@@ -1,0 +1,23 @@
+{
+  "name": "phx_live_storybook",
+  "version": "1.0.0",
+  "description": "PhxLiveStorybook assets",
+  "main": "./assets/js/phx_live_storybook.js",
+  "scripts": {
+    "build:css": "tailwindcss -i css/app.css -o ../dist/css/app.css",
+    "build:js": "esbuild js/*.js --bundle --outdir=../dist/js",
+    "build": "npm-run-all build:*",
+    "watch:css": "tailwindcss -i css/app.css -o ../dist/css/app.css --watch",
+    "watch:js": "esbuild js/*.js --bundle --outdir=../dist/js --watch",
+    "watch": "npm-run-all --parallel watch:*"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.14.49",
+    "npm-run-all": "^4.1.5",
+    "tailwindcss": "^3.1.6",
+    "phoenix_html": "file:../deps/phoenix_html",
+    "phoenix_live_view": "file:../deps/phoenix_live_view"
+  }
+}

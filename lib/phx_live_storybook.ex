@@ -1,0 +1,2 @@
+defmodule PhxLiveStorybook do
+end
