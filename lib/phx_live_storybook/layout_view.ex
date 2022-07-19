@@ -1,6 +1,7 @@
 defmodule PhxLiveStorybook.LayoutView do
   @moduledoc false
   use PhxLiveStorybook.Web, :view
+  use PhxLiveStorybook.Sidebar
 
   js_path = Path.join(__DIR__, "../../dist/js/app.js")
   css_path = Path.join(__DIR__, "../../dist/css/app.css")
