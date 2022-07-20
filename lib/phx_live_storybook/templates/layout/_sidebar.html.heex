@@ -2,13 +2,13 @@
   id="nav-sidebar"
   class="lsb-fixed lsb-w-64 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-border-r lsb-border-gray-200 lsb-pt-3 lsb-pb-4 lsb-bg-white lsb-lsb-overflow-y-auto"
 >
-  <%= inspect(storybook_entries()) %>
   <div class="lsb-flex-grow lsb-flex lsb-flex-col">
     <nav class="lsb-flex-1 lsb-px-3 lsb-bg-white lsb-space-y-1" aria-label="Sidebar">
-      <%= live_redirect to: live_storybook_path(@conn, :home), class: "block px-2 py-5" do %>
-        <i class="lsb-fa lsb-fa-book lsb-pr-1 lsb-text-green-500"></i>
-        <h4 class="lsb-inline lsb-uppercase">Live Storybook</h4>
+      <%= live_redirect to: live_storybook_path(@conn, :home) do %>
+        <h4 class="lsb-uppercase"><%= title() %></h4>
       <% end %> 
+      <%= render("_sidebar_entry.html", conn: @conn, entries: storybook_entries()) %>
     </nav>
   </div>
+
 </section>

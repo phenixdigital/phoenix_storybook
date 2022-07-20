@@ -1,0 +1,14 @@
+  <ul class="lsb-list-decimal lsb-ml-5">
+    <%= for entry <- @entries do %>
+      <li>
+        <%= case entry do %>
+          <% {:folder, folder_name, sub_entries} -> %>
+            <%= folder_name %>
+            <%= render("_sidebar_entry.html", conn: @conn, entries: sub_entries) %>
+
+          <% {:file, file_name} -> %>
+            <%= file_name %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>

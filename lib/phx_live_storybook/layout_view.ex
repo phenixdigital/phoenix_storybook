@@ -11,13 +11,17 @@ defmodule PhxLiveStorybook.LayoutView do
   @app_js File.read!(js_path)
   @app_css File.read!(css_path)
 
-  @storybook_backend Application.compile_env(:phx_live_storybook, :storybook_backend)
+  @storybook_backend Application.compile_env(:phx_live_storybook, :backend_module)
 
   def render("app.js", _), do: @app_js
   def render("app.css", _), do: @app_css
 
   def live_socket_path(conn) do
     [Enum.map(conn.script_name, &["/" | &1]) | conn.private.live_socket_path]
+  end
+
+  def title do
+    apply(@storybook_backend, :storybook_title, [])
   end
 
   def storybook_entries do

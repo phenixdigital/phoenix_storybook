@@ -570,6 +570,10 @@ video {
   left: 16rem;
 }
 
+.lsb-ml-5 {
+  margin-left: 1.25rem;
+}
+
 .lsb-inline {
   display: inline;
 }
@@ -592,6 +596,10 @@ video {
 
 .lsb-flex-grow {
   flex-grow: 1;
+}
+
+.lsb-list-decimal {
+  list-style-type: decimal;
 }
 
 .lsb-flex-col {
