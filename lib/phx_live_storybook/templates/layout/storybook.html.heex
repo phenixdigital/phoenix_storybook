@@ -8,16 +8,22 @@
     <%= csrf_meta_tag() %>
     <title><%= assigns[:page_title] || "Live Storybook" %></title>
     <style><%= raw(render("app.css")) %></style>
+    <%= if path = storybook_css_path() do %>
+      <link phx-track-static rel="stylesheet" href={path}/>
+    <% end %>
   </head>
 
   <body class="lsb-overflow-hidden">
     <%= render("_sidebar.html", assigns) %>
 
-    <div class="lsb-left-64 lsb-absolute lsb-h-screen lsb-main-container" style="width: calc(100% - 256px)">
+    <div class="lsb-left-64 lsb-absolute lsb-h-screen lsb-main-container lsb-p-4" style="width: calc(100% - 256px)">
       <%= @inner_content %>
     </div>
   </body>
 
+  <%= if path = storybook_js_path() do %>
+    <script phx-track-static type="text/javascript" src={path}/>
+  <% end %>
   <script><%= raw(render("app.js")) %></script>
   
 </html>

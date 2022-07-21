@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Router do
 
         live_session session_name, session_opts do
           live("/", PhxLiveStorybook.PageLive, :home, route_opts)
-          live("/:page", PhxLiveStorybook.PageLive, :page, route_opts)
+          live("/*page", PhxLiveStorybook.PageLive, :page, route_opts)
         end
       end
     end

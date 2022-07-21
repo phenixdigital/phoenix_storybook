@@ -574,10 +574,6 @@ video {
   margin-left: 1.25rem;
 }
 
-.lsb-inline {
-  display: inline;
-}
-
 .lsb-flex {
   display: flex;
 }
@@ -630,6 +626,10 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.lsb-p-4 {
+  padding: 1rem;
+}
+
 .lsb-px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -643,8 +643,9 @@ video {
   padding-bottom: 1rem;
 }
 
-.lsb-pr-1 {
-  padding-right: 0.25rem;
+.lsb-text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
 }
 
 .lsb-uppercase {
@@ -654,9 +655,4 @@ video {
 .lsb-text-blue-400 {
   --tw-text-opacity: 1;
   color: rgb(96 165 250 / var(--tw-text-opacity));
-}
-
-.lsb-text-green-500 {
-  --tw-text-opacity: 1;
-  color: rgb(34 197 94 / var(--tw-text-opacity));
 }

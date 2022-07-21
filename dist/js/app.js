@@ -4832,11 +4832,12 @@ within:
   };
 
   // js/app.js
-  var Hooks2 = {};
+  window.storybook ||= {};
   var socketPath = document.querySelector("html").getAttribute("phx-socket") || "/live";
   var csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
   var liveSocket = new LiveSocket(socketPath, Socket, {
-    hooks: Hooks2,
+    hooks: window.storybook.Hooks,
+    uploaders: window.storybook.Uploaders,
     params: (liveViewName) => {
       return {
         _csrf_token: csrfToken

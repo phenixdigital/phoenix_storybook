@@ -1,7 +1,7 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
 
-let Hooks = {};
+window.storybook ||= {};
 
 let socketPath =
   document.querySelector("html").getAttribute("phx-socket") || "/live";
@@ -11,7 +11,8 @@ let csrfToken = document
   .getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
-  hooks: Hooks,
+  hooks: window.storybook.Hooks,
+  uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
     return {
       _csrf_token: csrfToken,
