@@ -113,6 +113,7 @@ Here is an example of a stateless (function) component entry:
 defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
+  # :live_component is also available
   use PhxLiveStorybook.Entry, :component
 
   def component, do: Button

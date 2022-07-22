@@ -1,5 +1,4 @@
 defmodule PhxLiveStorybook.Entry do
-
   def live_component, do: component(live: true)
 
   def component(opts \\ [live: false]) do
@@ -10,7 +9,14 @@ defmodule PhxLiveStorybook.Entry do
       def live_component?, do: Keyword.get(unquote(opts), :live)
 
       def public_name do
-        call(:name, fn -> __MODULE__ |> Module.split() |> Enum.at(-1) end)
+        call(:name, fn ->
+          __MODULE__
+          |> Module.split()
+          |> Enum.at(-1)
+          |> Macro.underscore()
+          |> String.split("_")
+          |> Enum.map_join(" ", &String.capitalize/1)
+        end)
       end
 
       def public_component, do: call(:component)
