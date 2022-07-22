@@ -51,8 +51,7 @@ defmodule PhxLiveStorybook.Components.CodeRenderer do
     |> String.split("\n")
     |> Enum.map(&String.trim/1)
     |> Enum.reject(&(&1 == ""))
-    |> Enum.map(&"  #{&1}")
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", &"  #{&1}")
   end
 
   defp format_code(code) do
