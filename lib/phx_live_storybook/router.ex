@@ -20,6 +20,8 @@ defmodule PhxLiveStorybook.Router do
   @doc false
   def __options__(options) do
     live_socket_path = Keyword.get(options, :live_socket_path, "/live")
+    otp_app = Keyword.get_lazy(options, :otp_app, fn -> raise "Missing mandatory :otp_app option." end)
+    backend_module = Keyword.get_lazy(options, :backend_module, fn -> raise "Missing mandatory :backend_module option." end)
 
     {
       :live_storybook,
@@ -27,7 +29,7 @@ defmodule PhxLiveStorybook.Router do
         root_layout: {PhxLiveStorybook.LayoutView, :storybook}
       ],
       [
-        private: %{live_socket_path: live_socket_path},
+        private: %{live_socket_path: live_socket_path, otp_app: otp_app, backend_module: backend_module},
         as: :live_storybook
       ]
     }

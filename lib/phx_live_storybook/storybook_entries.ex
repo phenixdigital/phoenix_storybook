@@ -13,7 +13,9 @@ defmodule PhxLiveStorybook.StorybookEntries do
     quote bind_quoted: [opts: opts] do
       alias PhxLiveStorybook.StorybookEntries
 
-      @components_path Keyword.get(opts, :components_path)
+      @backend_module __MODULE__
+      @otp_app Keyword.get(opts, :otp_app)
+      @components_path Application.compile_env(@otp_app, @backend_module, []) |> Keyword.get(:components_path)
       @components_pattern if @components_path, do: "#{@components_path}/**/*"
       @paths if @components_path, do: Path.wildcard(@components_pattern), else: []
       @paths_hash :erlang.md5(@paths)
@@ -41,40 +43,39 @@ defmodule PhxLiveStorybook.StorybookEntries do
 
   def entries(path) do
     if path && File.dir?(path) do
-      recursive_scan(path) |> IO.inspect(label: "scan")
+      recursive_scan(path)
     else
       []
     end
   end
 
   defp recursive_scan(path) do
-    for entry_file_name <- path |> File.ls!() |> Enum.sort() do
-      entry_path = Path.join(path, entry_file_name)
-
-      if File.dir?(entry_path) do
-        sub_entries = recursive_scan(entry_path)
-        %FolderEntry{name: entry_file_name, sub_entries: sub_entries}
-      else
-        entry_module = entry_module(entry_path)
-
-        case entry_type(entry_module) do
-          nil ->
-            nil
-
-          :component ->
-            %ComponentEntry{
-              module: entry_module,
-              path: entry_path,
-              module_name: entry_module |> to_string() |> String.split(".") |> Enum.at(-1),
-              name: apply(entry_module, :public_name, [])
-            }
+    for file_name <- path |> File.ls!() |> Enum.sort(:desc),
+        file_path = Path.join(path, file_name),
+        reduce: [] do
+      acc ->
+        if File.dir?(file_path) do
+          [%FolderEntry{name: file_name, sub_entries: recursive_scan(file_path)} | acc]
+        else
+          entry_module = entry_module(file_path)
+          case entry_type(entry_module) do
+            nil -> acc
+            :component -> [component_entry(file_path, entry_module) | acc]
+          end
         end
-      end
     end
-    |> Enum.reject(&is_nil/1)
   end
 
-  def entry_module(entry_path) do
+  defp component_entry(path, module) do
+    %ComponentEntry{
+      module: module,
+      path: path,
+      module_name: module |> to_string() |> String.split(".") |> Enum.at(-1),
+      name: apply(module, :public_name, [])
+    }
+  end
+
+  defp entry_module(entry_path) do
     {:ok, contents} = File.read(entry_path)
 
     case Regex.run(~r/defmodule\s+([^\s]+)\s+do/, contents, capture: :all_but_first) do
@@ -83,9 +84,8 @@ defmodule PhxLiveStorybook.StorybookEntries do
     end
   end
 
-  def entry_type(entry_module) do
+  defp entry_type(entry_module) do
     fun = :storybook_type
-
     Code.ensure_compiled(entry_module)
 
     if Kernel.function_exported?(entry_module, fun, 0) do

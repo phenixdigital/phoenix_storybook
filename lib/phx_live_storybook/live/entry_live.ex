@@ -10,15 +10,15 @@ defmodule PhxLiveStorybook.EntryLive do
   alias PhxLiveStorybook.Components.{CodeRenderer, ComponentRenderer, Variation}
 
   def handle_params(_params = %{"entry" => entry}, _uri, socket) do
-    entry_module = load_entry_module(entry)
+    entry_module = load_entry_module(socket, entry)
     {:noreply, assign(socket, entry_module: entry_module)}
   end
 
   def handle_params(_params, _uri, socket) do
-    {:noreply, assign(socket, entry_module: "")}
+    {:noreply, socket}
   end
 
-  def render(assigns) do
+  def render(assigns = %{entry_module: _module}) do
     ~H"""
     <div class="lsb-space-y-8">
       <div>
@@ -38,18 +38,17 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp load_entry_module(entry_param) do
+  def render(assigns), do: ~H""
+
+  defp load_entry_module(socket, entry_param) do
     entry_module = entry_param |> Enum.map(&Macro.camelize/1) |> Enum.join(".")
-    entry_module = :"#{components_module_prefix()}.#{entry_module}"
+    entry_module = :"#{components_module_prefix(socket)}.#{entry_module}"
     Code.ensure_loaded(entry_module)
     entry_module
   end
 
-  defp components_module_prefix do
-    apply(storybook_backend(), :components_module_prefix, [])
+  defp components_module_prefix(socket) do
+    socket.private.connect_info.private.backend_module.config(:components_module_prefix)
   end
 
-  defp storybook_backend do
-    Application.get_env(:phx_live_storybook, :backend_module)
-  end
 end

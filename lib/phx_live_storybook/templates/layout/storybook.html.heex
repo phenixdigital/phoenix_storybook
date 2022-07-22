@@ -8,10 +8,10 @@
     <%= csrf_meta_tag() %>
     <title><%= assigns[:page_title] || "Live Storybook" %></title>
     <style><%= raw(render("app.css")) %></style>
-    <%= if path = storybook_css_path() do %>
+    <%= if path = storybook_css_path(@conn) do %>
       <link phx-track-static rel="stylesheet" href={path}/>
     <% end %>
-    <style><%= raw(makeup_stylesheet()) %></style>
+    <style><%= raw(makeup_stylesheet(@conn)) %></style>
   </head>
 
   <body class="lsb-overflow-hidden">
@@ -22,7 +22,7 @@
     </div>
   </body>
 
-  <%= if path = storybook_js_path() do %>
+  <%= if path = storybook_js_path(@conn) do %>
     <script phx-track-static type="text/javascript" src={path}></script>
   <% end %>
   <script><%= raw(render("app.js")) %></script>

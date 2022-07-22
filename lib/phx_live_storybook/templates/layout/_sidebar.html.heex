@@ -5,9 +5,9 @@
   <div class="lsb-flex-grow lsb-flex lsb-flex-col">
     <nav class="lsb-flex-1 lsb-px-3 lsb-bg-white lsb-space-y-1" aria-label="Sidebar">
       <%= live_redirect to: live_storybook_path(@conn, :home) do %>
-        <h4 class="lsb-uppercase"><%= title() %></h4>
+        <h4 class="lsb-uppercase"><%= title(@conn) %></h4>
       <% end %> 
-      <%= render("_sidebar_entry.html", conn: @conn, entries: storybook_entries(), current_path: live_storybook_path(@conn, :home)) %>
+      <%= render("_sidebar_entry.html", conn: @conn, entries: storybook_entries(@conn), current_path: live_storybook_path(@conn, :home)) %>
     </nav>
   </div>
 
