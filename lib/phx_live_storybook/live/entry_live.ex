@@ -20,23 +20,26 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  def handle_params(_params, _uri, socket) do
-    {:noreply, socket}
-  end
+  def handle_params(_params, _uri, socket), do: {:noreply, socket}
 
   def render(assigns = %{entry_module: _module}) do
     ~H"""
     <div class="lsb-space-y-8">
       <div>
         <h2 class="lsb-text-xl lsb-text-blue-400"><%= @entry_module.public_name() %></h2>
-        <h2 class="lsb-text-md"><%= @entry_module.public_description() %></h2>
+        <pre class="lsb-font-sans lsb-text-md"><%= @entry_module.public_description() %></pre>
       </div>
 
       <div class="lsb-space-y-12">
         <%= for variation = %Variation{} <- @entry_module.public_variations() do %>
           <div class="lsb-space-y-4">
-            <%= ComponentRenderer.render_component(@entry_module.public_component(), @entry_module.public_function(), variation) %>
-            <%= CodeRenderer.render_component_code(@entry_module.public_function(), variation) %>
+            <%= if @entry_module.live_component?() do %>
+              <%= ComponentRenderer.render_live_component(@entry_module.public_component(), variation) %>
+              <%= CodeRenderer.render_live_component_code(@entry_module.public_component(), variation) %>
+            <% else %>
+              <%= ComponentRenderer.render_component(@entry_module.public_component(), @entry_module.public_function(), variation) %>
+              <%= CodeRenderer.render_component_code(@entry_module.public_function(), variation) %>
+            <% end %>
           </div>
         <% end %>
       </div>

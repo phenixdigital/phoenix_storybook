@@ -8,20 +8,41 @@ defmodule PhxLiveStorybook.Components.CodeRenderer do
 
   def render_component_code(function, variation, assigns \\ %{}) do
     ~H"""
-    <pre class="highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-rounded-md">
-    <%= code_block(function, variation) |> format_code() %>
+    <pre class={pre_class()}>
+    <%= component_code_block(function, variation) |> format_code() %>
     </pre>
     """
   end
 
-  defp code_block(function, v = %Variation{}) do
-    fun = function |> function_name() |> to_string()
+  def render_live_component_code(module, variation, assigns \\ %{}) do
+    ~H"""
+    <pre class={pre_class()}>
+    <%= live_component_code_block(module, variation) |> format_code() %>
+    </pre>
+    """
+  end
+
+  defp pre_class, do: "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-rounded-md"
+
+  defp component_code_block(function, v = %Variation{}) do
+    fun = function_name(function)
     self_closed? = is_nil(v.block) and is_nil(v.slots)
 
     """
     #{"<.#{fun}"}#{for {k, val} <- v.attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
     #{if v.block, do: v.block}#{if v.slots, do: indent_block(v.slots)}
     #{unless self_closed?, do: "<./#{fun}>"}
+    """
+  end
+
+  defp live_component_code_block(module, v = %Variation{}) do
+    mod = module_name(module)
+    self_closed? = is_nil(v.block) and is_nil(v.slots)
+
+    """
+    #{"<.live_component module={#{mod}}"}#{for {k, val} <- v.attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
+    #{if v.block, do: v.block}#{if v.slots, do: indent_block(v.slots)}
+    #{unless self_closed?, do: "<./live_component>"}
     """
   end
 
@@ -43,6 +64,7 @@ defmodule PhxLiveStorybook.Components.CodeRenderer do
   end
 
   defp function_name(fun), do: Function.info(fun)[:name]
+  defp module_name(mod), do: mod |> to_string() |> String.split(".") |> Enum.at(-1)
 
   defp format_val(val) when is_binary(val), do: inspect(val)
   defp format_val(val), do: "{#{inspect(val)}}"

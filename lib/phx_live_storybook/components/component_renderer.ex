@@ -8,8 +8,17 @@ defmodule PhxLiveStorybook.Components.ComponentRenderer do
     render_component_markup(module, function, """
     <.#{function_name(function)} #{attributes_markup(variation.attributes, variation.id)}>
       #{variation.block}
-      #{if variation.slots, do: variation.slots}
+      #{variation.slots}
     </.#{function_name(function)}>
+    """)
+  end
+
+  def render_live_component(module, variation = %Variation{}) do
+    render_component_markup(module, """
+    <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, variation.id)}>
+      #{variation.block}
+      #{variation.slots}
+    </.live_component>
     """)
   end
 
@@ -22,7 +31,7 @@ defmodule PhxLiveStorybook.Components.ComponentRenderer do
     end)
   end
 
-  defp render_component_markup(module, function, markup) do
+  defp render_component_markup(module, function \\ & &1, markup) do
     quoted_code = EEx.compile_string(markup, engine: HTMLEngine)
 
     {evaluated, _} =

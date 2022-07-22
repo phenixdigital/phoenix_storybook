@@ -1,9 +1,13 @@
 defmodule PhxLiveStorybook.Entry do
-  def component do
+
+  def live_component, do: component(live: true)
+
+  def component(opts \\ [live: false]) do
     quote do
       alias PhxLiveStorybook.Components.Variation
 
       def storybook_type, do: :component
+      def live_component?, do: Keyword.get(unquote(opts), :live)
 
       def public_name do
         call(:name, fn -> __MODULE__ |> Module.split() |> Enum.at(-1) end)
