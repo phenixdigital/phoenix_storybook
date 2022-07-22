@@ -14,8 +14,10 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_params(_params = %{"entry" => entry}, _uri, socket) do
-    entry_module = load_entry_module(socket, entry)
-    {:noreply, assign(socket, entry_module: entry_module)}
+    case load_entry_module(socket, entry) do
+      nil -> raise PhxLiveStorybook.EntryNotFound, "unknown entry #{inspect(entry)}"
+      entry_module -> {:noreply, assign(socket, entry_module: entry_module)}
+    end
   end
 
   def handle_params(_params, _uri, socket) do
@@ -47,11 +49,16 @@ defmodule PhxLiveStorybook.EntryLive do
   defp load_entry_module(socket, entry_param) do
     entry_module = entry_param |> Enum.map(&Macro.camelize/1) |> Enum.join(".")
     entry_module = :"#{components_module_prefix(socket)}.#{entry_module}"
-    Code.ensure_loaded(entry_module)
-    entry_module
+    case Code.ensure_loaded(entry_module) do
+      {:module, ^entry_module} -> entry_module
+      _ -> nil
+    end
   end
 
   defp components_module_prefix(socket) do
-    socket.assigns.backend_module.config(:components_module_prefix, socket.assigns.backend_module)
+    socket.assigns.backend_module.config(
+      :components_module_prefix,
+      socket.assigns.backend_module
+    )
   end
 end

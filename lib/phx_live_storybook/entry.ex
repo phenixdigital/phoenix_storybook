@@ -1,5 +1,5 @@
-defmodule PhxLiveStorybook.Component do
-  defmacro __using__(_) do
+defmodule PhxLiveStorybook.Entry do
+  def component do
     quote do
       alias PhxLiveStorybook.Components.Variation
 
@@ -22,5 +22,12 @@ defmodule PhxLiveStorybook.Component do
         end
       end
     end
+  end
+
+  @doc """
+  Convenience helper for using the functions above.
+  """
+  defmacro __using__(which) when is_atom(which) do
+    apply(__MODULE__, which, [])
   end
 end
