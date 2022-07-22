@@ -10,8 +10,8 @@ defmodule PhxLiveStorybook.Router do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
         live_session session_name, session_opts do
-          live("/", PhxLiveStorybook.PageLive, :home, route_opts)
-          live("/*page", PhxLiveStorybook.PageLive, :page, route_opts)
+          live("/", PhxLiveStorybook.EntryLive, :home, route_opts)
+          live("/*entry", PhxLiveStorybook.EntryLive, :entry, route_opts)
         end
       end
     end

@@ -11,6 +11,7 @@
     <%= if path = storybook_css_path() do %>
       <link phx-track-static rel="stylesheet" href={path}/>
     <% end %>
+    <style><%= raw(makeup_stylesheet()) %></style>
   </head>
 
   <body class="lsb-overflow-hidden">
@@ -22,7 +23,7 @@
   </body>
 
   <%= if path = storybook_js_path() do %>
-    <script phx-track-static type="text/javascript" src={path}/>
+    <script phx-track-static type="text/javascript" src={path}></script>
   <% end %>
   <script><%= raw(render("app.js")) %></script>
   

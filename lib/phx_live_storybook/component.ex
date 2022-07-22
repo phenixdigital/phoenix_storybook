@@ -1,6 +1,8 @@
 defmodule PhxLiveStorybook.Component do
   defmacro __using__(_) do
     quote do
+      alias PhxLiveStorybook.Components.Variation
+
       def storybook_type, do: :component
 
       def public_name do

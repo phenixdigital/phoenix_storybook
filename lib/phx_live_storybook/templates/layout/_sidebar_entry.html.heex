@@ -2,11 +2,11 @@
     <%= for entry <- @entries do %>
       <li>
         <%= case entry do %>
-          <% {:folder, folder_name, sub_entries} -> %>
+          <% %FolderEntry{name: folder_name, sub_entries: sub_entries} -> %>
             <%= folder_name %>
             <%= render("_sidebar_entry.html", conn: @conn, entries: sub_entries, current_path: "#{@current_path}/#{folder_name}") %>
 
-          <% {:component, %{name: name, module_name: module_name}} -> %>
+          <% %ComponentEntry{name: name, module_name: module_name} -> %>
             <%= live_redirect name, to: "#{@current_path}/#{Macro.underscore(module_name)}" %>
         <% end %>
       </li>

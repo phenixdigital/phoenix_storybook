@@ -1,4 +1,14 @@
+defmodule PhxLiveStorybook.ComponentEntry do
+  defstruct [:name, :module, :path, :module_name]
+end
+
+defmodule PhxLiveStorybook.FolderEntry do
+  defstruct [:name, :sub_entries]
+end
+
 defmodule PhxLiveStorybook.StorybookEntries do
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
+
   def quotes(opts) do
     quote bind_quoted: [opts: opts] do
       alias PhxLiveStorybook.StorybookEntries
@@ -31,7 +41,7 @@ defmodule PhxLiveStorybook.StorybookEntries do
 
   def entries(path) do
     if path && File.dir?(path) do
-      recursive_scan(path)
+      recursive_scan(path) |> IO.inspect(label: "scan")
     else
       []
     end
@@ -43,7 +53,7 @@ defmodule PhxLiveStorybook.StorybookEntries do
 
       if File.dir?(entry_path) do
         sub_entries = recursive_scan(entry_path)
-        {:folder, entry_file_name, sub_entries}
+        %FolderEntry{name: entry_file_name, sub_entries: sub_entries}
       else
         entry_module = entry_module(entry_path)
 
@@ -52,13 +62,12 @@ defmodule PhxLiveStorybook.StorybookEntries do
             nil
 
           :component ->
-            {:component,
-             %{
-               module: entry_module,
-               path: entry_path,
-               module_name: entry_module |> to_string() |> String.split(".") |> Enum.at(-1),
-               name: apply(entry_module, :public_name, [])
-             }}
+            %ComponentEntry{
+              module: entry_module,
+              path: entry_path,
+              module_name: entry_module |> to_string() |> String.split(".") |> Enum.at(-1),
+              name: apply(entry_module, :public_name, [])
+            }
         end
       end
     end
@@ -76,7 +85,8 @@ defmodule PhxLiveStorybook.StorybookEntries do
 
   def entry_type(entry_module) do
     fun = :storybook_type
-    Code.ensure_loaded(entry_module)
+
+    Code.ensure_compiled(entry_module)
 
     if Kernel.function_exported?(entry_module, fun, 0) do
       apply(entry_module, fun, [])
