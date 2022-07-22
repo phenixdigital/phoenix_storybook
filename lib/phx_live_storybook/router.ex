@@ -26,7 +26,8 @@ defmodule PhxLiveStorybook.Router do
     {
       :live_storybook,
       [
-        root_layout: {PhxLiveStorybook.LayoutView, :storybook}
+        root_layout: {PhxLiveStorybook.LayoutView, :storybook},
+        session: %{"backend_module" => backend_module}
       ],
       [
         private: %{live_socket_path: live_socket_path, otp_app: otp_app, backend_module: backend_module},

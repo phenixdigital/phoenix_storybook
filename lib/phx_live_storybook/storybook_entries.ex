@@ -15,11 +15,11 @@ defmodule PhxLiveStorybook.StorybookEntries do
 
       @backend_module __MODULE__
       @otp_app Keyword.get(opts, :otp_app)
-      @components_path Application.compile_env(@otp_app, @backend_module, []) |> Keyword.get(:components_path)
-      @components_pattern if @components_path, do: "#{@components_path}/**/*"
-      @paths if @components_path, do: Path.wildcard(@components_pattern), else: []
+      @content_path Application.compile_env(@otp_app, @backend_module, []) |> Keyword.get(:content_path)
+      @components_pattern if @content_path, do: "#{@content_path}/**/*"
+      @paths if @content_path, do: Path.wildcard(@components_pattern), else: []
       @paths_hash :erlang.md5(@paths)
-      @entries StorybookEntries.entries(@components_path)
+      @entries StorybookEntries.entries(@content_path)
 
       # this file should be recompiled whenever any of the component file is touched
       for path <- @paths do

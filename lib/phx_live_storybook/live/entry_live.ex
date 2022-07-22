@@ -9,6 +9,10 @@ defmodule PhxLiveStorybook.EntryLive do
 
   alias PhxLiveStorybook.Components.{CodeRenderer, ComponentRenderer, Variation}
 
+  def mount(_params, session, socket) do
+    {:ok, assign(socket, backend_module: session["backend_module"])}
+  end
+
   def handle_params(_params = %{"entry" => entry}, _uri, socket) do
     entry_module = load_entry_module(socket, entry)
     {:noreply, assign(socket, entry_module: entry_module)}
@@ -48,7 +52,6 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp components_module_prefix(socket) do
-    socket.private.connect_info.private.backend_module.config(:components_module_prefix)
+    socket.assigns.backend_module.config(:components_module_prefix, socket.assigns.backend_module)
   end
-
 end

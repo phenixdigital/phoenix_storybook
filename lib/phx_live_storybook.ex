@@ -7,11 +7,12 @@ defmodule PhxLiveStorybook do
 
   def quotes(opts) do
     quote do
-      def config(key) do
+      def config(key, default \\ nil) do
         otp_app = Keyword.get(unquote(opts), :otp_app)
+
         otp_app
         |> Application.get_env(__MODULE__, [])
-        |> Keyword.get(key)
+        |> Keyword.get(key, default)
       end
     end
   end
