@@ -15,7 +15,8 @@ defmodule PhxLiveStorybook.StorybookEntries do
 
       @backend_module __MODULE__
       @otp_app Keyword.get(opts, :otp_app)
-      @content_path Application.compile_env(@otp_app, @backend_module, []) |> Keyword.get(:content_path)
+      @content_path Application.compile_env(@otp_app, @backend_module, [])
+                    |> Keyword.get(:content_path)
       @components_pattern if @content_path, do: "#{@content_path}/**/*"
       @paths if @content_path, do: Path.wildcard(@components_pattern), else: []
       @paths_hash :erlang.md5(@paths)
@@ -58,6 +59,7 @@ defmodule PhxLiveStorybook.StorybookEntries do
           [%FolderEntry{name: file_name, sub_entries: recursive_scan(file_path)} | acc]
         else
           entry_module = entry_module(file_path)
+
           case entry_type(entry_module) do
             nil -> acc
             :component -> [component_entry(file_path, entry_module) | acc]

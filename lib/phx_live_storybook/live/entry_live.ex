@@ -52,6 +52,7 @@ defmodule PhxLiveStorybook.EntryLive do
   defp load_entry_module(socket, entry_param) do
     entry_module = entry_param |> Enum.map(&Macro.camelize/1) |> Enum.join(".")
     entry_module = :"#{components_module_prefix(socket)}.#{entry_module}"
+
     case Code.ensure_loaded(entry_module) do
       {:module, ^entry_module} -> entry_module
       _ -> nil

@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.LayoutView do
 
   def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
-  def title(conn), do: storybook_setting(conn, :storybook_title)
+  def title(conn), do: storybook_setting(conn, :storybook_title, "Storybook")
   def makeup_style(conn), do: storybook_setting(conn, :makeup_style, StyleMap.tango_style())
 
   def storybook_setting(conn, key, default \\ nil) do
