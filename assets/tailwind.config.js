@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("tailwindcss-font-inter")],
   prefix: "lsb-",
+  important: true,
 };

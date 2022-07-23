@@ -14,10 +14,21 @@
     <style><%= raw(makeup_stylesheet(@conn)) %></style>
   </head>
 
-  <body class="lsb-overflow-hidden">
+  <body class="lsb-overflow-hidden lsb-font-inter lsb-text-base lsb-text-gray-600 lsb-bg-white lsb-antialiased lsb-font-feature-default">
+    <header class="lsb-sticky lsb-top-0 lsb-z-50 lsb-flex lsb-flex-wrap lsb-items-center lsb-justify-between lsb-bg-white lsb-px-4 lsb-py-5 lsb-shadow-md lsb-shadow-slate-900/5 lsb-transition lsb-duration-500 sm:lsb-px-6 lg:lsb-px-8 dark:lsb-bg-transparent">
+      <div class="lsb-relative lsb-flex lsb-flex-grow lsb-basis-0 lsb-items-center lsb-text-orange-600 lsb-text-lg lsb-font-bold lsb-uppercase">
+        <%= live_redirect to: live_storybook_path(@conn, :home) do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="lsb-inline lsb-h-6 lsb-w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          <span class="lsb-ml-1 lsb-align-middle"><%= title(@conn) %></span>
+        <% end %>
+      </div>
+    </header>
+     
     <%= render("_sidebar.html", assigns) %>
 
-    <div class="lsb-left-64 lsb-absolute lsb-h-screen lsb-main-container lsb-p-4" style="width: calc(100% - 256px)">
+    <div class="lsb-left-64 lsb-absolute lsb-h-screen lsb-main-container lsb-px-12 lsb-py-6 lsb-overflow-auto" style="width: calc(100% - 256px)">
       <%= @inner_content %>
     </div>
   </body>

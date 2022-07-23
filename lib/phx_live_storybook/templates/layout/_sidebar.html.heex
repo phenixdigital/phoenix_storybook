@@ -1,14 +1,9 @@
 <section
   id="nav-sidebar"
-  class="lsb-fixed lsb-w-64 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-border-r lsb-border-gray-200 lsb-pt-3 lsb-pb-4 lsb-bg-white lsb-lsb-overflow-y-auto"
+  class="lsb-fixed lsb-text-sm lsb-w-60 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-4 lsb-px-4 lsb-overflow-y-auto"
 >
-  <div class="lsb-flex-grow lsb-flex lsb-flex-col">
-    <nav class="lsb-flex-1 lsb-px-3 lsb-bg-white lsb-space-y-1" aria-label="Sidebar">
-      <%= live_redirect to: live_storybook_path(@conn, :home) do %>
-        <h4 class="lsb-uppercase"><%= title(@conn) %></h4>
-      <% end %> 
-      <%= render("_sidebar_entry.html", conn: @conn, entries: storybook_entries(@conn), current_path: live_storybook_path(@conn, :home)) %>
-    </nav>
-  </div>
+  <nav class="lsb-flex-1 xl:lsb-sticky xl:lsb-top-[4.5rem]">
+    <%= render("_sidebar_entry.html", conn: @conn, entries: storybook_entries(@conn), current_path: live_storybook_path(@conn, :home)) %>
+  </nav>
 
 </section>

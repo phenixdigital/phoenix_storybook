@@ -22,7 +22,9 @@ defmodule PhxLiveStorybook.Components.CodeRenderer do
     """
   end
 
-  defp pre_class, do: "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-rounded-md"
+  defp pre_class,
+    do:
+      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
   defp component_code_block(function, v = %Variation{}) do
     fun = function_name(function)

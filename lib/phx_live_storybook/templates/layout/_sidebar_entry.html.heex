@@ -1,13 +1,20 @@
-  <ul class="lsb-list-decimal lsb-ml-5">
+  <ul class="lsb-ml-2">
     <%= for entry <- @entries do %>
-      <li>
+      <li class="">
         <%= case entry do %>
           <% %FolderEntry{name: folder_name, sub_entries: sub_entries} -> %>
-            <%= folder_name %>
+            <div class="lsb-flex lsb-items-center lsb-py-1.5 lsb-group lsb-cursor-pointer hover:lsb-text-orange-600" >
+              <svg xmlns="http://www.w3.org/2000/svg" class="lsb-h-4 lsb-w-4 lsb-mr-2 lsb-text-slate-400 group-hover:lsb-text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+              <%= String.capitalize(folder_name) %>
+            </div>
             <%= render("_sidebar_entry.html", conn: @conn, entries: sub_entries, current_path: "#{@current_path}/#{folder_name}") %>
 
           <% %ComponentEntry{name: name, module_name: module_name} -> %>
-            <%= live_redirect name, to: "#{@current_path}/#{Macro.underscore(module_name)}" %>
+            <div class="lsb-block lsb-border-l lsb-py-1 lsb-pl-4 -lsb-ml-px lsb-border-slate-200 hover:lsb-border-orange-300 lsb-text-slate-700 hover:lsb-text-orange-600">
+              <%= live_redirect name, to: "#{@current_path}/#{Macro.underscore(module_name)}" %>
+            </div>
         <% end %>
       </li>
     <% end %>

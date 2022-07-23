@@ -26,20 +26,34 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb-space-y-8">
       <div>
-        <h2 class="lsb-text-xl lsb-text-blue-400"><%= @entry_module.public_name() %></h2>
-        <pre class="lsb-font-sans lsb-text-md"><%= @entry_module.public_description() %></pre>
+        <h2 class="lsb-mt-3 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-orange-600"><%= @entry_module.public_name() %></h2>
+        <div class="lsb-mt-4 lsb-text-lg lsb-leading-7 lsb-text-slate-700"><%= @entry_module.public_description() %></div>
       </div>
 
       <div class="lsb-space-y-12">
         <%= for variation = %Variation{} <- @entry_module.public_variations() do %>
-          <div class="lsb-space-y-4">
-            <%= if @entry_module.live_component?() do %>
-              <%= ComponentRenderer.render_live_component(@entry_module.public_component(), variation) %>
-              <%= CodeRenderer.render_live_component_code(@entry_module.public_component(), variation) %>
-            <% else %>
-              <%= ComponentRenderer.render_component(@entry_module.public_component(), @entry_module.public_function(), variation) %>
-              <%= CodeRenderer.render_component_code(@entry_module.public_function(), variation) %>
-            <% end %>
+          <div class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+            <div class="lsb-col-span-5 lsb-font-medium lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+              <%= if variation.description do %>
+                <%= variation.description  %>
+              <% else %>
+                <%= variation.id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+              <% end %>
+            </div>
+            <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2">
+              <%= if @entry_module.live_component?() do %>
+                <%= ComponentRenderer.render_live_component(@entry_module.public_component(), variation) %>
+              <% else %>
+                <%= ComponentRenderer.render_component(@entry_module.public_component(), @entry_module.public_function(), variation) %>
+              <% end %>
+            </div>
+            <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-3">
+              <%= if @entry_module.live_component?() do %>
+                <%= CodeRenderer.render_live_component_code(@entry_module.public_component(), variation) %>
+              <% else %>
+                <%= CodeRenderer.render_component_code(@entry_module.public_function(), variation) %>
+              <% end %>
+            </div>
           </div>
         <% end %>
       </div>
