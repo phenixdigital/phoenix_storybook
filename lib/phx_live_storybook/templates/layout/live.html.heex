@@ -1,0 +1,9 @@
+  <.live_component 
+    id="sidebar" module={PhxLiveStorybook.Sidebar}
+    backend_module={@backend_module}
+    current_path={assigns[:entry_path]}
+  />
+
+  <div class="lsb-left-64 lsb-absolute lsb-h-screen lsb-main-container lsb-px-12 lsb-py-6 lsb-overflow-auto" style="width: calc(100% - 256px)">
+    <%= @inner_content %>
+  </div>

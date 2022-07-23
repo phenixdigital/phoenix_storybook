@@ -6,12 +6,12 @@ defmodule PhxLiveStorybook.FolderEntry do
   defstruct [:name, :sub_entries]
 end
 
-defmodule PhxLiveStorybook.StorybookEntries do
+defmodule PhxLiveStorybook.Entries do
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
 
   def quotes(opts) do
     quote bind_quoted: [opts: opts] do
-      alias PhxLiveStorybook.StorybookEntries
+      alias PhxLiveStorybook.Entries
 
       @backend_module __MODULE__
       @otp_app Keyword.get(opts, :otp_app)
@@ -20,14 +20,14 @@ defmodule PhxLiveStorybook.StorybookEntries do
       @components_pattern if @content_path, do: "#{@content_path}/**/*"
       @paths if @content_path, do: Path.wildcard(@components_pattern), else: []
       @paths_hash :erlang.md5(@paths)
-      @entries StorybookEntries.entries(@content_path)
+      @entries Entries.entries(@content_path)
 
-      # this file should be recompiled whenever any of the component file is touched
+      # this file should be recompiled whenever any entry file is touched
       for path <- @paths do
         @external_resource path
       end
 
-      # this file should be recompiled whenever any file has been created or deleted
+      # this file should be recompiled whenever any file under content_path has been created or deleted
       def __mix_recompile__?() do
         if @components_pattern do
           @components_pattern |> Path.wildcard() |> :erlang.md5() !=
@@ -56,7 +56,13 @@ defmodule PhxLiveStorybook.StorybookEntries do
         reduce: [] do
       acc ->
         if File.dir?(file_path) do
-          [%FolderEntry{name: file_name, sub_entries: recursive_scan(file_path)} | acc]
+          [
+            %FolderEntry{
+              name: file_name,
+              sub_entries: file_path |> recursive_scan() |> sort_entries()
+            }
+            | acc
+          ]
         else
           entry_module = entry_module(file_path)
 
@@ -66,6 +72,11 @@ defmodule PhxLiveStorybook.StorybookEntries do
           end
         end
     end
+  end
+
+  @entry_priority %{ComponentEntry => 0, FolderEntry => 1}
+  defp sort_entries(entries) do
+    Enum.sort_by(entries, &Map.get(@entry_priority, &1.__struct__))
   end
 
   defp component_entry(path, module) do

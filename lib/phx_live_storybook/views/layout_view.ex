@@ -2,7 +2,6 @@ defmodule PhxLiveStorybook.LayoutView do
   @moduledoc false
   use PhxLiveStorybook.Web, :view
 
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
   alias Makeup.Styles.HTML.StyleMap
 
   js_path = Path.join(__DIR__, "../../../dist/js/app.js")
@@ -23,22 +22,18 @@ defmodule PhxLiveStorybook.LayoutView do
     [Enum.map(conn.script_name, &["/" | &1]) | conn.private.live_socket_path]
   end
 
-  def storybook_entries(conn), do: conn.private.backend_module.storybook_entries()
-
   def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
   def title(conn), do: storybook_setting(conn, :storybook_title, "Live Storybook")
 
-  def makeup_style(conn) do
+  defp makeup_style(conn) do
     style = storybook_setting(conn, :makeup_style, :monokai_style)
     apply(StyleMap, style, [])
   end
 
-  def storybook_setting(conn, key, default \\ nil) do
+  defp storybook_setting(conn, key, default \\ nil) do
     otp_app = conn.private.otp_app
     backend_module = conn.private.backend_module
     Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
   end
-
-  def module_name(mod), do: mod |> to_string() |> String.split(".") |> Enum.at(-1)
 end

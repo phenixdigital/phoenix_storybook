@@ -18,7 +18,9 @@ defmodule PhxLiveStorybook.Web do
   def live_view do
     quote do
       @moduledoc false
-      use Phoenix.LiveView
+      use Phoenix.LiveView,
+        layout: {PhxLiveStorybook.LayoutView, "live.html"}
+
       unquote(view_helpers())
     end
   end
@@ -40,6 +42,7 @@ defmodule PhxLiveStorybook.Web do
       # Import convenience functions for LiveView rendering
       import Phoenix.LiveView.Helpers
       import PhxLiveStorybook.Helpers
+      import PhxLiveStorybook.Heroicons
 
       alias PhxLiveStorybook.Router.Helpers, as: Routes
     end

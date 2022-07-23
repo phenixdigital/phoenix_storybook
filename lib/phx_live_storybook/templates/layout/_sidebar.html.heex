@@ -1,9 +1,0 @@
-<section
-  id="nav-sidebar"
-  class="lsb-fixed lsb-text-sm lsb-w-60 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-4 lsb-px-4 lsb-overflow-y-auto"
->
-  <nav class="lsb-flex-1 xl:lsb-sticky xl:lsb-top-[4.5rem]">
-    <%= render("_sidebar_entry.html", conn: @conn, entries: storybook_entries(@conn), current_path: live_storybook_path(@conn, :home)) %>
-  </nav>
-
-</section>

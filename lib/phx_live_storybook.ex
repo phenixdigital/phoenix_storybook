@@ -1,8 +1,8 @@
 defmodule PhxLiveStorybook do
-  alias PhxLiveStorybook.StorybookEntries
+  alias PhxLiveStorybook.Entries
 
   defmacro __using__(opts) do
-    [quotes(opts), StorybookEntries.quotes(opts)]
+    [quotes(opts), Entries.quotes(opts)]
   end
 
   def quotes(opts) do
