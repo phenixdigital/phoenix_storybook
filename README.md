@@ -8,6 +8,8 @@ PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI inte
 - Browse your components documentation, with their supported attributes.
 - Learn how components behave by using an interactive playground.
 
+![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/master/screenshot.png)
+
 ## Installation
 
 To start using `PhxLiveStorybook` in your phoenix application you will need to follow these steps:
