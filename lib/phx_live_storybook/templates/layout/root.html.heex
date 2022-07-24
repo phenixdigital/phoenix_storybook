@@ -12,14 +12,15 @@
       <link phx-track-static rel="stylesheet" href={path}/>
     <% end %>
     <style><%= raw(makeup_stylesheet(@conn)) %></style>
+    <script src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
   </head>
 
   <body class="lsb-overflow-hidden lsb-font-inter lsb-text-base lsb-text-gray-600 lsb-bg-white lsb-antialiased lsb-font-feature-default">
     <header class="lsb-sticky lsb-top-0 lsb-z-50 lsb-flex lsb-flex-wrap lsb-items-center lsb-justify-between lsb-bg-white lsb-px-4 lsb-py-5 lsb-shadow-md lsb-shadow-slate-900/5 lsb-transition lsb-duration-500 sm:lsb-px-6 lg:lsb-px-8 dark:lsb-bg-transparent">
       <div class="lsb-relative lsb-flex lsb-flex-grow lsb-basis-0 lsb-items-center lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase">
         <%= live_redirect to: live_storybook_path(@conn, :home) do %>
-          <%= heroicon(:book, "lsb-inline lsb-h-6 lsb-w-6") %>
-          <span class="lsb-ml-1 lsb-align-middle"><%= title(@conn) %></span>
+          <i class="fa-regular fa-book-open"></i>
+          <span class="lsb-ml-1"><%= title(@conn) %></span>
         <% end %>
       </div>
     </header>

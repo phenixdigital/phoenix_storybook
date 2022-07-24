@@ -32,7 +32,7 @@ defmodule PhxLiveStorybook.Router do
     {
       :live_storybook,
       [
-        root_layout: {PhxLiveStorybook.LayoutView, :storybook},
+        root_layout: {PhxLiveStorybook.LayoutView, :root},
         session: %{"backend_module" => backend_module}
       ],
       [

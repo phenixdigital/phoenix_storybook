@@ -22,6 +22,7 @@ defmodule PhxLiveStorybook.Entry do
       def public_component, do: call(:component)
       def public_function, do: call(:function)
       def public_description, do: call(:description, fn -> "" end)
+      def public_icon, do: call(:icon)
       def public_variations, do: call(:variations, fn -> [] end)
 
       defp call(fun, fallback \\ fn -> nil end, args \\ []) do

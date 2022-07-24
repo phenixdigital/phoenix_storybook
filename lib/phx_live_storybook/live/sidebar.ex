@@ -20,7 +20,8 @@ defmodule PhxLiveStorybook.Sidebar do
        root_entries: backend_module.storybook_entries(),
        current_path: current_path
      )
-     |> assign_opened_folders(root_path)}
+     |> assign_opened_folders(root_path)
+     |> assign_folder_icons(root_path)}
   end
 
   defp assign_opened_folders(socket = %{assigns: assigns}, root_path) do
@@ -45,6 +46,16 @@ defmodule PhxLiveStorybook.Sidebar do
     assign(socket, :opened_folders, opened_folders)
   end
 
+  defp assign_folder_icons(socket = %{assigns: assigns}, root_path) do
+    folder_icons =
+      for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+          folder_opts[:icon],
+          into: %{},
+          do: {"#{root_path}/#{folder_path}", folder_opts[:icon]}
+
+    assign(socket, :folder_icons, folder_icons)
+  end
+
   def render(assigns) do
     ~H"""
     <section
@@ -57,7 +68,7 @@ defmodule PhxLiveStorybook.Sidebar do
     """
   end
 
-  defp render_entries(assigns) do
+  defp render_entries(assigns = %{folder_icons: folder_icons}) do
     ~H"""
     <ul class="lsb-ml-3">
       <%= for entry <- @entries do %>
@@ -70,18 +81,26 @@ defmodule PhxLiveStorybook.Sidebar do
                 phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={current_path}
               >
                 <%= if open_folder? do %>
-                  <%= heroicon(:chevron_down, "lsb-h-4 lsb-w-4 lsb-mr-2 lsb-text-slate-400 group-hover:lsb-text-indigo-600") %>
+                  <i class="fas fa-caret-down lsb-pl-1 lsb-pr-2"></i>
                 <% else %>
-                  <%= heroicon(:chevron_right, "lsb-h-4 lsb-w-4 lsb-mr-2 lsb-text-slate-400 group-hover:lsb-text-indigo-600") %>
+                  <i class="fas fa-caret-right lsb-pl-1 lsb-pr-2"></i>
                 <% end %>
+
+                <%= if icon = Map.get(folder_icons, current_path) do %>
+                  <i class={"#{icon} lsb-pr-1.5"}></i>
+                <% end %>
+
                 <%= String.capitalize(folder_name) %>
               </div>
               <%= if open_folder? do %>
                 <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [folder_name])) %>
               <% end %>
 
-            <% %ComponentEntry{name: name, module_name: module_name} -> %>
+            <% %ComponentEntry{name: name, module: module, module_name: module_name} -> %>
               <div class={entry_class(@current_path, @folder_path, module_name)}>
+                <%= if icon = module.public_icon() do %>
+                  <i class={"#{icon} -lsb-ml-1 lsb-pr-1.5"}></i>
+                <% end %>
                 <%= live_patch name, to: entry_path(@folder_path, module_name) %>
               </div>
           <% end %>

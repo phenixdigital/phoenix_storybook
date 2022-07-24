@@ -29,8 +29,15 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb-space-y-8">
       <div>
-        <h2 class="lsb-mt-3 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600"><%= @entry_module.public_name() %></h2>
-        <div class="lsb-mt-4 lsb-text-lg lsb-leading-7 lsb-text-slate-700"><%= @entry_module.public_description() %></div>
+        <h2 class="lsb-mt-3 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
+          <%= if icon = @entry_module.public_icon() do %>
+            <i class={"#{icon} lsb-pr-2"}></i>
+          <% end %>
+          <%= @entry_module.public_name() %>
+        </h2>
+        <div class="lsb-mt-4 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+          <%= @entry_module.public_description() %>
+        </div>
       </div>
 
       <div class="lsb-space-y-12">
