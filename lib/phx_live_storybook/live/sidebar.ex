@@ -8,7 +8,7 @@ defmodule PhxLiveStorybook.Sidebar do
     {:ok, assign(socket, :opened_folders, MapSet.new())}
   end
 
-  def update(assigns = %{current_path: current_path}, socket) do
+  def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
     root_path = live_storybook_path(socket, :home)
     current_path = if current_path, do: [root_path | current_path], else: [root_path]
 
@@ -16,22 +16,33 @@ defmodule PhxLiveStorybook.Sidebar do
      socket
      |> assign(assigns)
      |> assign(
-       opened_folders: set_opened_folders_from_path(socket.assigns.opened_folders, current_path),
        root_path: root_path,
-       root_entries: assigns.backend_module.storybook_entries(),
+       root_entries: backend_module.storybook_entries(),
        current_path: current_path
-     )}
+     )
+     |> assign_opened_folders(root_path)}
   end
 
-  defp set_opened_folders_from_path(opened_folders, path) do
+  defp assign_opened_folders(socket = %{assigns: assigns}, root_path) do
+    # reading pre-opened folders from config
+    opened_folders =
+      for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+          folder_opts[:open],
+          reduce: assigns.opened_folders do
+        opened_folders ->
+          MapSet.put(opened_folders, "#{root_path}/#{folder_path}")
+      end
+
+    # then opening folders based on current request path
     {opened_folders, _} =
-      for path_item <- Enum.slice(path, 0..2), reduce: {opened_folders, nil} do
+      for path_item <- Enum.slice(assigns.current_path, 0..2),
+          reduce: {opened_folders, nil} do
         {opened_folders, path_acc} ->
           path = if path_acc, do: "#{path_acc}/#{path_item}", else: path_item
           {MapSet.put(opened_folders, path), path}
       end
 
-    opened_folders
+    assign(socket, :opened_folders, opened_folders)
   end
 
   def render(assigns) do
