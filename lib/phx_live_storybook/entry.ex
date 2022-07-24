@@ -32,6 +32,10 @@ defmodule PhxLiveStorybook.Entry do
   end
   ```
 
+  ### Live Component
+
+  Very similar components, excepted the `function/0` callback no longer required.
+
   ```elixir
   defmodule MyAppWeb.Storybook.MyLiveComponent do
     use PhxLiveStorybook.Entry, :live_component
