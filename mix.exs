@@ -8,7 +8,11 @@ defmodule PhxLiveStorybook.MixProject do
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      docs: [
+        main: "Phx Live Storybook",
+        extras: ["README.md"]
+      ]
     ]
   end
 
@@ -24,7 +28,8 @@ defmodule PhxLiveStorybook.MixProject do
     [
       {:phoenix_live_view, "~> 0.17.11"},
       {:makeup_eex, "~> 0.1.0"},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
     ]
   end
 

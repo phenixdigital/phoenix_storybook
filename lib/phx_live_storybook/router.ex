@@ -3,6 +3,46 @@ defmodule PhxLiveStorybook.Router do
   Provides LiveView routing for storybook.
   """
 
+  @doc """
+  Defines a PhxLiveStorybook route.
+
+  It expects the `path` the storybook will be mounted at and a set
+  of options.
+
+  This will also generate a named helper called `live_dashboard_path/2`
+  which you can use to link directly to the dashboard, such as:
+
+  ```elixir
+  <%= link "Storybook", to: live_storybook_path(conn, :home) %>
+  ```
+
+  Note you should only use `link/2` to link to the storybook (and not
+  `live_redirect/live_link`, as it has to set its own session on first
+  render.
+
+  ## Options
+    * `:otp_app` - _Required_ - OTP Name of your Phoenix application.
+      It must match `:otp_app` of your backend module and settings.
+    * `:backend_module` - _Required_ - Name of your backend module.
+    * `:live_socket_path` - Configures the socket path. It must match
+      the `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
+
+  ## Usage
+
+  ```elixir
+  # lib/my_app_web/router.ex
+  use MyAppWeb, :router
+  import PhxLiveStorybook.Router
+  ...
+
+  scope "/" do
+    pipe_through :browser
+    live_storybook "/storybook",
+      otp_app: :my_app,
+      backend_module: MyAppWeb.Storybook
+  end
+  ```
+  """
   defmacro live_storybook(path, opts \\ []) do
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do

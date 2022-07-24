@@ -26,3 +26,5 @@ phx_live_storybook-*.tar
 /tmp/
 
 /assets/node_modules
+
+.vscode

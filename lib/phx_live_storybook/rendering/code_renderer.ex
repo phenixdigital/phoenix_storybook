@@ -1,11 +1,21 @@
-defmodule PhxLiveStorybook.Components.CodeRenderer do
+defmodule PhxLiveStorybook.Rendering.CodeRenderer do
+  @moduledoc """
+  Responsible for rendering your components code snippet, for a given
+  `PhxLiveStorybook.Variation`.
+
+  Uses `Makeup` libray for syntax highlighting.
+  """
+
   import Phoenix.LiveView.Helpers
 
   alias Makeup.Lexers.HEExLexer
   alias Makeup.Formatters.HTML.HTMLFormatter
   alias Phoenix.HTML
-  alias PhxLiveStorybook.Components.Variation
+  alias PhxLiveStorybook.Variation
 
+  @doc """
+  Renders a function component code snippet, wrapped in a `<pre>` tag.
+  """
   def render_component_code(function, variation, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>
@@ -14,6 +24,9 @@ defmodule PhxLiveStorybook.Components.CodeRenderer do
     """
   end
 
+  @doc """
+  Renders a live component code snippet, wrapped in a `<pre>` tag.
+  """
   def render_live_component_code(module, variation, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>

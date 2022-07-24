@@ -1,9 +1,16 @@
-defmodule PhxLiveStorybook.Components.ComponentRenderer do
+defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
+  @moduledoc """
+  Responsible for rendering your function & live components, for a given
+  `PhxLiveStorybook.Variation`.
+  """
+
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
+  alias PhxLiveStorybook.Variation
 
-  alias PhxLiveStorybook.Components.Variation
-
+  @doc """
+  Render a stateless function component, with or without block / slots.
+  """
   def render_component(module, function, variation = %Variation{}) do
     render_component_markup(module, function, """
     <.#{function_name(function)} #{attributes_markup(variation.attributes, variation.id)}>
@@ -13,6 +20,9 @@ defmodule PhxLiveStorybook.Components.ComponentRenderer do
     """)
   end
 
+  @doc """
+  Render a live component, with or without block / slots.
+  """
   def render_live_component(module, variation = %Variation{}) do
     render_component_markup(module, """
     <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, variation.id)}>

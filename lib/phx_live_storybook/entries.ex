@@ -1,21 +1,25 @@
 defmodule PhxLiveStorybook.ComponentEntry do
+  @moduledoc false
   defstruct [:name, :module, :path, :module_name]
 end
 
 defmodule PhxLiveStorybook.FolderEntry do
+  @moduledoc false
   defstruct [:name, :sub_entries]
 end
 
 defmodule PhxLiveStorybook.Entries do
+  @moduledoc false
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
 
+  @doc false
   def quotes(opts) do
     quote bind_quoted: [opts: opts] do
       alias PhxLiveStorybook.Entries
 
       @backend_module __MODULE__
       @otp_app Keyword.get(opts, :otp_app)
-      @content_path Application.compile_env(@otp_app, @backend_module, [])
+      @content_path Application.cgompile_env(@otp_app, @backend_module, [])
                     |> Keyword.get(:content_path)
       @components_pattern if @content_path, do: "#{@content_path}/**/*"
       @paths if @content_path, do: Path.wildcard(@components_pattern), else: []
@@ -42,6 +46,7 @@ defmodule PhxLiveStorybook.Entries do
     end
   end
 
+  @doc false
   def entries(path) do
     if path && File.dir?(path) do
       recursive_scan(path)

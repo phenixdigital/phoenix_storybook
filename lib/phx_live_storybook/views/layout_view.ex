@@ -16,19 +16,20 @@ defmodule PhxLiveStorybook.LayoutView do
   def render("app.js", _), do: @app_js
   def render("app.css", _), do: @app_css
 
-  def makeup_stylesheet(conn), do: makeup_style(conn) |> Makeup.stylesheet()
+  defp makeup_stylesheet(conn) do
+    style = storybook_setting(conn, :makeup_style, :monokai_style)
+    apply(StyleMap, style, []) |> Makeup.stylesheet()
+  end
 
-  def live_socket_path(conn) do
+  defp live_socket_path(conn) do
     [Enum.map(conn.script_name, &["/" | &1]) | conn.private.live_socket_path]
   end
 
-  def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
-  def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
-  def title(conn), do: storybook_setting(conn, :storybook_title, "Live Storybook")
+  defp storybook_css_path(conn), do: storybook_setting(conn, :css_path)
+  defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
-  defp makeup_style(conn) do
-    style = storybook_setting(conn, :makeup_style, :monokai_style)
-    apply(StyleMap, style, [])
+  defp title(conn) do
+    storybook_setting(conn, :storybook_title, "Live Storybook")
   end
 
   defp storybook_setting(conn, key, default \\ nil) do

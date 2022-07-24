@@ -7,7 +7,8 @@ defmodule PhxLiveStorybook.EntryLive do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_view
 
-  alias PhxLiveStorybook.Components.{CodeRenderer, ComponentRenderer, Variation}
+  alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
+  alias PhxLiveStorybook.Variation
 
   def mount(_params, session, socket) do
     {:ok, assign(socket, backend_module: session["backend_module"])}
@@ -19,7 +20,12 @@ defmodule PhxLiveStorybook.EntryLive do
         raise PhxLiveStorybook.EntryNotFound, "unknown entry #{inspect(entry_path)}"
 
       entry_module ->
-        {:noreply, assign(socket, entry_path: entry_path, entry_module: entry_module)}
+        {:noreply,
+         assign(socket,
+           entry_path: entry_path,
+           entry_module: entry_module,
+           page_title: entry_module.public_name()
+         )}
     end
   end
 
@@ -82,7 +88,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp load_entry_module(socket, entry_param) do
     entry_module = Enum.map_join(entry_param, ".", &Macro.camelize/1)
-    entry_module = :"#{components_module_prefix(socket)}.#{entry_module}"
+    entry_module = :"#{entries_module_prefix(socket)}.#{entry_module}"
 
     case Code.ensure_loaded(entry_module) do
       {:module, ^entry_module} -> entry_module
@@ -90,9 +96,9 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  defp components_module_prefix(socket) do
+  defp entries_module_prefix(socket) do
     socket.assigns.backend_module.config(
-      :components_module_prefix,
+      :entries_module_prefix,
       socket.assigns.backend_module
     )
   end
