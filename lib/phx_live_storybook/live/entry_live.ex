@@ -7,7 +7,6 @@ defmodule PhxLiveStorybook.EntryLive do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_view
 
-  alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
   alias PhxLiveStorybook.Variation
 
   def mount(_params, session, socket) do
@@ -61,20 +60,12 @@ defmodule PhxLiveStorybook.EntryLive do
 
             <!-- Variation component preview -->
             <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2">
-              <%= if @entry_module.live_component?() do %>
-                <%= ComponentRenderer.render_live_component(@entry_module.public_component(), variation) %>
-              <% else %>
-                <%= ComponentRenderer.render_component(@entry_module.public_component(), @entry_module.public_function(), variation) %>
-              <% end %>
+              <%= @backend_module.render_component(@entry_module, variation.id) %>
             </div>
 
             <!-- Variation code -->
             <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-3">
-              <%= if @entry_module.live_component?() do %>
-                <%= CodeRenderer.render_live_component_code(@entry_module.public_component(), variation) %>
-              <% else %>
-                <%= CodeRenderer.render_component_code(@entry_module.public_function(), variation) %>
-              <% end %>
+              <%= @backend_module.render_code(@entry_module, variation.id) %>
             </div>
 
           </div>

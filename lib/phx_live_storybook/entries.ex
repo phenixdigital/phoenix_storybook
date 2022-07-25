@@ -10,41 +10,17 @@ end
 
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
+  alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry}
 
   @doc false
-  def quotes(opts) do
-    quote bind_quoted: [opts: opts] do
-      alias PhxLiveStorybook.Entries
+  # This quote
+  def entries_quote(backend_module, opts) do
+    otp_app = Keyword.get(opts, :otp_app)
+    content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
+    entries = Entries.entries(content_path)
 
-      @backend_module __MODULE__
-      @otp_app Keyword.get(opts, :otp_app)
-      @content_path Application.compile_env(@otp_app, @backend_module, [])
-                    |> Keyword.get(:content_path)
-      @components_pattern if @content_path, do: "#{@content_path}/**/*"
-      @paths if @content_path, do: Path.wildcard(@components_pattern), else: []
-      @paths_hash :erlang.md5(@paths)
-      @entries Entries.entries(@content_path)
-
-      # this file should be recompiled whenever any entry file is touched
-      for path <- @paths do
-        @external_resource path
-      end
-
-      # this file should be recompiled whenever any file under content_path has been created or deleted
-      def __mix_recompile__?() do
-        if @components_pattern do
-          @components_pattern |> Path.wildcard() |> :erlang.md5() !=
-            @paths_hash
-        else
-          false
-        end
-      end
-
-      # at compile time, build a tree of all files under the watched component folder
-      def storybook_entries do
-        @entries
-      end
+    quote do
+      def storybook_entries, do: unquote(Macro.escape(entries))
     end
   end
 

@@ -83,8 +83,6 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
   end
 
-  # TODO test with icon folders
-
   defp render_sidebar(backend_module, path \\ "/") do
     html =
       render_component(Sidebar,
