@@ -119,7 +119,7 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_component/2 with a tree" do
-    alias Elixir.TreeStorybook.AComponent
+    alias Elixir.TreeStorybook.{AComponent, BComponent}
 
     test "it should return HEEX for each component/variation couple" do
       assert TreeStorybook.render_component(AComponent, :hello) |> rendered_to_string() ==
@@ -127,17 +127,29 @@ defmodule PhxLiveStorybookTest do
 
       assert TreeStorybook.render_component(AComponent, :world) |> rendered_to_string() ==
                "<span>a component: world</span>"
+
+      assert TreeStorybook.render_component(BComponent, :hello) |> rendered_to_string() ==
+               "<span>b component: hello</span>"
+
+      assert TreeStorybook.render_component(BComponent, :world) |> rendered_to_string() ==
+               "<span>b component: world</span>"
     end
   end
 
   describe "render_code/2 with a tree" do
-    alias Elixir.TreeStorybook.AComponent
+    alias Elixir.TreeStorybook.{AComponent, BComponent}
 
     test "it should return HEEX for each component/variation couple" do
       assert TreeStorybook.render_code(AComponent, :hello) |> rendered_to_string() =~
                ~r/<pre.*pre/
 
       assert TreeStorybook.render_code(AComponent, :world) |> rendered_to_string() =~
+               ~r/<pre.*pre/
+
+      assert TreeStorybook.render_code(BComponent, :hello) |> rendered_to_string() =~
+               ~r/<pre.*pre/
+
+      assert TreeStorybook.render_code(BComponent, :world) |> rendered_to_string() =~
                ~r/<pre.*pre/
     end
   end
