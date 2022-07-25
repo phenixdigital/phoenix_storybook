@@ -18,4 +18,9 @@ if config_env() == :test do
       content_path: Path.expand("../test/fixtures/storybook_content/#{content_path}", __DIR__),
       folders: folders
   end
+
+  config :phx_live_storybook, PhxLiveStorybook.TestStorybook,
+    entries_module_prefix: TreeStorybook,
+    content_path: Path.expand("../test/fixtures/storybook_content/tree", __DIR__),
+    folders: [a_folder: [open: true]]
 end

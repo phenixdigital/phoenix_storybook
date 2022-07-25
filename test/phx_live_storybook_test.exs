@@ -70,14 +70,14 @@ defmodule PhxLiveStorybookTest do
                  name: "a_folder",
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.AAComponent,
-                     module_name: "AAComponent",
+                     module: Elixir.TreeStorybook.AFolder.AaComponent,
+                     module_name: "AaComponent",
                      name: "Aa Component",
                      path: content_path("tree/a_folder/aa_component.ex")
                    },
                    %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.ABComponent,
-                     module_name: "ABComponent",
+                     module: Elixir.TreeStorybook.AFolder.AbComponent,
+                     module_name: "AbComponent",
                      name: "Ab Component",
                      path: content_path("tree/a_folder/ab_component.ex")
                    }
@@ -87,14 +87,14 @@ defmodule PhxLiveStorybookTest do
                  name: "b_folder",
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.BAComponent,
-                     module_name: "BAComponent",
+                     module: Elixir.TreeStorybook.BFolder.BaComponent,
+                     module_name: "BaComponent",
                      name: "Ba Component",
                      path: content_path("tree/b_folder/ba_component.ex")
                    },
                    %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.BBComponent,
-                     module_name: "BBComponent",
+                     module: Elixir.TreeStorybook.BFolder.BbComponent,
+                     module_name: "BbComponent",
                      name: "Bb Component",
                      path: content_path("tree/b_folder/bb_component.ex")
                    }
@@ -129,7 +129,7 @@ defmodule PhxLiveStorybookTest do
       assert TreeStorybook.render_component(AComponent, :world) |> rendered_to_string() ==
                "<span>a component: world</span>"
 
-      # I did not manage to assert against the HTML output
+      # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: :hello}] =
                TreeStorybook.render_component(BComponent, :hello).dynamic.([])
 

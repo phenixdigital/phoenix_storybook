@@ -3,10 +3,20 @@ defmodule TreeStorybook.AComponent do
   def component, do: AComponent
   def function, do: &AComponent.a_component/1
 
+  def description, do: "a component description"
+
   def variations do
     [
-      %Variation{id: :hello, attributes: %{label: "hello"}},
-      %Variation{id: :world, attributes: %{label: "world"}}
+      %Variation{
+        id: :hello,
+        description: "Hello variation",
+        attributes: %{label: "hello"}
+      },
+      %Variation{
+        id: :world,
+        description: "World variation",
+        attributes: %{label: "world"}
+      }
     ]
   end
 end

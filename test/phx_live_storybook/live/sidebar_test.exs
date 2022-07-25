@@ -7,7 +7,6 @@ defmodule PhxLiveStorybook.SidebarTest do
 
   describe "storybook with flat list of entries" do
     defmodule FlatListStorybook do
-      # content_path is set in config/config.ex
       use PhxLiveStorybook, otp_app: :phx_live_storybook
     end
 
@@ -23,7 +22,6 @@ defmodule PhxLiveStorybook.SidebarTest do
 
   describe "storybook with a tree of entries" do
     defmodule TreeStorybook do
-      # content_path is set in config/config.ex
       use PhxLiveStorybook, otp_app: :phx_live_storybook
     end
 
