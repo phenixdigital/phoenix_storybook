@@ -23,7 +23,7 @@ defmodule PhxLiveStorybook.EntryLive do
          assign(socket,
            entry_path: entry_path,
            entry_module: entry_module,
-           page_title: entry_module.public_name()
+           page_title: entry_module.name()
          )}
     end
   end
@@ -35,18 +35,18 @@ defmodule PhxLiveStorybook.EntryLive do
     <div class="lsb-space-y-8">
       <div>
         <h2 class="lsb-mt-3 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
-          <%= if icon = @entry_module.public_icon() do %>
+          <%= if icon = @entry_module.icon() do %>
             <i class={"#{icon} lsb-pr-2"}></i>
           <% end %>
-          <%= @entry_module.public_name() %>
+          <%= @entry_module.name() %>
         </h2>
         <div class="lsb-mt-4 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-          <%= @entry_module.public_description() %>
+          <%= @entry_module.description() %>
         </div>
       </div>
 
       <div class="lsb-space-y-12">
-        <%= for variation = %Variation{} <- @entry_module.public_variations() do %>
+        <%= for variation = %Variation{} <- @entry_module.variations() do %>
           <div class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
             <!-- Variation description -->

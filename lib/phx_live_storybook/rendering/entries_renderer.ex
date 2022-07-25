@@ -8,40 +8,42 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
   # Precompiling component preview & code snippet for every component / variation couple.
   def rendering_quote(backend_module, opts) do
     for %ComponentEntry{module: module} <- component_entries(backend_module, opts[:otp_app]),
-        variation = %Variation{id: variation_id} <- module.public_variations() do
-      if module.live_component?() do
-        quote do
-          def render_component(unquote(module), unquote(variation_id)) do
-            ComponentRenderer.render_live_component(
-              unquote(module).public_component(),
-              unquote(Macro.escape(variation))
-            )
+        variation = %Variation{id: variation_id} <- module.variations() do
+      case module.storybook_type() do
+        :component ->
+          quote do
+            def render_component(unquote(module), unquote(variation_id)) do
+              ComponentRenderer.render_component(
+                unquote(module).component(),
+                unquote(module).function(),
+                unquote(Macro.escape(variation))
+              )
+            end
+
+            def render_code(unquote(module), unquote(variation_id)) do
+              CodeRenderer.render_component_code(
+                unquote(module).function(),
+                unquote(Macro.escape(variation))
+              )
+            end
           end
 
-          def render_code(unquote(module), unquote(variation_id)) do
-            CodeRenderer.render_live_component_code(
-              unquote(module).public_component(),
-              unquote(Macro.escape(variation))
-            )
-          end
-        end
-      else
-        quote do
-          def render_component(unquote(module), unquote(variation_id)) do
-            ComponentRenderer.render_component(
-              unquote(module).public_component(),
-              unquote(module).public_function(),
-              unquote(Macro.escape(variation))
-            )
-          end
+        :live_component ->
+          quote do
+            def render_component(unquote(module), unquote(variation_id)) do
+              ComponentRenderer.render_live_component(
+                unquote(module).component(),
+                unquote(Macro.escape(variation))
+              )
+            end
 
-          def render_code(unquote(module), unquote(variation_id)) do
-            CodeRenderer.render_component_code(
-              unquote(module).public_function(),
-              unquote(Macro.escape(variation))
-            )
+            def render_code(unquote(module), unquote(variation_id)) do
+              CodeRenderer.render_live_component_code(
+                unquote(module).component(),
+                unquote(Macro.escape(variation))
+              )
+            end
           end
-        end
       end
     end
   end

@@ -50,8 +50,11 @@ defmodule PhxLiveStorybook.Entries do
           entry_module = entry_module(file_path)
 
           case entry_type(entry_module) do
-            nil -> acc
-            :component -> [component_entry(file_path, entry_module) | acc]
+            nil ->
+              acc
+
+            type when type in [:component, :live_component] ->
+              [component_entry(file_path, entry_module) | acc]
           end
         end
     end
@@ -68,7 +71,7 @@ defmodule PhxLiveStorybook.Entries do
       module: module,
       path: path,
       module_name: module |> to_string() |> String.split(".") |> Enum.at(-1),
-      name: apply(module, :public_name, [])
+      name: apply(module, :name, [])
     }
   end
 

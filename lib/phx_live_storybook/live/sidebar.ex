@@ -98,7 +98,7 @@ defmodule PhxLiveStorybook.Sidebar do
 
             <% %ComponentEntry{name: name, module: module, module_name: module_name} -> %>
               <div class={entry_class(@current_path, @folder_path, module_name)}>
-                <%= if icon = module.public_icon() do %>
+                <%= if icon = module.icon() do %>
                   <i class={"#{icon} -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
                 <%= live_patch name, to: entry_path(@folder_path, module_name) %>
