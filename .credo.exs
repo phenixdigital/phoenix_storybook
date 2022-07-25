@@ -24,7 +24,7 @@
         included: [
           "lib/"
         ],
-        excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/"]
+        excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/", ~r"/test/"]
       },
       #
       # Load and configure plugins here:
