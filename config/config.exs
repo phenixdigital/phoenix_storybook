@@ -9,13 +9,13 @@ if config_env() == :test do
 
   for test_module <- [PhxLiveStorybookTest, PhxLiveStorybook.SidebarTest],
       {storybook_module, content_path, folders} <- [
-        {"FlatListStorybook", "flat_list_content", []},
-        {"EmptyFilesStorybook", "empty_files_content", []},
-        {"EmptyFoldersStorybook", "empty_folders_content", []},
-        {"TreeStorybook", "tree_content", [a_folder: [icon: "fa-icon"], b_folder: [open: true]]}
+        {"FlatListStorybook", "flat_list", []},
+        {"EmptyFilesStorybook", "empty_files", []},
+        {"EmptyFoldersStorybook", "empty_folders", []},
+        {"TreeStorybook", "tree", [a_folder: [icon: "fa-icon"], b_folder: [open: true]]}
       ] do
     config :phx_live_storybook, :"#{test_module}.#{storybook_module}",
-      content_path: Path.expand("../test/fixtures/#{content_path}", __DIR__),
+      content_path: Path.expand("../test/fixtures/storybook_content/#{content_path}", __DIR__),
       folders: folders
   end
 end
