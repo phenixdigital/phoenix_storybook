@@ -18,9 +18,10 @@ defmodule PhxLiveStorybook.EntryLiveTest do
              ~s|phx-socket="/live"|
   end
 
-  @tag :skip
   test "404 on unknown entry", %{conn: conn} do
-    get(conn, "/storybook/wrong") |> html_response(404)
+    assert_raise PhxLiveStorybook.EntryNotFound, fn ->
+      get(conn, "/storybook/wrong") |> response(500)
+    end
   end
 
   test "renders component entry from path", %{conn: conn} do
