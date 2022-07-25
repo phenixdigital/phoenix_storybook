@@ -19,7 +19,7 @@ defmodule PhxLiveStorybook.Entries do
 
       @backend_module __MODULE__
       @otp_app Keyword.get(opts, :otp_app)
-      @content_path Application.cgompile_env(@otp_app, @backend_module, [])
+      @content_path Application.compile_env(@otp_app, @backend_module, [])
                     |> Keyword.get(:content_path)
       @components_pattern if @content_path, do: "#{@content_path}/**/*"
       @paths if @content_path, do: Path.wildcard(@components_pattern), else: []
@@ -42,7 +42,9 @@ defmodule PhxLiveStorybook.Entries do
       end
 
       # at compile time, build a tree of all files under the watched component folder
-      def storybook_entries, do: @entries
+      def storybook_entries do
+        @entries
+      end
     end
   end
 
@@ -64,7 +66,7 @@ defmodule PhxLiveStorybook.Entries do
           [
             %FolderEntry{
               name: file_name,
-              sub_entries: file_path |> recursive_scan() |> sort_entries()
+              sub_entries: file_path |> recursive_scan()
             }
             | acc
           ]
@@ -77,6 +79,7 @@ defmodule PhxLiveStorybook.Entries do
           end
         end
     end
+    |> sort_entries()
   end
 
   @entry_priority %{ComponentEntry => 0, FolderEntry => 1}

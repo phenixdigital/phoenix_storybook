@@ -13,6 +13,7 @@ jobs:
 
     env:
       MIX_ENV: test
+      CODECOV_TOKEN: 75c316c8-72ed-4eb3-90fc-482c0669401c
 
     steps:
       - uses: actions/checkout@v2
@@ -43,4 +44,8 @@ jobs:
         run: mix credo
 
       - name: Run tests
-        run: mix test
+        run: mix coveralls.json
+
+      - name: Upload test coverage
+        id: codecov
+        run: bash <(curl -s https://codecov.io/bash)
