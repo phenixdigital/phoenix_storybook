@@ -20,7 +20,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
   test "404 on unknown entry", %{conn: conn} do
     assert_raise PhxLiveStorybook.EntryNotFound, fn ->
-      get(conn, "/storybook/wrong") |> response(500)
+      get(conn, "/storybook/wrong") |> response(404)
     end
   end
 

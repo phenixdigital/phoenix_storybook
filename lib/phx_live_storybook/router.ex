@@ -44,6 +44,8 @@ defmodule PhxLiveStorybook.Router do
   ```
   """
   defmacro live_storybook(path, opts \\ []) do
+    opts = Keyword.put(opts, :application_router, __CALLER__.module)
+
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
         {session_name, session_opts, route_opts} = PhxLiveStorybook.Router.__options__(opts)
@@ -58,14 +60,14 @@ defmodule PhxLiveStorybook.Router do
   end
 
   @doc false
-  def __options__(options) do
-    live_socket_path = Keyword.get(options, :live_socket_path, "/live")
+  def __options__(opts) do
+    live_socket_path = Keyword.get(opts, :live_socket_path, "/live")
 
     otp_app =
-      Keyword.get_lazy(options, :otp_app, fn -> raise "Missing mandatory :otp_app option." end)
+      Keyword.get_lazy(opts, :otp_app, fn -> raise "Missing mandatory :otp_app option." end)
 
     backend_module =
-      Keyword.get_lazy(options, :backend_module, fn ->
+      Keyword.get_lazy(opts, :backend_module, fn ->
         raise "Missing mandatory :backend_module option."
       end)
 
@@ -79,7 +81,8 @@ defmodule PhxLiveStorybook.Router do
         private: %{
           live_socket_path: live_socket_path,
           otp_app: otp_app,
-          backend_module: backend_module
+          backend_module: backend_module,
+          application_router: Keyword.get(opts, :application_router)
         },
         as: :live_storybook
       ]

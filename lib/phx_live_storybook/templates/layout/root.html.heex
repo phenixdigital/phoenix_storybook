@@ -9,7 +9,7 @@
     <%= live_title_tag assigns[:page_title] || "Home", prefix: "#{title(@conn)} - " %>
     <style><%= raw(render("app.css")) %></style>
     <%= if path = storybook_css_path(@conn) do %>
-      <link phx-track-static rel="stylesheet" href={path}/>
+      <link phx-track-static rel="stylesheet" href={application_static_path(@conn, path)}/>
     <% end %>
     <style><%= raw(makeup_stylesheet(@conn)) %></style>
     <script src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
   </body>
 
   <%= if path = storybook_js_path(@conn) do %>
-    <script phx-track-static type="text/javascript" src={path}></script>
+    <script phx-track-static type="text/javascript" src={application_static_path(@conn, path)}></script>
   <% end %>
   <script><%= raw(render("app.js")) %></script>
   

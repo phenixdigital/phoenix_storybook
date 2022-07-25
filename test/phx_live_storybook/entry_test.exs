@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.EntryTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   test "component entry default behaviors" do
     defmodule MyEntry do

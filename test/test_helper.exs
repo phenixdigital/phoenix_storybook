@@ -38,5 +38,6 @@ Application.put_env(:phx_live_storybook, PhxLiveStorybook.TestEndpoint,
   url: [host: "localhost", port: 4000],
   secret_key_base: "Hu4qQN3iKzTV4fJxhorPQlA/osH9fAMtbtjVS58PFgfw3ja5Z18Q/WSNR9wP4OfW",
   live_view: [signing_salt: "hMegieSe"],
-  check_origin: false
+  check_origin: false,
+  render_errors: [view: PhxLiveStorybook.ErrorView]
 )

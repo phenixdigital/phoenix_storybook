@@ -37,4 +37,9 @@ defmodule PhxLiveStorybook.LayoutView do
     backend_module = conn.private.backend_module
     Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
   end
+
+  defp application_static_path(conn, path) do
+    router = conn.private.application_router
+    apply(:"#{router}.Helpers", :static_path, [conn, path])
+  end
 end
