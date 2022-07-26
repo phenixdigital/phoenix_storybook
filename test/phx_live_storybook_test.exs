@@ -6,34 +6,19 @@ defmodule PhxLiveStorybookTest do
 
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
 
-  defmodule NoContentStorybook do
-    use PhxLiveStorybook, otp_app: :phx_live_storybook
-  end
+  defmodule NoContentStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  defmodule TreeStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  defmodule TreeBStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  defmodule FlatListStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  defmodule EmptyFilesStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  defmodule EmptyFoldersStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
 
-  defmodule TreeStorybook do
-    use PhxLiveStorybook, otp_app: :phx_live_storybook
-  end
-
-  defmodule FlatListStorybook do
-    use PhxLiveStorybook, otp_app: :phx_live_storybook
-  end
-
-  defmodule EmptyFilesStorybook do
-    use PhxLiveStorybook, otp_app: :phx_live_storybook
-  end
-
-  defmodule EmptyFoldersStorybook do
-    use PhxLiveStorybook, otp_app: :phx_live_storybook
-  end
-
-  describe "storybook_entries/0 when no content path set" do
-    test "it should return no entries" do
+  describe "storybook_entries/0" do
+    test "when no content path set it should return no entries" do
       assert NoContentStorybook.storybook_entries() == []
     end
-  end
 
-  describe "storybook_entries/0 with a flat list of entries" do
-    test "it should return a flat list of 2 components" do
+    test "with a flat list of entries, it should return a flat list of 2 components" do
       assert FlatListStorybook.storybook_entries() == [
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.AComponent,
@@ -49,10 +34,8 @@ defmodule PhxLiveStorybookTest do
                }
              ]
     end
-  end
 
-  describe "storybook_entries/0 with a tree hierarchy of contents" do
-    test "it should return a hierarchy of components, correctly sorted" do
+    test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
       assert TreeStorybook.storybook_entries() == [
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.AComponent,
@@ -102,16 +85,12 @@ defmodule PhxLiveStorybookTest do
                }
              ]
     end
-  end
 
-  describe "storybook_entries/0 with empty files" do
-    test "it should return no entries" do
+    test "with an empty folder it should return no entries" do
       assert EmptyFilesStorybook.storybook_entries() == []
     end
-  end
 
-  describe "storybook_entries/0 with empty folders" do
-    test "it should return a flat list of 2 folders" do
+    test "with empty sub-folders, it should return a flat list of 2 folders" do
       assert EmptyFoldersStorybook.storybook_entries() == [
                %FolderEntry{name: "empty_a", sub_entries: []},
                %FolderEntry{name: "empty_b", sub_entries: []}
@@ -155,6 +134,24 @@ defmodule PhxLiveStorybookTest do
 
       code = TreeStorybook.render_code(BComponent, :world)
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+  end
+
+  describe "path_to_first_leaf_entry/0" do
+    test "with a tree it should return path to first component" do
+      assert TreeBStorybook.path_to_first_leaf_entry() == [
+               "b_folder",
+               "bb_folder",
+               "bba_component"
+             ]
+    end
+
+    test "with empty folder" do
+      assert NoContentStorybook.path_to_first_leaf_entry() == nil
+    end
+
+    test "with empty sub folders" do
+      assert EmptyFoldersStorybook.path_to_first_leaf_entry() == nil
     end
   end
 

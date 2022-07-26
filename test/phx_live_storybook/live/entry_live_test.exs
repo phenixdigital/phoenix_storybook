@@ -4,23 +4,24 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   import Phoenix.LiveViewTest
 
   @endpoint PhxLiveStorybook.TestEndpoint
+  @moduletag :capture_log
 
   setup do
-    Supervisor.start_link([PhxLiveStorybook.TestEndpoint],
-      strategy: :one_for_one
-    )
-
+    start_supervised!(PhxLiveStorybook.TestEndpoint)
     {:ok, conn: build_conn()}
   end
 
   test "embeds phx-socket information", %{conn: conn} do
-    assert get(conn, "/storybook") |> html_response(200) =~
-             ~s|phx-socket="/live"|
+    assert get(conn, "/storybook/a_component") |> html_response(200) =~ ~s|phx-socket="/live"|
+  end
+
+  test "home path redirects to first component", %{conn: conn} do
+    assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_component"
   end
 
   test "404 on unknown entry", %{conn: conn} do
     assert_raise PhxLiveStorybook.EntryNotFound, fn ->
-      get(conn, "/storybook/wrong") |> response(404)
+      get(conn, "/storybook/wrong")
     end
   end
 

@@ -10,10 +10,24 @@ defmodule PhxLiveStorybook.EntryLive do
   alias PhxLiveStorybook.Variation
 
   def mount(_params, session, socket) do
-    {:ok, assign(socket, backend_module: session["backend_module"])}
+    {:ok,
+     assign(socket,
+       otp_app: session["otp_app"],
+       backend_module: session["backend_module"]
+     )}
   end
 
-  def handle_params(_params = %{"entry" => entry_path}, _uri, socket) do
+  def handle_params(params, _uri, socket) when params == %{} do
+    case first_component_entry_path(socket) do
+      nil ->
+        {:noreply, socket}
+
+      entry ->
+        {:noreply, push_patch(socket, to: live_storybook_path(socket, :entry, entry))}
+    end
+  end
+
+  def handle_params(%{"entry" => entry_path}, _uri, socket) do
     case load_entry_module(socket, entry_path) do
       nil ->
         raise PhxLiveStorybook.EntryNotFound, "unknown entry #{inspect(entry_path)}"
@@ -28,7 +42,9 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  def handle_params(_params, _uri, socket), do: {:noreply, socket}
+  def handle_params(_params, _uri, socket) do
+    {:noreply, socket}
+  end
 
   def render(assigns = %{entry_module: _module}) do
     ~H"""
@@ -88,9 +104,14 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp entries_module_prefix(socket) do
-    socket.assigns.backend_module.config(
-      :entries_module_prefix,
-      socket.assigns.backend_module
-    )
+    config(socket, :entries_module_prefix, socket.assigns.backend_module)
+  end
+
+  defp config(socket, key, default) do
+    socket.assigns.backend_module.config(key, default)
+  end
+
+  defp first_component_entry_path(socket) do
+    socket.assigns.backend_module.path_to_first_leaf_entry()
   end
 end

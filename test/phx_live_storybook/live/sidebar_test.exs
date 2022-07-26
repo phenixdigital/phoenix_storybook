@@ -5,11 +5,10 @@ defmodule PhxLiveStorybook.SidebarTest do
 
   alias PhxLiveStorybook.Sidebar
 
-  describe "storybook with flat list of entries" do
-    defmodule FlatListStorybook do
-      use PhxLiveStorybook, otp_app: :phx_live_storybook
-    end
+  defmodule FlatListStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  defmodule TreeStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
 
+  describe "storybook with flat list of entries" do
     test "sidebar contains those 2 entries" do
       {document, _html} = render_sidebar(FlatListStorybook)
       # test sidebar has 2 entries
@@ -21,10 +20,6 @@ defmodule PhxLiveStorybook.SidebarTest do
   end
 
   describe "storybook with a tree of entries" do
-    defmodule TreeStorybook do
-      use PhxLiveStorybook, otp_app: :phx_live_storybook
-    end
-
     test "sidebar contains all entries, with one open folder" do
       {document, _html} = render_sidebar(TreeStorybook)
 

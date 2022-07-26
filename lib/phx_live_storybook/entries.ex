@@ -13,14 +13,17 @@ defmodule PhxLiveStorybook.Entries do
   alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry}
 
   @doc false
-  # This quote
+  # This quote inlines a storybook_entries/0 function to return the content
+  # tree of current storybook.
   def entries_quote(backend_module, opts) do
     otp_app = Keyword.get(opts, :otp_app)
     content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
     entries = Entries.entries(content_path)
+    path_to_first_leaf_entry = Entries.path_to_first_leaf(entries)
 
     quote do
       def storybook_entries, do: unquote(Macro.escape(entries))
+      def path_to_first_leaf_entry, do: unquote(Macro.escape(path_to_first_leaf_entry))
     end
   end
 
@@ -93,5 +96,32 @@ defmodule PhxLiveStorybook.Entries do
     else
       nil
     end
+  end
+
+  def path_to_first_leaf(entries) do
+    case path_to_first_leaf(entries, []) do
+      nil ->
+        nil
+
+      entries ->
+        entries
+        |> Enum.reverse()
+        |> Enum.map(fn
+          %FolderEntry{name: name} -> name
+          %ComponentEntry{path: path} -> Path.basename(path, ".ex")
+        end)
+    end
+  end
+
+  def path_to_first_leaf(entries, acc) do
+    Enum.find_value(entries, fn entry ->
+      case entry do
+        %ComponentEntry{} ->
+          [entry | acc]
+
+        %FolderEntry{sub_entries: sub_entries} ->
+          path_to_first_leaf(sub_entries, [entry | acc])
+      end
+    end)
   end
 end

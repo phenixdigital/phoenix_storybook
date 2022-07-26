@@ -59,11 +59,11 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
 
   # Recursive traversal of the entry tree to build a flattened list of components
   defp collect_components(entries, acc \\ []) do
-    for entry <- entries, reduce: acc do
+    for entry <- Enum.reverse(entries), reduce: acc do
       acc ->
         case entry do
           %ComponentEntry{} -> [entry | acc]
-          %FolderEntry{sub_entries: entries} -> collect_components(entries, acc)
+          %FolderEntry{sub_entries: entries} -> collect_components(Enum.reverse(entries), acc)
         end
     end
   end
