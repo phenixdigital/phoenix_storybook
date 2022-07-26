@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"/>
     <%= csrf_meta_tag() %>
     <%= live_title_tag assigns[:page_title] || "Home", prefix: "#{title(@conn)} - " %>
-    <script src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
+    <script defer src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
     <style><%= raw(render("app.css")) %></style>
     <%= if path = storybook_css_path(@conn) do %>
       <link phx-track-static rel="stylesheet" href={application_static_path(@conn, path)}/>
@@ -15,7 +15,7 @@
     <style><%= raw(makeup_stylesheet(@conn)) %></style>
   </head>
 
-  <body class="lsb-overflow-hidden lsb-font-inter lsb-text-base lsb-text-gray-600 lsb-bg-white lsb-antialiased lsb-font-feature-default">
+  <body class="wait-for-icons lsb-overflow-hidden lsb-font-inter lsb-text-base lsb-text-gray-600 lsb-bg-white lsb-antialiased lsb-font-feature-default">
     
     <header class="lsb-sticky lsb-top-0 lsb-z-50 lsb-flex lsb-flex-wrap lsb-items-center lsb-justify-between lsb-bg-white lsb-px-4 lsb-py-5 lsb-shadow-md lsb-shadow-slate-900/5 lsb-transition lsb-duration-500 sm:lsb-px-6 lg:lsb-px-8 dark:lsb-bg-transparent">
       <div class="lsb-relative lsb-flex lsb-flex-grow lsb-basis-0 lsb-items-center lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase">

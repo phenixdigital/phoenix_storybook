@@ -883,6 +883,10 @@ video {
   height: 100vh !important;
 }
 
+.lsb-h-24 {
+  height: 6rem !important;
+}
+
 .lsb-w-60 {
   width: 15rem !important;
 }
@@ -1058,6 +1062,16 @@ video {
   padding-bottom: 1.25rem !important;
 }
 
+.lsb-px-4 {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.lsb-py-5 {
+  padding-top: 1.25rem !important;
+  padding-bottom: 1.25rem !important;
+}
+
 .lsb-pr-2 {
   padding-right: 0.5rem !important;
 }
@@ -1102,6 +1116,11 @@ video {
   line-height: 1.5rem !important;
 }
 
+.lsb-text-lg {
+  font-size: 1.125rem !important;
+  line-height: 1.75rem !important;
+}
+
 .lsb-font-extrabold {
   font-weight: 800 !important;
 }
@@ -1144,6 +1163,11 @@ video {
 .lsb-text-gray-600 {
   --tw-text-opacity: 1 !important;
   color: rgb(75 85 99 / var(--tw-text-opacity)) !important;
+}
+
+.lsb-text-indigo-600 {
+  --tw-text-opacity: 1 !important;
+  color: rgb(79 70 229 / var(--tw-text-opacity)) !important;
 }
 
 .lsb-antialiased {
@@ -1736,6 +1760,14 @@ video {
   line-height: 1 !important;
   font-size: 8rem !important;
   letter-spacing: 0.0777em !important;
+}
+
+.wait-for-icons {
+  display: none;
+}
+
+.fontawesome-i2svg-active .wait-for-icons {
+  display: initial;
 }
 
 .hover\:lsb-border-indigo-600:hover {
