@@ -61,9 +61,16 @@ defmodule PhxLiveStorybook.Sidebar do
     <section
       class="lsb-fixed lsb-text-sm lsb-w-60 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-4 lsb-px-4 lsb-overflow-y-auto"
     >
-      <nav class="lsb-flex-1 xl:lsb-sticky xl:lsb-top-[4.5rem]">
+      <nav class="lsb-flex-1 xl:lsb-sticky">
         <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path])) %>
       </nav>
+
+        <div class="lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600">
+          <%= link to: "https://github.com/phenixdigital/phx_live_storybook", target: "_blank" do %>
+            <i class="fa fa-github lsb-pr-1"></i>
+            <%= Application.spec(:phx_live_storybook, :vsn) %>
+          <% end %>
+        </div>
     </section>
     """
   end
