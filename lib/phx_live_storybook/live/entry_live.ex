@@ -48,7 +48,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def render(assigns = %{entry_module: _module}) do
     ~H"""
-    <div class="lsb-space-y-8">
+    <div class="lsb-space-y-8 lsb-pb-24" id="entry-live" phx-hook="EntryHook">
       <div>
         <h2 class="lsb-mt-3 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
           <%= if icon = @entry_module.icon() do %>
@@ -63,14 +63,17 @@ defmodule PhxLiveStorybook.EntryLive do
 
       <div class="lsb-space-y-12">
         <%= for variation = %Variation{} <- @entry_module.variations() do %>
-          <div class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+          <div id={anchor_id(variation)} class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
             <!-- Variation description -->
-            <div class="lsb-col-span-5 lsb-font-medium lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-              <%= if variation.description do %>
-                <%= variation.description  %>
-              <% else %>
-                <%= variation.id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+            <div class="lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group">
+              <%= link to: "##{anchor_id(variation)}", class: "entry-anchor-link" do %>
+                <i class="fal fa-link hidden group-hover:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
+                <%= if variation.description do %>
+                  <%= variation.description  %>
+                <% else %>
+                  <%= variation.id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+                <% end %>
               <% end %>
             </div>
 
@@ -113,5 +116,9 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp first_component_entry_path(socket) do
     socket.assigns.backend_module.path_to_first_leaf_entry()
+  end
+
+  defp anchor_id(%Variation{id: id}) do
+    id |> to_string() |> String.replace("_", "-")
   end
 end
