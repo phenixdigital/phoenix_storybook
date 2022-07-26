@@ -83,7 +83,10 @@ defmodule PhxLiveStorybook.EntryLive do
             </div>
 
             <!-- Variation code -->
-            <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-3">
+            <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-3 lsb-group lsb-relative">
+              <div class="copy-code-btn lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
+                <i class="fa fa-copy"></i>
+              </div>
               <%= @backend_module.render_code(@entry_module, variation.id) %>
             </div>
 
