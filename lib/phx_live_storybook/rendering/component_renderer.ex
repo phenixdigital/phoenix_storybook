@@ -11,9 +11,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Render a stateless function component, with or without block / slots.
   """
-  def render_component(module, function, variation = %Variation{}) do
+  def render_component(module, function, variation = %Variation{}, id) do
     render_component_markup(module, function, """
-    <.#{function_name(function)} #{attributes_markup(variation.attributes, variation.id)}>
+    <.#{function_name(function)} #{attributes_markup(variation.attributes, id)}>
       #{variation.block}
       #{variation.slots}
     </.#{function_name(function)}>
@@ -23,9 +23,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Render a live component, with or without block / slots.
   """
-  def render_live_component(module, variation = %Variation{}) do
+  def render_live_component(module, variation = %Variation{}, id) do
     render_component_markup(module, """
-    <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, variation.id)}>
+    <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, id)}>
       #{variation.block}
       #{variation.slots}
     </.live_component>

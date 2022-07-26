@@ -109,10 +109,10 @@ defmodule PhxLiveStorybookTest do
                "<span>a component: world</span>"
 
       # I did not manage to assert against the HTML
-      assert [%Phoenix.LiveView.Component{id: :hello}] =
+      assert [%Phoenix.LiveView.Component{id: "b_component-hello"}] =
                TreeStorybook.render_component(BComponent, :hello).dynamic.([])
 
-      assert [%Phoenix.LiveView.Component{id: :world}] =
+      assert [%Phoenix.LiveView.Component{id: "b_component-world"}] =
                TreeStorybook.render_component(BComponent, :world).dynamic.([])
     end
   end
