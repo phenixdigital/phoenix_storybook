@@ -98,15 +98,15 @@ defmodule PhxLiveStorybookTest do
     end
   end
 
-  describe "render_component/2 with a tree" do
+  describe "render_component/2" do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
 
     test "it should return HEEX for each component/variation couple" do
       assert TreeStorybook.render_component(AComponent, :hello) |> rendered_to_string() ==
-               "<span>a component: hello</span>"
+               "<span data-index=\"42\">a component: hello</span>"
 
       assert TreeStorybook.render_component(AComponent, :world) |> rendered_to_string() ==
-               "<span>a component: world</span>"
+               "<span data-index=\"37\">a component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "b_component-hello"}] =
@@ -117,7 +117,7 @@ defmodule PhxLiveStorybookTest do
     end
   end
 
-  describe "render_code/2 with a tree" do
+  describe "render_code/2" do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
 
     test "it should return HEEX for each component/variation couple" do
@@ -134,6 +134,18 @@ defmodule PhxLiveStorybookTest do
 
       code = TreeStorybook.render_code(BComponent, :world)
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+  end
+
+  describe "render_source/1" do
+    alias Elixir.TreeStorybook.{AComponent, BComponent}
+
+    test "it should return HEEX for each component" do
+      assert TreeStorybook.render_source(AComponent) |> rendered_to_string() =~
+               ~r/<pre.*Phoenix\.Component.*<\/pre>/s
+
+      assert TreeStorybook.render_source(BComponent) |> rendered_to_string() =~
+               ~r/<pre.*Phoenix\.LiveComponent.*<\/pre>/s
     end
   end
 

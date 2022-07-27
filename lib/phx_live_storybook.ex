@@ -16,7 +16,8 @@ defmodule PhxLiveStorybook do
       recompilation_quote(backend_module, opts),
       config_quote(backend_module, opts),
       Entries.entries_quote(backend_module, opts),
-      EntriesRenderer.rendering_quote(backend_module, opts)
+      EntriesRenderer.rendering_quote(backend_module, opts),
+      EntriesRenderer.source_quote(backend_module, opts)
     ]
   end
 

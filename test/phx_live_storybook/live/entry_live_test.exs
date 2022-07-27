@@ -38,13 +38,35 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     assert html =~ "B Component"
     assert html =~ "b component description"
     assert html =~ "Hello variation"
-    assert html =~ "World variation"
+    assert html =~ "World"
   end
 
   test "renders nested component entry from path", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/storybook/a_folder/aa_component")
     assert html =~ "Aa Component"
     assert html =~ "Aa component description"
+  end
+
+  test "renders component entry and navigate to documentation tab", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/storybook/a_component")
+
+    html = view |> element("a", "Documentation") |> render_click()
+    assert_patched(view, "/storybook/a_component?tab=documentation")
+    assert html =~ "Coming soon"
+  end
+
+  test "renders component entry and navigate to source tab", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/storybook/a_component")
+
+    html = view |> element("a", "Source") |> render_click()
+    assert_patched(view, "/storybook/a_component?tab=source")
+    assert html =~ "defmodule"
+  end
+
+  test "navigate to unknown tab", %{conn: conn} do
+    assert_raise PhxLiveStorybook.EntryTabNotFound, fn ->
+      get(conn, "/storybook/a_component", tab: "unknown")
+    end
   end
 
   test "navigate in sidebar", %{conn: conn} do

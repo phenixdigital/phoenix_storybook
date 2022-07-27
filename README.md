@@ -123,7 +123,7 @@ Then you can start creating some content for your storybook. Storybook can conta
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **samples**: to show how your components can be used and mixed togethers in real UI pages.
 
-_As of `0.1.0`, only component entries are available._
+_As of `0.2.0`, only component entries are available._
 
 Entries are described as regular Elixir modules, created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
 

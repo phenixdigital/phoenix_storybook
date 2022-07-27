@@ -13,8 +13,10 @@ defmodule TreeStorybook.BComponent do
       },
       %Variation{
         id: :world,
-        description: "World variation",
-        attributes: %{label: "world"}
+        attributes: %{label: "world"},
+        block: """
+        <span>inner block</span>
+        """
       }
     ]
   end

@@ -8,7 +8,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   import Phoenix.LiveView.Helpers
 
-  alias Makeup.Lexers.HEExLexer
+  alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Makeup.Formatters.HTML.HTMLFormatter
   alias Phoenix.HTML
   alias PhxLiveStorybook.Variation
@@ -19,7 +19,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   def render_component_code(function, variation, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_block(function, variation) |> format_code() %>
+    <%= component_code_block(function, variation) |> format_heex() %>
     </pre>
     """
   end
@@ -30,14 +30,25 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   def render_live_component_code(module, variation, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>
-    <%= live_component_code_block(module, variation) |> format_code() %>
+    <%= live_component_code_block(module, variation) |> format_heex() %>
+    </pre>
+    """
+  end
+
+  @doc """
+  Renders a component's (live or not) source code, wrapped in a `<pre>` tag.
+  """
+  def render_component_source(module, assigns \\ %{}) do
+    ~H"""
+    <pre class={pre_class()}>
+    <%= module.component().__info__(:compile)[:source] |> File.read!() |> format_elixir() %>
     </pre>
     """
   end
 
   defp pre_class,
     do:
-      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-shadow-md lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
   defp component_code_block(function, v = %Variation{}) do
     fun = function_name(function)
@@ -45,7 +56,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
     """
     #{"<.#{fun}"}#{for {k, val} <- v.attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if v.block, do: v.block}#{if v.slots, do: indent_block(v.slots)}
+    #{if v.block, do: indent_block(v.block)}#{if v.slots, do: indent_block(v.slots)}
     #{unless self_closed?, do: "<./#{fun}>"}
     """
   end
@@ -56,7 +67,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
     """
     #{"<.live_component module={#{mod}}"}#{for {k, val} <- v.attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if v.block, do: v.block}#{if v.slots, do: indent_block(v.slots)}
+    #{if v.block, do: indent_block(v.block)}#{if v.slots, do: indent_block(v.slots)}
     #{unless self_closed?, do: "<./live_component>"}
     """
   end
@@ -69,10 +80,18 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     |> Enum.map_join("\n", &"  #{&1}")
   end
 
-  defp format_code(code) do
+  defp format_heex(code) do
     code
     |> String.trim()
     |> HEExLexer.lex()
+    |> HTMLFormatter.format_inner_as_binary([])
+    |> HTML.raw()
+  end
+
+  defp format_elixir(code) do
+    code
+    |> String.trim()
+    |> ElixirLexer.lex()
     |> HTMLFormatter.format_inner_as_binary([])
     |> HTML.raw()
   end

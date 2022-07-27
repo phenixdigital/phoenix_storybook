@@ -54,6 +54,17 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
   end
 
   @doc false
+  def source_quote(backend_module, opts) do
+    for %ComponentEntry{module: module} <- component_entries(backend_module, opts[:otp_app]) do
+      quote do
+        def render_source(unquote(module)) do
+          CodeRenderer.render_component_source(unquote(module))
+        end
+      end
+    end
+  end
+
+  @doc false
   def component_entries(backend_module, otp_app) do
     otp_app
     |> Application.get_env(backend_module, [])

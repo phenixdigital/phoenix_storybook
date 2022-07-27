@@ -15,7 +15,7 @@ defmodule TreeStorybook.AComponent do
       %Variation{
         id: :world,
         description: "World variation",
-        attributes: %{label: "world"}
+        attributes: %{label: "world", index: 37}
       }
     ]
   end

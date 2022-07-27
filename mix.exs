@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.2.0"
 
   def project do
     [
@@ -21,9 +21,8 @@ defmodule PhxLiveStorybook.MixProject do
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
+        "coveralls.lcov": :test,
+        coverage: :test
       ]
     ]
   end
@@ -71,7 +70,8 @@ defmodule PhxLiveStorybook.MixProject do
 
   defp aliases do
     [
-      "assets.watch": "cmd npm run watch --prefix assets"
+      "assets.watch": "cmd npm run watch --prefix assets",
+      coverage: "coveralls.lcov"
     ]
   end
 end
