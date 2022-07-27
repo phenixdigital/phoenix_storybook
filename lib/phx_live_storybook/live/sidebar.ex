@@ -95,7 +95,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <% end %>
 
                 <%= if icon = Map.get(folder_icons, current_path) do %>
-                  <i class={"#{icon} lsb-pr-1.5"}></i>
+                  <i class={"#{icon} fa-fw lsb-pr-1.5"}></i>
                 <% end %>
 
                 <%= String.capitalize(folder_name) %>
@@ -107,7 +107,7 @@ defmodule PhxLiveStorybook.Sidebar do
             <% %ComponentEntry{name: name, module: module, module_name: module_name} -> %>
               <div class={entry_class(@current_path, @folder_path, module_name)}>
                 <%= if icon = module.icon() do %>
-                  <i class={"#{icon} -lsb-ml-1 lsb-pr-1.5"}></i>
+                  <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
                 <%= live_patch name, to: entry_path(@folder_path, module_name) %>
               </div>
