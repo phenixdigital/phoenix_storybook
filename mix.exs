@@ -55,7 +55,7 @@ defmodule PhxLiveStorybook.MixProject do
       main: "PhxLiveStorybook",
       source_ref: "v#{@version}",
       source_url: "https://github.com/phenixdigital/phx_live_storybook",
-      extras: [],
+      extras: ["README.md"],
       nest_modules_by_prefix: [PhxLiveStorybook]
     ]
   end

@@ -5,13 +5,28 @@
 
 📚 [Online Documentation](https://hexdocs.pm/phx_live_storybook)
 
+<!-- MDOC !-->
+
 PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your Phoenix LiveView components.
 
 - Explore all your components, and showcase them with different variations.
-- Browse your components documentation, with their supported attributes.
-- Learn how components behave by using an interactive playground.
+- Browse your components documentation, with their supported attributes (_soon_).
+- Learn how components behave by using an interactive playground (_soon_).
 
 ![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshot.png)
+
+## How does it work?
+
+PhxLiveStorybook is mounted in your application router and serves its UI at the mounting point of your choice.
+
+It performs an automatic discovery of your storybook content under a specified folder (`:content_path`) and then automatically generate storybook navigation sidebar. Every module detected in your content folder, will be loaded and identified as a storybook entry.
+
+For now two kind of entries are supported:
+
+- `component` to describe your stateless function components
+- `live_component` to describe your live components.
+
+Almost everything, from sidebar rendering to component preview, is performed at compilation time.
 
 ## Installation
 
@@ -147,6 +162,44 @@ defmodule MyAppWeb.Storybook.Components.Button do
   end
 end
 ```
+
+### Configuration
+
+All config settings, only the `:content_path` key is mandatory.
+
+```elixir
+# config/config.exs
+config :my_app, MyAppWeb.Storybook,
+
+  # Path to your storybook entries (required).
+  content_path: Path.expand("../my_app_web/lib/storybook", __DIR__),
+
+  # Each entry module is loaded from camelized HTTP request path (ie. `"/components/button"`)
+  # prefixed by the following. Default is your backend module.
+  entries_module_prefix: MyAppWeb.Storybook,
+
+  # Path to your components stylesheet.
+  css_path: "/assets/my_components.css",
+
+  # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
+  # JS. It's mainly intended to define your own LiveView Hooks in `window.storybook.Hooks`.
+  js_path: "/assets/my_components.js",
+
+  # Custom storybook title. Default is "Live Storybook".
+  title: "My Live Storybook",
+
+  # Folder settings.
+  # Each folder is designated by its relative path from the storybook mounting point.
+  # For each folder you can:
+  # - make it open by defaut in the sidebar, with `open: true`.
+  # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
+  folders: [
+    components: [icon: "far fa-toolbox", open: true],
+    "components/live": [icon: "fal fa-bolt"]
+  ]
+```
+
+<!-- MDOC !-->
 
 ### License
 
