@@ -74,7 +74,7 @@ defmodule PhxLiveStorybook.Entries do
       module: module,
       path: path,
       module_name: module |> to_string() |> String.split(".") |> Enum.at(-1),
-      name: apply(module, :name, [])
+      name: module.name()
     }
   end
 

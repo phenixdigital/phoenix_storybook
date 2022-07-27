@@ -2,17 +2,17 @@ defmodule PhxLiveStorybook.EntryTest do
   use ExUnit.Case
 
   test "component entry default behaviors" do
-    defmodule MyEntry do
+    defmodule MyComponentEntry do
       use PhxLiveStorybook.Entry, :component
       def component, do: nil
       def function, do: nil
     end
 
-    assert MyEntry.name() == "My Entry"
-    assert MyEntry.variations() == []
-    assert MyEntry.storybook_type() == :component
-    assert MyEntry.description() == ""
-    assert MyEntry.icon() == nil
+    assert MyComponentEntry.name() == "My Component Entry"
+    assert MyComponentEntry.variations() == []
+    assert MyComponentEntry.storybook_type() == :component
+    assert MyComponentEntry.description() == ""
+    assert MyComponentEntry.icon() == nil
   end
 
   test "live_component entry default behaviors" do
@@ -26,5 +26,17 @@ defmodule PhxLiveStorybook.EntryTest do
     assert MyLiveEntry.storybook_type() == :live_component
     assert MyLiveEntry.description() == ""
     assert MyLiveEntry.icon() == nil
+  end
+
+  test "page entry default behaviors" do
+    defmodule MyPageEntry do
+      use PhxLiveStorybook.Entry, :page
+      def component, do: nil
+    end
+
+    assert MyPageEntry.name() == "My Page Entry"
+    assert MyPageEntry.storybook_type() == :page
+    assert MyPageEntry.description() == ""
+    assert MyPageEntry.icon() == nil
   end
 end

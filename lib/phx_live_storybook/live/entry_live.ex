@@ -9,7 +9,6 @@ defmodule PhxLiveStorybook.EntryTabNotFound do
 end
 
 defmodule PhxLiveStorybook.EntryLive do
-  @moduledoc false
   use PhxLiveStorybook.Web, :live_view
 
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}

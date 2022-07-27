@@ -8,8 +8,8 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   import Phoenix.LiveView.Helpers
 
-  alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Makeup.Formatters.HTML.HTMLFormatter
+  alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
   alias PhxLiveStorybook.Variation
 

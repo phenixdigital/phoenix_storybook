@@ -40,6 +40,6 @@ defmodule PhxLiveStorybook.LayoutView do
 
   defp application_static_path(conn, path) do
     router = conn.private.application_router
-    apply(:"#{router}.Helpers", :static_path, [conn, path])
+    :"#{router}.Helpers".static_path(conn, path)
   end
 end

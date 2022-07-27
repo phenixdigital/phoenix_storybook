@@ -1,8 +1,8 @@
 defmodule PhxLiveStorybook.Entry do
   @moduledoc """
   An entry designates any kind of content in your storybook. For now
-  only two kinds of entries are supported: `component` and `:live_component`, but
-  `:page` and `:example` will follow in later versions.
+  only following kinds of entries are supported: `component`, `:live_component`,
+  and `:page`.
 
   In order to populate your storybook, just create _entry_ modules under your
   content path, and implement their required behaviour.
@@ -24,6 +24,7 @@ defmodule PhxLiveStorybook.Entry do
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
 
+    def name, do: "Another name for my component"
     def description, do: "My component description"
     def icon, do: "fa fa-icon"
 
@@ -43,6 +44,7 @@ defmodule PhxLiveStorybook.Entry do
     # required
     def component, do: MyAppWeb.MyLiveComponent
 
+    def name, do: "Another name for my component"
     def description, do: "My live component description"
     def icon, do: "fa fa-icon"
 
@@ -50,28 +52,41 @@ defmodule PhxLiveStorybook.Entry do
     def variations, do: []
   end
   ```
+
+  ### Page
+
+  ```elixir
+  defmodule MyAppWeb.Storybook.MyPage do
+    use PhxLiveStorybook.Entry, :page
+
+    def name, do: "Another name for my page"
+    def description, do: "My page description"
+    def icon, do: "fa fa-icon"
+  end
+  ```
   """
 
-  defmodule ComponentBehaviour do
+  defmodule EntryBehaviour do
     @moduledoc false
 
     @callback storybook_type() :: atom()
     @callback name() :: String.t()
-    @callback component() :: atom()
-    @callback function() :: function()
     @callback description() :: String.t()
     @callback icon() :: String.t()
+  end
+
+  defmodule ComponentBehaviour do
+    @moduledoc false
+
+    @callback component() :: atom()
+    @callback function() :: function()
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
   end
 
   defmodule LiveComponentBehaviour do
     @moduledoc false
 
-    @callback storybook_type() :: atom()
-    @callback name() :: String.t()
     @callback component() :: atom()
-    @callback description() :: String.t()
-    @callback icon() :: String.t()
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
   end
 
@@ -83,26 +98,45 @@ defmodule PhxLiveStorybook.Entry do
 
   defp component_quote(module, live?) do
     quote do
+      @behaviour EntryBehaviour
       @behaviour unquote(component_behaviour(live?))
 
       alias PhxLiveStorybook.Variation
 
-      @impl true
+      @impl EntryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
 
-      @impl true
+      @impl EntryBehaviour
       def name, do: unquote(module_name(module))
 
-      @impl true
+      @impl EntryBehaviour
       def description, do: ""
 
-      @impl true
+      @impl EntryBehaviour
       def icon, do: nil
 
-      @impl true
+      @impl unquote(component_behaviour(live?))
       def variations, do: []
 
       defoverridable name: 0, description: 0, icon: 0, variations: 0
+    end
+  end
+
+  def page(module) do
+    quote do
+      @behaviour EntryBehaviour
+
+      @impl EntryBehaviour
+      def storybook_type, do: :page
+
+      @impl EntryBehaviour
+      def name, do: unquote(module_name(module))
+
+      @impl EntryBehaviour
+      def description, do: ""
+
+      @impl EntryBehaviour
+      def icon, do: nil
     end
   end
 
