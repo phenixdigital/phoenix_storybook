@@ -2,8 +2,9 @@
 
 ![github](https://github.com/phenixdigital/phx_live_storybook/actions/workflows/elixir.yml/badge.svg)
 [![codecov](https://codecov.io/gh/phenixdigital/phx_live_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phx_live_storybook)
+[![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phx_live_storybook.svg)](https://github.com/phenixdigital/phx_live_storybook/releases/)
 
-📚 [Online Documentation](https://hexdocs.pm/phx_live_storybook)
+📚 [Online Documentation](https://hexdocs.pm/phx_live_storybook) &nbsp; - &nbsp; 🔎 [Online Demo](http://phx-live-storybook-sample.fly.dev)
 
 <!-- MDOC !-->
 
