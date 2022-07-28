@@ -22,10 +22,11 @@ PhxLiveStorybook is mounted in your application router and serves its UI at the 
 
 It performs an automatic discovery of your storybook content under a specified folder (`:content_path`) and then automatically generate storybook navigation sidebar. Every module detected in your content folder, will be loaded and identified as a storybook entry.
 
-For now two kind of entries are supported:
+Three kind of entries are supported:
 
-- `component` to describe your stateless function components
+- `component` to describe your stateless function components.
 - `live_component` to describe your live components.
+- `page` to write & document UI guidelines, or whatever content you want.
 
 Almost everything, from sidebar rendering to component preview, is performed at compilation time.
 
