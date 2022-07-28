@@ -94,7 +94,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp render_navigation_tabs(tabs, assigns) do
     ~H"""
-    <div class="lsb-rounded-lg lsb-flex lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
+    <nav class="entry-tabs lsb-rounded-lg lsb-flex lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
       <%= for {tab, label, icon} <- tabs do %>
         <%= live_patch to: "?tab=#{tab}", class: "lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}" do %>
           <span class={active_span(@tab, tab)}>
@@ -105,7 +105,7 @@ defmodule PhxLiveStorybook.EntryLive do
           </span>
         <% end %>
       <% end %>
-    </div>
+    </nav>
     """
   end
 

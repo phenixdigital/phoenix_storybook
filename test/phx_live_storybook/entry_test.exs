@@ -38,5 +38,7 @@ defmodule PhxLiveStorybook.EntryTest do
     assert MyPageEntry.storybook_type() == :page
     assert MyPageEntry.description() == ""
     assert MyPageEntry.icon() == nil
+    assert MyPageEntry.navigation() == []
+    assert MyPageEntry.render(%{}) == false
   end
 end

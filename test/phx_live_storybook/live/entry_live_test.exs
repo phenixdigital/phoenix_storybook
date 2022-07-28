@@ -15,8 +15,8 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     assert get(conn, "/storybook/a_component") |> html_response(200) =~ ~s|phx-socket="/live"|
   end
 
-  test "home path redirects to first component", %{conn: conn} do
-    assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_component"
+  test "home path redirects to first page", %{conn: conn} do
+    assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_page"
   end
 
   test "404 on unknown entry", %{conn: conn} do
@@ -61,6 +61,22 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     html = view |> element("a", "Source") |> render_click()
     assert_patched(view, "/storybook/a_component?tab=source")
     assert html =~ "defmodule"
+  end
+
+  test "renders a page entry", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/storybook/a_page")
+    assert html =~ "A Page"
+    refute html =~ "entry-tabs"
+  end
+
+  test "renders a page entry with tabs", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/storybook/b_page")
+    assert html =~ "B Page: tab_1"
+    assert html =~ "entry-tabs"
+
+    html = view |> element("a", "Tab 2") |> render_click()
+    assert_patched(view, "/storybook/b_page?tab=tab_2")
+    assert html =~ "B Page: tab_2"
   end
 
   test "navigate to unknown tab", %{conn: conn} do

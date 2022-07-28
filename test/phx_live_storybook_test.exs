@@ -39,6 +39,20 @@ defmodule PhxLiveStorybookTest do
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
       assert TreeStorybook.storybook_entries() == [
+               %PhxLiveStorybook.PageEntry{
+                 module_name: "APage",
+                 module: Elixir.TreeStorybook.APage,
+                 name: "A Page",
+                 path: content_path("tree/a_page.ex"),
+                 relative_path: "/a_page"
+               },
+               %PhxLiveStorybook.PageEntry{
+                 module_name: "BPage",
+                 module: Elixir.TreeStorybook.BPage,
+                 name: "B Page",
+                 path: content_path("tree/b_page.ex"),
+                 relative_path: "/b_page"
+               },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.AComponent,
                  module_name: "AComponent",

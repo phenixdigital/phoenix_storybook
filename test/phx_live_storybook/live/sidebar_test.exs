@@ -28,17 +28,17 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 4 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 4
+      # test sidebar has 6 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 6
 
-      # test 2 of them are links (ie. not folders)
-      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 2
+      # test 4 of them are links (ie. not folders)
+      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
 
-      # third node (which is 1st folder) is closed
-      assert find(document, "nav>ul>li>ul>li:nth-child(3)>ul>li") |> length() == 0
+      # fifth node (which is 1st folder) is closed
+      assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 0
 
-      # fourth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li>ul>li:nth-child(4)>ul>li") |> length() == 2
+      # sixth node (which is 2nd folder) is open (by config)
+      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 2
     end
 
     test "sidebar with a path contains all entries, with 2 open folders" do
@@ -46,17 +46,17 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 4 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 4
+      # test sidebar has 5 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 6
 
-      # test 2 of them are links (ie. not folders)
-      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 2
+      # test 4 of them are links (ie. not folders)
+      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
 
-      # third node (which is 1st folder) is open (by path)
-      assert find(document, "nav>ul>li>ul>li:nth-child(3)>ul>li") |> length() == 2
+      # fifth node (which is 1st folder) is open (by path)
+      assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 2
 
-      # fourth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li>ul>li:nth-child(4)>ul>li") |> length() == 2
+      # sixth node (which is 2nd folder) is open (by config)
+      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 2
     end
 
     test "sidebar with a path has active entry marked as active" do
@@ -64,7 +64,7 @@ defmodule PhxLiveStorybook.SidebarTest do
 
       # test 1th entry in 1st folder is active (font-bold class)
       [{"div", [{"class", link_class} | _], _}] =
-        find(document, "nav>ul>li>ul>li:nth-child(3)>ul>li:nth-child(1)>div")
+        find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li:nth-child(1)>div")
 
       assert String.contains?(link_class, "lsb-font-bold")
     end
@@ -76,7 +76,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       [
         {"i", [{"class", first_icon_classes} | _], _},
         {"i", [{"class", second_icon_classes} | _], _}
-      ] = find(document, "nav>ul>li>ul>li:nth-child(3)>div>i")
+      ] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>i")
 
       assert String.contains?(first_icon_classes, "fa-caret-down")
       assert String.contains?(second_icon_classes, "fa-icon")
@@ -86,11 +86,11 @@ defmodule PhxLiveStorybook.SidebarTest do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
 
       # test default folder name (properly humanized)
-      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(3)>div>span")
+      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")
       assert String.contains?(html, "A folder")
 
       # test config folder name
-      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(4)>div>span")
+      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(6)>div>span")
       assert String.contains?(html, "Config Name")
     end
   end
