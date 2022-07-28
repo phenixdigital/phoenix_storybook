@@ -11,45 +11,52 @@ defmodule PhxLiveStorybook.SidebarTest do
   describe "storybook with flat list of entries" do
     test "sidebar contains those 2 entries" do
       {document, _html} = render_sidebar(FlatListStorybook)
-      # test sidebar has 2 entries
-      assert find(document, "nav>ul>li") |> length() == 2
+      # test sidebar has 1 root entry
+      assert find(document, "nav>ul>li") |> length() == 1
+
+      # test sidebar has 2 folders beneath root
+      assert find(document, "nav>ul>li>ul>li") |> length() == 2
 
       # test those 2 entries are links (ie. not folders)
-      assert find(document, "nav>ul>li>div>a") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 2
     end
   end
 
   describe "storybook with a tree of entries" do
     test "sidebar contains all entries, with one open folder" do
       {document, _html} = render_sidebar(TreeStorybook)
+      # test sidebar has 1 root entry
+      assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 4 entries
-      assert find(document, "nav>ul>li") |> length() == 4
+      assert find(document, "nav>ul>li>ul>li") |> length() == 4
 
       # test 2 of them are links (ie. not folders)
-      assert find(document, "nav>ul>li>div>a") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 2
 
       # third node (which is 1st folder) is closed
-      assert find(document, "nav>ul>li:nth-child(3)>ul>li") |> length() == 0
+      assert find(document, "nav>ul>li>ul>li:nth-child(3)>ul>li") |> length() == 0
 
       # fourth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li:nth-child(4)>ul>li") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li:nth-child(4)>ul>li") |> length() == 2
     end
 
     test "sidebar with a path contains all entries, with 2 open folders" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      # test sidebar has 1 root entry
+      assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 4 entries
-      assert find(document, "nav>ul>li") |> length() == 4
+      assert find(document, "nav>ul>li>ul>li") |> length() == 4
 
       # test 2 of them are links (ie. not folders)
-      assert find(document, "nav>ul>li>div>a") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 2
 
       # third node (which is 1st folder) is open (by path)
-      assert find(document, "nav>ul>li:nth-child(3)>ul>li") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li:nth-child(3)>ul>li") |> length() == 2
 
       # fourth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li:nth-child(4)>ul>li") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li:nth-child(4)>ul>li") |> length() == 2
     end
 
     test "sidebar with a path has active entry marked as active" do
@@ -57,7 +64,7 @@ defmodule PhxLiveStorybook.SidebarTest do
 
       # test 1th entry in 1st folder is active (font-bold class)
       [{"div", [{"class", link_class} | _], _}] =
-        find(document, "nav>ul>li:nth-child(3)>ul>li:nth-child(1)>div")
+        find(document, "nav>ul>li>ul>li:nth-child(3)>ul>li:nth-child(1)>div")
 
       assert String.contains?(link_class, "lsb-font-bold")
     end
@@ -69,10 +76,22 @@ defmodule PhxLiveStorybook.SidebarTest do
       [
         {"i", [{"class", first_icon_classes} | _], _},
         {"i", [{"class", second_icon_classes} | _], _}
-      ] = find(document, "nav>ul>li:nth-child(3)>div>i")
+      ] = find(document, "nav>ul>li>ul>li:nth-child(3)>div>i")
 
       assert String.contains?(first_icon_classes, "fa-caret-down")
       assert String.contains?(second_icon_classes, "fa-icon")
+    end
+
+    test "sidebar folder names are well displayed" do
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+
+      # test default folder name (properly humanized)
+      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(3)>div>span")
+      assert String.contains?(html, "A folder")
+
+      # test config folder name
+      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(4)>div>span")
+      assert String.contains?(html, "Config Name")
     end
   end
 

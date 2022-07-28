@@ -1,18 +1,8 @@
-defmodule PhxLiveStorybook.EntryNotFound do
-  @moduledoc false
-  defexception [:message, plug_status: 404]
-end
-
-defmodule PhxLiveStorybook.EntryTabNotFound do
-  @moduledoc false
-  defexception [:message, plug_status: 404]
-end
-
 defmodule PhxLiveStorybook.EntryLive do
   use PhxLiveStorybook.Web, :live_view
 
-  alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
   alias PhxLiveStorybook.Variation
+  alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
 
   @tabs [
     {:variations, "Variations", "far fa-eye"},
@@ -48,6 +38,7 @@ defmodule PhxLiveStorybook.EntryLive do
       entry_module ->
         {:noreply,
          assign(socket,
+           entry_type: entry_module.storybook_type(),
            entry_path: entry_path,
            entry_module: entry_module,
            page_title: entry_module.name(),
@@ -119,7 +110,8 @@ defmodule PhxLiveStorybook.EntryLive do
   defp active_text(same, same), do: ""
   defp active_text(_tab, _current_tab), do: "-lsb-ml-0.5"
 
-  defp render_tab_content(assigns = %{tab: :variations}) do
+  defp render_tab_content(assigns = %{entry_type: type, tab: :variations})
+       when type in [:component, :live_component] do
     ~H"""
     <div class="lsb-space-y-12">
       <%= for variation = %Variation{} <- @entry_module.variations() do %>
@@ -156,7 +148,8 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp render_tab_content(assigns = %{tab: :documentation}) do
+  defp render_tab_content(assigns = %{entry_type: type, tab: :documentation})
+       when type in [:component, :live_component] do
     ~H"""
     <div class="lsb-w-full lsb-text-center lsb-text-slate-400 lsb-pt-20 lsb-px-40">
       <i class="hover:lsb-text-indigo-400 fas fa-traffic-cone fa-5x fa-bounce" style="--fa-animation-iteration-count: 2;"></i>
@@ -171,9 +164,15 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp render_tab_content(assigns = %{tab: :source}) do
+  defp render_tab_content(assigns = %{entry_type: type, tab: :source})
+       when type in [:component, :live_component] do
     ~H"""
     <%= @backend_module.render_source(@entry_module) %>
+    """
+  end
+
+  defp render_tab_content(assigns = %{entry_type: :page}) do
+    ~H"""
     """
   end
 
@@ -205,4 +204,14 @@ defmodule PhxLiveStorybook.EntryLive do
   defp anchor_id(%Variation{id: id}) do
     id |> to_string() |> String.replace("_", "-")
   end
+end
+
+defmodule PhxLiveStorybook.EntryNotFound do
+  @moduledoc false
+  defexception [:message, plug_status: 404]
+end
+
+defmodule PhxLiveStorybook.EntryTabNotFound do
+  @moduledoc false
+  defexception [:message, plug_status: 404]
 end

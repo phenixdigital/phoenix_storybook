@@ -82,12 +82,12 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     refute has_element?(view, "a", "Bb Component")
 
     # opening "B folder" then reaching items inside
-    element(view, "div", "B_folder") |> render_click()
+    element(view, "div", "B folder") |> render_click()
     assert view |> element("a", "Ba Component") |> render_click() =~ "Ba component description"
     assert view |> element("a", "Bb Component") |> render_click() =~ "Bb component description"
 
     # closing "B folder"
-    element(view, "div", "B_folder") |> render_click()
+    element(view, "div", "B folder") |> render_click()
     refute has_element?(view, "a", "Ba Component")
     refute has_element?(view, "a", "Bb Component")
   end

@@ -903,8 +903,16 @@ video {
   margin-left: 0.75rem !important;
 }
 
+.-lsb-ml-2 {
+  margin-left: -0.5rem !important;
+}
+
 .-lsb-ml-1 {
   margin-left: -0.25rem !important;
+}
+
+.-lsb-ml-\[12px\] {
+  margin-left: -12px !important;
 }
 
 .lsb-ml-1 {
@@ -1880,6 +1888,10 @@ video {
 
 .fontawesome-i2svg-active .wait-for-icons {
   display: initial;
+}
+
+.lsb-entry {
+  margin-left: -0.5rem;
 }
 
 .hover\:lsb-border-indigo-600:hover {

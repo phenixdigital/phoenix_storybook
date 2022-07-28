@@ -49,6 +49,9 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
               )
             end
           end
+
+        _ ->
+          []
       end
     end
   end
@@ -80,6 +83,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
         case entry do
           %ComponentEntry{} -> [entry | acc]
           %FolderEntry{sub_entries: entries} -> collect_components(Enum.reverse(entries), acc)
+          _ -> acc
         end
     end
   end

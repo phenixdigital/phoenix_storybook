@@ -1,16 +1,21 @@
 defmodule PhxLiveStorybook.ComponentEntry do
   @moduledoc false
-  defstruct [:name, :module, :path, :module_name]
+  defstruct [:name, :module, :path, :module_name, :relative_path]
+end
+
+defmodule PhxLiveStorybook.PageEntry do
+  @moduledoc false
+  defstruct [:name, :module, :path, :module_name, :relative_path]
 end
 
 defmodule PhxLiveStorybook.FolderEntry do
   @moduledoc false
-  defstruct [:name, :sub_entries]
+  defstruct [:name, :sub_entries, :relative_path]
 end
 
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
-  alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry}
+  alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry, PageEntry}
 
   @doc false
   # This quote inlines a storybook_entries/0 function to return the content
@@ -36,16 +41,19 @@ defmodule PhxLiveStorybook.Entries do
     end
   end
 
-  defp recursive_scan(path) do
+  defp recursive_scan(path, relative_path \\ "") do
     for file_name <- path |> File.ls!() |> Enum.sort(:desc),
         file_path = Path.join(path, file_name),
         reduce: [] do
       acc ->
         if File.dir?(file_path) do
+          relative_path = "#{relative_path}/#{file_name}"
+
           [
             %FolderEntry{
               name: file_name,
-              sub_entries: file_path |> recursive_scan()
+              relative_path: relative_path,
+              sub_entries: recursive_scan(file_path, relative_path)
             }
             | acc
           ]
@@ -57,24 +65,42 @@ defmodule PhxLiveStorybook.Entries do
               acc
 
             type when type in [:component, :live_component] ->
-              [component_entry(file_path, entry_module) | acc]
+              [component_entry(file_path, entry_module, relative_path) | acc]
+
+            :page ->
+              [page_entry(file_path, entry_module, relative_path) | acc]
           end
         end
     end
     |> sort_entries()
   end
 
-  @entry_priority %{ComponentEntry => 0, FolderEntry => 1}
+  @entry_priority %{PageEntry => 0, ComponentEntry => 1, FolderEntry => 2}
   defp sort_entries(entries) do
     Enum.sort_by(entries, &Map.get(@entry_priority, &1.__struct__))
   end
 
-  defp component_entry(path, module) do
+  defp component_entry(path, module, relative_path) do
+    module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
+
     %ComponentEntry{
       module: module,
       path: path,
-      module_name: module |> to_string() |> String.split(".") |> Enum.at(-1),
-      name: module.name()
+      module_name: module_name,
+      name: module.name(),
+      relative_path: "#{relative_path}/#{Macro.underscore(module_name)}"
+    }
+  end
+
+  defp page_entry(path, module, relative_path) do
+    module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
+
+    %PageEntry{
+      module: module,
+      path: path,
+      module_name: module_name,
+      name: module.name(),
+      relative_path: "#{relative_path}/#{Macro.underscore(module_name)}"
     }
   end
 
@@ -109,6 +135,7 @@ defmodule PhxLiveStorybook.Entries do
         |> Enum.map(fn
           %FolderEntry{name: name} -> name
           %ComponentEntry{path: path} -> Path.basename(path, ".ex")
+          %PageEntry{path: path} -> Path.basename(path, ".ex")
         end)
     end
   end
@@ -117,6 +144,9 @@ defmodule PhxLiveStorybook.Entries do
     Enum.find_value(entries, fn entry ->
       case entry do
         %ComponentEntry{} ->
+          [entry | acc]
+
+        %PageEntry{} ->
           [entry | acc]
 
         %FolderEntry{sub_entries: sub_entries} ->

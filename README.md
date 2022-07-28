@@ -192,10 +192,11 @@ config :my_app, MyAppWeb.Storybook,
   # Each folder is designated by its relative path from the storybook mounting point.
   # For each folder you can:
   # - make it open by defaut in the sidebar, with `open: true`.
+  # - give it a custom name in the sidebar
   # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
   folders: [
     components: [icon: "far fa-toolbox", open: true],
-    "components/live": [icon: "fal fa-bolt"]
+    "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
   ]
 ```
 

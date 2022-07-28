@@ -9,3 +9,7 @@
 .fontawesome-i2svg-active .wait-for-icons {
   display: initial;
 }
+
+.lsb-entry {
+  @apply -lsb-ml-2;
+}

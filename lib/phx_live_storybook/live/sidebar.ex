@@ -2,7 +2,7 @@ defmodule PhxLiveStorybook.Sidebar do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   def mount(socket) do
     {:ok, assign(socket, :opened_folders, MapSet.new())}
@@ -17,21 +17,32 @@ defmodule PhxLiveStorybook.Sidebar do
      |> assign(assigns)
      |> assign(
        root_path: root_path,
-       root_entries: backend_module.storybook_entries(),
+       root_entries: [root_entry(backend_module)],
        current_path: current_path
      )
      |> assign_opened_folders(root_path)
-     |> assign_folder_icons(root_path)}
+     |> assign_folder_icons(root_path)
+     |> assign_folder_names(root_path)
+     |> assign(current_path: Enum.join(current_path, "/"))}
+  end
+
+  defp root_entry(backend_module) do
+    %FolderEntry{
+      sub_entries: backend_module.storybook_entries(),
+      relative_path: "",
+      name: "root"
+    }
   end
 
   defp assign_opened_folders(socket = %{assigns: assigns}, root_path) do
     # reading pre-opened folders from config
     opened_folders =
       for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+          folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
           folder_opts[:open],
           reduce: assigns.opened_folders do
         opened_folders ->
-          MapSet.put(opened_folders, "#{root_path}/#{folder_path}")
+          MapSet.put(opened_folders, "#{root_path}#{folder_path}")
       end
 
     # then opening folders based on current request path
@@ -49,11 +60,23 @@ defmodule PhxLiveStorybook.Sidebar do
   defp assign_folder_icons(socket = %{assigns: assigns}, root_path) do
     folder_icons =
       for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+          folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
           folder_opts[:icon],
-          into: %{},
-          do: {"#{root_path}/#{folder_path}", folder_opts[:icon]}
+          into: %{root_path => "fal fa-book-open"},
+          do: {"#{root_path}#{folder_path}", folder_opts[:icon]}
 
     assign(socket, :folder_icons, folder_icons)
+  end
+
+  defp assign_folder_names(socket = %{assigns: assigns}, root_path) do
+    folder_names =
+      for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+          folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
+          folder_opts[:name],
+          into: %{root_path => "Storybook"},
+          do: {"#{root_path}#{folder_path}", folder_opts[:name]}
+
+    assign(socket, :folder_names, folder_names)
   end
 
   def render(assigns) do
@@ -62,7 +85,7 @@ defmodule PhxLiveStorybook.Sidebar do
       class="lsb-fixed lsb-text-sm lsb-w-60 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-4 lsb-px-4 lsb-overflow-y-auto"
     >
       <nav class="lsb-flex-1 xl:lsb-sticky">
-        <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path])) %>
+        <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
       </nav>
 
         <div class="lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
@@ -76,40 +99,57 @@ defmodule PhxLiveStorybook.Sidebar do
     """
   end
 
-  defp render_entries(assigns = %{folder_icons: folder_icons}) do
+  defp render_entries(assigns = %{folder_icons: folder_icons, folder_names: folder_names}) do
     ~H"""
     <ul class="lsb-ml-3">
       <%= for entry <- @entries do %>
         <li>
           <%= case entry do %>
-            <% %FolderEntry{name: folder_name, sub_entries: sub_entries} -> %>
-              <% current_path = Enum.join(@folder_path ++ [folder_name], "/") %>
-              <% open_folder? = open_folder?(current_path, assigns) %>
-              <div class="lsb-flex lsb-items-center lsb-py-1.5 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
-                phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={current_path}
+            <% %FolderEntry{name: folder_name, relative_path: relative_path, sub_entries: sub_entries} -> %>
+              <% folder_path = @root_path <> relative_path %>
+              <% open_folder? = open_folder?(folder_path, assigns) %>
+              <div class="lsb-flex lsb-items-center lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
+                phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={folder_path}
               >
-                <%= if open_folder? do %>
-                  <i class="fas fa-caret-down lsb-pl-1 lsb-pr-2"></i>
-                <% else %>
-                  <i class="fas fa-caret-right lsb-pl-1 lsb-pr-2"></i>
+                <%= unless @root do %>
+                  <%= if open_folder? do %>
+                    <i class="fas fa-caret-down lsb-pl-1 lsb-pr-2"></i>
+                  <% else %>
+                    <i class="fas fa-caret-right lsb-pl-1 lsb-pr-2"></i>
+                  <% end %>
                 <% end %>
 
-                <%= if icon = Map.get(folder_icons, current_path) do %>
+                <%= if icon = Map.get(folder_icons, folder_path) do %>
                   <i class={"#{icon} fa-fw lsb-pr-1.5"}></i>
                 <% end %>
 
-                <%= String.capitalize(folder_name) %>
+                <span>
+                  <%= Map.get_lazy(folder_names, folder_path, fn ->
+                      folder_name |> String.capitalize() |> String.replace("_", " ")
+                    end) %>
+                </span>
               </div>
-              <%= if open_folder? do %>
-                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [folder_name])) %>
+
+              <%= if open_folder? or @root do %>
+                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [relative_path], root: false)) %>
               <% end %>
 
-            <% %ComponentEntry{name: name, module: module, module_name: module_name} -> %>
-              <div class={entry_class(@current_path, @folder_path, module_name)}>
+            <% %ComponentEntry{name: name, module: module, relative_path: relative_path} -> %>
+              <% entry_path =  @root_path <> relative_path %>
+              <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon = module.icon() do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= live_patch name, to: entry_path(@folder_path, module_name) %>
+                <%= live_patch name, to: entry_path %>
+              </div>
+
+            <% %PageEntry{name: name, module: module, relative_path: relative_path} -> %>
+              <% entry_path =  @root_path <> relative_path %>
+              <div class={entry_class(@current_path, entry_path)}>
+                <%= if icon = module.icon() do %>
+                  <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
+                <% end %>
+                <%= live_patch name, to: entry_path %>
               </div>
           <% end %>
         </li>
@@ -118,19 +158,15 @@ defmodule PhxLiveStorybook.Sidebar do
     """
   end
 
-  defp entry_class(current_path, folder_path, entry_module_name) do
+  defp entry_class(current_path, entry_path) do
     entry_class =
-      "lsb-block lsb-border-l lsb-py-1 lsb-pl-4 -lsb-ml-1 hover:lsb-border-indigo-600 hover:lsb-text-indigo-600 hover:lsb-border-l-1.5"
+      "-lsb-ml-[12px] lsb-block lsb-border-l lsb-py-1 lsb-pl-4 hover:lsb-border-indigo-600 hover:lsb-text-indigo-600 hover:lsb-border-l-1.5"
 
-    if Enum.join(current_path, "/") == entry_path(folder_path, entry_module_name) do
+    if current_path == entry_path do
       entry_class <> " lsb-font-bold lsb-border-indigo-600 lsb-text-indigo-700 lsb-border-l-1.5"
     else
       entry_class <> " lsb-border-slate-200 lsb-text-slate-700"
     end
-  end
-
-  defp entry_path(folder_path, module_name) do
-    Enum.join(folder_path ++ [Macro.underscore(module_name)], "/")
   end
 
   defp click_action(_open? = false), do: "open-folder"

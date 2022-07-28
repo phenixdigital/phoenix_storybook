@@ -12,7 +12,8 @@ if config_env() == :test do
         {"FlatListStorybook", "flat_list", []},
         {"EmptyFilesStorybook", "empty_files", []},
         {"EmptyFoldersStorybook", "empty_folders", []},
-        {"TreeStorybook", "tree", [a_folder: [icon: "fa-icon"], b_folder: [open: true]]},
+        {"TreeStorybook", "tree",
+         ["/a_folder": [icon: "fa-icon"], "/b_folder": [open: true, name: "Config Name"]]},
         {"TreeBStorybook", "tree_b", []}
       ] do
     config :phx_live_storybook, :"#{test_module}.#{storybook_module}",

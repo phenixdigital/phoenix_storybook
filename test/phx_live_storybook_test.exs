@@ -24,13 +24,15 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.FlatListStorybook.AComponent,
                  module_name: "AComponent",
                  name: "A Component",
-                 path: content_path("flat_list/a_component.ex")
+                 path: content_path("flat_list/a_component.ex"),
+                 relative_path: "/a_component"
                },
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
-                 path: content_path("flat_list/b_component.ex")
+                 path: content_path("flat_list/b_component.ex"),
+                 relative_path: "/b_component"
                }
              ]
     end
@@ -41,45 +43,53 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeStorybook.AComponent,
                  module_name: "AComponent",
                  name: "A Component",
-                 path: content_path("tree/a_component.ex")
+                 path: content_path("tree/a_component.ex"),
+                 relative_path: "/a_component"
                },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
-                 path: content_path("tree/b_component.ex")
+                 path: content_path("tree/b_component.ex"),
+                 relative_path: "/b_component"
                },
                %PhxLiveStorybook.FolderEntry{
                  name: "a_folder",
+                 relative_path: "/a_folder",
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.AFolder.AaComponent,
                      module_name: "AaComponent",
                      name: "Aa Component",
-                     path: content_path("tree/a_folder/aa_component.ex")
+                     path: content_path("tree/a_folder/aa_component.ex"),
+                     relative_path: "/a_folder/aa_component"
                    },
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.AFolder.AbComponent,
                      module_name: "AbComponent",
                      name: "Ab Component",
-                     path: content_path("tree/a_folder/ab_component.ex")
+                     path: content_path("tree/a_folder/ab_component.ex"),
+                     relative_path: "/a_folder/ab_component"
                    }
                  ]
                },
                %PhxLiveStorybook.FolderEntry{
                  name: "b_folder",
+                 relative_path: "/b_folder",
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.BFolder.BaComponent,
                      module_name: "BaComponent",
                      name: "Ba Component",
-                     path: content_path("tree/b_folder/ba_component.ex")
+                     path: content_path("tree/b_folder/ba_component.ex"),
+                     relative_path: "/b_folder/ba_component"
                    },
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.BFolder.BbComponent,
                      module_name: "BbComponent",
                      name: "Bb Component",
-                     path: content_path("tree/b_folder/bb_component.ex")
+                     path: content_path("tree/b_folder/bb_component.ex"),
+                     relative_path: "/b_folder/bb_component"
                    }
                  ]
                }
@@ -92,8 +102,8 @@ defmodule PhxLiveStorybookTest do
 
     test "with empty sub-folders, it should return a flat list of 2 folders" do
       assert EmptyFoldersStorybook.storybook_entries() == [
-               %FolderEntry{name: "empty_a", sub_entries: []},
-               %FolderEntry{name: "empty_b", sub_entries: []}
+               %FolderEntry{name: "empty_a", sub_entries: [], relative_path: "/empty_a"},
+               %FolderEntry{name: "empty_b", sub_entries: [], relative_path: "/empty_b"}
              ]
     end
   end
