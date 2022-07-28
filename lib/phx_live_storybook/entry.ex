@@ -51,6 +51,13 @@ defmodule PhxLiveStorybook.Entry do
 
   ### Page
 
+  A page is basically a `LiveComponent` that can be used to write whatever
+  content you want. We use it to provide some UI guidelines.
+
+  You should implement the render function and an optional navigation function,
+  if you want a tab based sub-navigation. Current tab is passed as `:tab`
+  in `render/1` assigns.
+
   ```elixir
   defmodule MyAppWeb.Storybook.MyPage do
     use PhxLiveStorybook.Entry, :page
@@ -68,7 +75,7 @@ defmodule PhxLiveStorybook.Entry do
 
     def render(assigns) do
       ~H\"\"\"
-      Your HEEX template
+      <div>Your HEEX template</div>
       \"\"\"
     end
   end
@@ -138,6 +145,7 @@ defmodule PhxLiveStorybook.Entry do
     end
   end
 
+  @doc false
   def page(module) do
     quote do
       use Phoenix.LiveComponent
@@ -168,12 +176,15 @@ defmodule PhxLiveStorybook.Entry do
     end
   end
 
+  @doc false
   def component_behaviour(_live = true), do: LiveComponentBehaviour
   def component_behaviour(_live = false), do: ComponentBehaviour
 
+  @doc false
   def storybook_type(_live = true), do: :live_component
   def storybook_type(_live = false), do: :component
 
+  @doc false
   def module_name(module) do
     module
     |> Module.split()

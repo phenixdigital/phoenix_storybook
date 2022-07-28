@@ -195,7 +195,8 @@ config :my_app, MyAppWeb.Storybook,
   # - give it a custom name in the sidebar
   # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
   folders: [
-    components: [icon: "far fa-toolbox", open: true],
+    "/": [icon: "fas fa-banana"],
+    "/components": [icon: "far fa-toolbox", open: true],
     "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
   ]
 ```

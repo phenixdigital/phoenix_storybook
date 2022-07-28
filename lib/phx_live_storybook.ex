@@ -1,3 +1,50 @@
+defmodule PhxLiveStorybook.BackendBehaviour do
+  @moduledoc """
+  Behaviour implemented by your backend module.
+  Most of it is precompiled through macros.
+  """
+
+  alias Phoenix.LiveView.Rendered
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
+
+  @doc """
+  Returns a configuration value from your config.exs storybook settings.
+
+  `key` is the config key
+  `default` is an optional default value if no value can be fetched.
+  """
+  @callback config(key :: atom(), default :: any()) :: any()
+
+  @doc """
+  Returns a precompiled tree of your storybook entries.
+  """
+  @callback storybook_entries() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
+
+  @doc """
+  Returns the first leaf of the storybook content tree (ie. whichever entry which is
+  not a folder)
+  """
+  @callback path_to_first_leaf_entry() :: %ComponentEntry{} | %PageEntry{}
+
+  @doc """
+  Renders a specific variation for a given component entry.
+  Returns rendered HEEx template.
+  """
+  @callback render_component(entry_module :: atom(), variation_id :: atom()) :: %Rendered{}
+
+  @doc """
+  Renders code snippet of a specific variation for a given component entry.
+  Returns rendered HEEx template.
+  """
+  @callback render_code(entry_module :: atom(), variation_id :: atom()) :: %Rendered{}
+
+  @doc """
+  Renders source of a component entry.
+  Returns rendered HEEx template.
+  """
+  @callback render_source(entry_module :: atom()) :: %Rendered{}
+end
+
 defmodule PhxLiveStorybook do
   @external_resource "README.md"
   @moduledoc @external_resource
@@ -54,6 +101,9 @@ defmodule PhxLiveStorybook do
   # This quote provides config access helper
   defp config_quote(backend_module, opts) do
     quote do
+      @behaviour PhxLiveStorybook.BackendBehaviour
+
+      @impl PhxLiveStorybook.BackendBehaviour
       def config(key, default \\ nil) do
         otp_app = Keyword.get(unquote(opts), :otp_app)
 

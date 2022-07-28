@@ -15,6 +15,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
       case module.storybook_type() do
         :component ->
           quote do
+            @impl PhxLiveStorybook.BackendBehaviour
             def render_component(unquote(module), unquote(variation_id)) do
               ComponentRenderer.render_component(
                 unquote(module).component(),
@@ -24,6 +25,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
               )
             end
 
+            @impl PhxLiveStorybook.BackendBehaviour
             def render_code(unquote(module), unquote(variation_id)) do
               CodeRenderer.render_component_code(
                 unquote(module).function(),
@@ -34,6 +36,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
 
         :live_component ->
           quote do
+            @impl PhxLiveStorybook.BackendBehaviour
             def render_component(unquote(module), unquote(variation_id)) do
               ComponentRenderer.render_live_component(
                 unquote(module).component(),
@@ -42,6 +45,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
               )
             end
 
+            @impl PhxLiveStorybook.BackendBehaviour
             def render_code(unquote(module), unquote(variation_id)) do
               CodeRenderer.render_live_component_code(
                 unquote(module).component(),
@@ -60,6 +64,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
   def source_quote(backend_module, opts) do
     for %ComponentEntry{module: module} <- component_entries(backend_module, opts[:otp_app]) do
       quote do
+        @impl PhxLiveStorybook.BackendBehaviour
         def render_source(unquote(module)) do
           CodeRenderer.render_component_source(unquote(module))
         end

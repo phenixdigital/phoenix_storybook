@@ -27,7 +27,10 @@ defmodule PhxLiveStorybook.Entries do
     path_to_first_leaf_entry = Entries.path_to_first_leaf(entries)
 
     quote do
+      @impl PhxLiveStorybook.BackendBehaviour
       def storybook_entries, do: unquote(Macro.escape(entries))
+
+      @impl PhxLiveStorybook.BackendBehaviour
       def path_to_first_leaf_entry, do: unquote(Macro.escape(path_to_first_leaf_entry))
     end
   end
