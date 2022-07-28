@@ -27,8 +27,6 @@ defmodule PhxLiveStorybook.Entry do
     def name, do: "Another name for my component"
     def description, do: "My component description"
     def icon, do: "fa fa-icon"
-
-    # required
     def variations, do: []
   end
   ```
@@ -47,8 +45,6 @@ defmodule PhxLiveStorybook.Entry do
     def name, do: "Another name for my component"
     def description, do: "My live component description"
     def icon, do: "fa fa-icon"
-
-    # required
     def variations, do: []
   end
   ```
@@ -62,7 +58,21 @@ defmodule PhxLiveStorybook.Entry do
     def name, do: "Another name for my page"
     def description, do: "My page description"
     def icon, do: "fa fa-icon"
+
+    def navigation do
+      [
+        {:tab_id, "Tab Name", "tab-icon"},
+        {:tab_id, "Tab Name", "tab-icon"}
+      ]
+    end
+
+    def render(assigns) do
+      ~H\"\"\"
+      Your HEEX template
+      \"\"\"
+    end
   end
+
   ```
   """
 
@@ -88,6 +98,12 @@ defmodule PhxLiveStorybook.Entry do
 
     @callback component() :: atom()
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
+  end
+
+  defmodule PageBehaviour do
+    @moduledoc false
+
+    @callback navigation() :: [{atom(), String.t(), String.t()}]
   end
 
   @doc false
@@ -124,7 +140,11 @@ defmodule PhxLiveStorybook.Entry do
 
   def page(module) do
     quote do
+      use Phoenix.LiveComponent
+      import Phoenix.LiveView.Helpers
+
       @behaviour EntryBehaviour
+      @behaviour PageBehaviour
 
       @impl EntryBehaviour
       def storybook_type, do: :page
@@ -137,6 +157,14 @@ defmodule PhxLiveStorybook.Entry do
 
       @impl EntryBehaviour
       def icon, do: nil
+
+      @impl PageBehaviour
+      def navigation, do: []
+
+      @impl Phoenix.LiveComponent
+      def render(_assigns), do: false
+
+      defoverridable name: 0, description: 0, icon: 0, navigation: 0, render: 1
     end
   end
 
