@@ -36,7 +36,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
           </div>
 
           <!-- Variation component preview -->
-          <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2">
+          <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
             <%= @backend_module.render_component(@entry_module, variation.id) %>
           </div>
 

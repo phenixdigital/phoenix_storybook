@@ -117,7 +117,7 @@ defmodule PhxLiveStorybook.EntryLive do
     PageEntryLive.render(assigns)
   end
 
-  defp active_link(same, same), do: ""
+  defp active_link(same, same), do: "lsb-bg-white lsb-opacity-100"
 
   defp active_link(_tab, _current_tab) do
     "lsb-ml-0.5 lsb-p-1.5 lg:lsb-pl-2.5 lg:lsb-pr-3.5 lsb-items-center lsb-text-slate-600"
