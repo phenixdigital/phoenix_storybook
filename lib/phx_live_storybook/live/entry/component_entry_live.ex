@@ -78,7 +78,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   def render(_assigns = %{tab: tab}),
     do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
 
-  defp anchor_id(%Variation{id: id}) do
+  defp anchor_id(%{id: id}) do
     id |> to_string() |> String.replace("_", "-")
   end
 end
