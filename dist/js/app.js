@@ -4903,7 +4903,9 @@ within:
   // js/app.js
   if (window.storybook === void 0) {
     console.warn("No storybook configuration detected.");
-    console.warn("If you need to use custom hooks or uploaders, please define them in JS file  and declare this file in your Elixir app config (:js_path key) ");
+    console.warn(
+      "If you need to use custom hooks or uploaders, please define them in JS file  and declare this file in your Elixir app config (:js_path key) "
+    );
     window.storybook = {};
   }
   var socketPath = document.querySelector("html").getAttribute("phx-socket") || "/live";

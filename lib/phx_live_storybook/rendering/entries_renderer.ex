@@ -1,8 +1,9 @@
 defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
   @moduledoc false
 
-  alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry, Variation}
+  alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry}
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
+  alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc false
   # Precompiling component preview & code snippet for every component / variation couple.
@@ -10,27 +11,28 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
     quotes =
       for %ComponentEntry{module: module, module_name: module_name} <-
             component_entries(backend_module, opts[:otp_app]),
-          variation = %Variation{id: variation_id} <- module.variations() do
-        unique_variation_id = Macro.underscore("#{module_name}-#{variation.id}")
+          var when is_struct(var, Variation) or is_struct(var, VariationGroup) <-
+            module.variations() do
+        unique_variation_id = Macro.underscore("#{module_name}-#{var.id}")
 
         case module.storybook_type() do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_component(unquote(module), unquote(variation_id)) do
-                ComponentRenderer.render_component(
+              def render_variation(unquote(module), unquote(var.id)) do
+                ComponentRenderer.render_variation(
                   unquote(module).component(),
                   unquote(module).function(),
-                  unquote(Macro.escape(variation)),
+                  unquote(Macro.escape(var)),
                   unquote(unique_variation_id)
                 )
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(variation_id)) do
+              def render_code(unquote(module), unquote(var.id)) do
                 CodeRenderer.render_component_code(
                   unquote(module).function(),
-                  unquote(Macro.escape(variation))
+                  unquote(Macro.escape(var))
                 )
               end
             end
@@ -38,19 +40,19 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
           :live_component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_component(unquote(module), unquote(variation_id)) do
-                ComponentRenderer.render_live_component(
+              def render_variation(unquote(module), unquote(var.id)) do
+                ComponentRenderer.render_variation(
                   unquote(module).component(),
-                  unquote(Macro.escape(variation)),
+                  unquote(Macro.escape(var)),
                   unquote(unique_variation_id)
                 )
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(variation_id)) do
+              def render_code(unquote(module), unquote(var.id)) do
                 CodeRenderer.render_live_component_code(
                   unquote(module).component(),
-                  unquote(Macro.escape(variation))
+                  unquote(Macro.escape(var))
                 )
               end
             end
@@ -60,7 +62,7 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
     default_quote =
       quote do
         @impl PhxLiveStorybook.BackendBehaviour
-        def render_component(module, variation_id) do
+        def render_variation(module, variation_id) do
           raise "unknown variation #{inspect(variation_id)} for module #{inspect(module)}"
         end
 

@@ -4,8 +4,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   use Phoenix.HTML
   import Phoenix.LiveView.Helpers
 
-  alias PhxLiveStorybook.EntryTabNotFound
-  alias PhxLiveStorybook.Variation
+  alias PhxLiveStorybook.{EntryTabNotFound, Variation, VariationGroup}
 
   def navigation_tabs do
     [
@@ -19,33 +18,33 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
   def render(assigns = %{tab: :variations}) do
     ~H"""
-    <div class="lsb-space-y-12">
-      <%= for variation = %Variation{} <- @entry_module.variations() do %>
-        <div id={anchor_id(variation)} class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+    <div class="lsb-space-y-12 lsb-pt-8">
+      <%= for var = %{id: var_id, description: description} when is_struct(var, Variation) or is_struct(var, VariationGroup) <- @entry_module.variations() do %>
+        <div id={anchor_id(var)} class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
           <div class="lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group">
-            <%= link to: "##{anchor_id(variation)}", class: "entry-anchor-link" do %>
+            <%= link to: "##{anchor_id(var)}", class: "entry-anchor-link" do %>
               <i class="fal fa-link hidden group-hover:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
-              <%= if variation.description do %>
-                <%= variation.description  %>
+              <%= if description do %>
+                <%= description  %>
               <% else %>
-                <%= variation.id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+                <%= var_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
           </div>
 
           <!-- Variation component preview -->
-          <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
-            <%= @backend_module.render_component(@entry_module, variation.id) %>
+          <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm lsb-justify-evenly">
+            <%= @backend_module.render_variation(@entry_module, var_id) %>
           </div>
 
           <!-- Variation code -->
-          <div class="lsb-border lsb-border-slate-100 lsb-rounded lsb-col-span-3 lsb-group lsb-relative">
+          <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm">
             <div class="copy-code-btn lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="fa fa-copy"></i>
             </div>
-            <%= @backend_module.render_code(@entry_module, variation.id) %>
+            <%= @backend_module.render_code(@entry_module, var_id) %>
           </div>
 
         </div>
@@ -71,7 +70,9 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
   def render(assigns = %{tab: :source}) do
     ~H"""
-    <%= @backend_module.render_source(@entry_module) %>
+    <div class="lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
+      <%= @backend_module.render_source(@entry_module) %>
+    </div>
     """
   end
 

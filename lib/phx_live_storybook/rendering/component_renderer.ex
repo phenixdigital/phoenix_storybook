@@ -6,30 +6,58 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
-  alias PhxLiveStorybook.Variation
+  alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
-  Render a stateless function component, with or without block / slots.
+  Renders a variation of stateless function component, with or without block / slots.
   """
-  def render_component(module, function, variation = %Variation{}, id) do
-    render_component_markup(module, function, """
+  def render_variation(module, function, variation = %Variation{}, id) do
+    heex = component_variation_heex(function, variation, id)
+    render_component_heex(module, function, heex)
+  end
+
+  def render_variation(module, function, %VariationGroup{variations: variations}, group_id) do
+    heex =
+      for variation = %Variation{id: id} <- variations, into: "" do
+        component_variation_heex(function, variation, "#{group_id}-#{id}")
+      end
+
+    render_component_heex(module, function, heex)
+  end
+
+  defp component_variation_heex(function, variation = %Variation{}, id) do
+    """
     <.#{function_name(function)} #{attributes_markup(variation.attributes, id)}>
       #{variation.block}
       #{variation.slots}
     </.#{function_name(function)}>
-    """)
+    """
   end
 
   @doc """
   Render a live component, with or without block / slots.
   """
-  def render_live_component(module, variation = %Variation{}, id) do
-    render_component_markup(module, """
+  def render_variation(module, variation = %Variation{}, id) do
+    heex = live_component_variation_heex(module, variation, id)
+    render_component_heex(module, heex)
+  end
+
+  def render_variation(module, %VariationGroup{variations: variations}, group_id) do
+    heex =
+      for variation = %Variation{id: id} <- variations, into: "" do
+        live_component_variation_heex(module, variation, "#{group_id}-#{id}")
+      end
+
+    render_component_heex(module, heex)
+  end
+
+  defp live_component_variation_heex(module, variation = %Variation{}, id) do
+    """
     <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, id)}>
       #{variation.block}
       #{variation.slots}
     </.live_component>
-    """)
+    """
   end
 
   defp attributes_markup(attributes, id) do
@@ -41,8 +69,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     end)
   end
 
-  defp render_component_markup(module, function \\ & &1, markup) do
-    quoted_code = EEx.compile_string(markup, engine: HTMLEngine)
+  defp render_component_heex(module, function \\ & &1, heex) do
+    quoted_code = EEx.compile_string(heex, engine: HTMLEngine)
 
     {evaluated, _} =
       Code.eval_quoted(quoted_code, [assigns: []],

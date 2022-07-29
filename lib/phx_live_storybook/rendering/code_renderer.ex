@@ -11,15 +11,28 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias Makeup.Formatters.HTML.HTMLFormatter
   alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
-  alias PhxLiveStorybook.Variation
+  alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
   Renders a function component code snippet, wrapped in a `<pre>` tag.
   """
-  def render_component_code(function, variation, assigns \\ %{}) do
+  def render_component_code(function, variation_or_group, assigns \\ %{})
+
+  def render_component_code(function, variation = %Variation{}, assigns) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_block(function, variation) |> format_heex() %>
+    <%= component_code_heex(function, variation) |> format_heex() %>
+    </pre>
+    """
+  end
+
+  def render_component_code(function, %VariationGroup{variations: variations}, assigns) do
+    heexes =
+      for v <- variations, do: function |> component_code_heex(v) |> String.replace("\n", "")
+
+    ~H"""
+    <pre class={pre_class()}>
+    <%= heexes |> Enum.join("\n") |> format_heex() %>
     </pre>
     """
   end
@@ -27,10 +40,23 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   @doc """
   Renders a live component code snippet, wrapped in a `<pre>` tag.
   """
-  def render_live_component_code(module, variation, assigns \\ %{}) do
+  def render_live_component_code(module, variation_or_group, assigns \\ %{})
+
+  def render_live_component_code(module, variation = %Variation{}, assigns) do
     ~H"""
     <pre class={pre_class()}>
-    <%= live_component_code_block(module, variation) |> format_heex() %>
+    <%= live_component_code_heex(module, variation) |> format_heex() %>
+    </pre>
+    """
+  end
+
+  def render_live_component_code(mod, %VariationGroup{variations: variations}, assigns) do
+    heexes =
+      for v <- variations, do: mod |> live_component_code_heex(v) |> String.replace("\n", "")
+
+    ~H"""
+    <pre class={pre_class()}>
+    <%= heexes |> Enum.join("\n") |> format_heex() %>
     </pre>
     """
   end
@@ -48,9 +74,9 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp pre_class,
     do:
-      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-shadow-md lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-shadow-md lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"
 
-  defp component_code_block(function, v = %Variation{}) do
+  defp component_code_heex(function, v = %Variation{}) do
     fun = function_name(function)
     self_closed? = is_nil(v.block) and is_nil(v.slots)
 
@@ -61,7 +87,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
   end
 
-  defp live_component_code_block(module, v = %Variation{}) do
+  defp live_component_code_heex(module, v = %Variation{}) do
     mod = module_name(module)
     self_closed? = is_nil(v.block) and is_nil(v.slots)
 

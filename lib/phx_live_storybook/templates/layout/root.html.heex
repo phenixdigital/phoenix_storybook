@@ -17,20 +17,22 @@
 
   <body class="wait-for-icons lsb-overflow-hidden lsb-font-inter lsb-text-base lsb-text-gray-600 lsb-bg-white lsb-antialiased lsb-font-feature-default">
 
+    <header class="lsb-sticky lsb-top-0 lsb-z-10 lsb-h-16 lsb-flex lsb-flex-wrap lsb-items-center lsb-justify-between lsb-bg-white lsb-shadow-md lsb-shadow-slate-900/5 lsb-opacity-40">
+    </header>
+
+    <div class="lsb-absolute lsb-top-5 lsb-left-8 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
+      <%= live_patch to: live_storybook_path(@conn, :home) do %>
+        <i class="fa-regular fa-book-open"></i>
+        <span class="lsb-ml-1"><%= title(@conn) %></span>
+      <% end %>
+    </div>
+
     <div class="lsb-absolute lsb-opacity-20 lsb-top-0 lsb-inset-x-0 lsb-flex lsb-justify-center lsb-overflow-hidden lsb-pointer-events-none">
       <div class="lsb-w-[108rem] lsb-flex-none lsb-flex lsb-justify-end">
         <%= render "_background.html", class: "lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none" %>
       </div>
     </div>
     
-    <header class="lsb-sticky lsb-top-0 lsb-z-50 lsb-flex lsb-flex-wrap lsb-items-center lsb-justify-between lsb-bg-white lsb-px-4 lsb-py-5 lsb-shadow-md lsb-shadow-slate-900/5 lsb-transition lsb-duration-500 sm:lsb-px-6 lg:lsb-px-8 lsb-opacity-80">
-      <div class="lsb-relative lsb-flex lsb-flex-grow lsb-basis-0 lsb-items-center lsb-text-indigo-800 lsb-text-lg lsb-font-bold lsb-uppercase ">
-        <%= live_patch to: live_storybook_path(@conn, :home) do %>
-          <i class="fa-regular fa-book-open"></i>
-          <span class="lsb-ml-1"><%= title(@conn) %></span>
-        <% end %>
-      </div>
-    </header>
      
     <%= @inner_content %>
   </body>

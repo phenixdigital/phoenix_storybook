@@ -7,7 +7,9 @@ defmodule PhxLiveStorybook.Entry.PageEntryLive do
   @doc false
   def render(assigns) do
     ~H"""
-    <.live_component id={@entry_module.name()} module={@entry_module} tab={@tab}/>
+    <div class="lsb-pb-12">
+      <.live_component id={@entry_module.name()} module={@entry_module} tab={@tab}/>
+    </div>
     """
   end
 

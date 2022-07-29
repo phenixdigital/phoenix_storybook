@@ -58,7 +58,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def render(assigns = %{entry_module: _module}) do
     ~H"""
-    <div class="lsb-space-y-12 lsb-pb-24" id="entry-live" phx-hook="EntryHook">
+    <div class="lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-full" id="entry-live" phx-hook="EntryHook">
       <div>
         <div class="lsb-flex lsb-mt-5 lsb-items-center">
           <h2 class="lsb-flex-1 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
@@ -70,7 +70,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
           <%=  @entry_type |> navigation_tabs(assigns) |> render_navigation_tabs(assigns) %>
         </div>
-        <div class="lsb-mt-4 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+        <div class="lsb-mt-2 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
           <%= @entry_module.description() %>
         </div>
       </div>

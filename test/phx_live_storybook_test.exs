@@ -122,22 +122,22 @@ defmodule PhxLiveStorybookTest do
     end
   end
 
-  describe "render_component/2" do
+  describe "render_variation/2" do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
 
     test "it should return HEEX for each component/variation couple" do
-      assert TreeStorybook.render_component(AComponent, :hello) |> rendered_to_string() ==
+      assert TreeStorybook.render_variation(AComponent, :hello) |> rendered_to_string() ==
                "<span data-index=\"42\">a component: hello</span>"
 
-      assert TreeStorybook.render_component(AComponent, :world) |> rendered_to_string() ==
+      assert TreeStorybook.render_variation(AComponent, :world) |> rendered_to_string() ==
                "<span data-index=\"37\">a component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "b_component-hello"}] =
-               TreeStorybook.render_component(BComponent, :hello).dynamic.([])
+               TreeStorybook.render_variation(BComponent, :hello).dynamic.([])
 
       assert [%Phoenix.LiveView.Component{id: "b_component-world"}] =
-               TreeStorybook.render_component(BComponent, :world).dynamic.([])
+               TreeStorybook.render_variation(BComponent, :world).dynamic.([])
     end
   end
 
