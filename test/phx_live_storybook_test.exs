@@ -124,6 +124,7 @@ defmodule PhxLiveStorybookTest do
 
   describe "render_variation/2" do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
+    alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/variation couple" do
       assert TreeStorybook.render_variation(AComponent, :hello) |> rendered_to_string() ==
@@ -139,10 +140,22 @@ defmodule PhxLiveStorybookTest do
       assert [%Phoenix.LiveView.Component{id: "b_component-world"}] =
                TreeStorybook.render_variation(BComponent, :world).dynamic.([])
     end
+
+    test "it also works for a variation group" do
+      assert TreeStorybook.render_variation(AaComponent, :group) |> rendered_to_string() ==
+               "<span data-index=\"42\">a component: hello</span>\n<span data-index=\"37\">a component: world</span>"
+
+      # I did not manage to assert against the HTML
+      assert [
+               %Phoenix.LiveView.Component{id: "ab_component-group-hello"},
+               %Phoenix.LiveView.Component{id: "ab_component-group-world"}
+             ] = TreeStorybook.render_variation(AbComponent, :group).dynamic.([])
+    end
   end
 
   describe "render_code/2" do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
+    alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/variation couple" do
       assert TreeStorybook.render_code(AComponent, :hello) |> rendered_to_string() =~
@@ -157,6 +170,15 @@ defmodule PhxLiveStorybookTest do
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
 
       code = TreeStorybook.render_code(BComponent, :world)
+      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+
+    test "it also works for a variation group" do
+      assigns = []
+      code = TreeStorybook.render_code(AaComponent, :group)
+      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+
+      code = TreeStorybook.render_code(AbComponent, :group)
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
     end
   end
