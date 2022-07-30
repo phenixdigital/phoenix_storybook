@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.2.0 (unreleased yet)
+## v0.2.0 (2022-07-30)
 
 - feature: new tab to browse your component sources
 - feature: work-in-progress component documentation source
