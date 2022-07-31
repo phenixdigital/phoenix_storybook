@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
   @moduledoc false
 
-  alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry}
+  alias PhxLiveStorybook.{ComponentEntry, Entries}
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
@@ -100,22 +100,16 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
 
   @doc false
   def component_entries(backend_module, otp_app) do
-    otp_app
-    |> Application.get_env(backend_module, [])
-    |> Keyword.get(:content_path)
-    |> Entries.entries()
-    |> collect_components()
-  end
+    content_path =
+      otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:content_path)
 
-  # Recursive traversal of the entry tree to build a flattened list of components
-  defp collect_components(entries, acc \\ []) do
-    for entry <- Enum.reverse(entries), reduce: acc do
-      acc ->
-        case entry do
-          %ComponentEntry{} -> [entry | acc]
-          %FolderEntry{sub_entries: entries} -> collect_components(Enum.reverse(entries), acc)
-          _ -> acc
-        end
-    end
+    folders_config = otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders)
+
+    Entries.entries(content_path, folders_config)
+    |> Entries.all_leaves()
+    |> Enum.filter(fn
+      %ComponentEntry{} -> true
+      _ -> false
+    end)
   end
 end

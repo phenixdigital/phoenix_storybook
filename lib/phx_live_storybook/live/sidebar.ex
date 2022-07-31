@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.Sidebar do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
+  alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   def mount(socket) do
@@ -21,16 +22,16 @@ defmodule PhxLiveStorybook.Sidebar do
        current_path: current_path
      )
      |> assign_opened_folders(root_path)
-     |> assign_folder_icons(root_path)
-     |> assign_folder_names(root_path)
      |> assign(current_path: Enum.join(current_path, "/"))}
   end
 
   defp root_entry(backend_module) do
     %FolderEntry{
-      sub_entries: backend_module.storybook_entries(),
-      relative_path: "",
-      name: "root"
+      sub_entries: backend_module.entries(),
+      absolute_path: "",
+      name: "root",
+      nice_name: "Storybook",
+      icon: "fal fa-book-open"
     }
   end
 
@@ -57,38 +58,19 @@ defmodule PhxLiveStorybook.Sidebar do
     assign(socket, :opened_folders, opened_folders)
   end
 
-  defp assign_folder_icons(socket = %{assigns: assigns}, root_path) do
-    folder_icons =
-      for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
-          folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
-          folder_opts[:icon],
-          into: %{root_path => "fal fa-book-open"},
-          do: {"#{root_path}#{folder_path}", folder_opts[:icon]}
-
-    assign(socket, :folder_icons, folder_icons)
-  end
-
-  defp assign_folder_names(socket = %{assigns: assigns}, root_path) do
-    folder_names =
-      for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
-          folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
-          folder_opts[:name],
-          into: %{root_path => "Storybook"},
-          do: {"#{root_path}#{folder_path}", folder_opts[:name]}
-
-    assign(socket, :folder_names, folder_names)
-  end
-
   def render(assigns) do
     ~H"""
-    <section
-      class="lsb-fixed lsb-text-sm lsb-w-60 lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-4 lsb-px-4 lsb-overflow-y-auto"
+    <section id="sidebar"
+      class="lsb-hidden lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-96 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
     >
+
+      <i class="far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click={close_sidebar()}></i>
+
       <nav class="lsb-flex-1 xl:lsb-sticky">
         <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
       </nav>
 
-        <div class="lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
+        <div class="lsb-hidden lg:lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
           <%= link to: "https://github.com/phenixdigital/phx_live_storybook", target: "_blank" do %>
             <i class="fa fa-github"></i>
             -
@@ -99,16 +81,27 @@ defmodule PhxLiveStorybook.Sidebar do
     """
   end
 
-  defp render_entries(assigns = %{folder_icons: folder_icons, folder_names: folder_names}) do
+  defp close_sidebar(js \\ %JS{}) do
+    js
+    |> JS.add_class("lsb-hidden", to: "#sidebar")
+    |> JS.add_class("lsb-hidden", to: "#sidebar-overlay")
+  end
+
+  defp patch_to(js \\ %JS{}, path) do
+    js
+    |> JS.push("patch-to", value: %{path: path}, target: "#sidebar")
+  end
+
+  defp render_entries(assigns) do
     ~H"""
     <ul class="lsb-ml-3">
       <%= for entry <- @entries do %>
         <li>
           <%= case entry do %>
-            <% %FolderEntry{name: folder_name, relative_path: relative_path, sub_entries: sub_entries} -> %>
-              <% folder_path = @root_path <> relative_path %>
+            <% %FolderEntry{nice_name: nice_name, absolute_path: absolute_path, sub_entries: sub_entries, icon: folder_icon} -> %>
+              <% folder_path = @root_path <> absolute_path %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
-              <div class="lsb-flex lsb-items-center lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
+              <div class="lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
                 phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={folder_path}
               >
                 <%= unless @root do %>
@@ -119,37 +112,35 @@ defmodule PhxLiveStorybook.Sidebar do
                   <% end %>
                 <% end %>
 
-                <%= if icon = Map.get(folder_icons, folder_path) do %>
-                  <i class={"#{icon} fa-fw lsb-pr-1.5"}></i>
+                <%= if folder_icon do %>
+                  <i class={"#{folder_icon} fa-fw lsb-pr-1.5"}></i>
                 <% end %>
 
                 <span>
-                  <%= Map.get_lazy(folder_names, folder_path, fn ->
-                      folder_name |> String.capitalize() |> String.replace("_", " ")
-                    end) %>
+                  <%= nice_name %>
                 </span>
               </div>
 
               <%= if open_folder? or @root do %>
-                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [relative_path], root: false)) %>
+                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [absolute_path], root: false)) %>
               <% end %>
 
-            <% %ComponentEntry{name: name, module: module, relative_path: relative_path} -> %>
-              <% entry_path =  @root_path <> relative_path %>
+            <% %ComponentEntry{name: name, module: module, absolute_path: absolute_path} -> %>
+              <% entry_path =  @root_path <> absolute_path %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon = module.icon() do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= live_patch name, to: entry_path %>
+                <%= render_patch_link(name, entry_path) %>
               </div>
 
-            <% %PageEntry{name: name, module: module, relative_path: relative_path} -> %>
-              <% entry_path =  @root_path <> relative_path %>
+            <% %PageEntry{name: name, module: module, absolute_path: absolute_path} -> %>
+              <% entry_path =  @root_path <> absolute_path %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon = module.icon() do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= live_patch name, to: entry_path %>
+                <%= render_patch_link(name, entry_path) %>
               </div>
           <% end %>
         </li>
@@ -158,9 +149,21 @@ defmodule PhxLiveStorybook.Sidebar do
     """
   end
 
+  defp render_patch_link(name, path, assigns \\ %{}) do
+    if current_env() == :test do
+      live_patch(name, to: path)
+    else
+      ~H"""
+      <a href="#" phx-click={ patch_to(path) |> close_sidebar()}>
+        <%= name %>
+      </a>
+      """
+    end
+  end
+
   defp entry_class(current_path, entry_path) do
     entry_class =
-      "-lsb-ml-[12px] lsb-block lsb-border-l lsb-py-1 lsb-pl-4 hover:lsb-border-indigo-600 hover:lsb-text-indigo-600 hover:lsb-border-l-1.5"
+      "-lsb-ml-[12px] lsb-block lsb-border-l lsb-py-2 lg:lsb-py-1 lsb-pl-4 hover:lsb-border-indigo-600 hover:lsb-text-indigo-600 hover:lsb-border-l-1.5"
 
     if current_path == entry_path do
       entry_class <> " lsb-font-bold lsb-border-indigo-600 lsb-text-indigo-700 lsb-border-l-1.5"
@@ -176,6 +179,10 @@ defmodule PhxLiveStorybook.Sidebar do
     Enum.member?(opened_folders, path)
   end
 
+  defp current_env do
+    Application.get_env(:phx_live_storybook, :env)
+  end
+
   def handle_event("open-folder", %{"path" => path}, socket) do
     {:noreply, assign(socket, :opened_folders, MapSet.put(socket.assigns.opened_folders, path))}
   end
@@ -183,5 +190,9 @@ defmodule PhxLiveStorybook.Sidebar do
   def handle_event("close-folder", %{"path" => path}, socket) do
     {:noreply,
      assign(socket, :opened_folders, MapSet.delete(socket.assigns.opened_folders, path))}
+  end
+
+  def handle_event("patch-to", %{"path" => path}, socket) do
+    {:noreply, push_patch(socket, to: path)}
   end
 end

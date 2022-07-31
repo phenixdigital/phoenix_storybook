@@ -176,10 +176,6 @@ config :my_app, MyAppWeb.Storybook,
   # Path to your storybook entries (required).
   content_path: Path.expand("../my_app_web/lib/storybook", __DIR__),
 
-  # Each entry module is loaded from camelized HTTP request path (ie. `"/components/button"`)
-  # prefixed by the following. Default is your backend module.
-  entries_module_prefix: MyAppWeb.Storybook,
-
   # Path to your components stylesheet.
   css_path: "/assets/my_components.css",
 

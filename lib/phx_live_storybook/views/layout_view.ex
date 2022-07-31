@@ -3,6 +3,8 @@ defmodule PhxLiveStorybook.LayoutView do
   use PhxLiveStorybook.Web, :view
 
   alias Makeup.Styles.HTML.StyleMap
+  alias Phoenix.LiveView.JS
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   js_path = Path.join(__DIR__, "../../../dist/js/app.js")
   css_path = Path.join(__DIR__, "../../../dist/css/app.css")
@@ -28,18 +30,56 @@ defmodule PhxLiveStorybook.LayoutView do
   defp storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
-  defp title(conn) do
-    storybook_setting(conn, :storybook_title, "Live Storybook")
+  defp title(socket) do
+    storybook_setting(socket, :storybook_title, "Live Storybook")
   end
 
-  defp storybook_setting(conn, key, default \\ nil) do
-    otp_app = conn.private.otp_app
-    backend_module = conn.private.backend_module
+  defp storybook_setting(conn_or_socket, key, default \\ nil)
+
+  defp storybook_setting(conn_or_socket, key, default) do
+    otp_app = otp_app(conn_or_socket)
+    backend_module = backend_module(conn_or_socket)
     Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
   end
+
+  defp render_breadcrumb(socket, entry) do
+    backend_module = backend_module(socket)
+
+    {_, breadcrumb} =
+      for path_item <- String.split(entry.absolute_path, "/", trim: true), reduce: {"", []} do
+        {path, breadcrumb} ->
+          path = path <> "/" <> path_item
+
+          case backend_module.find_entry_by_path(path) do
+            %FolderEntry{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
+            %ComponentEntry{module: module} -> {path, [module.name() | breadcrumb]}
+            %PageEntry{module: module} -> {path, [module.name() | breadcrumb]}
+          end
+      end
+
+    breadcrumb |> Enum.reverse() |> Enum.join(" / ")
+  end
+
+  defp otp_app(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.otp_app
+  defp otp_app(conn = %Plug.Conn{}), do: conn.private.otp_app
+
+  defp backend_module(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.backend_module
+  defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module
 
   defp application_static_path(conn, path) do
     router = conn.private.application_router
     :"#{router}.Helpers".static_path(conn, path)
+  end
+
+  defp show_sidebar do
+    %JS{}
+    |> JS.remove_class("lsb-hidden", to: "#sidebar")
+    |> JS.remove_class("lsb-hidden", to: "#sidebar-overlay")
+  end
+
+  defp close_sidebar do
+    %JS{}
+    |> JS.add_class("lsb-hidden", to: "#sidebar")
+    |> JS.add_class("lsb-hidden", to: "#sidebar-overlay")
   end
 end

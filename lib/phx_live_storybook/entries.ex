@@ -1,16 +1,16 @@
 defmodule PhxLiveStorybook.ComponentEntry do
   @moduledoc false
-  defstruct [:name, :module, :path, :module_name, :relative_path]
+  defstruct [:name, :module, :path, :module_name, :absolute_path]
 end
 
 defmodule PhxLiveStorybook.PageEntry do
   @moduledoc false
-  defstruct [:name, :module, :path, :module_name, :relative_path]
+  defstruct [:name, :module, :path, :module_name, :absolute_path]
 end
 
 defmodule PhxLiveStorybook.FolderEntry do
   @moduledoc false
-  defstruct [:name, :sub_entries, :relative_path]
+  defstruct [:name, :nice_name, :sub_entries, :absolute_path, :icon]
 end
 
 defmodule PhxLiveStorybook.Entries do
@@ -18,45 +18,68 @@ defmodule PhxLiveStorybook.Entries do
   alias PhxLiveStorybook.{ComponentEntry, Entries, FolderEntry, PageEntry}
 
   @doc false
-  # This quote inlines a storybook_entries/0 function to return the content
+  # This quote inlines a entries/0 function to return the content
   # tree of current storybook.
   def entries_quote(backend_module, opts) do
     otp_app = Keyword.get(opts, :otp_app)
     content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
-    entries = Entries.entries(content_path)
-    path_to_first_leaf_entry = Entries.path_to_first_leaf(entries)
+    folders_config = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:folders)
+    entries = Entries.entries(content_path, folders_config)
+    all_leaves = Entries.all_leaves(entries)
 
-    quote do
-      @impl PhxLiveStorybook.BackendBehaviour
-      def storybook_entries, do: unquote(Macro.escape(entries))
+    loop_quotes =
+      for entry <- Entries.flat_list(entries) do
+        quote do
+          @impl PhxLiveStorybook.BackendBehaviour
+          def find_entry_by_path(unquote(entry.absolute_path)) do
+            unquote(Macro.escape(entry))
+          end
+        end
+      end
 
-      @impl PhxLiveStorybook.BackendBehaviour
-      def path_to_first_leaf_entry, do: unquote(Macro.escape(path_to_first_leaf_entry))
-    end
+    single_quote =
+      quote do
+        @impl PhxLiveStorybook.BackendBehaviour
+        def find_entry_by_path(_), do: nil
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def entries, do: unquote(Macro.escape(entries))
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def all_leaves, do: unquote(Macro.escape(all_leaves))
+      end
+
+    loop_quotes ++ [single_quote]
   end
 
   @doc false
-  def entries(path) do
+  def entries(path, folders_config) do
     if path && File.dir?(path) do
-      recursive_scan(path)
+      recursive_scan(path, folders_config)
     else
       []
     end
   end
 
-  defp recursive_scan(path, relative_path \\ "") do
+  defp recursive_scan(path, folders_config, absolute_path \\ "") do
     for file_name <- path |> File.ls!() |> Enum.sort(:desc),
         file_path = Path.join(path, file_name),
         reduce: [] do
       acc ->
         if File.dir?(file_path) do
-          relative_path = "#{relative_path}/#{file_name}"
+          absolute_path = "#{absolute_path}/#{file_name}"
+          folder_config = Keyword.get(folders_config, String.to_atom(absolute_path), [])
 
           [
             %FolderEntry{
               name: file_name,
-              relative_path: relative_path,
-              sub_entries: recursive_scan(file_path, relative_path)
+              nice_name:
+                Keyword.get_lazy(folder_config, :name, fn ->
+                  file_name |> String.capitalize() |> String.replace("_", " ")
+                end),
+              absolute_path: absolute_path,
+              sub_entries: recursive_scan(file_path, folders_config, absolute_path),
+              icon: folder_config[:icon]
             }
             | acc
           ]
@@ -68,10 +91,10 @@ defmodule PhxLiveStorybook.Entries do
               acc
 
             type when type in [:component, :live_component] ->
-              [component_entry(file_path, entry_module, relative_path) | acc]
+              [component_entry(file_path, entry_module, absolute_path) | acc]
 
             :page ->
-              [page_entry(file_path, entry_module, relative_path) | acc]
+              [page_entry(file_path, entry_module, absolute_path) | acc]
           end
         end
     end
@@ -83,7 +106,7 @@ defmodule PhxLiveStorybook.Entries do
     Enum.sort_by(entries, &Map.get(@entry_priority, &1.__struct__))
   end
 
-  defp component_entry(path, module, relative_path) do
+  defp component_entry(path, module, absolute_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
     %ComponentEntry{
@@ -91,11 +114,11 @@ defmodule PhxLiveStorybook.Entries do
       path: path,
       module_name: module_name,
       name: module.name(),
-      relative_path: "#{relative_path}/#{Macro.underscore(module_name)}"
+      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}"
     }
   end
 
-  defp page_entry(path, module, relative_path) do
+  defp page_entry(path, module, absolute_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
     %PageEntry{
@@ -103,7 +126,7 @@ defmodule PhxLiveStorybook.Entries do
       path: path,
       module_name: module_name,
       name: module.name(),
-      relative_path: "#{relative_path}/#{Macro.underscore(module_name)}"
+      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}"
     }
   end
 
@@ -127,33 +150,22 @@ defmodule PhxLiveStorybook.Entries do
     end
   end
 
-  def path_to_first_leaf(entries) do
-    case path_to_first_leaf(entries, []) do
-      nil ->
-        nil
-
-      entries ->
-        entries
-        |> Enum.reverse()
-        |> Enum.map(fn
-          %FolderEntry{name: name} -> name
-          %ComponentEntry{path: path} -> Path.basename(path, ".ex")
-          %PageEntry{path: path} -> Path.basename(path, ".ex")
-        end)
-    end
+  def all_leaves(entries, acc \\ []) do
+    Enum.flat_map(entries, fn entry ->
+      case entry do
+        %ComponentEntry{} -> [entry | acc]
+        %PageEntry{} -> [entry | acc]
+        %FolderEntry{sub_entries: sub_entries} -> all_leaves(sub_entries, acc)
+      end
+    end)
   end
 
-  def path_to_first_leaf(entries, acc) do
-    Enum.find_value(entries, fn entry ->
+  def flat_list(entries, acc \\ []) do
+    Enum.flat_map(entries, fn entry ->
       case entry do
-        %ComponentEntry{} ->
-          [entry | acc]
-
-        %PageEntry{} ->
-          [entry | acc]
-
-        %FolderEntry{sub_entries: sub_entries} ->
-          path_to_first_leaf(sub_entries, [entry | acc])
+        %ComponentEntry{} -> [entry | acc]
+        %PageEntry{} -> [entry | acc]
+        %FolderEntry{sub_entries: sub_entries} -> [entry | flat_list(sub_entries, acc)]
       end
     end)
   end

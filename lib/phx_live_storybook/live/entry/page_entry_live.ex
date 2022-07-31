@@ -8,19 +8,19 @@ defmodule PhxLiveStorybook.Entry.PageEntryLive do
   def render(assigns) do
     ~H"""
     <div class="lsb-pb-12">
-      <.live_component id={@entry_module.name()} module={@entry_module} tab={@tab}/>
+      <.live_component id={@entry.name} module={@entry.module} tab={@tab}/>
     </div>
     """
   end
 
   @doc false
-  def navigation_tabs(%{entry_module: entry_module}) do
-    entry_module.navigation()
+  def navigation_tabs(%{entry: entry}) do
+    entry.module.navigation()
   end
 
   @doc false
-  def default_tab(entry_module) do
-    case entry_module.navigation() do
+  def default_tab(entry) do
+    case entry.module.navigation() do
       [] -> nil
       [{tab, _, _} | _] -> tab
     end

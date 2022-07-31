@@ -87,6 +87,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
   test "navigate in sidebar", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/storybook/a_folder/aa_component")
+
     assert view |> element("a", "A Component") |> render_click() =~ "a component description"
 
     # reaching items under "A folder" which is open by default (cf. config.exs)
@@ -99,6 +100,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
     # opening "B folder" then reaching items inside
     element(view, "div", "B folder") |> render_click()
+
     assert view |> element("a", "Ba Component") |> render_click() =~ "Ba component description"
     assert view |> element("a", "Bb Component") |> render_click() =~ "Bb component description"
 

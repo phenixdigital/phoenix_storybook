@@ -13,97 +13,100 @@ defmodule PhxLiveStorybookTest do
   defmodule EmptyFilesStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
   defmodule EmptyFoldersStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
 
-  describe "storybook_entries/0" do
+  describe "entries/0" do
     test "when no content path set it should return no entries" do
-      assert NoContentStorybook.storybook_entries() == []
+      assert NoContentStorybook.entries() == []
     end
 
     test "with a flat list of entries, it should return a flat list of 2 components" do
-      assert FlatListStorybook.storybook_entries() == [
+      assert FlatListStorybook.entries() == [
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.AComponent,
                  module_name: "AComponent",
                  name: "A Component",
                  path: content_path("flat_list/a_component.ex"),
-                 relative_path: "/a_component"
+                 absolute_path: "/a_component"
                },
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
                  path: content_path("flat_list/b_component.ex"),
-                 relative_path: "/b_component"
+                 absolute_path: "/b_component"
                }
              ]
     end
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
-      assert TreeStorybook.storybook_entries() == [
+      assert TreeStorybook.entries() == [
                %PhxLiveStorybook.PageEntry{
                  module_name: "APage",
                  module: Elixir.TreeStorybook.APage,
                  name: "A Page",
                  path: content_path("tree/a_page.ex"),
-                 relative_path: "/a_page"
+                 absolute_path: "/a_page"
                },
                %PhxLiveStorybook.PageEntry{
                  module_name: "BPage",
                  module: Elixir.TreeStorybook.BPage,
                  name: "B Page",
                  path: content_path("tree/b_page.ex"),
-                 relative_path: "/b_page"
+                 absolute_path: "/b_page"
                },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.AComponent,
                  module_name: "AComponent",
                  name: "A Component",
                  path: content_path("tree/a_component.ex"),
-                 relative_path: "/a_component"
+                 absolute_path: "/a_component"
                },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
                  path: content_path("tree/b_component.ex"),
-                 relative_path: "/b_component"
+                 absolute_path: "/b_component"
                },
                %PhxLiveStorybook.FolderEntry{
                  name: "a_folder",
-                 relative_path: "/a_folder",
+                 absolute_path: "/a_folder",
+                 icon: "fa-icon",
+                 nice_name: "A folder",
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.AFolder.AaComponent,
                      module_name: "AaComponent",
                      name: "Aa Component",
                      path: content_path("tree/a_folder/aa_component.ex"),
-                     relative_path: "/a_folder/aa_component"
+                     absolute_path: "/a_folder/aa_component"
                    },
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.AFolder.AbComponent,
                      module_name: "AbComponent",
                      name: "Ab Component",
                      path: content_path("tree/a_folder/ab_component.ex"),
-                     relative_path: "/a_folder/ab_component"
+                     absolute_path: "/a_folder/ab_component"
                    }
                  ]
                },
                %PhxLiveStorybook.FolderEntry{
                  name: "b_folder",
-                 relative_path: "/b_folder",
+                 absolute_path: "/b_folder",
+                 nice_name: "Config Name",
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.BFolder.BaComponent,
                      module_name: "BaComponent",
                      name: "Ba Component",
                      path: content_path("tree/b_folder/ba_component.ex"),
-                     relative_path: "/b_folder/ba_component"
+                     absolute_path: "/b_folder/ba_component"
                    },
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.BFolder.BbComponent,
                      module_name: "BbComponent",
                      name: "Bb Component",
                      path: content_path("tree/b_folder/bb_component.ex"),
-                     relative_path: "/b_folder/bb_component"
+                     absolute_path: "/b_folder/bb_component"
                    }
                  ]
                }
@@ -111,13 +114,23 @@ defmodule PhxLiveStorybookTest do
     end
 
     test "with an empty folder it should return no entries" do
-      assert EmptyFilesStorybook.storybook_entries() == []
+      assert EmptyFilesStorybook.entries() == []
     end
 
     test "with empty sub-folders, it should return a flat list of 2 folders" do
-      assert EmptyFoldersStorybook.storybook_entries() == [
-               %FolderEntry{name: "empty_a", sub_entries: [], relative_path: "/empty_a"},
-               %FolderEntry{name: "empty_b", sub_entries: [], relative_path: "/empty_b"}
+      assert EmptyFoldersStorybook.entries() == [
+               %FolderEntry{
+                 name: "empty_a",
+                 nice_name: "Empty a",
+                 sub_entries: [],
+                 absolute_path: "/empty_a"
+               },
+               %FolderEntry{
+                 name: "empty_b",
+                 nice_name: "Empty b",
+                 sub_entries: [],
+                 absolute_path: "/empty_b"
+               }
              ]
     end
   end
@@ -195,25 +208,36 @@ defmodule PhxLiveStorybookTest do
     end
   end
 
-  describe "path_to_first_leaf_entry/0" do
-    test "with a tree it should return path to first component" do
-      assert TreeBStorybook.path_to_first_leaf_entry() == [
-               "b_folder",
-               "bb_folder",
-               "bba_component"
+  describe "all_leaves/0" do
+    test "with a tree it should return all leaves" do
+      assert TreeBStorybook.all_leaves() == [
+               %ComponentEntry{
+                 absolute_path: "/b_folder/bb_folder/b_ba_component",
+                 module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
+                 module_name: "BBaComponent",
+                 name: "B Ba Component",
+                 path: content_path("tree_b/b_folder/bb_folder/bba_component.ex")
+               },
+               %ComponentEntry{
+                 absolute_path: "/b_folder/bb_folder/bbb_component",
+                 module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
+                 module_name: "BbbComponent",
+                 name: "Bbb Component",
+                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.ex")
+               }
              ]
     end
 
     test "with empty folder" do
-      assert NoContentStorybook.path_to_first_leaf_entry() == nil
+      assert NoContentStorybook.all_leaves() == []
     end
 
     test "with empty sub folders" do
-      assert EmptyFoldersStorybook.path_to_first_leaf_entry() == nil
+      assert EmptyFoldersStorybook.all_leaves() == []
     end
   end
 
-  defp content_path(relative_path) do
-    ["fixtures", "storybook_content", relative_path] |> Path.join() |> Path.expand(__DIR__)
+  defp content_path(absolute_path) do
+    ["fixtures", "storybook_content", absolute_path] |> Path.join() |> Path.expand(__DIR__)
   end
 end

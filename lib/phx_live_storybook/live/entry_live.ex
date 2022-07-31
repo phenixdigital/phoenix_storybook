@@ -17,24 +17,32 @@ defmodule PhxLiveStorybook.EntryLive do
       nil ->
         {:noreply, socket}
 
-      entry ->
-        {:noreply, push_patch(socket, to: live_storybook_path(socket, :entry, entry))}
+      entry_absolute_path ->
+        {:noreply,
+         push_patch(socket,
+           to:
+             live_storybook_path(
+               socket,
+               :entry,
+               String.split(entry_absolute_path, "/", trim: true)
+             )
+         )}
     end
   end
 
   def handle_params(params = %{"entry" => entry_path}, _uri, socket) do
-    case load_entry_module(socket, entry_path) do
+    case load_entry(socket, entry_path) do
       nil ->
         raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
 
-      entry_module ->
+      entry ->
         {:noreply,
          assign(socket,
-           entry_type: entry_module.storybook_type(),
+           entry: entry,
+           entry_type: entry.module.storybook_type(),
            entry_path: entry_path,
-           entry_module: entry_module,
-           page_title: entry_module.name(),
-           tab: current_tab(params, entry_module)
+           page_title: entry.module.name(),
+           tab: current_tab(params, entry)
          )}
     end
   end
@@ -43,12 +51,12 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, socket}
   end
 
-  defp current_tab(params, entry_module) do
+  defp current_tab(params, entry) do
     case Map.get(params, "tab") do
       nil ->
-        case entry_module.storybook_type() do
+        case entry.module.storybook_type() do
           type when type in [:component, :live_component] -> ComponentEntryLive.default_tab()
-          :page -> PageEntryLive.default_tab(entry_module)
+          :page -> PageEntryLive.default_tab(entry)
         end
 
       tab ->
@@ -56,22 +64,22 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  def render(assigns = %{entry_module: _module}) do
+  def render(assigns = %{entry: _entry}) do
     ~H"""
-    <div class="lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-full" id="entry-live" phx-hook="EntryHook">
+    <div class="lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
       <div>
         <div class="lsb-flex lsb-mt-5 lsb-items-center">
           <h2 class="lsb-flex-1 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
-            <%= if icon = @entry_module.icon() do %>
+            <%= if icon = @entry.module.icon() do %>
               <i class={"#{icon} lsb-pr-2"}></i>
             <% end %>
-            <%= @entry_module.name() %>
+            <%= @entry.module.name() %>
           </h2>
 
           <%=  @entry_type |> navigation_tabs(assigns) |> render_navigation_tabs(assigns) %>
         </div>
         <div class="lsb-mt-2 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-          <%= @entry_module.description() %>
+          <%= @entry.module.description() %>
         </div>
       </div>
 
@@ -133,26 +141,26 @@ defmodule PhxLiveStorybook.EntryLive do
   defp active_text(same, same), do: ""
   defp active_text(_tab, _current_tab), do: "-lsb-ml-0.5"
 
-  defp load_entry_module(socket, entry_param) do
-    entry_module = Enum.map_join(entry_param, ".", &Macro.camelize/1)
-    entry_module = :"#{entries_module_prefix(socket)}.#{entry_module}"
+  defp load_entry(socket, entry_param) do
+    entry_absolute_path = "/#{Enum.join(entry_param, "/")}"
 
-    case Code.ensure_loaded(entry_module) do
-      {:module, ^entry_module} -> entry_module
-      _ -> nil
+    case socket.assigns.backend_module.find_entry_by_path(entry_absolute_path) do
+      nil ->
+        nil
+
+      entry = %{module: entry_module} ->
+        case Code.ensure_loaded(entry_module) do
+          {:module, ^entry_module} -> entry
+          _ -> nil
+        end
     end
   end
 
-  defp entries_module_prefix(socket) do
-    config(socket, :entries_module_prefix, socket.assigns.backend_module)
-  end
-
-  defp config(socket, key, default) do
-    socket.assigns.backend_module.config(key, default)
-  end
-
   defp first_component_entry_path(socket) do
-    socket.assigns.backend_module.path_to_first_leaf_entry()
+    case socket.assigns.backend_module.all_leaves() do
+      [] -> nil
+      [entry | _] -> entry.absolute_path
+    end
   end
 end
 

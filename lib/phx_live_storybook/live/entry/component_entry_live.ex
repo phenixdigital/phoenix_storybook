@@ -19,7 +19,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   def render(assigns = %{tab: :variations}) do
     ~H"""
     <div class="lsb-space-y-12 lsb-pt-8">
-      <%= for var = %{id: var_id, description: description} when is_struct(var, Variation) or is_struct(var, VariationGroup) <- @entry_module.variations() do %>
+      <%= for var = %{id: var_id, description: description} when is_struct(var, Variation) or is_struct(var, VariationGroup) <- @entry.module.variations() do %>
         <div id={anchor_id(var)} class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
@@ -36,7 +36,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
           <!-- Variation component preview -->
           <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-2 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm lsb-justify-evenly">
-            <%= @backend_module.render_variation(@entry_module, var_id) %>
+            <%= @backend_module.render_variation(@entry.module, var_id) %>
           </div>
 
           <!-- Variation code -->
@@ -44,7 +44,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
             <div class="copy-code-btn lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="fa fa-copy"></i>
             </div>
-            <%= @backend_module.render_code(@entry_module, var_id) %>
+            <%= @backend_module.render_code(@entry.module, var_id) %>
           </div>
 
         </div>
@@ -71,7 +71,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   def render(assigns = %{tab: :source}) do
     ~H"""
     <div class="lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
-      <%= @backend_module.render_source(@entry_module) %>
+      <%= @backend_module.render_source(@entry.module) %>
     </div>
     """
   end

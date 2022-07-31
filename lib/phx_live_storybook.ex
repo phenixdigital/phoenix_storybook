@@ -1,6 +1,7 @@
 defmodule PhxLiveStorybook.BackendBehaviour do
   @moduledoc """
   Behaviour implemented by your backend module.
+
   Most of it is precompiled through macros.
   """
 
@@ -18,13 +19,18 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @doc """
   Returns a precompiled tree of your storybook entries.
   """
-  @callback storybook_entries() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
+  @callback entries() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
 
   @doc """
-  Returns the first leaf of the storybook content tree (ie. whichever entry which is
+  Returns the all leaves of the storybook content tree (ie. whichever entries are is
   not a folder)
   """
-  @callback path_to_first_leaf_entry() :: %ComponentEntry{} | %PageEntry{}
+  @callback all_leaves() :: [%ComponentEntry{} | %PageEntry{}]
+
+  @doc """
+  Returns an entry from its absolute path.
+  """
+  @callback find_entry_by_path(String.t()) :: %ComponentEntry{} | %PageEntry{}
 
   @doc """
   Renders a specific variation for a given component entry.

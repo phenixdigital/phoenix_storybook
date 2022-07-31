@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @moduledoc """
   Responsible for rendering your function & live components, for a given
-  `PhxLiveStorybook.Variation`.
+  `PhxLiveStorybook.Variation` or `PhxLiveStorybook.VariationGroup`.
   """
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
@@ -9,7 +9,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
-  Renders a variation of stateless function component, with or without block / slots.
+  Renders a variation or a group of variation for a stateless function component.
   """
   def render_variation(module, function, variation = %Variation{}, id) do
     heex = component_variation_heex(function, variation, id)
@@ -35,7 +35,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   @doc """
-  Render a live component, with or without block / slots.
+  Renders a variation or a group of variation for a live component.
   """
   def render_variation(module, variation = %Variation{}, id) do
     heex = live_component_variation_heex(module, variation, id)
