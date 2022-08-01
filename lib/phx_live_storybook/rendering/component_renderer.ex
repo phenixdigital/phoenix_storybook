@@ -64,6 +64,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     attributes
     |> Map.put(:id, id)
     |> Enum.map_join(" ", fn
+      {:let, val} when is_binary(val) -> ~s|#{name}={#{val}}|
       {name, val} when is_binary(val) -> ~s|#{name}="#{val}"|
       {name, val} -> ~s|#{name}={#{inspect(val, structs: false)}}|
     end)
