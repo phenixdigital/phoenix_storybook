@@ -80,7 +80,7 @@ defmodule PhxLiveStorybook.EntryLive do
     <div class="lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
       <div>
         <div class="lsb-flex lsb-my-6 lsb-items-center">
-          <h2 class="lsb-flex-1 lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
+          <h2 class="lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @entry.module.icon() do %>
               <i class={"#{icon} lsb-pr-2"}></i>
             <% end %>
