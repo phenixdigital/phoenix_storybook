@@ -112,7 +112,7 @@ In your configuration files, add the following.
 # config/config.exs
 
 config :my_app, MyAppWeb.Storybook,
-  content_path: Path.expand("../my_app_web/lib/storybook", __DIR__),
+  content_path: Path.expand("../lib/my_app_web/storybook", __DIR__),
   css_path: "/assets/my_components.css",
   js_path: "/assets/my_components.js"
 ```
@@ -174,7 +174,7 @@ All config settings, only the `:content_path` key is mandatory.
 config :my_app, MyAppWeb.Storybook,
 
   # Path to your storybook entries (required).
-  content_path: Path.expand("../my_app_web/lib/storybook", __DIR__),
+  content_path: Path.expand("../lib/my_app_web/storybook", __DIR__),
 
   # Path to your components stylesheet.
   css_path: "/assets/my_components.css",
