@@ -140,7 +140,6 @@ defmodule MyAppWeb.Storybook.Components.Button do
   # :live_component is also available
   use PhxLiveStorybook.Entry, :component
 
-  def component, do: Button
   def function, do: &Button.button/1
   def description, do: "A simple generic button."
 

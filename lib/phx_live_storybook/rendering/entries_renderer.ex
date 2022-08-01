@@ -21,7 +21,6 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_variation(unquote(module), unquote(var.id)) do
                 ComponentRenderer.render_variation(
-                  unquote(module).component(),
                   unquote(module).function(),
                   unquote(Macro.escape(var)),
                   unquote(unique_variation_id)

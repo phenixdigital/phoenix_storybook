@@ -3,6 +3,7 @@
 ## v0.3.0 (not released)
 
 - improvement: storybook is now fully responsive
+- improvement: (stateless) component entries no longer require to define a `component/0` function.
 
 ## v0.2.0 (2022-07-30)
 

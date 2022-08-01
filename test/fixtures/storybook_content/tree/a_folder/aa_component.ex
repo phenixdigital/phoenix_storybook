@@ -1,6 +1,5 @@
 defmodule TreeStorybook.AFolder.AaComponent do
   use PhxLiveStorybook.Entry, :component
-  def component, do: AComponent
   def function, do: &AComponent.a_component/1
   def icon, do: "aa-icon"
 
