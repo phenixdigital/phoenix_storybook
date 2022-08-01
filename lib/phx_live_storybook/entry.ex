@@ -19,9 +19,6 @@ defmodule PhxLiveStorybook.Entry do
     use PhxLiveStorybook.Entry, :component
 
     # required
-    def component, do: MyAppWeb.MyComponent
-
-    # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
 
     def name, do: "Another name for my component"
@@ -95,7 +92,6 @@ defmodule PhxLiveStorybook.Entry do
   defmodule ComponentBehaviour do
     @moduledoc false
 
-    @callback component() :: atom()
     @callback function() :: function()
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
   end

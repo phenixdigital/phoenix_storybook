@@ -4,7 +4,6 @@ defmodule PhxLiveStorybook.EntryTest do
   test "component entry default behaviors" do
     defmodule MyComponentEntry do
       use PhxLiveStorybook.Entry, :component
-      def component, do: nil
       def function, do: nil
     end
 

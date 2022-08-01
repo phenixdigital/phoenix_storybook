@@ -67,9 +67,18 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   def render_component_source(module, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>
-    <%= module.component().__info__(:compile)[:source] |> File.read!() |> format_elixir() %>
+    <%= component_source(module, module.storybook_type()) |> File.read!() |> format_elixir() %>
     </pre>
     """
+  end
+
+  defp component_source(module, :component) do
+    component = Function.info(module.function)[:module]
+    component.__info__(:compile)[:source]
+  end
+
+  defp component_source(module, :live_component) do
+    module.component().__info__(:compile)[:source]
   end
 
   defp pre_class,

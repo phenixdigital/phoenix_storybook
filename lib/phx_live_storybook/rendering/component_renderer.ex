@@ -9,49 +9,48 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
-  Renders a variation or a group of variation for a stateless function component.
+  Renders a variation or a group of variation for a component.
   """
-  def render_variation(module, function, variation = %Variation{}, id) do
-    heex = component_variation_heex(function, variation, id)
-    render_component_heex(module, function, heex)
+  def render_variation(fun, variation = %Variation{}, id) when is_function(fun) do
+    heex = component_variation_heex(fun, variation, id)
+    render_component_heex(fun, heex)
   end
 
-  def render_variation(module, function, %VariationGroup{variations: variations}, group_id) do
+  def render_variation(fun, %VariationGroup{variations: variations}, group_id)
+      when is_function(fun) do
     heex =
       for variation = %Variation{id: id} <- variations, into: "" do
-        component_variation_heex(function, variation, "#{group_id}-#{id}")
+        component_variation_heex(fun, variation, "#{group_id}-#{id}")
       end
 
-    render_component_heex(module, function, heex)
+    render_component_heex(fun, heex)
   end
 
-  defp component_variation_heex(function, variation = %Variation{}, id) do
+  def render_variation(module, variation = %Variation{}, id) when is_atom(module) do
+    heex = component_variation_heex(module, variation, id)
+    render_component_heex(heex)
+  end
+
+  def render_variation(module, %VariationGroup{variations: variations}, group_id)
+      when is_atom(module) do
+    heex =
+      for variation = %Variation{id: id} <- variations, into: "" do
+        component_variation_heex(module, variation, "#{group_id}-#{id}")
+      end
+
+    render_component_heex(heex)
+  end
+
+  defp component_variation_heex(fun, variation = %Variation{}, id) when is_function(fun) do
     """
-    <.#{function_name(function)} #{attributes_markup(variation.attributes, id)}>
+    <.#{function_name(fun)} #{attributes_markup(variation.attributes, id)}>
       #{variation.block}
       #{variation.slots}
-    </.#{function_name(function)}>
+    </.#{function_name(fun)}>
     """
   end
 
-  @doc """
-  Renders a variation or a group of variation for a live component.
-  """
-  def render_variation(module, variation = %Variation{}, id) do
-    heex = live_component_variation_heex(module, variation, id)
-    render_component_heex(module, heex)
-  end
-
-  def render_variation(module, %VariationGroup{variations: variations}, group_id) do
-    heex =
-      for variation = %Variation{id: id} <- variations, into: "" do
-        live_component_variation_heex(module, variation, "#{group_id}-#{id}")
-      end
-
-    render_component_heex(module, heex)
-  end
-
-  defp live_component_variation_heex(module, variation = %Variation{}, id) do
+  defp component_variation_heex(module, variation = %Variation{}, id) when is_atom(module) do
     """
     <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, id)}>
       #{variation.block}
@@ -69,7 +68,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     end)
   end
 
-  defp render_component_heex(module, function \\ & &1, heex) do
+  defp render_component_heex(fun \\ & &1, heex) do
     quoted_code = EEx.compile_string(heex, engine: HTMLEngine)
 
     {evaluated, _} =
@@ -78,12 +77,13 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         requires: [Kernel],
         functions: [
           {Phoenix.LiveView.Helpers, [live_component: 1, live_file_input: 2]},
-          {module, [{function_name(function), 1}]}
+          {function_module(fun), [{function_name(fun), 1}]}
         ]
       )
 
     LiveViewEngine.live_to_iodata(evaluated)
   end
 
+  defp function_module(fun), do: Function.info(fun)[:module]
   defp function_name(fun), do: Function.info(fun)[:name]
 end
