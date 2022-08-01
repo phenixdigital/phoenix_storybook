@@ -6,7 +6,7 @@ export const EntryHook = {
       if (el) {
         const liveContainer = document.querySelector("#live-container");
         setTimeout(() => {
-          liveContainer.scrollTop = el.offsetTop - 10;
+          liveContainer.scrollTop = el.offsetTop - 115;
         }, 100);
       }
     }
@@ -16,6 +16,7 @@ export const EntryHook = {
   },
 
   updated() {
+    this.bindAnchorLinks();
     this.bindCopyCodeLinks();
   },
   bindAnchorLinks() {

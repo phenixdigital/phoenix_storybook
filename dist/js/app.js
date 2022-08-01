@@ -4839,7 +4839,7 @@ within:
         if (el) {
           const liveContainer = document.querySelector("#live-container");
           setTimeout(() => {
-            liveContainer.scrollTop = el.offsetTop - 10;
+            liveContainer.scrollTop = el.offsetTop - 115;
           }, 100);
         }
       }
@@ -4847,6 +4847,7 @@ within:
       this.bindCopyCodeLinks();
     },
     updated() {
+      this.bindAnchorLinks();
       this.bindCopyCodeLinks();
     },
     bindAnchorLinks() {
@@ -4900,6 +4901,18 @@ within:
     }
   };
 
+  // js/sidebar_hook.js
+  var SidebarHook = {
+    mounted() {
+      let sidebar = document.querySelector("#sidebar");
+      let overlay = document.querySelector("#sidebar-overlay");
+      this.handleEvent("close-sidebar", (_data) => {
+        sidebar.classList.add("lsb-hidden");
+        overlay.classList.add("lsb-hidden");
+      });
+    }
+  };
+
   // js/app.js
   if (window.storybook === void 0) {
     console.warn("No storybook configuration detected.");
@@ -4911,7 +4924,7 @@ within:
   var socketPath = document.querySelector("html").getAttribute("phx-socket") || "/live";
   var csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
   var liveSocket = new LiveSocket(socketPath, Socket, {
-    hooks: { ...window.storybook.Hooks, EntryHook },
+    hooks: { ...window.storybook.Hooks, EntryHook, SidebarHook },
     uploaders: window.storybook.Uploaders,
     params: (liveViewName) => {
       return {

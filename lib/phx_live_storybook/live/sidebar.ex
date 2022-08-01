@@ -60,7 +60,7 @@ defmodule PhxLiveStorybook.Sidebar do
 
   def render(assigns) do
     ~H"""
-    <section id="sidebar"
+    <section id="sidebar" phx-hook="SidebarHook"
       class="lsb-hidden lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-96 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
     >
 
@@ -85,11 +85,6 @@ defmodule PhxLiveStorybook.Sidebar do
     js
     |> JS.add_class("lsb-hidden", to: "#sidebar")
     |> JS.add_class("lsb-hidden", to: "#sidebar-overlay")
-  end
-
-  defp patch_to(js \\ %JS{}, path) do
-    js
-    |> JS.push("patch-to", value: %{path: path}, target: "#sidebar")
   end
 
   defp render_entries(assigns) do
@@ -131,7 +126,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon = module.icon() do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= render_patch_link(name, entry_path) %>
+                <%= live_patch(name, to: entry_path) %>
               </div>
 
             <% %PageEntry{name: name, module: module, absolute_path: absolute_path} -> %>
@@ -140,25 +135,13 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon = module.icon() do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= render_patch_link(name, entry_path) %>
+                <%= live_patch(name, to: entry_path) %>
               </div>
           <% end %>
         </li>
       <% end %>
     </ul>
     """
-  end
-
-  defp render_patch_link(name, path, assigns \\ %{}) do
-    if current_env() == :test do
-      live_patch(name, to: path)
-    else
-      ~H"""
-      <a href="#" phx-click={ patch_to(path) |> close_sidebar()}>
-        <%= name %>
-      </a>
-      """
-    end
   end
 
   defp entry_class(current_path, entry_path) do
@@ -179,10 +162,6 @@ defmodule PhxLiveStorybook.Sidebar do
     Enum.member?(opened_folders, path)
   end
 
-  defp current_env do
-    Application.get_env(:phx_live_storybook, :env)
-  end
-
   def handle_event("open-folder", %{"path" => path}, socket) do
     {:noreply, assign(socket, :opened_folders, MapSet.put(socket.assigns.opened_folders, path))}
   end
@@ -190,9 +169,5 @@ defmodule PhxLiveStorybook.Sidebar do
   def handle_event("close-folder", %{"path" => path}, socket) do
     {:noreply,
      assign(socket, :opened_folders, MapSet.delete(socket.assigns.opened_folders, path))}
-  end
-
-  def handle_event("patch-to", %{"path" => path}, socket) do
-    {:noreply, push_patch(socket, to: path)}
   end
 end

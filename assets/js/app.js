@@ -1,6 +1,7 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
 import { EntryHook } from "./entry_hook";
+import { SidebarHook } from "./sidebar_hook";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -19,7 +20,7 @@ let csrfToken = document
   .getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
-  hooks: { ...window.storybook.Hooks, EntryHook },
+  hooks: { ...window.storybook.Hooks, EntryHook, SidebarHook },
   uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
     return {

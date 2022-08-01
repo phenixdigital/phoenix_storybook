@@ -43,7 +43,8 @@ defmodule PhxLiveStorybook.EntryLive do
            entry_path: entry_path,
            page_title: entry.module.name(),
            tab: current_tab(params, entry)
-         )}
+         )
+         |> push_event("close-sidebar", %{"id" => "#sidebar"})}
     end
   end
 
