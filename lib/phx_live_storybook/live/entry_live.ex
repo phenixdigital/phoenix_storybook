@@ -51,6 +51,17 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, socket}
   end
 
+  def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do
+    entry_path =
+      live_storybook_path(
+        socket,
+        :entry,
+        String.split(socket.assigns.entry.absolute_path, "/", trim: true)
+      )
+
+    {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
+  end
+
   defp current_tab(params, entry) do
     case Map.get(params, "tab") do
       nil ->
@@ -68,8 +79,8 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
       <div>
-        <div class="lsb-flex lsb-mt-5 lsb-items-center">
-          <h2 class="lsb-flex-1 lsb-text-3xl lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
+        <div class="lsb-flex lsb-my-6 lsb-items-center">
+          <h2 class="lsb-flex-1 lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @entry.module.icon() do %>
               <i class={"#{icon} lsb-pr-2"}></i>
             <% end %>
@@ -78,7 +89,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
           <%=  @entry_type |> navigation_tabs(assigns) |> render_navigation_tabs(assigns) %>
         </div>
-        <div class="lsb-mt-2 lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+        <div class="lsb-text-lg lsb-leading-7 lsb-text-slate-700">
           <%= @entry.module.description() %>
         </div>
       </div>
@@ -102,20 +113,36 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp render_navigation_tabs(tabs, assigns) do
     ~H"""
-    <nav class="entry-tabs lsb-rounded-lg lsb-flex lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
-      <%= for {tab, label, icon} <- tabs do %>
-        <%= live_patch to: "?tab=#{tab}", class: "lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}" do %>
-          <span class={active_span(@tab, tab)}>
-            <i class={"#{icon} lg:lsb-mr-2 group-hover:lsb-text-indigo-600"}></i>
-            <span class={"group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
-              <%= label %>
+    <div class="lsb-flex lsb-flex-items-center">
+      <!-- mobile version of navigation tabs -->
+      <.form let={f} for={:navigation} class="block lg:lsb-hidden">
+        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md" %>
+      </.form>
+
+      <!-- :lg+ version of navigation tabs -->
+      <nav class="entry-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
+        <%= for {tab, label, icon} <- tabs do %>
+          <%= live_patch to: "?tab=#{tab}", class: "lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}" do %>
+            <span class={active_span(@tab, tab)}>
+              <i class={"#{icon} lg:lsb-mr-2 group-hover:lsb-text-indigo-600"}></i>
+              <span class={"group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
+                <%= label %>
+              </span>
             </span>
-          </span>
+          <% end %>
         <% end %>
-      <% end %>
-    </nav>
+      </nav>
+    </div>
     """
   end
+
+  defp navigation_select_options(tabs) do
+    for {tab, label, _icon} <- tabs, do: {label, tab}
+  end
+
+  # <select phx-change="hello" >
+  #
+  #       </select>
 
   defp render_content(type, assigns) when type in [:component, :live_component] do
     ComponentEntryLive.render(assigns)

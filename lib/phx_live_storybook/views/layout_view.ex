@@ -43,21 +43,13 @@ defmodule PhxLiveStorybook.LayoutView do
   end
 
   defp render_breadcrumb(socket, entry) do
-    backend_module = backend_module(socket)
-
-    {_, breadcrumb} =
-      for path_item <- String.split(entry.absolute_path, "/", trim: true), reduce: {"", []} do
-        {path, breadcrumb} ->
-          path = path <> "/" <> path_item
-
-          case backend_module.find_entry_by_path(path) do
-            %FolderEntry{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
-            %ComponentEntry{module: module} -> {path, [module.name() | breadcrumb]}
-            %PageEntry{module: module} -> {path, [module.name() | breadcrumb]}
-          end
-      end
-
-    breadcrumb |> Enum.reverse() |> Enum.join(" / ")
+    breadcrumb(socket, entry)
+    |> Enum.intersperse(:separator)
+    |> Enum.map_join("", fn
+      :separator -> ~s|<i class="fat fa-angle-right lsb-px-2 lsb-text-slate-500"></i>|
+      entry_name -> ~s|<span>#{entry_name}</span>|
+    end)
+    |> raw()
   end
 
   defp otp_app(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.otp_app
@@ -81,5 +73,23 @@ defmodule PhxLiveStorybook.LayoutView do
     %JS{}
     |> JS.add_class("lsb-hidden", to: "#sidebar")
     |> JS.add_class("lsb-hidden", to: "#sidebar-overlay")
+  end
+
+  defp breadcrumb(socket, entry) do
+    backend_module = backend_module(socket)
+
+    {_, breadcrumb} =
+      for path_item <- String.split(entry.absolute_path, "/", trim: true), reduce: {"", []} do
+        {path, breadcrumb} ->
+          path = path <> "/" <> path_item
+
+          case backend_module.find_entry_by_path(path) do
+            %FolderEntry{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
+            %ComponentEntry{module: module} -> {path, [module.name() | breadcrumb]}
+            %PageEntry{module: module} -> {path, [module.name() | breadcrumb]}
+          end
+      end
+
+    Enum.reverse(breadcrumb)
   end
 end
