@@ -244,19 +244,31 @@ defmodule PhxLiveStorybookTest do
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/variation couple" do
-      assert TreeStorybook.render_code(AComponent, :hello) |> rendered_to_string() =~
-               ~r/<pre.*pre/
+      assert [{"pre", [{"class", _}], ["\n<.a_component label=\"hello\"/>\n"]}] =
+               TreeStorybook.render_code(AComponent, :hello, format: false)
+               |> rendered_to_string()
+               |> Floki.parse_fragment!()
 
-      assert TreeStorybook.render_code(AComponent, :world) |> rendered_to_string() =~
-               ~r/<pre.*pre/
+      assert [{"pre", [{"class", _}], ["\n<.a_component index={37} label=\"world\"/>\n"]}] =
+               TreeStorybook.render_code(AComponent, :world, format: false)
+               |> rendered_to_string()
+               |> Floki.parse_fragment!()
 
-      assigns = []
+      code = TreeStorybook.render_code(BComponent, :hello, format: false)
 
-      code = TreeStorybook.render_code(BComponent, :hello)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      assert [
+               {"pre", [{"class", _}],
+                ["\n<.live_component module={BComponent} label=\"hello\"/>\n"]}
+             ] = code |> rendered_to_string() |> Floki.parse_fragment!()
 
-      code = TreeStorybook.render_code(BComponent, :world)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      code = TreeStorybook.render_code(BComponent, :world, format: false)
+
+      assert [
+               {"pre", [{"class", _}],
+                [
+                  "\n<.live_component module={BComponent} label=\"world\">\n  <span>inner block</span>\n<./live_component>\n"
+                ]}
+             ] = code |> rendered_to_string() |> Floki.parse_fragment!()
     end
 
     test "it also works for a variation group" do

@@ -44,7 +44,8 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Renders code snippet of a specific variation for a given component entry.
   Returns rendered HEEx template.
   """
-  @callback render_code(entry_module :: atom(), variation_id :: atom()) :: %Rendered{}
+  @callback render_code(entry_module :: atom(), variation_id :: atom(), opts :: keyword()) ::
+              %Rendered{}
 
   @doc """
   Renders source of a component entry.

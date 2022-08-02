@@ -28,10 +28,11 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(var.id)) do
+              def render_code(unquote(module), unquote(var.id), opts) do
                 CodeRenderer.render_component_code(
                   unquote(module).function(),
-                  unquote(Macro.escape(var))
+                  unquote(Macro.escape(var)),
+                  opts
                 )
               end
             end
@@ -48,14 +49,20 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(var.id)) do
+              def render_code(unquote(module), unquote(var.id), opts) do
                 CodeRenderer.render_live_component_code(
                   unquote(module).component(),
-                  unquote(Macro.escape(var))
+                  unquote(Macro.escape(var)),
+                  opts
                 )
               end
             end
         end
+      end
+
+    header_quote =
+      quote do
+        def render_code(module, variation_id, opts \\ [])
       end
 
     default_quote =
@@ -66,12 +73,12 @@ defmodule PhxLiveStorybook.Rendering.EntriesRenderer do
         end
 
         @impl PhxLiveStorybook.BackendBehaviour
-        def render_code(module, variation_id) do
+        def render_code(module, variation_id, opts) do
           raise "unknown variation #{inspect(variation_id)} for module #{inspect(module)}"
         end
       end
 
-    quotes ++ [default_quote]
+    [header_quote] ++ quotes ++ [default_quote]
   end
 
   @doc false
