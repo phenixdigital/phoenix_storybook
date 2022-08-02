@@ -63,6 +63,16 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     assert html =~ "defmodule"
   end
 
+  test "renders component entry and navigate to source tab with select", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/storybook/a_component")
+
+    html =
+      view |> element("select#navigation_tab") |> render_change(%{navigation: %{tab: "source"}})
+
+    assert_patched(view, "/storybook/a_component?tab=source")
+    assert html =~ "defmodule"
+  end
+
   test "renders a page entry", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/storybook/a_page")
     assert html =~ "A Page"

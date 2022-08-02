@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"/>
     <%= csrf_meta_tag() %>
+    <%= render "_favicon.html" %>
     <%= live_title_tag assigns[:page_title] || "Home", prefix: "#{title(@conn)} - " %>
     <script defer src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
     <style><%= raw(render("app.css")) %></style>
