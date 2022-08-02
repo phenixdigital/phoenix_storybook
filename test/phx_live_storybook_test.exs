@@ -25,14 +25,16 @@ defmodule PhxLiveStorybookTest do
                  module_name: "AComponent",
                  name: "A Component",
                  path: content_path("flat_list/a_component.ex"),
-                 absolute_path: "/a_component"
+                 absolute_path: "/a_component",
+                 variations: []
                },
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
                  path: content_path("flat_list/b_component.ex"),
-                 absolute_path: "/b_component"
+                 absolute_path: "/b_component",
+                 variations: []
                }
              ]
     end
@@ -58,14 +60,38 @@ defmodule PhxLiveStorybookTest do
                  module_name: "AComponent",
                  name: "A Component",
                  path: content_path("tree/a_component.ex"),
-                 absolute_path: "/a_component"
+                 absolute_path: "/a_component",
+                 variations: [
+                   %PhxLiveStorybook.Variation{
+                     attributes: %{label: "hello"},
+                     description: "Hello variation",
+                     id: :hello
+                   },
+                   %PhxLiveStorybook.Variation{
+                     attributes: %{index: 37, label: "world"},
+                     description: "World variation",
+                     id: :world
+                   }
+                 ]
                },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
                  path: content_path("tree/b_component.ex"),
-                 absolute_path: "/b_component"
+                 absolute_path: "/b_component",
+                 variations: [
+                   %PhxLiveStorybook.Variation{
+                     attributes: %{label: "hello"},
+                     description: "Hello variation",
+                     id: :hello
+                   },
+                   %PhxLiveStorybook.Variation{
+                     attributes: %{label: "world"},
+                     block: "<span>inner block</span>\n",
+                     id: :world
+                   }
+                 ]
                },
                %PhxLiveStorybook.FolderEntry{
                  name: "a_folder",
@@ -78,14 +104,48 @@ defmodule PhxLiveStorybookTest do
                      module_name: "AaComponent",
                      name: "Aa Component",
                      path: content_path("tree/a_folder/aa_component.ex"),
-                     absolute_path: "/a_folder/aa_component"
+                     absolute_path: "/a_folder/aa_component",
+                     variations: [
+                       %PhxLiveStorybook.VariationGroup{
+                         id: :group,
+                         variations: [
+                           %PhxLiveStorybook.Variation{
+                             attributes: %{label: "hello"},
+                             description: "Hello variation",
+                             id: :hello
+                           },
+                           %PhxLiveStorybook.Variation{
+                             attributes: %{index: 37, label: "world"},
+                             description: "World variation",
+                             id: :world
+                           }
+                         ]
+                       }
+                     ]
                    },
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.AFolder.AbComponent,
                      module_name: "AbComponent",
                      name: "Ab Component",
                      path: content_path("tree/a_folder/ab_component.ex"),
-                     absolute_path: "/a_folder/ab_component"
+                     absolute_path: "/a_folder/ab_component",
+                     variations: [
+                       %PhxLiveStorybook.VariationGroup{
+                         id: :group,
+                         variations: [
+                           %PhxLiveStorybook.Variation{
+                             attributes: %{label: "hello"},
+                             description: "Hello variation",
+                             id: :hello
+                           },
+                           %PhxLiveStorybook.Variation{
+                             attributes: %{label: "world"},
+                             block: "<span>inner block</span>\n",
+                             id: :world
+                           }
+                         ]
+                       }
+                     ]
                    }
                  ]
                },
@@ -99,14 +159,16 @@ defmodule PhxLiveStorybookTest do
                      module_name: "BaComponent",
                      name: "Ba Component",
                      path: content_path("tree/b_folder/ba_component.ex"),
-                     absolute_path: "/b_folder/ba_component"
+                     absolute_path: "/b_folder/ba_component",
+                     variations: []
                    },
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.BFolder.BbComponent,
                      module_name: "BbComponent",
                      name: "Bb Component",
                      path: content_path("tree/b_folder/bb_component.ex"),
-                     absolute_path: "/b_folder/bb_component"
+                     absolute_path: "/b_folder/bb_component",
+                     variations: []
                    }
                  ]
                }
@@ -216,14 +278,16 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
                  module_name: "BBaComponent",
                  name: "B Ba Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bba_component.ex")
+                 path: content_path("tree_b/b_folder/bb_folder/bba_component.ex"),
+                 variations: []
                },
                %ComponentEntry{
                  absolute_path: "/b_folder/bb_folder/bbb_component",
                  module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
                  module_name: "BbbComponent",
                  name: "Bbb Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.ex")
+                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.ex"),
+                 variations: []
                }
              ]
     end

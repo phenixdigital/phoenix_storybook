@@ -19,7 +19,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   def render(assigns = %{tab: :variations}) do
     ~H"""
     <div class="lsb-space-y-12 lsb-pt-8">
-      <%= for var = %{id: var_id, description: description} when is_struct(var, Variation) or is_struct(var, VariationGroup) <- @entry.module.variations() do %>
+      <%= for var = %{id: var_id, description: description} when is_struct(var, Variation) or is_struct(var, VariationGroup) <- @entry.variations() do %>
         <div id={anchor_id(var)} class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->

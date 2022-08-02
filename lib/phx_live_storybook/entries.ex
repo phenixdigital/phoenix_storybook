@@ -1,6 +1,6 @@
 defmodule PhxLiveStorybook.ComponentEntry do
   @moduledoc false
-  defstruct [:name, :module, :path, :module_name, :absolute_path]
+  defstruct [:name, :module, :path, :module_name, :absolute_path, :variations]
 end
 
 defmodule PhxLiveStorybook.PageEntry do
@@ -114,7 +114,8 @@ defmodule PhxLiveStorybook.Entries do
       path: path,
       module_name: module_name,
       name: module.name(),
-      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}"
+      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
+      variations: module.variations()
     }
   end
 
