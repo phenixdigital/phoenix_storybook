@@ -37,7 +37,8 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Can be a single variation or a variation group.
   Returns rendered HEEx template.
   """
-  @callback render_variation(entry_module :: atom(), variation_id :: atom()) :: %Rendered{}
+  @callback render_variation(entry_module :: any(), variation_id :: atom()) ::
+              %Rendered{}
 
   @doc """
   Renders code snippet of a specific variation for a given component entry.

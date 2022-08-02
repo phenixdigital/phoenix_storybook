@@ -10,7 +10,7 @@ defmodule PhxLiveStorybook.EntryTest do
     assert MyComponentEntry.name() == "My Component Entry"
     assert MyComponentEntry.variations() == []
     assert MyComponentEntry.storybook_type() == :component
-    assert MyComponentEntry.description() == ""
+    assert MyComponentEntry.description() == nil
     assert MyComponentEntry.icon() == nil
   end
 
@@ -23,7 +23,7 @@ defmodule PhxLiveStorybook.EntryTest do
     assert MyLiveEntry.name() == "My Live Entry"
     assert MyLiveEntry.variations() == []
     assert MyLiveEntry.storybook_type() == :live_component
-    assert MyLiveEntry.description() == ""
+    assert MyLiveEntry.description() == nil
     assert MyLiveEntry.icon() == nil
   end
 
@@ -35,7 +35,7 @@ defmodule PhxLiveStorybook.EntryTest do
 
     assert MyPageEntry.name() == "My Page Entry"
     assert MyPageEntry.storybook_type() == :page
-    assert MyPageEntry.description() == ""
+    assert MyPageEntry.description() == nil
     assert MyPageEntry.icon() == nil
     assert MyPageEntry.navigation() == []
     assert MyPageEntry.render(%{}) == false

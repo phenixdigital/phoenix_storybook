@@ -45,20 +45,25 @@ defmodule PhxLiveStorybookTest do
                  module_name: "APage",
                  module: Elixir.TreeStorybook.APage,
                  name: "A Page",
+                 description: "a page",
                  path: content_path("tree/a_page.ex"),
-                 absolute_path: "/a_page"
+                 absolute_path: "/a_page",
+                 icon: "fa fa-page"
                },
                %PhxLiveStorybook.PageEntry{
                  module_name: "BPage",
                  module: Elixir.TreeStorybook.BPage,
                  name: "B Page",
+                 description: "b page",
                  path: content_path("tree/b_page.ex"),
-                 absolute_path: "/b_page"
+                 absolute_path: "/b_page",
+                 icon: "fa fa-page"
                },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.AComponent,
                  module_name: "AComponent",
                  name: "A Component",
+                 description: "a component description",
                  path: content_path("tree/a_component.ex"),
                  absolute_path: "/a_component",
                  variations: [
@@ -78,6 +83,7 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
+                 description: "b component description",
                  path: content_path("tree/b_component.ex"),
                  absolute_path: "/b_component",
                  variations: [
@@ -103,8 +109,10 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.AFolder.AaComponent,
                      module_name: "AaComponent",
                      name: "Aa Component",
+                     description: "Aa component description",
                      path: content_path("tree/a_folder/aa_component.ex"),
                      absolute_path: "/a_folder/aa_component",
+                     icon: "aa-icon",
                      variations: [
                        %PhxLiveStorybook.VariationGroup{
                          id: :group,
@@ -127,6 +135,7 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.AFolder.AbComponent,
                      module_name: "AbComponent",
                      name: "Ab Component",
+                     description: "Ab component description",
                      path: content_path("tree/a_folder/ab_component.ex"),
                      absolute_path: "/a_folder/ab_component",
                      variations: [
@@ -158,6 +167,7 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.BFolder.BaComponent,
                      module_name: "BaComponent",
                      name: "Ba Component",
+                     description: "Ba component description",
                      path: content_path("tree/b_folder/ba_component.ex"),
                      absolute_path: "/b_folder/ba_component",
                      variations: []
@@ -166,6 +176,7 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.BFolder.BbComponent,
                      module_name: "BbComponent",
                      name: "Bb Component",
+                     description: "Bb component description",
                      path: content_path("tree/b_folder/bb_component.ex"),
                      absolute_path: "/b_folder/bb_component",
                      variations: []

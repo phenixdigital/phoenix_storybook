@@ -1,11 +1,20 @@
 defmodule PhxLiveStorybook.ComponentEntry do
   @moduledoc false
-  defstruct [:name, :module, :path, :module_name, :absolute_path, :variations]
+  defstruct [
+    :name,
+    :description,
+    :module,
+    :path,
+    :module_name,
+    :absolute_path,
+    :variations,
+    :icon
+  ]
 end
 
 defmodule PhxLiveStorybook.PageEntry do
   @moduledoc false
-  defstruct [:name, :module, :path, :module_name, :absolute_path]
+  defstruct [:name, :description, :module, :path, :module_name, :absolute_path, :icon]
 end
 
 defmodule PhxLiveStorybook.FolderEntry do
@@ -114,8 +123,10 @@ defmodule PhxLiveStorybook.Entries do
       path: path,
       module_name: module_name,
       name: module.name(),
+      description: module.description(),
       absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
-      variations: module.variations()
+      variations: module.variations(),
+      icon: module.icon()
     }
   end
 
@@ -127,7 +138,9 @@ defmodule PhxLiveStorybook.Entries do
       path: path,
       module_name: module_name,
       name: module.name(),
-      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}"
+      description: module.description(),
+      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
+      icon: module.icon()
     }
   end
 

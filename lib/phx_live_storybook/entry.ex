@@ -129,7 +129,7 @@ defmodule PhxLiveStorybook.Entry do
       def name, do: unquote(module_name(module))
 
       @impl EntryBehaviour
-      def description, do: ""
+      def description, do: nil
 
       @impl EntryBehaviour
       def icon, do: nil
@@ -157,7 +157,7 @@ defmodule PhxLiveStorybook.Entry do
       def name, do: unquote(module_name(module))
 
       @impl EntryBehaviour
-      def description, do: ""
+      def description, do: nil
 
       @impl EntryBehaviour
       def icon, do: nil

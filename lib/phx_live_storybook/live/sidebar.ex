@@ -120,19 +120,19 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [absolute_path], root: false)) %>
               <% end %>
 
-            <% %ComponentEntry{name: name, module: module, absolute_path: absolute_path} -> %>
+            <% %ComponentEntry{name: name, absolute_path: absolute_path, icon: icon} -> %>
               <% entry_path =  @root_path <> absolute_path %>
               <div class={entry_class(@current_path, entry_path)}>
-                <%= if icon = module.icon() do %>
+                <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
                 <%= live_patch(name, to: entry_path) %>
               </div>
 
-            <% %PageEntry{name: name, module: module, absolute_path: absolute_path} -> %>
+            <% %PageEntry{name: name, absolute_path: absolute_path, icon: icon} -> %>
               <% entry_path =  @root_path <> absolute_path %>
               <div class={entry_class(@current_path, entry_path)}>
-                <%= if icon = module.icon() do %>
+                <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
                 <%= live_patch(name, to: entry_path) %>

@@ -1,6 +1,7 @@
 defmodule PhxLiveStorybook.EntryLive do
   use PhxLiveStorybook.Web, :live_view
 
+  alias PhxLiveStorybook.{ComponentEntry, PageEntry}
   alias PhxLiveStorybook.Entry.{ComponentEntryLive, PageEntryLive}
   alias PhxLiveStorybook.EntryNotFound
 
@@ -39,7 +40,6 @@ defmodule PhxLiveStorybook.EntryLive do
         {:noreply,
          assign(socket,
            entry: entry,
-           entry_type: entry.module.storybook_type(),
            entry_path: entry_path,
            page_title: entry.module.name(),
            tab: current_tab(params, entry)
@@ -66,9 +66,9 @@ defmodule PhxLiveStorybook.EntryLive do
   defp current_tab(params, entry) do
     case Map.get(params, "tab") do
       nil ->
-        case entry.module.storybook_type() do
-          type when type in [:component, :live_component] -> ComponentEntryLive.default_tab()
-          :page -> PageEntryLive.default_tab(entry)
+        case entry do
+          %ComponentEntry{} -> ComponentEntryLive.default_tab()
+          %PageEntry{} -> PageEntryLive.default_tab(entry)
         end
 
       tab ->
@@ -82,31 +82,31 @@ defmodule PhxLiveStorybook.EntryLive do
       <div>
         <div class="lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
-            <%= if icon = @entry.module.icon() do %>
+            <%= if icon = @entry.icon do %>
               <i class={"#{icon} lsb-pr-2"}></i>
             <% end %>
-            <%= @entry.module.name() %>
+            <%= @entry.name() %>
           </h2>
 
-          <%=  @entry_type |> navigation_tabs(assigns) |> render_navigation_tabs(assigns) %>
+          <%=  @entry |> navigation_tabs(assigns) |> render_navigation_tabs(assigns) %>
         </div>
         <div class="lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-          <%= @entry.module.description() %>
+          <%= @entry.description() %>
         </div>
       </div>
 
-      <%= render_content(@entry_type, assigns) %>
+      <%= render_content(@entry, assigns) %>
     </div>
     """
   end
 
   def render(assigns), do: ~H""
 
-  defp navigation_tabs(type, _assigns) when type in [:component, :live_component] do
+  defp navigation_tabs(%ComponentEntry{}, _assigns) do
     ComponentEntryLive.navigation_tabs()
   end
 
-  defp navigation_tabs(:page, assigns) do
+  defp navigation_tabs(%PageEntry{}, assigns) do
     PageEntryLive.navigation_tabs(assigns)
   end
 
@@ -141,15 +141,11 @@ defmodule PhxLiveStorybook.EntryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  # <select phx-change="hello" >
-  #
-  #       </select>
-
-  defp render_content(type, assigns) when type in [:component, :live_component] do
+  defp render_content(%ComponentEntry{}, assigns) do
     ComponentEntryLive.render(assigns)
   end
 
-  defp render_content(:page, assigns) do
+  defp render_content(%PageEntry{}, assigns) do
     PageEntryLive.render(assigns)
   end
 
