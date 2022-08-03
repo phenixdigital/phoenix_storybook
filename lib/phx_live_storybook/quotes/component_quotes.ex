@@ -17,11 +17,17 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
       end
 
     component_quotes =
-      for %ComponentEntry{module: module, module_name: module_name} <- entries,
-          variation <- module.variations() do
+      for %ComponentEntry{
+            type: type,
+            component: component,
+            module: module,
+            module_name: module_name,
+            variations: variations
+          } <- entries,
+          variation <- variations do
         unique_variation_id = Macro.underscore("#{module_name}-#{variation.id}")
 
-        case module.storybook_type() do
+        case type do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
@@ -50,7 +56,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_variation(unquote(module), unquote(variation.id)) do
                 ComponentRenderer.render_variation(
-                  unquote(module).component(),
+                  unquote(component),
                   unquote(Macro.escape(variation)),
                   unquote(unique_variation_id)
                 )

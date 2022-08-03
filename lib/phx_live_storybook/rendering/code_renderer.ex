@@ -61,20 +61,26 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   Renders a component's (live or not) source code, wrapped in a `<pre>` tag.
   """
   def render_component_source(module, assigns \\ %{}) do
-    ~H"""
-    <pre class={pre_class()}>
-    <%= component_source(module, module.storybook_type()) |> File.read!() |> format_elixir() %>
-    </pre>
-    """
+    if source = component_source(module, module.storybook_type()) do
+      ~H"""
+      <pre class={pre_class()}>
+      <%= source |> File.read!() |> format_elixir() %>
+      </pre>
+      """
+    end
   end
 
   defp component_source(module, :component) do
-    component = Function.info(module.function)[:module]
-    component.__info__(:compile)[:source]
+    if module.function() do
+      component = Function.info(module.function())[:module]
+      component.__info__(:compile)[:source]
+    end
   end
 
   defp component_source(module, :live_component) do
-    module.component().__info__(:compile)[:source]
+    if module.component() do
+      module.component().__info__(:compile)[:source]
+    end
   end
 
   defp pre_class,

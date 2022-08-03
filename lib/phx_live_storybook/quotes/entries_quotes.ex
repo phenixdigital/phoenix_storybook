@@ -7,7 +7,7 @@ defmodule PhxLiveStorybook.Quotes.EntriesQuotes do
   # This quote inlines a entries/0 function to return the content
   # tree of current storybook.
   def entries_quotes(entries) do
-    loop_quotes =
+    find_entry_by_path_quotes =
       for entry <- Entries.flat_list(entries) do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
@@ -29,6 +29,6 @@ defmodule PhxLiveStorybook.Quotes.EntriesQuotes do
         def all_leaves, do: unquote(Macro.escape(Entries.all_leaves(entries)))
       end
 
-    loop_quotes ++ [single_quote]
+    find_entry_by_path_quotes ++ [single_quote]
   end
 end

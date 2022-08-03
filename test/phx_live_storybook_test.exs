@@ -23,6 +23,7 @@ defmodule PhxLiveStorybookTest do
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.AComponent,
                  module_name: "AComponent",
+                 type: :component,
                  name: "A Component",
                  path: content_path("flat_list/a_component.ex"),
                  absolute_path: "/a_component",
@@ -31,6 +32,7 @@ defmodule PhxLiveStorybookTest do
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.BComponent,
                  module_name: "BComponent",
+                 type: :live_component,
                  name: "B Component",
                  path: content_path("flat_list/b_component.ex"),
                  absolute_path: "/b_component",
@@ -64,6 +66,8 @@ defmodule PhxLiveStorybookTest do
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.AComponent,
                  module_name: "AComponent",
+                 type: :component,
+                 function: &AComponent.a_component/1,
                  name: "A Component",
                  description: "a component description",
                  path: content_path("tree/a_component.ex"),
@@ -85,6 +89,8 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeStorybook.BComponent,
                  module_name: "BComponent",
                  name: "B Component",
+                 type: :live_component,
+                 component: BComponent,
                  description: "b component description",
                  path: content_path("tree/b_component.ex"),
                  absolute_path: "/b_component",
@@ -109,8 +115,10 @@ defmodule PhxLiveStorybookTest do
                  sub_entries: [
                    %PhxLiveStorybook.ComponentEntry{
                      module: Elixir.TreeStorybook.AFolder.AaComponent,
+                     function: &AComponent.a_component/1,
                      module_name: "AaComponent",
                      name: "Aa Component",
+                     type: :component,
                      description: "Aa component description",
                      path: content_path("tree/a_folder/aa_component.ex"),
                      absolute_path: "/a_folder/aa_component",
@@ -137,6 +145,8 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.AFolder.AbComponent,
                      module_name: "AbComponent",
                      name: "Ab Component",
+                     component: BComponent,
+                     type: :live_component,
                      description: "Ab component description",
                      path: content_path("tree/a_folder/ab_component.ex"),
                      absolute_path: "/a_folder/ab_component",
@@ -169,6 +179,7 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.BFolder.BaComponent,
                      module_name: "BaComponent",
                      name: "Ba Component",
+                     type: :component,
                      description: "Ba component description",
                      path: content_path("tree/b_folder/ba_component.ex"),
                      absolute_path: "/b_folder/ba_component",
@@ -178,6 +189,7 @@ defmodule PhxLiveStorybookTest do
                      module: Elixir.TreeStorybook.BFolder.BbComponent,
                      module_name: "BbComponent",
                      name: "Bb Component",
+                     type: :component,
                      description: "Bb component description",
                      path: content_path("tree/b_folder/bb_component.ex"),
                      absolute_path: "/b_folder/bb_component",
@@ -287,6 +299,7 @@ defmodule PhxLiveStorybookTest do
                %ComponentEntry{
                  absolute_path: "/b_folder/bb_folder/b_ba_component",
                  module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
+                 type: :component,
                  module_name: "BBaComponent",
                  name: "B Ba Component",
                  path: content_path("tree_b/b_folder/bb_folder/bba_component.ex"),
@@ -295,6 +308,7 @@ defmodule PhxLiveStorybookTest do
                %ComponentEntry{
                  absolute_path: "/b_folder/bb_folder/bbb_component",
                  module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
+                 type: :component,
                  module_name: "BbbComponent",
                  name: "Bbb Component",
                  path: content_path("tree_b/b_folder/bb_folder/bbb_component.ex"),

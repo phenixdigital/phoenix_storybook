@@ -1,12 +1,15 @@
 defmodule PhxLiveStorybook.ComponentEntry do
   @moduledoc false
   defstruct [
-    :name,
-    :description,
     :module,
     :path,
-    :module_name,
     :absolute_path,
+    :type,
+    :name,
+    :module_name,
+    :description,
+    :function,
+    :component,
     :variations,
     :icon
   ]
@@ -94,14 +97,21 @@ defmodule PhxLiveStorybook.Entries do
 
     %ComponentEntry{
       module: module,
+      type: module.storybook_type(),
       path: path,
-      module_name: module_name,
-      name: module.name(),
-      description: module.description(),
       absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
+      name: module.name(),
+      module_name: module_name,
+      description: module.description(),
+      component: call_if_exported(module, :component),
+      function: call_if_exported(module, :function),
       variations: module.variations(),
       icon: module.icon()
     }
+  end
+
+  defp call_if_exported(mod, fun) do
+    if function_exported?(mod, fun, 0), do: apply(mod, fun, []), else: nil
   end
 
   defp page_entry(path, module, absolute_path) do
@@ -110,12 +120,12 @@ defmodule PhxLiveStorybook.Entries do
     %PageEntry{
       module: module,
       path: path,
+      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
       module_name: module_name,
       name: module.name(),
       description: module.description(),
-      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
-      icon: module.icon(),
-      navigation: module.navigation()
+      navigation: module.navigation(),
+      icon: module.icon()
     }
   end
 

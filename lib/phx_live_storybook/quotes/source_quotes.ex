@@ -1,6 +1,7 @@
 defmodule PhxLiveStorybook.Quotes.SourceQuotes do
   @moduledoc false
 
+  alias Phoenix.HTML.Safe
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entries
   alias PhxLiveStorybook.Rendering.CodeRenderer
@@ -12,7 +13,7 @@ defmodule PhxLiveStorybook.Quotes.SourceQuotes do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
           def render_source(unquote(module)) do
-            CodeRenderer.render_component_source(unquote(module))
+            unquote(CodeRenderer.render_component_source(module) |> to_raw_html())
           end
         end
       end
@@ -26,5 +27,12 @@ defmodule PhxLiveStorybook.Quotes.SourceQuotes do
       end
 
     quotes ++ [default_quote]
+  end
+
+  defp to_raw_html(heex) do
+    heex
+    |> Safe.to_iodata()
+    |> IO.iodata_to_binary()
+    |> Phoenix.HTML.raw()
   end
 end
