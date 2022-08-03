@@ -14,49 +14,45 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
-  Renders a function component code snippet, wrapped in a `<pre>` tag.
+  Renders a component code snippet, wrapped in a `<pre>` tag.
   """
-  def render_component_code(function, variation_or_group, opts, assigns \\ %{})
+  def render_component_code(function_or_module, variation_or_group, assigns \\ %{})
 
-  def render_component_code(function, variation = %Variation{}, opts, assigns) do
+  def render_component_code(fun, variation = %Variation{}, assigns) when is_function(fun) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_heex(function, variation) |> format_heex(opts) %>
+    <%= component_code_heex(fun, variation) |> format_heex() %>
     </pre>
     """
   end
 
-  def render_component_code(function, %VariationGroup{variations: variations}, opts, assigns) do
-    heexes =
-      for v <- variations, do: function |> component_code_heex(v) |> String.replace("\n", "")
+  def render_component_code(fun, %VariationGroup{variations: variations}, assigns)
+      when is_function(fun) do
+    heexes = for v <- variations, do: fun |> component_code_heex(v) |> String.replace("\n", "")
 
     ~H"""
     <pre class={pre_class()}>
-    <%= heexes |> Enum.join("\n") |> format_heex(opts) %>
+    <%= heexes |> Enum.join("\n") |> format_heex() %>
     </pre>
     """
   end
 
-  @doc """
-  Renders a live component code snippet, wrapped in a `<pre>` tag.
-  """
-  def render_live_component_code(module, variation_or_group, opts, assigns \\ %{})
-
-  def render_live_component_code(module, variation = %Variation{}, opts, assigns) do
+  def render_component_code(mod, variation = %Variation{}, assigns) when is_atom(mod) do
     ~H"""
     <pre class={pre_class()}>
-    <%= live_component_code_heex(module, variation) |> format_heex(opts) %>
+    <%= live_component_code_heex(mod, variation) |> format_heex() %>
     </pre>
     """
   end
 
-  def render_live_component_code(mod, %VariationGroup{variations: variations}, opts, assigns) do
+  def render_component_code(mod, %VariationGroup{variations: variations}, assigns)
+      when is_atom(mod) do
     heexes =
       for v <- variations, do: mod |> live_component_code_heex(v) |> String.replace("\n", "")
 
     ~H"""
     <pre class={pre_class()}>
-    <%= heexes |> Enum.join("\n") |> format_heex(opts) %>
+    <%= heexes |> Enum.join("\n") |> format_heex() %>
     </pre>
     """
   end
@@ -115,9 +111,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     |> Enum.map_join("\n", &"  #{&1}")
   end
 
-  defp format_heex(code, format: false), do: String.trim(code)
-
-  defp format_heex(code, _) do
+  defp format_heex(code) do
     code
     |> String.trim()
     |> HEExLexer.lex()

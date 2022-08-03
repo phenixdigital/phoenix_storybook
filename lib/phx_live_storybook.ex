@@ -44,7 +44,7 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Renders code snippet of a specific variation for a given component entry.
   Returns rendered HEEx template.
   """
-  @callback render_code(entry_module :: atom(), variation_id :: atom(), opts :: keyword()) ::
+  @callback render_code(entry_module :: atom(), variation_id :: atom()) ::
               %Rendered{}
 
   @doc """
@@ -52,6 +52,12 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Returns rendered HEEx template.
   """
   @callback render_source(entry_module :: atom()) :: %Rendered{}
+
+  @doc """
+  Renders a tab content for a page entry.
+  Returns rendered HEEx template.
+  """
+  @callback render_page(entry_module :: atom(), tab :: atom()) :: %Rendered{}
 end
 
 defmodule PhxLiveStorybook do
@@ -62,25 +68,34 @@ defmodule PhxLiveStorybook do
              |> Enum.fetch!(1)
 
   alias PhxLiveStorybook.Entries
-  alias PhxLiveStorybook.Rendering.EntriesRenderer
+
+  alias PhxLiveStorybook.Quotes.{
+    ComponentQuotes,
+    ConfigQuotes,
+    EntriesQuotes,
+    PageQuotes,
+    SourceQuotes
+  }
 
   @doc false
   defmacro __using__(opts) do
     backend_module = __CALLER__.module
+    otp_app = opts[:otp_app]
+    entries = entries(backend_module, otp_app)
 
     [
-      recompilation_quote(backend_module, opts),
-      config_quote(backend_module, opts),
-      Entries.entries_quote(backend_module, opts),
-      EntriesRenderer.rendering_quote(backend_module, opts),
-      EntriesRenderer.source_quote(backend_module, opts)
+      recompilation_quotes(backend_module, otp_app),
+      ConfigQuotes.config_quotes(backend_module, otp_app),
+      EntriesQuotes.entries_quotes(entries),
+      ComponentQuotes.component_quotes(entries),
+      SourceQuotes.source_quotes(entries),
+      PageQuotes.page_quotes(entries)
     ]
   end
 
   # This quote triggers recompilation for the module whenever something
   # under content path has been touched
-  defp recompilation_quote(backend_module, opts) do
-    otp_app = Keyword.get(opts, :otp_app)
+  defp recompilation_quotes(backend_module, otp_app) do
     content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
     components_pattern = if content_path, do: "#{content_path}/**/*"
 
@@ -107,19 +122,11 @@ defmodule PhxLiveStorybook do
     end
   end
 
-  # This quote provides config access helper
-  defp config_quote(backend_module, opts) do
-    quote do
-      @behaviour PhxLiveStorybook.BackendBehaviour
+  defp entries(backend_module, otp_app) do
+    content_path =
+      otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:content_path)
 
-      @impl PhxLiveStorybook.BackendBehaviour
-      def config(key, default \\ nil) do
-        otp_app = Keyword.get(unquote(opts), :otp_app)
-
-        otp_app
-        |> Application.get_env(unquote(backend_module), [])
-        |> Keyword.get(key, default)
-      end
-    end
+    folders_config = otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders)
+    Entries.entries(content_path, folders_config)
   end
 end

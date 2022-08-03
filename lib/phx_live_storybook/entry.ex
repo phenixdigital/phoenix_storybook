@@ -144,7 +144,6 @@ defmodule PhxLiveStorybook.Entry do
   @doc false
   def page(module) do
     quote do
-      use Phoenix.LiveComponent
       import Phoenix.LiveView.Helpers
 
       @behaviour EntryBehaviour
@@ -165,7 +164,6 @@ defmodule PhxLiveStorybook.Entry do
       @impl PageBehaviour
       def navigation, do: []
 
-      @impl Phoenix.LiveComponent
       def render(_assigns), do: false
 
       defoverridable name: 0, description: 0, icon: 0, navigation: 0, render: 1

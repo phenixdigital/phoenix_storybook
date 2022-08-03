@@ -48,7 +48,8 @@ defmodule PhxLiveStorybookTest do
                  description: "a page",
                  path: content_path("tree/a_page.ex"),
                  absolute_path: "/a_page",
-                 icon: "fa fa-page"
+                 icon: "fa fa-page",
+                 navigation: []
                },
                %PhxLiveStorybook.PageEntry{
                  module_name: "BPage",
@@ -57,7 +58,8 @@ defmodule PhxLiveStorybookTest do
                  description: "b page",
                  path: content_path("tree/b_page.ex"),
                  absolute_path: "/b_page",
-                 icon: "fa fa-page"
+                 icon: "fa fa-page",
+                 navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
                },
                %PhxLiveStorybook.ComponentEntry{
                  module: Elixir.TreeStorybook.AComponent,
@@ -244,31 +246,17 @@ defmodule PhxLiveStorybookTest do
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/variation couple" do
-      assert [{"pre", [{"class", _}], ["\n<.a_component label=\"hello\"/>\n"]}] =
-               TreeStorybook.render_code(AComponent, :hello, format: false)
-               |> rendered_to_string()
-               |> Floki.parse_fragment!()
+      assert TreeStorybook.render_code(AComponent, :hello)
+             |> rendered_to_string() =~ ~r|<pre.*</pre>|s
 
-      assert [{"pre", [{"class", _}], ["\n<.a_component index={37} label=\"world\"/>\n"]}] =
-               TreeStorybook.render_code(AComponent, :world, format: false)
-               |> rendered_to_string()
-               |> Floki.parse_fragment!()
+      assert TreeStorybook.render_code(AComponent, :world)
+             |> rendered_to_string() =~ ~r|<pre.*</pre>|s
 
-      code = TreeStorybook.render_code(BComponent, :hello, format: false)
+      assert TreeStorybook.render_code(BComponent, :hello) |> rendered_to_string() =~
+               ~r|<pre.*</pre>|s
 
-      assert [
-               {"pre", [{"class", _}],
-                ["\n<.live_component module={BComponent} label=\"hello\"/>\n"]}
-             ] = code |> rendered_to_string() |> Floki.parse_fragment!()
-
-      code = TreeStorybook.render_code(BComponent, :world, format: false)
-
-      assert [
-               {"pre", [{"class", _}],
-                [
-                  "\n<.live_component module={BComponent} label=\"world\">\n  <span>inner block</span>\n<./live_component>\n"
-                ]}
-             ] = code |> rendered_to_string() |> Floki.parse_fragment!()
+      assert TreeStorybook.render_code(BComponent, :world) |> rendered_to_string() =~
+               ~r|<pre.*</pre>|s
     end
 
     test "it also works for a variation group" do
