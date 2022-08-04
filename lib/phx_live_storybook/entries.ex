@@ -52,31 +52,32 @@ defmodule PhxLiveStorybook.Entries do
         file_path = Path.join(path, file_name),
         reduce: [] do
       acc ->
-        if File.dir?(file_path) do
-          absolute_path = "#{absolute_path}/#{file_name}"
-          folder_config = Keyword.get(folders_config, String.to_atom(absolute_path), [])
+        cond do
+          File.dir?(file_path) ->
+            absolute_path = "#{absolute_path}/#{file_name}"
+            folder_config = Keyword.get(folders_config, String.to_atom(absolute_path), [])
 
-          [
-            %FolderEntry{
-              name: file_name,
-              nice_name:
-                Keyword.get_lazy(folder_config, :name, fn ->
-                  file_name |> String.capitalize() |> String.replace("_", " ")
-                end),
-              absolute_path: absolute_path,
-              sub_entries: recursive_scan(file_path, folders_config, absolute_path),
-              icon: folder_config[:icon]
-            }
-            | acc
-          ]
-        else
-          entry_module = entry_module(file_path)
+            [
+              %FolderEntry{
+                name: file_name,
+                nice_name:
+                  Keyword.get_lazy(folder_config, :name, fn ->
+                    file_name |> String.capitalize() |> String.replace("_", " ")
+                  end),
+                absolute_path: absolute_path,
+                sub_entries: recursive_scan(file_path, folders_config, absolute_path),
+                icon: folder_config[:icon]
+              }
+              | acc
+            ]
 
-          if Path.extname(file_path) == ".exs" and not Code.ensure_loaded?(entry_module) do
-            Code.require_file(file_path)
-          end
+          Path.extname(file_path) == ".exs" ->
+            entry_module = entry_module(file_path)
 
-          acc =
+            unless Code.ensure_loaded?(entry_module) do
+              Code.eval_file(file_path)
+            end
+
             case entry_type(entry_module) do
               nil ->
                 acc
@@ -88,11 +89,8 @@ defmodule PhxLiveStorybook.Entries do
                 [page_entry(file_path, entry_module, absolute_path) | acc]
             end
 
-          if Path.extname(file_path) == ".exs" do
-            Code.unrequire_files([file_path])
-          end
-
-          acc
+          true ->
+            acc
         end
     end
     |> sort_entries()
