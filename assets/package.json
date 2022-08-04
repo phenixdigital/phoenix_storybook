@@ -4,8 +4,8 @@
   "description": "PhxLiveStorybook assets",
   "main": "./assets/js/phx_live_storybook.js",
   "scripts": {
-    "build:css": "tailwindcss -i css/app.css -o ../dist/css/app.css",
-    "build:js": "esbuild js/*.js --bundle --outdir=../dist/js",
+    "build:css": "tailwindcss --minify -i css/app.css -o ../dist/css/app.css",
+    "build:js": "esbuild js/*.js --minify --bundle --outdir=../dist/js",
     "build": "npm-run-all build:*",
     "watch:css": "tailwindcss -i css/app.css -o ../dist/css/app.css --watch",
     "watch:js": "esbuild js/*.js --bundle --outdir=../dist/js --watch",

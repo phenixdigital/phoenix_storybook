@@ -71,6 +71,7 @@ defmodule PhxLiveStorybook.MixProject do
   defp aliases do
     [
       "assets.watch": "cmd npm run watch --prefix assets",
+      "assets.build": "cmd npm run build --prefix assets",
       coverage: "coveralls.lcov"
     ]
   end
