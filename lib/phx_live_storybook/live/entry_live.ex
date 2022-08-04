@@ -14,18 +14,18 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_params(params, _uri, socket) when params == %{} do
-    case first_component_entry_path(socket) do
+    case first_component_entry(socket) do
       nil ->
         {:noreply, socket}
 
-      entry_absolute_path ->
+      entry ->
         {:noreply,
          push_patch(socket,
            to:
              live_storybook_path(
                socket,
                :entry,
-               String.split(entry_absolute_path, "/", trim: true)
+               String.split(entry.absolute_path, "/", trim: true)
              )
          )}
     end
@@ -41,7 +41,7 @@ defmodule PhxLiveStorybook.EntryLive do
          assign(socket,
            entry: entry,
            entry_path: entry_path,
-           page_title: entry.module.name(),
+           page_title: entry.name,
            tab: current_tab(params, entry)
          )
          |> push_event("close-sidebar", %{"id" => "#sidebar"})}
@@ -167,24 +167,11 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp load_entry(socket, entry_param) do
     entry_absolute_path = "/#{Enum.join(entry_param, "/")}"
-
-    case socket.assigns.backend_module.find_entry_by_path(entry_absolute_path) do
-      nil ->
-        nil
-
-      entry = %{module: entry_module} ->
-        case Code.ensure_loaded(entry_module) do
-          {:module, ^entry_module} -> entry
-          _ -> nil
-        end
-    end
+    socket.assigns.backend_module.find_entry_by_path(entry_absolute_path)
   end
 
-  defp first_component_entry_path(socket) do
-    case socket.assigns.backend_module.all_leaves() do
-      [] -> nil
-      [entry | _] -> entry.absolute_path
-    end
+  defp first_component_entry(socket) do
+    socket.assigns.backend_module.all_leaves() |> Enum.at(0)
   end
 end
 

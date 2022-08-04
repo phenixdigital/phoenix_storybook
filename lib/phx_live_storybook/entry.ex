@@ -4,8 +4,10 @@ defmodule PhxLiveStorybook.Entry do
   only following kinds of entries are supported: `component`, `:live_component`,
   and `:page`.
 
-  In order to populate your storybook, just create _entry_ modules under your
+  In order to populate your storybook, just create _entry_ scripts under your
   content path, and implement their required behaviour.
+
+  Entries must be created as `.exs` files.
 
   ## Usage
 
@@ -15,6 +17,7 @@ defmodule PhxLiveStorybook.Entry do
   Confer to `PhxLiveStorybook.Variation` documentation for variations.
 
   ```elixir
+  # storybook/my_component.exs
   defmodule MyAppWeb.Storybook.MyComponent do
     use PhxLiveStorybook.Entry, :component
 
@@ -33,6 +36,7 @@ defmodule PhxLiveStorybook.Entry do
   Very similar components, excepted the `function/0` callback no longer required.
 
   ```elixir
+  # storybook/my_live_component.exs
   defmodule MyAppWeb.Storybook.MyLiveComponent do
     use PhxLiveStorybook.Entry, :live_component
 
@@ -48,7 +52,7 @@ defmodule PhxLiveStorybook.Entry do
 
   ### Page
 
-  A page is basically a `LiveComponent` that can be used to write whatever
+  A page is a fairly simple entry that can be used to write whatever
   content you want. We use it to provide some UI guidelines.
 
   You should implement the render function and an optional navigation function,
@@ -56,6 +60,7 @@ defmodule PhxLiveStorybook.Entry do
   in `render/1` assigns.
 
   ```elixir
+  # storybook/my_page.exs
   defmodule MyAppWeb.Storybook.MyPage do
     use PhxLiveStorybook.Entry, :page
 
