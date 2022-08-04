@@ -34,6 +34,8 @@ defmodule PhxLiveStorybook.FolderEntry do
   defstruct [:name, :nice_name, :sub_entries, :absolute_path, :icon]
 end
 
+# This module performs a recursive scan of all files/folders under :content_path
+# and creates an in-memory tree hierarchy of content using above Entry structs.
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
@@ -58,16 +60,12 @@ defmodule PhxLiveStorybook.Entries do
             folder_config = Keyword.get(folders_config, String.to_atom(absolute_path), [])
 
             [
-              %FolderEntry{
-                name: file_name,
-                nice_name:
-                  Keyword.get_lazy(folder_config, :name, fn ->
-                    file_name |> String.capitalize() |> String.replace("_", " ")
-                  end),
-                absolute_path: absolute_path,
-                sub_entries: recursive_scan(file_path, folders_config, absolute_path),
-                icon: folder_config[:icon]
-              }
+              folder_entry(
+                file_name,
+                folder_config,
+                absolute_path,
+                recursive_scan(file_path, folders_config, absolute_path)
+              )
               | acc
             ]
 
@@ -96,9 +94,17 @@ defmodule PhxLiveStorybook.Entries do
     |> sort_entries()
   end
 
-  @entry_priority %{PageEntry => 0, ComponentEntry => 1, FolderEntry => 2}
-  defp sort_entries(entries) do
-    Enum.sort_by(entries, &Map.get(@entry_priority, &1.__struct__))
+  defp folder_entry(file_name, folder_config, absolute_path, sub_entries) do
+    %FolderEntry{
+      name: file_name,
+      nice_name:
+        Keyword.get_lazy(folder_config, :name, fn ->
+          file_name |> String.capitalize() |> String.replace("_", " ")
+        end),
+      absolute_path: absolute_path,
+      sub_entries: sub_entries,
+      icon: folder_config[:icon]
+    }
   end
 
   defp component_entry(path, module, absolute_path) do
@@ -119,10 +125,6 @@ defmodule PhxLiveStorybook.Entries do
     }
   end
 
-  defp call_if_exported(mod, fun) do
-    if function_exported?(mod, fun, 0), do: apply(mod, fun, []), else: nil
-  end
-
   defp page_entry(path, module, absolute_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
@@ -136,6 +138,15 @@ defmodule PhxLiveStorybook.Entries do
       navigation: module.navigation(),
       icon: module.icon()
     }
+  end
+
+  defp call_if_exported(mod, fun) do
+    if function_exported?(mod, fun, 0), do: apply(mod, fun, []), else: nil
+  end
+
+  @entry_priority %{PageEntry => 0, ComponentEntry => 1, FolderEntry => 2}
+  defp sort_entries(entries) do
+    Enum.sort_by(entries, &Map.get(@entry_priority, &1.__struct__))
   end
 
   defp entry_module(entry_path) do

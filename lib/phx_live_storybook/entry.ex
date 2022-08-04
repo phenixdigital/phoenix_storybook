@@ -33,7 +33,8 @@ defmodule PhxLiveStorybook.Entry do
 
   ### Live Component
 
-  Very similar components, excepted the `function/0` callback no longer required.
+  Very similar components, excepted you need to define a `component/0  function
+  instead of `function/0`.
 
   ```elixir
   # storybook/my_live_component.exs
