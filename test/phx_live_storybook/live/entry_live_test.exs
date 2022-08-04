@@ -67,7 +67,9 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     {:ok, view, _html} = live(conn, "/storybook/a_component")
 
     html =
-      view |> element("select#navigation_tab") |> render_change(%{navigation: %{tab: "source"}})
+      view
+      |> element(".entry-nav-form select")
+      |> render_change(%{navigation: %{tab: "source"}})
 
     assert_patched(view, "/storybook/a_component?tab=source")
     assert html =~ "defmodule"

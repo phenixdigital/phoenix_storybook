@@ -116,7 +116,7 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
-      <.form let={f} for={:navigation} class="block lg:lsb-hidden">
+      <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="entry-nav-form lg:lsb-hidden">
         <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md" %>
       </.form>
 
