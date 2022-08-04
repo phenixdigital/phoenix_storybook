@@ -112,7 +112,7 @@ In your configuration files, add the following.
 # config/config.exs
 
 config :my_app, MyAppWeb.Storybook,
-  content_path: Path.expand("../lib/my_app_web/storybook", __DIR__),
+  content_path: Path.expand("../storybook", __DIR__),
   css_path: "/assets/my_components.css",
   js_path: "/assets/my_components.js"
 ```
@@ -125,19 +125,19 @@ Then you can start creating some content for your storybook. Storybook can conta
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **samples**: to show how your components can be used and mixed togethers in real UI pages.
 
-_As of `0.2.0`, only component entries are available._
+_As of `0.3.0`, only component and page entries are available._
 
-Entries are described as regular Elixir modules, created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
+Entries are described as Elixir scripts (`.exs`), created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
 
 Here is an example of a stateless (function) component entry:
 
 ```elixir
-# lib/my_app_web/storybook/components/button.ex
+# storybook/components/button.exs
 
 defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
-  # :live_component is also available
+  # :live_component or :page are also available
   use PhxLiveStorybook.Entry, :component
 
   def function, do: &Button.button/1
@@ -173,7 +173,7 @@ All config settings, only the `:content_path` key is mandatory.
 config :my_app, MyAppWeb.Storybook,
 
   # Path to your storybook entries (required).
-  content_path: Path.expand("../lib/my_app_web/storybook", __DIR__),
+  content_path: Path.expand("../storybook", __DIR__),
 
   # Path to your components stylesheet.
   css_path: "/assets/my_components.css",

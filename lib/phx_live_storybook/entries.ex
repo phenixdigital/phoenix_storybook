@@ -72,16 +72,27 @@ defmodule PhxLiveStorybook.Entries do
         else
           entry_module = entry_module(file_path)
 
-          case entry_type(entry_module) do
-            nil ->
-              acc
-
-            type when type in [:component, :live_component] ->
-              [component_entry(file_path, entry_module, absolute_path) | acc]
-
-            :page ->
-              [page_entry(file_path, entry_module, absolute_path) | acc]
+          if Path.extname(file_path) == ".exs" and not Code.ensure_loaded?(entry_module) do
+            Code.require_file(file_path)
           end
+
+          acc =
+            case entry_type(entry_module) do
+              nil ->
+                acc
+
+              type when type in [:component, :live_component] ->
+                [component_entry(file_path, entry_module, absolute_path) | acc]
+
+              :page ->
+                [page_entry(file_path, entry_module, absolute_path) | acc]
+            end
+
+          if Path.extname(file_path) == ".exs" do
+            Code.unrequire_files([file_path])
+          end
+
+          acc
         end
     end
     |> sort_entries()
@@ -140,7 +151,6 @@ defmodule PhxLiveStorybook.Entries do
 
   defp entry_type(entry_module) do
     fun = :storybook_type
-    Code.ensure_compiled(entry_module)
 
     if Kernel.function_exported?(entry_module, fun, 0) do
       apply(entry_module, fun, [])
