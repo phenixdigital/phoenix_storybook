@@ -25,7 +25,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "AComponent",
                  type: :component,
                  name: "A Component",
-                 path: content_path("flat_list/a_component.ex"),
+                 path: content_path("flat_list/a_component.exs"),
                  absolute_path: "/a_component",
                  variations: []
                },
@@ -34,7 +34,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BComponent",
                  type: :live_component,
                  name: "B Component",
-                 path: content_path("flat_list/b_component.ex"),
+                 path: content_path("flat_list/b_component.exs"),
                  absolute_path: "/b_component",
                  variations: []
                }
@@ -48,7 +48,7 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeStorybook.APage,
                  name: "A Page",
                  description: "a page",
-                 path: content_path("tree/a_page.ex"),
+                 path: content_path("tree/a_page.exs"),
                  absolute_path: "/a_page",
                  icon: "fa fa-page",
                  navigation: []
@@ -58,7 +58,7 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeStorybook.BPage,
                  name: "B Page",
                  description: "b page",
-                 path: content_path("tree/b_page.ex"),
+                 path: content_path("tree/b_page.exs"),
                  absolute_path: "/b_page",
                  icon: "fa fa-page",
                  navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
@@ -70,7 +70,7 @@ defmodule PhxLiveStorybookTest do
                  function: &AComponent.a_component/1,
                  name: "A Component",
                  description: "a component description",
-                 path: content_path("tree/a_component.ex"),
+                 path: content_path("tree/a_component.exs"),
                  absolute_path: "/a_component",
                  variations: [
                    %PhxLiveStorybook.Variation{
@@ -92,7 +92,7 @@ defmodule PhxLiveStorybookTest do
                  type: :live_component,
                  component: BComponent,
                  description: "b component description",
-                 path: content_path("tree/b_component.ex"),
+                 path: content_path("tree/b_component.exs"),
                  absolute_path: "/b_component",
                  variations: [
                    %PhxLiveStorybook.Variation{
@@ -120,7 +120,7 @@ defmodule PhxLiveStorybookTest do
                      name: "Aa Component",
                      type: :component,
                      description: "Aa component description",
-                     path: content_path("tree/a_folder/aa_component.ex"),
+                     path: content_path("tree/a_folder/aa_component.exs"),
                      absolute_path: "/a_folder/aa_component",
                      icon: "aa-icon",
                      variations: [
@@ -148,7 +148,7 @@ defmodule PhxLiveStorybookTest do
                      component: BComponent,
                      type: :live_component,
                      description: "Ab component description",
-                     path: content_path("tree/a_folder/ab_component.ex"),
+                     path: content_path("tree/a_folder/ab_component.exs"),
                      absolute_path: "/a_folder/ab_component",
                      variations: [
                        %PhxLiveStorybook.VariationGroup{
@@ -181,7 +181,7 @@ defmodule PhxLiveStorybookTest do
                      name: "Ba Component",
                      type: :component,
                      description: "Ba component description",
-                     path: content_path("tree/b_folder/ba_component.ex"),
+                     path: content_path("tree/b_folder/ba_component.exs"),
                      absolute_path: "/b_folder/ba_component",
                      variations: []
                    },
@@ -191,7 +191,7 @@ defmodule PhxLiveStorybookTest do
                      name: "Bb Component",
                      type: :component,
                      description: "Bb component description",
-                     path: content_path("tree/b_folder/bb_component.ex"),
+                     path: content_path("tree/b_folder/bb_component.exs"),
                      absolute_path: "/b_folder/bb_component",
                      variations: []
                    }
@@ -302,7 +302,7 @@ defmodule PhxLiveStorybookTest do
                  type: :component,
                  module_name: "BBaComponent",
                  name: "B Ba Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bba_component.ex"),
+                 path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
                  variations: []
                },
                %ComponentEntry{
@@ -311,7 +311,7 @@ defmodule PhxLiveStorybookTest do
                  type: :component,
                  module_name: "BbbComponent",
                  name: "Bbb Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.ex"),
+                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
                  variations: []
                }
              ]
