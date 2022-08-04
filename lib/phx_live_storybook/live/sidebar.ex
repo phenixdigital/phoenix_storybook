@@ -61,7 +61,7 @@ defmodule PhxLiveStorybook.Sidebar do
   def render(assigns) do
     ~H"""
     <section id="sidebar" phx-hook="SidebarHook"
-      class="lsb-hidden lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-96 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
+      class="lsb-hidden lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-80 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
     >
 
       <i class="far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click={close_sidebar()}></i>
