@@ -127,13 +127,12 @@ Then you can start creating some content for your storybook. Storybook can conta
 
 _As of `0.2.0`, only component entries are available._
 
-Entries are described as regular Elixir modules, created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
+Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
 
 Here is an example of a stateless (function) component entry:
 
 ```elixir
-# lib/my_app_web/storybook/components/button.ex
-
+# storybook/components/button.exs
 defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 

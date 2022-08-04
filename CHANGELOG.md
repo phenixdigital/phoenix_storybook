@@ -2,6 +2,7 @@
 
 ## v0.3.0 (not released)
 
+- change (breaking!): entries must know be written as `.exs` files. Otherwise they will be ignored.
 - improvement: storybook is now fully responsive
 - improvement: (stateless) component entries no longer require to define a `component/0` function.
 
