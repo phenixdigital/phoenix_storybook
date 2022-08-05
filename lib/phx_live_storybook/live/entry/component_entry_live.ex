@@ -55,14 +55,14 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
   def render(assigns = %{tab: :documentation}) do
     ~H"""
-    <div class="lsb-w-full lsb-text-center lsb-text-slate-400 lsb-pt-20 lsb-px-40">
+    <div class="lsb-w-full lsb-text-center lsb-text-slate-400 lg:lsb-pt-20 lg:lsb-px-40">
       <i class="hover:lsb-text-indigo-400 fas fa-traffic-cone fa-5x fa-bounce" style="--fa-animation-iteration-count: 2;"></i>
       <h2 class="lsb-mt-8 lsb-text-lg">Coming soon</h2>
-      <p class="lsb-text-left lsb-pt-12 lsb-text-slate-500">
+      <p class="lsb-text-left lg:lsb-pt-12 lsb-text-slate-500">
         Here, you'll soon be able to explore your component properties, see their related
         documentation and experiment with them in an interactive playground.
         <br/><br/>
-        This will most likely rely on <code>phoenix_live_view 0.18.0</code> declarative assigns feature.
+        This will most likely rely on <code>live_view</code> <code>0.18.0</code> declarative assigns feature.
       </p>
     </div>
     """
