@@ -33,18 +33,18 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @callback find_entry_by_path(String.t()) :: %ComponentEntry{} | %PageEntry{}
 
   @doc """
-  Renders a specific variation for a given component entry.
-  Can be a single variation or a variation group.
+  Renders a specific story for a given component entry.
+  Can be a single story or a story group.
   Returns rendered HEEx template.
   """
-  @callback render_variation(entry_module :: any(), variation_id :: atom()) ::
+  @callback render_story(entry_module :: any(), story_id :: atom()) ::
               %Rendered{}
 
   @doc """
-  Renders code snippet of a specific variation for a given component entry.
+  Renders code snippet of a specific story for a given component entry.
   Returns rendered HEEx template.
   """
-  @callback render_code(entry_module :: atom(), variation_id :: atom()) ::
+  @callback render_code(entry_module :: atom(), story_id :: atom()) ::
               %Rendered{}
 
   @doc """

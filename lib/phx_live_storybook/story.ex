@@ -1,15 +1,17 @@
-defmodule PhxLiveStorybook.Variation do
+defmodule PhxLiveStorybook.Story do
   @moduledoc """
-  A variation is an example of how your component can be used.
+  A story captures the rendered state of a UI component. Developers write
+  multiple stories per component that describe all the “interesting” states
+  a component can support.
 
-  Each variation will be displayed in the storybook as a code
+  Each story will be displayed in the storybook as a code
   snippet alongside with the component preview.
 
   ## Usage
   ```elixir
-    def variations do
+    def stories do
       [
-        %Variation{
+        %Story{
           id: :default,
           description: "Default dropdown",
           attributes: %{
@@ -31,28 +33,28 @@ defmodule PhxLiveStorybook.Variation do
   defstruct [:id, :description, :attributes, :slots, :block]
 end
 
-defmodule PhxLiveStorybook.VariationGroup do
+defmodule PhxLiveStorybook.StoryGroup do
   @moduledoc """
-  A variation group is a set of similar variations that will
+  A story group is a set of similar stories that will
   be rendered together in a single preview <pre> block.
 
   ## Usage
   ```elixir
-    def variations do
+    def stories do
       [
-        %VariationGroup{
+        %StoryGroup{
           id: colors,
           description: "Different color buttons",
-          variations: [
-            %Variation{
+          stories: [
+            %Story{
               id: :blue_button,
               attributes: %{label: "A button", color: :blue }
             },
-            %Variation{
+            %Story{
               id: :red_button,
               attributes: %{label: "A button", color: :red }
             },
-            %Variation{
+            %Story{
               id: :green_button,
               attributes: %{label: "A button", color: :green }
             }
@@ -63,6 +65,6 @@ defmodule PhxLiveStorybook.VariationGroup do
   ```
   """
 
-  @enforce_keys [:id, :variations]
-  defstruct [:id, :description, :variations]
+  @enforce_keys [:id, :stories]
+  defstruct [:id, :description, :stories]
 end

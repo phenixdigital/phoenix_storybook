@@ -1,60 +1,60 @@
 defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @moduledoc """
   Responsible for rendering your function & live components, for a given
-  `PhxLiveStorybook.Variation` or `PhxLiveStorybook.VariationGroup`.
+  `PhxLiveStorybook.Story` or `PhxLiveStorybook.StoryGroup`.
   """
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.{Story, StoryGroup}
 
   @doc """
-  Renders a variation or a group of variation for a component.
+  Renders a story or a group of story for a component.
   """
-  def render_variation(fun, variation = %Variation{}, id) when is_function(fun) do
-    heex = component_variation_heex(fun, variation, id)
+  def render_story(fun, story = %Story{}, id) when is_function(fun) do
+    heex = component_story_heex(fun, story, id)
     render_component_heex(fun, heex)
   end
 
-  def render_variation(fun, %VariationGroup{variations: variations}, group_id)
+  def render_story(fun, %StoryGroup{stories: stories}, group_id)
       when is_function(fun) do
     heex =
-      for variation = %Variation{id: id} <- variations, into: "" do
-        component_variation_heex(fun, variation, "#{group_id}-#{id}")
+      for story = %Story{id: id} <- stories, into: "" do
+        component_story_heex(fun, story, "#{group_id}-#{id}")
       end
 
     render_component_heex(fun, heex)
   end
 
-  def render_variation(module, variation = %Variation{}, id) when is_atom(module) do
-    heex = component_variation_heex(module, variation, id)
+  def render_story(module, story = %Story{}, id) when is_atom(module) do
+    heex = component_story_heex(module, story, id)
     render_component_heex(heex)
   end
 
-  def render_variation(module, %VariationGroup{variations: variations}, group_id)
+  def render_story(module, %StoryGroup{stories: stories}, group_id)
       when is_atom(module) do
     heex =
-      for variation = %Variation{id: id} <- variations, into: "" do
-        component_variation_heex(module, variation, "#{group_id}-#{id}")
+      for story = %Story{id: id} <- stories, into: "" do
+        component_story_heex(module, story, "#{group_id}-#{id}")
       end
 
     render_component_heex(heex)
   end
 
-  defp component_variation_heex(fun, variation = %Variation{}, id) when is_function(fun) do
+  defp component_story_heex(fun, story = %Story{}, id) when is_function(fun) do
     """
-    <.#{function_name(fun)} #{attributes_markup(variation.attributes, id)}>
-      #{variation.block}
-      #{variation.slots}
+    <.#{function_name(fun)} #{attributes_markup(story.attributes, id)}>
+      #{story.block}
+      #{story.slots}
     </.#{function_name(fun)}>
     """
   end
 
-  defp component_variation_heex(module, variation = %Variation{}, id) when is_atom(module) do
+  defp component_story_heex(module, story = %Story{}, id) when is_atom(module) do
     """
-    <.live_component module={#{inspect(module)}} #{attributes_markup(variation.attributes, id)}>
-      #{variation.block}
-      #{variation.slots}
+    <.live_component module={#{inspect(module)}} #{attributes_markup(story.attributes, id)}>
+      #{story.block}
+      #{story.slots}
     </.live_component>
     """
   end

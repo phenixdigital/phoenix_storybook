@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.Entry do
   ### Component
 
   Implement your component as such.
-  Confer to `PhxLiveStorybook.Variation` documentation for variations.
+  Confer to `PhxLiveStorybook.Story` documentation for stories.
 
   ```elixir
   # storybook/my_component.exs
@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.Entry do
     def name, do: "Another name for my component"
     def description, do: "My component description"
     def icon, do: "fa fa-icon"
-    def variations, do: []
+    def stories, do: []
   end
   ```
 
@@ -47,7 +47,7 @@ defmodule PhxLiveStorybook.Entry do
     def name, do: "Another name for my component"
     def description, do: "My live component description"
     def icon, do: "fa fa-icon"
-    def variations, do: []
+    def stories, do: []
   end
   ```
 
@@ -99,14 +99,14 @@ defmodule PhxLiveStorybook.Entry do
     @moduledoc false
 
     @callback function() :: function()
-    @callback variations() :: [PhxLiveStorybook.Variation.t()]
+    @callback stories() :: [PhxLiveStorybook.Story.t()]
   end
 
   defmodule LiveComponentBehaviour do
     @moduledoc false
 
     @callback component() :: atom()
-    @callback variations() :: [PhxLiveStorybook.Variation.t()]
+    @callback stories() :: [PhxLiveStorybook.Story.t()]
   end
 
   defmodule PageBehaviour do
@@ -126,7 +126,7 @@ defmodule PhxLiveStorybook.Entry do
       @behaviour EntryBehaviour
       @behaviour unquote(component_behaviour(live?))
 
-      alias PhxLiveStorybook.{Variation, VariationGroup}
+      alias PhxLiveStorybook.{Story, StoryGroup}
 
       @impl EntryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
@@ -141,9 +141,9 @@ defmodule PhxLiveStorybook.Entry do
       def icon, do: nil
 
       @impl unquote(component_behaviour(live?))
-      def variations, do: []
+      def stories, do: []
 
-      defoverridable name: 0, description: 0, icon: 0, variations: 0
+      defoverridable name: 0, description: 0, icon: 0, stories: 0
     end
   end
 

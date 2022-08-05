@@ -7,13 +7,13 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
 
   @doc false
-  # Precompiling component preview & code snippet for every component / variation couple.
+  # Precompiling component preview & code snippet for every component / story couple.
   def component_quotes(entries) do
     entries = Entries.all_leaves(entries)
 
     header_quote =
       quote do
-        def render_code(module, variation_id)
+        def render_code(module, story_id)
       end
 
     component_quotes =
@@ -22,30 +22,30 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             component: component,
             module: module,
             module_name: module_name,
-            variations: variations
+            stories: stories
           } <- entries,
-          variation <- variations do
-        unique_variation_id = Macro.underscore("#{module_name}-#{variation.id}")
+          story <- stories do
+        unique_story_id = Macro.underscore("#{module_name}-#{story.id}")
 
         case type do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_variation(unquote(module), unquote(variation.id)) do
+              def render_story(unquote(module), unquote(story.id)) do
                 unquote(
-                  ComponentRenderer.render_variation(
+                  ComponentRenderer.render_story(
                     module.function(),
-                    variation,
-                    unique_variation_id
+                    story,
+                    unique_story_id
                   )
                   |> to_raw_html()
                 )
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(variation.id)) do
+              def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_component_code(module.function(), variation)
+                  CodeRenderer.render_component_code(module.function(), story)
                   |> to_raw_html()
                 )
               end
@@ -54,18 +54,18 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           :live_component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_variation(unquote(module), unquote(variation.id)) do
-                ComponentRenderer.render_variation(
+              def render_story(unquote(module), unquote(story.id)) do
+                ComponentRenderer.render_story(
                   unquote(component),
-                  unquote(Macro.escape(variation)),
-                  unquote(unique_variation_id)
+                  unquote(Macro.escape(story)),
+                  unquote(unique_story_id)
                 )
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(variation.id)) do
+              def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_component_code(module.component(), variation)
+                  CodeRenderer.render_component_code(module.component(), story)
                   |> to_raw_html()
                 )
               end
@@ -76,13 +76,13 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
     default_quote =
       quote do
         @impl PhxLiveStorybook.BackendBehaviour
-        def render_variation(module, variation_id) do
-          raise "unknown variation #{inspect(variation_id)} for module #{inspect(module)}"
+        def render_story(module, story_id) do
+          raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"
         end
 
         @impl PhxLiveStorybook.BackendBehaviour
-        def render_code(module, variation_id) do
-          raise "unknown variation #{inspect(variation_id)} for module #{inspect(module)}"
+        def render_code(module, story_id) do
+          raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"
         end
       end
 

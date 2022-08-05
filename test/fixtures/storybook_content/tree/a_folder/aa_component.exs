@@ -5,19 +5,19 @@ defmodule TreeStorybook.AFolder.AaComponent do
 
   def description, do: "Aa component description"
 
-  def variations do
+  def stories do
     [
-      %VariationGroup{
+      %StoryGroup{
         id: :group,
-        variations: [
-          %Variation{
+        stories: [
+          %Story{
             id: :hello,
-            description: "Hello variation",
+            description: "Hello story",
             attributes: %{label: "hello"}
           },
-          %Variation{
+          %Story{
             id: :world,
-            description: "World variation",
+            description: "World story",
             attributes: %{label: "world", index: 37}
           }
         ]

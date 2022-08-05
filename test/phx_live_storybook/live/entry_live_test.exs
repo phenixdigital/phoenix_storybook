@@ -29,15 +29,15 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     {:ok, _view, html} = live(conn, "/storybook/a_component")
     assert html =~ "A Component"
     assert html =~ "a component description"
-    assert html =~ "Hello variation"
-    assert html =~ "World variation"
+    assert html =~ "Hello story"
+    assert html =~ "World story"
   end
 
   test "renders live component entry from path", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/storybook/b_component")
     assert html =~ "B Component"
     assert html =~ "b component description"
-    assert html =~ "Hello variation"
+    assert html =~ "Hello story"
     assert html =~ "World"
   end
 

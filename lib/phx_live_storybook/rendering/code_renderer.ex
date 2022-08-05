@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   @moduledoc """
   Responsible for rendering your components code snippet, for a given
-  `PhxLiveStorybook.Variation`.
+  `PhxLiveStorybook.Story`.
 
   Uses `Makeup` libray for syntax highlighting.
   """
@@ -11,24 +11,24 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias Makeup.Formatters.HTML.HTMLFormatter
   alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.{Story, StoryGroup}
 
   @doc """
   Renders a component code snippet, wrapped in a `<pre>` tag.
   """
-  def render_component_code(function_or_module, variation_or_group, assigns \\ %{})
+  def render_component_code(function_or_module, story_or_group, assigns \\ %{})
 
-  def render_component_code(fun, variation = %Variation{}, assigns) when is_function(fun) do
+  def render_component_code(fun, story = %Story{}, assigns) when is_function(fun) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_heex(fun, variation) |> format_heex() %>
+    <%= component_code_heex(fun, story) |> format_heex() %>
     </pre>
     """
   end
 
-  def render_component_code(fun, %VariationGroup{variations: variations}, assigns)
+  def render_component_code(fun, %StoryGroup{stories: stories}, assigns)
       when is_function(fun) do
-    heexes = for v <- variations, do: fun |> component_code_heex(v) |> String.replace("\n", "")
+    heexes = for v <- stories, do: fun |> component_code_heex(v) |> String.replace("\n", "")
 
     ~H"""
     <pre class={pre_class()}>
@@ -37,18 +37,17 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
   end
 
-  def render_component_code(mod, variation = %Variation{}, assigns) when is_atom(mod) do
+  def render_component_code(mod, story = %Story{}, assigns) when is_atom(mod) do
     ~H"""
     <pre class={pre_class()}>
-    <%= live_component_code_heex(mod, variation) |> format_heex() %>
+    <%= live_component_code_heex(mod, story) |> format_heex() %>
     </pre>
     """
   end
 
-  def render_component_code(mod, %VariationGroup{variations: variations}, assigns)
+  def render_component_code(mod, %StoryGroup{stories: stories}, assigns)
       when is_atom(mod) do
-    heexes =
-      for v <- variations, do: mod |> live_component_code_heex(v) |> String.replace("\n", "")
+    heexes = for v <- stories, do: mod |> live_component_code_heex(v) |> String.replace("\n", "")
 
     ~H"""
     <pre class={pre_class()}>
@@ -87,7 +86,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     do:
       "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-shadow-md lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"
 
-  defp component_code_heex(function, v = %Variation{}) do
+  defp component_code_heex(function, v = %Story{}) do
     fun = function_name(function)
     self_closed? = is_nil(v.block) and is_nil(v.slots)
 
@@ -98,7 +97,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
   end
 
-  defp live_component_code_heex(module, v = %Variation{}) do
+  defp live_component_code_heex(module, v = %Story{}) do
     mod = module_name(module)
     self_closed? = is_nil(v.block) and is_nil(v.slots)
 

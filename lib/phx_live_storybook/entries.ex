@@ -10,7 +10,7 @@ defmodule PhxLiveStorybook.ComponentEntry do
     :description,
     :function,
     :component,
-    :variations,
+    :stories,
     :icon
   ]
 end
@@ -120,7 +120,7 @@ defmodule PhxLiveStorybook.Entries do
       description: module.description(),
       component: call_if_exported(module, :component),
       function: call_if_exported(module, :function),
-      variations: module.variations(),
+      stories: module.stories(),
       icon: module.icon()
     }
   end

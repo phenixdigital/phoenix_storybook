@@ -3,17 +3,17 @@ defmodule TreeStorybook.AFolder.AbComponent do
   def component, do: BComponent
   def description, do: "Ab component description"
 
-  def variations do
+  def stories do
     [
-      %VariationGroup{
+      %StoryGroup{
         id: :group,
-        variations: [
-          %Variation{
+        stories: [
+          %Story{
             id: :hello,
-            description: "Hello variation",
+            description: "Hello story",
             attributes: %{label: "hello"}
           },
-          %Variation{
+          %Story{
             id: :world,
             attributes: %{label: "world"},
             block: """

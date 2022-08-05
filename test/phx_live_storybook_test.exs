@@ -27,7 +27,7 @@ defmodule PhxLiveStorybookTest do
                  name: "A Component",
                  path: content_path("flat_list/a_component.exs"),
                  absolute_path: "/a_component",
-                 variations: []
+                 stories: []
                },
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.BComponent,
@@ -36,7 +36,7 @@ defmodule PhxLiveStorybookTest do
                  name: "B Component",
                  path: content_path("flat_list/b_component.exs"),
                  absolute_path: "/b_component",
-                 variations: []
+                 stories: []
                }
              ]
     end
@@ -72,15 +72,15 @@ defmodule PhxLiveStorybookTest do
                name: "A Component",
                description: "a component description",
                absolute_path: "/a_component",
-               variations: [
-                 %PhxLiveStorybook.Variation{
+               stories: [
+                 %PhxLiveStorybook.Story{
                    attributes: %{label: "hello"},
-                   description: "Hello variation",
+                   description: "Hello story",
                    id: :hello
                  },
-                 %PhxLiveStorybook.Variation{
+                 %PhxLiveStorybook.Story{
                    attributes: %{index: 37, label: "world"},
-                   description: "World variation",
+                   description: "World story",
                    id: :world
                  }
                ]
@@ -94,13 +94,13 @@ defmodule PhxLiveStorybookTest do
                component: BComponent,
                description: "b component description",
                absolute_path: "/b_component",
-               variations: [
-                 %PhxLiveStorybook.Variation{
+               stories: [
+                 %PhxLiveStorybook.Story{
                    attributes: %{label: "hello"},
-                   description: "Hello variation",
+                   description: "Hello story",
                    id: :hello
                  },
-                 %PhxLiveStorybook.Variation{
+                 %PhxLiveStorybook.Story{
                    attributes: %{label: "world"},
                    block: "<span>inner block</span>\n",
                    id: :world
@@ -160,34 +160,34 @@ defmodule PhxLiveStorybookTest do
     end
   end
 
-  describe "render_variation/2" do
+  describe "render_story/2" do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
-    test "it should return HEEX for each component/variation couple" do
-      assert TreeStorybook.render_variation(AComponent, :hello) |> rendered_to_string() ==
+    test "it should return HEEX for each component/story couple" do
+      assert TreeStorybook.render_story(AComponent, :hello) |> rendered_to_string() ==
                "<span data-index=\"42\">a component: hello</span>"
 
-      assert TreeStorybook.render_variation(AComponent, :world) |> rendered_to_string() ==
+      assert TreeStorybook.render_story(AComponent, :world) |> rendered_to_string() ==
                "<span data-index=\"37\">a component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "b_component-hello"}] =
-               TreeStorybook.render_variation(BComponent, :hello).dynamic.([])
+               TreeStorybook.render_story(BComponent, :hello).dynamic.([])
 
       assert [%Phoenix.LiveView.Component{id: "b_component-world"}] =
-               TreeStorybook.render_variation(BComponent, :world).dynamic.([])
+               TreeStorybook.render_story(BComponent, :world).dynamic.([])
     end
 
-    test "it also works for a variation group" do
-      assert TreeStorybook.render_variation(AaComponent, :group) |> rendered_to_string() ==
+    test "it also works for a story group" do
+      assert TreeStorybook.render_story(AaComponent, :group) |> rendered_to_string() ==
                "<span data-index=\"42\">a component: hello</span>\n<span data-index=\"37\">a component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [
                %Phoenix.LiveView.Component{id: "ab_component-group-hello"},
                %Phoenix.LiveView.Component{id: "ab_component-group-world"}
-             ] = TreeStorybook.render_variation(AbComponent, :group).dynamic.([])
+             ] = TreeStorybook.render_story(AbComponent, :group).dynamic.([])
     end
   end
 
@@ -195,7 +195,7 @@ defmodule PhxLiveStorybookTest do
     alias Elixir.TreeStorybook.{AComponent, BComponent}
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
-    test "it should return HEEX for each component/variation couple" do
+    test "it should return HEEX for each component/story couple" do
       assert TreeStorybook.render_code(AComponent, :hello)
              |> rendered_to_string() =~ ~r|<pre.*</pre>|s
 
@@ -209,7 +209,7 @@ defmodule PhxLiveStorybookTest do
                ~r|<pre.*</pre>|s
     end
 
-    test "it also works for a variation group" do
+    test "it also works for a story group" do
       assigns = []
       code = TreeStorybook.render_code(AaComponent, :group)
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
@@ -241,7 +241,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BBaComponent",
                  name: "B Ba Component",
                  path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
-                 variations: []
+                 stories: []
                },
                %ComponentEntry{
                  absolute_path: "/b_folder/bb_folder/bbb_component",
@@ -250,7 +250,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BbbComponent",
                  name: "Bbb Component",
                  path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
-                 variations: []
+                 stories: []
                }
              ]
     end
