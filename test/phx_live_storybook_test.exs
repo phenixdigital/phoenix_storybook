@@ -42,162 +42,100 @@ defmodule PhxLiveStorybookTest do
     end
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
-      assert TreeStorybook.entries() == [
-               %PhxLiveStorybook.PageEntry{
-                 module_name: "APage",
-                 module: Elixir.TreeStorybook.APage,
-                 name: "A Page",
-                 description: "a page",
-                 path: content_path("tree/a_page.exs"),
-                 absolute_path: "/a_page",
-                 icon: "fa fa-page",
-                 navigation: []
-               },
-               %PhxLiveStorybook.PageEntry{
-                 module_name: "BPage",
-                 module: Elixir.TreeStorybook.BPage,
-                 name: "B Page",
-                 description: "b page",
-                 path: content_path("tree/b_page.exs"),
-                 absolute_path: "/b_page",
-                 icon: "fa fa-page",
-                 navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
-               },
-               %PhxLiveStorybook.ComponentEntry{
-                 module: Elixir.TreeStorybook.AComponent,
-                 module_name: "AComponent",
-                 type: :component,
-                 function: &AComponent.a_component/1,
-                 name: "A Component",
-                 description: "a component description",
-                 path: content_path("tree/a_component.exs"),
-                 absolute_path: "/a_component",
-                 variations: [
-                   %PhxLiveStorybook.Variation{
-                     attributes: %{label: "hello"},
-                     description: "Hello variation",
-                     id: :hello
-                   },
-                   %PhxLiveStorybook.Variation{
-                     attributes: %{index: 37, label: "world"},
-                     description: "World variation",
-                     id: :world
-                   }
-                 ]
-               },
-               %PhxLiveStorybook.ComponentEntry{
-                 module: Elixir.TreeStorybook.BComponent,
-                 module_name: "BComponent",
-                 name: "B Component",
-                 type: :live_component,
-                 component: BComponent,
-                 description: "b component description",
-                 path: content_path("tree/b_component.exs"),
-                 absolute_path: "/b_component",
-                 variations: [
-                   %PhxLiveStorybook.Variation{
-                     attributes: %{label: "hello"},
-                     description: "Hello variation",
-                     id: :hello
-                   },
-                   %PhxLiveStorybook.Variation{
-                     attributes: %{label: "world"},
-                     block: "<span>inner block</span>\n",
-                     id: :world
-                   }
-                 ]
-               },
-               %PhxLiveStorybook.FolderEntry{
-                 name: "a_folder",
-                 absolute_path: "/a_folder",
-                 icon: "fa-icon",
-                 nice_name: "A folder",
-                 sub_entries: [
-                   %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.AFolder.AaComponent,
-                     function: &AComponent.a_component/1,
-                     module_name: "AaComponent",
-                     name: "Aa Component",
-                     type: :component,
-                     description: "Aa component description",
-                     path: content_path("tree/a_folder/aa_component.exs"),
-                     absolute_path: "/a_folder/aa_component",
-                     icon: "aa-icon",
-                     variations: [
-                       %PhxLiveStorybook.VariationGroup{
-                         id: :group,
-                         variations: [
-                           %PhxLiveStorybook.Variation{
-                             attributes: %{label: "hello"},
-                             description: "Hello variation",
-                             id: :hello
-                           },
-                           %PhxLiveStorybook.Variation{
-                             attributes: %{index: 37, label: "world"},
-                             description: "World variation",
-                             id: :world
-                           }
-                         ]
-                       }
-                     ]
-                   },
-                   %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.AFolder.AbComponent,
-                     module_name: "AbComponent",
-                     name: "Ab Component",
-                     component: BComponent,
-                     type: :live_component,
-                     description: "Ab component description",
-                     path: content_path("tree/a_folder/ab_component.exs"),
-                     absolute_path: "/a_folder/ab_component",
-                     variations: [
-                       %PhxLiveStorybook.VariationGroup{
-                         id: :group,
-                         variations: [
-                           %PhxLiveStorybook.Variation{
-                             attributes: %{label: "hello"},
-                             description: "Hello variation",
-                             id: :hello
-                           },
-                           %PhxLiveStorybook.Variation{
-                             attributes: %{label: "world"},
-                             block: "<span>inner block</span>\n",
-                             id: :world
-                           }
-                         ]
-                       }
-                     ]
-                   }
-                 ]
-               },
-               %PhxLiveStorybook.FolderEntry{
-                 name: "b_folder",
-                 absolute_path: "/b_folder",
-                 nice_name: "Config Name",
-                 sub_entries: [
-                   %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.BFolder.BaComponent,
-                     module_name: "BaComponent",
-                     name: "Ba Component",
-                     type: :component,
-                     description: "Ba component description",
-                     path: content_path("tree/b_folder/ba_component.exs"),
-                     absolute_path: "/b_folder/ba_component",
-                     variations: []
-                   },
-                   %PhxLiveStorybook.ComponentEntry{
-                     module: Elixir.TreeStorybook.BFolder.BbComponent,
-                     module_name: "BbComponent",
-                     name: "Bb Component",
-                     type: :component,
-                     description: "Bb component description",
-                     path: content_path("tree/b_folder/bb_component.exs"),
-                     absolute_path: "/b_folder/bb_component",
-                     variations: []
-                   }
-                 ]
-               }
-             ]
+      entries = TreeStorybook.entries()
+      assert Enum.count(entries) == 6
+
+      assert %PhxLiveStorybook.PageEntry{
+               module_name: "APage",
+               module: Elixir.TreeStorybook.APage,
+               name: "A Page",
+               description: "a page",
+               absolute_path: "/a_page",
+               icon: "fa fa-page",
+               navigation: []
+             } = Enum.at(entries, 0)
+
+      assert %PhxLiveStorybook.PageEntry{
+               module_name: "BPage",
+               module: Elixir.TreeStorybook.BPage,
+               name: "B Page",
+               description: "b page",
+               absolute_path: "/b_page",
+               icon: "fa fa-page",
+               navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
+             } = Enum.at(entries, 1)
+
+      assert %PhxLiveStorybook.ComponentEntry{
+               module: Elixir.TreeStorybook.AComponent,
+               module_name: "AComponent",
+               type: :component,
+               name: "A Component",
+               description: "a component description",
+               absolute_path: "/a_component",
+               variations: [
+                 %PhxLiveStorybook.Variation{
+                   attributes: %{label: "hello"},
+                   description: "Hello variation",
+                   id: :hello
+                 },
+                 %PhxLiveStorybook.Variation{
+                   attributes: %{index: 37, label: "world"},
+                   description: "World variation",
+                   id: :world
+                 }
+               ]
+             } = Enum.at(entries, 2)
+
+      assert %PhxLiveStorybook.ComponentEntry{
+               module: Elixir.TreeStorybook.BComponent,
+               module_name: "BComponent",
+               name: "B Component",
+               type: :live_component,
+               component: BComponent,
+               description: "b component description",
+               absolute_path: "/b_component",
+               variations: [
+                 %PhxLiveStorybook.Variation{
+                   attributes: %{label: "hello"},
+                   description: "Hello variation",
+                   id: :hello
+                 },
+                 %PhxLiveStorybook.Variation{
+                   attributes: %{label: "world"},
+                   block: "<span>inner block</span>\n",
+                   id: :world
+                 }
+               ]
+             } = Enum.at(entries, 3)
+
+      assert %PhxLiveStorybook.FolderEntry{
+               name: "a_folder",
+               absolute_path: "/a_folder",
+               icon: "fa-icon",
+               nice_name: "A folder",
+               sub_entries: [
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.AFolder.AaComponent
+                 },
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.AFolder.AbComponent
+                 }
+               ]
+             } = Enum.at(entries, 4)
+
+      assert %PhxLiveStorybook.FolderEntry{
+               name: "b_folder",
+               absolute_path: "/b_folder",
+               nice_name: "Config Name",
+               sub_entries: [
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.BFolder.BaComponent
+                 },
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.BFolder.BbComponent
+                 }
+               ]
+             } = Enum.at(entries, 5)
     end
 
     test "with an empty folder it should return no entries" do
