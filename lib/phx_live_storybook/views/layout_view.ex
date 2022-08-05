@@ -85,8 +85,8 @@ defmodule PhxLiveStorybook.LayoutView do
 
           case backend_module.find_entry_by_path(path) do
             %FolderEntry{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
-            %ComponentEntry{module: module} -> {path, [module.name() | breadcrumb]}
-            %PageEntry{module: module} -> {path, [module.name() | breadcrumb]}
+            %ComponentEntry{name: name} -> {path, [name | breadcrumb]}
+            %PageEntry{name: name} -> {path, [name | breadcrumb]}
           end
       end
 
