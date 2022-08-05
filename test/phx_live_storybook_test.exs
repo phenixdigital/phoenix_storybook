@@ -27,6 +27,7 @@ defmodule PhxLiveStorybookTest do
                  name: "A Component",
                  path: content_path("flat_list/a_component.exs"),
                  absolute_path: "/a_component",
+                 attributes: [],
                  stories: []
                },
                %ComponentEntry{
@@ -36,6 +37,7 @@ defmodule PhxLiveStorybookTest do
                  name: "B Component",
                  path: content_path("flat_list/b_component.exs"),
                  absolute_path: "/b_component",
+                 attributes: [],
                  stories: []
                }
              ]
@@ -72,6 +74,14 @@ defmodule PhxLiveStorybookTest do
                name: "A Component",
                description: "a component description",
                absolute_path: "/a_component",
+               attributes: [
+                 %PhxLiveStorybook.Attr{
+                   id: :label,
+                   required: true,
+                   type: :string,
+                   doc: "component label"
+                 }
+               ],
                stories: [
                  %PhxLiveStorybook.Story{
                    attributes: %{label: "hello"},
@@ -241,6 +251,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BBaComponent",
                  name: "B Ba Component",
                  path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
+                 attributes: [],
                  stories: []
                },
                %ComponentEntry{
@@ -250,6 +261,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BbbComponent",
                  name: "Bbb Component",
                  path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
+                 attributes: [],
                  stories: []
                }
              ]

@@ -1,1 +1,71 @@
-(()=>{var r={mounted(){if(window.location.hash){let t=document.querySelector(window.location.hash);if(t){let e=document.querySelector("#live-container");setTimeout(()=>{e.scrollTop=t.offsetTop-115},100)}}this.bindAnchorLinks(),this.bindCopyCodeLinks()},updated(){this.bindAnchorLinks(),this.bindCopyCodeLinks()},bindAnchorLinks(){document.querySelectorAll(".entry-anchor-link").forEach(t=>{t.addEventListener("click",e=>{e.preventDefault(),window.history.replaceState({},"",t.hash)})})},bindCopyCodeLinks(){let t=["lsb-text-slate-500","hover:lsb-text-slate-100"],e=["lsb-text-green-400","hover:lsb-text-green-400"],s="fa-copy",n="fa-check";document.querySelectorAll(".copy-code-btn").forEach(o=>{o.addEventListener("click",l=>{let c=o.querySelector(".svg-inline--fa");o.classList.add(...e),o.classList.remove(...t),c.classList.add(n),c.classList.remove(s),this.copyToClipboard(o.nextElementSibling.textContent),setTimeout(()=>{let i=o.querySelector(".svg-inline--fa");i.classList.add(s),i.classList.remove(n),o.classList.add(...t),o.classList.remove(...e)},1e3)})})},copyToClipboard(t){var e=document.createElement("textarea");e.textContent=t,e.style.position="fixed",document.body.appendChild(e),e.select();try{return document.execCommand("copy")}catch(s){return console.warn("Copy to clipboard failed.",s),prompt("Copy to clipboard: Ctrl+C, Enter",t)}finally{document.body.removeChild(e)}}};})();
+(() => {
+  // js/entry_hook.js
+  var EntryHook = {
+    mounted() {
+      if (window.location.hash) {
+        const el = document.querySelector(window.location.hash);
+        if (el) {
+          const liveContainer = document.querySelector("#live-container");
+          setTimeout(() => {
+            liveContainer.scrollTop = el.offsetTop - 115;
+          }, 100);
+        }
+      }
+      this.bindAnchorLinks();
+      this.bindCopyCodeLinks();
+    },
+    updated() {
+      this.bindAnchorLinks();
+      this.bindCopyCodeLinks();
+    },
+    bindAnchorLinks() {
+      document.querySelectorAll(".entry-anchor-link").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          window.history.replaceState({}, "", link.hash);
+        });
+      });
+    },
+    bindCopyCodeLinks() {
+      const buttonClasses = ["lsb-text-slate-500", "hover:lsb-text-slate-100"];
+      const buttonActiveClasses = [
+        "lsb-text-green-400",
+        "hover:lsb-text-green-400"
+      ];
+      const iconClass = "fa-copy";
+      const iconActiveClass = "fa-check";
+      document.querySelectorAll(".copy-code-btn").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          let icon = button.querySelector(".svg-inline--fa");
+          button.classList.add(...buttonActiveClasses);
+          button.classList.remove(...buttonClasses);
+          icon.classList.add(iconActiveClass);
+          icon.classList.remove(iconClass);
+          this.copyToClipboard(button.nextElementSibling.textContent);
+          setTimeout(() => {
+            let icon2 = button.querySelector(".svg-inline--fa");
+            icon2.classList.add(iconClass);
+            icon2.classList.remove(iconActiveClass);
+            button.classList.add(...buttonClasses);
+            button.classList.remove(...buttonActiveClasses);
+          }, 1e3);
+        });
+      });
+    },
+    copyToClipboard(text) {
+      var textarea = document.createElement("textarea");
+      textarea.textContent = text;
+      textarea.style.position = "fixed";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        return document.execCommand("copy");
+      } catch (ex) {
+        console.warn("Copy to clipboard failed.", ex);
+        return prompt("Copy to clipboard: Ctrl+C, Enter", text);
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+  };
+})();

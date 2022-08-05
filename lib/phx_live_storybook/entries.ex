@@ -7,11 +7,12 @@ defmodule PhxLiveStorybook.ComponentEntry do
     :type,
     :name,
     :module_name,
+    :icon,
     :description,
     :function,
     :component,
-    :stories,
-    :icon
+    :attributes,
+    :stories
   ]
 end
 
@@ -118,10 +119,11 @@ defmodule PhxLiveStorybook.Entries do
       name: module.name(),
       module_name: module_name,
       description: module.description(),
+      icon: module.icon(),
       component: call_if_exported(module, :component),
       function: call_if_exported(module, :function),
-      stories: module.stories(),
-      icon: module.icon()
+      attributes: module.attributes(),
+      stories: module.stories()
     }
   end
 

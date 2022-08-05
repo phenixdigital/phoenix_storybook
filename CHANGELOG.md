@@ -5,7 +5,7 @@
 - change (breaking!): entries must know be written as `.exs` files. Otherwise they will be ignored.
 - change (breaking!): `variations` have been rebranded as `stories`.
 - improvement: storybook is now fully responsive.
-- improvement: (stateless) component entries no longer require to define a `component/0` function.
+- improvement: stateless component entries no longer require to define a `component/0` function.
 
 ## v0.2.0 (2022-07-30)
 
