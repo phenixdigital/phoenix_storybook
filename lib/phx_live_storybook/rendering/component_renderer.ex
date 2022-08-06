@@ -41,6 +41,26 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(heex)
   end
 
+  def render_component(id, fun, assigns, slots \\ nil, block \\ nil)
+
+  def render_component(id, fun, assigns, slots, block) when is_function(fun) do
+    IO.render_component_heex(fun, """
+    <.#{function_name(fun)} #{attributes_markup(assigns, id)}>
+      #{block}
+      #{slots}
+    </.#{function_name(fun)}>
+    """)
+  end
+
+  def render_component(id, module, assigns, slots, block) when is_atom(module) do
+    render_component_heex("""
+    <.live_component module={#{inspect(module)}} #{attributes_markup(assigns, id)}>
+      #{block}
+      #{slots}
+    </.live_component>
+    """)
+  end
+
   defp component_story_heex(fun, story = %Story{}, id) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(story.attributes, id)}>
