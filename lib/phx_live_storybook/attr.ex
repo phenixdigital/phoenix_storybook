@@ -14,5 +14,5 @@ defmodule PhxLiveStorybook.Attr do
   - `default`: attribute default value.
   """
   @enforce_keys [:id, :type]
-  defstruct [:id, :type, :required, :doc, :default]
+  defstruct [:id, :type, :required, :doc, :default, :options]
 end

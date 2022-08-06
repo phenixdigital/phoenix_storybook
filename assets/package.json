@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@tailwindcss/line-clamp": "^0.4.0",
+    "@tailwindcss/forms": "^0.5.2",
     "esbuild": "^0.14.51",
     "npm-run-all": "^4.1.5",
     "phoenix": "file:../deps/phoenix",

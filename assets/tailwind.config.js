@@ -3,7 +3,7 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [require("tailwindcss-font-inter")],
+  plugins: [require("tailwindcss-font-inter"), require("@tailwindcss/forms")],
   prefix: "lsb-",
   important: true,
 };

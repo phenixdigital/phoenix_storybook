@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   use Phoenix.HTML
   import Phoenix.LiveView.Helpers
 
+  alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryTabNotFound, Story, StoryGroup}
 
   def navigation_tabs do
@@ -53,21 +54,6 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
     """
   end
 
-  def render(assigns = %{tab: :documentation}) do
-    ~H"""
-    <div class="lsb-w-full lsb-text-center lsb-text-slate-400 lg:lsb-pt-20 lg:lsb-px-40">
-      <i class="hover:lsb-text-indigo-400 fas fa-traffic-cone fa-5x fa-bounce" style="--fa-animation-iteration-count: 2;"></i>
-      <h2 class="lsb-mt-8 lsb-text-lg">Coming soon</h2>
-      <p class="lsb-text-left lg:lsb-pt-12 lsb-text-slate-500">
-        Here, you'll soon be able to explore your component properties, see their related
-        documentation and experiment with them in an interactive playground.
-        <br/><br/>
-        This will most likely rely on <code>live_view</code> <code>0.18.0</code> declarative assigns feature.
-      </p>
-    </div>
-    """
-  end
-
   def render(assigns = %{tab: :source}) do
     ~H"""
     <div class="lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
@@ -76,8 +62,113 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
     """
   end
 
+  def render(assigns = %{tab: :documentation}) do
+    ~H"""
+    <div class="lsb-space-y-12 lsb-pt-8">
+      <!-- Component playground -->
+      <.live_component module={Playground} id={"#{Macro.underscore(@entry.module)}-playground"}
+        entry={@entry} attrs={@playground_attrs}
+      />
+
+      <!-- Component properties -->
+      <.form for={:playground} let={f} id={"#{Macro.underscore(@entry.module)}-playground-form"} phx-change={"playground-change"}>
+        <div class="lsb-mt-8 lsb-flex lsb-flex-col">
+          <div class="-lsb-my-2 -lsb-mx-4 lsb-overflow-x-auto md:-lsb-mx-8">
+            <div class="lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
+              <div class="lsb-overflow-hidden lsb-shadow lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 md:lsb-rounded-lg">
+                <table class="lsb-min-w-full lsb-divide-y lsb-divide-gray-300">
+                  <thead class="lsb-bg-gray-50">
+                    <tr>
+                      <%= for header <- ~w(Attribute Type Documentation Value) do %>
+                        <th scope="col" class="lsb-py-3.5 lsb-px-3 md:lsb-px-6 first:lsb-pl-6 first:lg:lsb-pl-9 lsb-text-left lsb-text-sm lsb-font-semibold lsb-text-gray-900">
+                          <%= header %>
+                        </th>
+                      <% end %>
+                    </tr>
+                  </thead>
+                  <tbody class="lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
+                    <%= for attr <- @entry.attributes do %>
+                      <tr>
+                        <td class="lsb-whitespace-nowrap lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
+                          <%= if attr.required do %>
+                            <span class="lsb-hidden md:lsb-inline lsb-group lsb-relative -lsb-ml-[1.85em] lsb-pr-2">
+                              <i class="lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer fad fa-circle-dot"></i>
+                              <span class="lsb-hidden lsb-absolute lsb-top-6 group-hover:lsb-block lsb-z-50 lsb-mx-auto lsb-text-xs lsb-text-indigo-800 lsb-bg-indigo-100 lsb-rounded lsb-px-2 lsb-py-1">
+                                Required
+                              </span>
+                            </span>
+                          <% end %>
+
+                          <%= attr.id %>
+                        </td>
+                        <td class="lsb-whitespace-nowrap lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500">
+                          <.type_badge type={attr.type}/>
+                        </td>
+                        <td class="lsb-whitespace-pre-line lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500"><%=String.trim(attr.doc)%></td>
+                        <td class="lsb-whitespace-nowrap lsb-lsb-py-4 lsb-pl-3 lsb-pr-4  lsb-text-sm lsb-font-medium sm:lsb-pr-6">
+                          <%= text_input f, attr.id, value: Map.get(@playground_attrs, attr.id), class: "lsb-max-w-lg lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-max-w-xs sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md" %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </.form>
+    </div>
+    """
+  end
+
   def render(_assigns = %{tab: tab}),
     do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
+
+  defp type_badge(assigns = %{type: :string}) do
+    ~H"""
+    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge(assigns = %{type: :atom}) do
+    ~H"""
+    <span class={"lsb-bg-blue-100 lsb-text-blue-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge(assigns = %{type: :boolean}) do
+    ~H"""
+    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge(assigns = %{type: :integer}) do
+    ~H"""
+    <span class={"lsb-bg-green-100 lsb-text-green-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge(assigns = %{type: :float}) do
+    ~H"""
+    <span class={"lsb-bg-green-100 lsb-text-green-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge(assigns = %{type: :list}) do
+    ~H"""
+    <span class={"lsb-bg-teal-100 lsb-text-teal-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge(assigns = %{type: _type}) do
+    ~H"""
+    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= @type %></span>
+    """
+  end
+
+  defp type_badge_class do
+    "lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"
+  end
 
   defp anchor_id(%{id: id}) do
     id |> to_string() |> String.replace("_", "-")

@@ -42,7 +42,8 @@ defmodule PhxLiveStorybook.EntryLive do
            entry: entry,
            entry_path: entry_path,
            page_title: entry.name,
-           tab: current_tab(params, entry)
+           tab: current_tab(params, entry),
+           playground_attrs: default_attrs(entry)
          )
          |> push_event("close-sidebar", %{"id" => "#sidebar"})}
     end
@@ -51,6 +52,14 @@ defmodule PhxLiveStorybook.EntryLive do
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
   end
+
+  defp default_attrs(%ComponentEntry{attributes: attributes}) do
+    for attr <- attributes, into: %{} do
+      {attr.id, attr.default}
+    end
+  end
+
+  defp default_attrs(_entry), do: nil
 
   def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do
     entry_path =
@@ -61,6 +70,15 @@ defmodule PhxLiveStorybook.EntryLive do
       )
 
     {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
+  end
+
+  def handle_event("playground-change", %{"playground" => params}, socket) do
+    playground_attrs =
+      for {key, value} <- params, into: socket.assigns.playground_attrs do
+        {String.to_atom(key), value}
+      end
+
+    {:noreply, assign(socket, :playground_attrs, playground_attrs)}
   end
 
   defp current_tab(params, entry) do
