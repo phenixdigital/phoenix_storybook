@@ -47,6 +47,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     assert html =~ "Aa component description"
   end
 
+  @tag :skip
   test "renders component entry and navigate to documentation tab", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/storybook/a_component")
 
