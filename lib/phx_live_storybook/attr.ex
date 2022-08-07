@@ -12,7 +12,9 @@ defmodule PhxLiveStorybook.Attr do
   - `required`: `true` if the attribute is mandatory.
   - `doc`: a text documentation for this attribute.
   - `default`: attribute default value.
+  - `init`: if you want to init the playground input with a value different
+    than the `default` one.
   """
   @enforce_keys [:id, :type]
-  defstruct [:id, :type, :required, :doc, :default, :options]
+  defstruct [:id, :type, :required, :doc, :default, :init, :options]
 end

@@ -43,7 +43,8 @@ defmodule PhxLiveStorybook.EntryLive do
            entry_path: entry_path,
            page_title: entry.name,
            tab: current_tab(params, entry),
-           playground_attrs: default_attrs(entry)
+           playground_attrs: default_attrs(entry),
+           playground_sequence: 0
          )
          |> push_event("close-sidebar", %{"id" => "#sidebar"})}
     end
@@ -54,8 +55,8 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp default_attrs(%ComponentEntry{attributes: attributes}) do
-    for attr <- attributes, into: %{} do
-      {attr.id, attr.default}
+    for attr <- attributes, value = attr.init, !is_nil(value), into: %{} do
+      {attr.id, value}
     end
   end
 
@@ -72,13 +73,43 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
   end
 
-  def handle_event("playground-change", %{"playground" => params}, socket) do
+  def handle_event("playground-change", %{"playground" => params}, socket = %{assigns: assigns}) do
+    entry = assigns.entry
+
     playground_attrs =
-      for {key, value} <- params, into: socket.assigns.playground_attrs do
-        {String.to_atom(key), value}
+      for {key, value} <- params, key = String.to_atom(key), reduce: assigns.playground_attrs do
+        acc ->
+          if is_nil(value) || value == "" do
+            Map.delete(acc, key)
+          else
+            Map.put(acc, key, cast_value(entry, key, value))
+          end
       end
 
+    {:noreply,
+     assign(socket,
+       playground_attrs: playground_attrs,
+       playground_sequence: assigns.playground_sequence + 1
+     )}
+  end
+
+  def handle_event(
+        "playground-toggle",
+        %{"toggled" => [key, value]},
+        socket = %{assigns: assigns}
+      ) do
+    playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
     {:noreply, assign(socket, :playground_attrs, playground_attrs)}
+  end
+
+  defp cast_value(%ComponentEntry{attributes: attributes}, attr_id, value) do
+    attr = Enum.find(attributes, &(&1.id == attr_id))
+
+    case attr.type do
+      :atom -> String.to_atom(value)
+      :boolean -> String.to_atom(value)
+      _ -> value
+    end
   end
 
   defp current_tab(params, entry) do
