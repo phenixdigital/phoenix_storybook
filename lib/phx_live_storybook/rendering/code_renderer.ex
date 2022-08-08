@@ -14,44 +14,40 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias PhxLiveStorybook.{Story, StoryGroup}
 
   @doc """
+  Renders a `Story` (or `StoryGroup`) code snippet, wrapped in a `<pre>` tag.
+  """
+  def render_story_code(fun_or_mod, story_or_group, assigns \\ %{})
+
+  def render_story_code(fun_or_mod, story = %Story{}, assigns) do
+    ~H"""
+    <pre class={pre_class()}>
+    <%= component_code_heex(fun_or_mod, story.attributes, story.block, story.slots) |> format_heex() %>
+    </pre>
+    """
+  end
+
+  def render_story_code(fun_or_mod, %StoryGroup{stories: stories}, assigns) do
+    heexes =
+      for s <- stories do
+        fun_or_mod
+        |> component_code_heex(s.attributes, s.block, s.slots)
+        |> String.replace("\n", "")
+      end
+
+    ~H"""
+    <pre class={pre_class()}>
+    <%= heexes |> Enum.join("\n") |> format_heex() %>
+    </pre>
+    """
+  end
+
+  @doc """
   Renders a component code snippet, wrapped in a `<pre>` tag.
   """
-  def render_component_code(function_or_module, story_or_group, assigns \\ %{})
-
-  def render_component_code(fun, story = %Story{}, assigns) when is_function(fun) do
+  def render_component_code(fun_or_mod, attributes, block, slots, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_heex(fun, story) |> format_heex() %>
-    </pre>
-    """
-  end
-
-  def render_component_code(fun, %StoryGroup{stories: stories}, assigns)
-      when is_function(fun) do
-    heexes = for v <- stories, do: fun |> component_code_heex(v) |> String.replace("\n", "")
-
-    ~H"""
-    <pre class={pre_class()}>
-    <%= heexes |> Enum.join("\n") |> format_heex() %>
-    </pre>
-    """
-  end
-
-  def render_component_code(mod, story = %Story{}, assigns) when is_atom(mod) do
-    ~H"""
-    <pre class={pre_class()}>
-    <%= live_component_code_heex(mod, story) |> format_heex() %>
-    </pre>
-    """
-  end
-
-  def render_component_code(mod, %StoryGroup{stories: stories}, assigns)
-      when is_atom(mod) do
-    heexes = for v <- stories, do: mod |> live_component_code_heex(v) |> String.replace("\n", "")
-
-    ~H"""
-    <pre class={pre_class()}>
-    <%= heexes |> Enum.join("\n") |> format_heex() %>
+    <%= component_code_heex(fun_or_mod, attributes, block, slots) |> format_heex() %>
     </pre>
     """
   end
@@ -86,24 +82,24 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     do:
       "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-shadow-md lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"
 
-  defp component_code_heex(function, v = %Story{}) do
+  defp component_code_heex(function, attributes, block, slots) when is_function(function) do
     fun = function_name(function)
-    self_closed? = is_nil(v.block) and is_nil(v.slots)
+    self_closed? = is_nil(block) and is_nil(slots)
 
     """
-    #{"<.#{fun}"}#{for {k, val} <- v.attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if v.block, do: indent_block(v.block)}#{if v.slots, do: indent_block(v.slots)}
+    #{"<.#{fun}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
+    #{if block, do: indent_block(block)}#{if slots, do: indent_block(slots)}
     #{unless self_closed?, do: "<./#{fun}>"}
     """
   end
 
-  defp live_component_code_heex(module, v = %Story{}) do
+  defp component_code_heex(module, attributes, block, slots) when is_atom(module) do
     mod = module_name(module)
-    self_closed? = is_nil(v.block) and is_nil(v.slots)
+    self_closed? = is_nil(block) and is_nil(slots)
 
     """
-    #{"<.live_component module={#{mod}}"}#{for {k, val} <- v.attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if v.block, do: indent_block(v.block)}#{if v.slots, do: indent_block(v.slots)}
+    #{"<.live_component module={#{mod}}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
+    #{if block, do: indent_block(block)}#{if slots, do: indent_block(slots)}
     #{unless self_closed?, do: "<./live_component>"}
     """
   end

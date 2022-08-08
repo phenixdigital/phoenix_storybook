@@ -45,7 +45,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_component_code(module.function(), story)
+                  CodeRenderer.render_story_code(module.function(), story)
                   |> to_raw_html()
                 )
               end
@@ -65,7 +65,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_component_code(module.component(), story)
+                  CodeRenderer.render_story_code(module.component(), story)
                   |> to_raw_html()
                 )
               end

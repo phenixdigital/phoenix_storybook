@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreview do
   def render(assigns) do
     ~H"""
     <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-py-8 lsb-bg-white lsb-shadow-sm lsb-justify-evenly">
-      <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs) %>
+      <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs, nil, nil) %>
     </div>
     """
   end

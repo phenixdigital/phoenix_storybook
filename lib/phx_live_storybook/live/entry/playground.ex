@@ -5,6 +5,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.PlaygroundPreview
+  alias PhxLiveStorybook.Rendering.CodeRenderer
 
   def update(assigns, socket) do
     {:ok,
@@ -12,7 +13,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
      |> assign(assigns)
      |> assign(
        playground_attrs: default_attrs(assigns.entry),
-       playground_sequence: 0
+       playground_sequence: 0,
+       tab: :attributes
      )}
   end
 
@@ -26,65 +28,101 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   def render(assigns) do
     ~H"""
-    <div class="lsb-space-y-12 lsb-pt-8">
-      <!-- Component playground -->
+    <div class="lsb-space-y-6 lsb-pt-8 lsb-flex lsb-flex-col lsb-flex-1">
       <.live_component module={PlaygroundPreview} id={"#{Macro.underscore(@entry.module)}-playground-#{@playground_sequence}"}
         entry={@entry} attrs={@playground_attrs}
       />
-
-      <!-- Component properties -->
-      <.form for={:playground} let={f} id={form_id(@entry)} phx-change={"playground-change"} phx-target={@myself}>
-        <div class="lsb-mt-8 lsb-flex lsb-flex-col">
-          <div class="-lsb-my-2 -lsb-mx-4 lsb-overflow-x-auto md:-lsb-mx-8">
-            <div class="lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
-              <div class="lsb-overflow-hidden lsb-shadow lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 md:lsb-rounded-lg">
-                <table class="lsb-min-w-full lsb-divide-y lsb-divide-gray-300">
-                  <thead class="lsb-bg-gray-50">
-                    <tr>
-                      <%= for header <- ~w(Attribute Type Documentation Default Value) do %>
-                        <th scope="col" class="lsb-py-3.5 lsb-px-3 md:lsb-px-6 first:lsb-pl-6 first:lg:lsb-pl-9 lsb-text-left lsb-text-sm lsb-font-semibold lsb-text-gray-900">
-                          <%= header %>
-                        </th>
-                      <% end %>
-                    </tr>
-                  </thead>
-                  <tbody class="lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
-                    <%= for attr <- @entry.attributes do %>
-                      <tr>
-                        <td class="lsb-whitespace-nowrap lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
-                          <%= if attr.required do %>
-                            <span class="lsb-hidden md:lsb-inline lsb-group lsb-relative -lsb-ml-[1.85em] lsb-pr-2">
-                              <i class="lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer fad fa-circle-dot"></i>
-                              <span class="lsb-hidden lsb-absolute lsb-top-6 group-hover:lsb-block lsb-z-50 lsb-mx-auto lsb-text-xs lsb-text-indigo-800 lsb-bg-indigo-100 lsb-rounded lsb-px-2 lsb-py-1">
-                                Required
-                              </span>
-                            </span>
-                          <% end %>
-
-                          <%= attr.id %>
-                        </td>
-                        <td class="lsb-whitespace-nowrap lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500">
-                          <.type_badge type={attr.type}/>
-                        </td>
-                        <td class="lsb-whitespace-pre-line lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500"><%=String.trim(attr.doc)%></td>
-                        <td class="lsb-whitespace-nowrap lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500">
-                          <span class="lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"><%= attr.default %></span>
-                        </td>
-                        <td class="lsb-whitespace-nowrap lsb-lsb-py-4 lsb-pl-3 lsb-pr-4  lsb-text-sm lsb-font-medium sm:lsb-pr-6">
-                          <.attr_input form={f} attr_id={attr.id} type={attr.type} playground_attrs={@playground_attrs} options={attr.options} myself={@myself}/>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </.form>
+      <%= render_navigation_tabs(assigns) %>
+      <%= render_current_tab(assigns) %>
     </div>
     """
   end
+
+  defp render_navigation_tabs(assigns) do
+    ~H"""
+    <div>
+      <div class="lsb-border-b lsb-border-gray-200">
+        <nav class="-lsb-mb-px lsb-flex lsb-space-x-8">
+          <%= for {tab, label} <- [{:attributes, "Attributes"}, {:code, "Code"}] do %>
+            <a href="#" phx-click="tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"#{active_link(@tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
+              <%= label %>
+            </a>
+          <% end %>
+        </nav>
+      </div>
+    </div>
+    """
+  end
+
+  defp active_link(same_tab, same_tab), do: "lsb-border-indigo-500 lsb-text-indigo-600"
+
+  defp active_link(_current_tab, _tab) do
+    "lsb-border-transparent lsb-text-gray-500 hover:lsb-text-gray-700 hover:lsb-border-gray-300"
+  end
+
+  defp render_current_tab(assigns = %{tab: :attributes}) do
+    ~H"""
+    <.form for={:playground} let={f} id={form_id(@entry)} phx-change={"playground-change"} phx-target={@myself}>
+    <div class="lsb-flex lsb-flex-col">
+      <div class="-lsb-my-2 -lsb-mx-4 lsb-overflow-x-auto md:-lsb-mx-8">
+        <div class="lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
+          <div class="lsb-overflow-hidden lsb-shadow lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 md:lsb-rounded-lg">
+            <table class="lsb-min-w-full lsb-divide-y lsb-divide-gray-300">
+              <thead class="lsb-bg-gray-50">
+                <tr>
+                  <%= for header <- ~w(Attribute Type Documentation Default Value) do %>
+                    <th scope="col" class="lsb-py-3.5 lsb-px-3 md:lsb-px-6 first:lsb-pl-6 first:lg:lsb-pl-9 lsb-text-left lsb-text-sm lsb-font-semibold lsb-text-gray-900">
+                      <%= header %>
+                    </th>
+                  <% end %>
+                </tr>
+              </thead>
+              <tbody class="lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
+                <%= for attr <- @entry.attributes do %>
+                  <tr>
+                    <td class="lsb-whitespace-nowrap lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
+                      <%= if attr.required do %>
+                        <span class="lsb-hidden md:lsb-inline lsb-group lsb-relative -lsb-ml-[1.85em] lsb-pr-2">
+                          <i class="lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer fad fa-circle-dot"></i>
+                          <span class="lsb-hidden lsb-absolute lsb-top-6 group-hover:lsb-block lsb-z-50 lsb-mx-auto lsb-text-xs lsb-text-indigo-800 lsb-bg-indigo-100 lsb-rounded lsb-px-2 lsb-py-1">
+                            Required
+                          </span>
+                        </span>
+                      <% end %>
+
+                      <%= attr.id %>
+                    </td>
+                    <td class="lsb-whitespace-nowrap lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500">
+                      <.type_badge type={attr.type}/>
+                    </td>
+                    <td class="lsb-whitespace-pre-line lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500"><%=String.trim(attr.doc)%></td>
+                    <td class="lsb-whitespace-nowrap lsb-px-3 lg:lsb-px-6 lsb-py-4 lsb-text-sm lsb-text-gray-500">
+                      <span class="lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"><%= attr.default %></span>
+                    </td>
+                    <td class="lsb-whitespace-nowrap lsb-lsb-py-4 lsb-pl-3 lsb-pr-4  lsb-text-sm lsb-font-medium sm:lsb-pr-6">
+                      <.attr_input form={f} attr_id={attr.id} type={attr.type} playground_attrs={@playground_attrs} options={attr.options} myself={@myself}/>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    </.form>
+    """
+  end
+
+  defp render_current_tab(assigns = %{tab: :code}) do
+    ~H"""
+    <div class="lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
+      <%= CodeRenderer.render_component_code(fun_or_component(@entry), @playground_attrs, nil, nil) %>
+    </div>
+    """
+  end
+
+  defp render_current_tab(_), do: ""
 
   defp form_id(entry) do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
@@ -182,6 +220,16 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp on_toggle_click(form, attr_id, value) do
     JS.set_attribute({"value", to_string(!value)}, to: "##{form.id}_#{attr_id}")
     |> JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
+  end
+
+  defp fun_or_component(%ComponentEntry{type: :live_component, component: component}),
+    do: component
+
+  defp fun_or_component(%ComponentEntry{type: :component, function: function}),
+    do: function
+
+  def handle_event("tab-navigation", %{"tab" => tab}, socket) do
+    {:noreply, assign(socket, :tab, String.to_atom(tab))}
   end
 
   def handle_event("playground-change", %{"playground" => params}, socket = %{assigns: assigns}) do
