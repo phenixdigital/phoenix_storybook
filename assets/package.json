@@ -15,7 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.0",
-    "esbuild": "^0.14.51",
+    "esbuild": "^0.14.54",
     "npm-run-all": "^4.1.5",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
