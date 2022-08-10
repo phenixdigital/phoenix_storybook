@@ -80,7 +80,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp pre_class,
     do:
-      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-shadow-md lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"
+      "highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"
 
   defp component_code_heex(function, attributes, block, slots) when is_function(function) do
     fun = function_name(function)
@@ -88,7 +88,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
     """
     #{"<.#{fun}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if block, do: indent_block(block)}#{if slots, do: indent_block(slots)}
+    #{if block, do: indent_block([block])}#{if slots, do: indent_block(slots)}
     #{unless self_closed?, do: "<./#{fun}>"}
     """
   end
@@ -99,14 +99,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
     """
     #{"<.live_component module={#{mod}}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if block, do: indent_block(block)}#{if slots, do: indent_block(slots)}
+    #{if block, do: indent_block([block])}#{if slots, do: indent_block(slots)}
     #{unless self_closed?, do: "<./live_component>"}
     """
   end
 
   defp indent_block(block) do
     block
-    |> String.split("\n")
     |> Enum.map(&String.trim/1)
     |> Enum.reject(&(&1 == ""))
     |> Enum.map_join("\n", &"  #{&1}")

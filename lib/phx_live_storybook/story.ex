@@ -18,11 +18,11 @@ defmodule PhxLiveStorybook.Story do
             label: "A dropdown",
 
           },
-          slots: \"\"\"
-          <:entry path="#" label="Account settings"/>
-          <:entry path="#" label="Support"/>
-          <:entry path="#" label="License"/>
-          \"\"\"
+          slots: [
+            ~s|<:entry path="#" label="Account settings"/>|,
+            ~s|<:entry path="#" label="Support"/>|,
+            ~s|<:entry path="#" label="License"/>|
+          ]
         }
       ]
     end

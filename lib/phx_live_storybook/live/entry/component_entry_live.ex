@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   use Phoenix.HTML
   import Phoenix.LiveView.Helpers
 
+  alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryTabNotFound, Story, StoryGroup}
 
@@ -64,12 +65,19 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
   def render(assigns = %{tab: :playground}) do
     ~H"""
-    <.live_component module={Playground} id="playground" entry={@entry}/>
+    <.live_component module={Playground} id="playground"
+      entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
+      story={default_story(@entry)}
+      playground_preview_pid={@playground_preview_pid}
+    />
     """
   end
 
   def render(_assigns = %{tab: tab}),
     do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
+
+  defp default_story(%ComponentEntry{stories: [story | _]}), do: story
+  defp default_story(_), do: nil
 
   defp anchor_id(%{id: id}) do
     id |> to_string() |> String.replace("_", "-")

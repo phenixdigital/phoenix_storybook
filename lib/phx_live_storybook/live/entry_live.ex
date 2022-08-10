@@ -9,7 +9,8 @@ defmodule PhxLiveStorybook.EntryLive do
     {:ok,
      assign(socket,
        otp_app: session["otp_app"],
-       backend_module: session["backend_module"]
+       backend_module: session["backend_module"],
+       playground_preview_pid: nil
      )}
   end
 
@@ -117,7 +118,7 @@ defmodule PhxLiveStorybook.EntryLive do
     <div class="lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
       <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="entry-nav-form lg:lsb-hidden">
-        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md" %>
+        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md", value: @tab %>
       </.form>
 
       <!-- :lg+ version of navigation tabs -->
@@ -172,6 +173,10 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp first_component_entry(socket) do
     socket.assigns.backend_module.all_leaves() |> Enum.at(0)
+  end
+
+  def handle_info({:playground_preview_pid, pid}, socket) do
+    {:noreply, assign(socket, :playground_preview_pid, pid)}
   end
 end
 
