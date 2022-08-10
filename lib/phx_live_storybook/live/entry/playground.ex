@@ -69,15 +69,30 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
-    <%= live_render @socket, PlaygroundPreviewLive,
-      id: "#{Macro.underscore(@entry.module)}-playground-preview",
-      session: %{"entry_path" => @entry_path, "story_id" => @story.id, "backend_module" => to_string(@backend_module)}
-    %>
-    <%= if @upper_tab == :code do %>
-      <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm lsb-justify-evenly">
-        <%= CodeRenderer.render_component_code(fun_or_component(@entry), @playground_attrs, @playground_block, @playground_slots) %>
-      </div>
-    <% end %>
+    <div class="lsb-relative">
+      <%= live_render @socket, PlaygroundPreviewLive,
+        id: "#{Macro.underscore(@entry.module)}-playground-preview",
+        session: %{"entry_path" => @entry_path, "story_id" => @story.id, "backend_module" => to_string(@backend_module)}
+      %>
+      <%= if @upper_tab == :code do %>
+        <div class="lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm lsb-justify-evenly">
+          <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
+            <i class="fa fa-copy"></i>
+          </div>
+          <%= CodeRenderer.render_component_code(fun_or_component(@entry), @playground_attrs, @playground_block, @playground_slots) %>
+        </div>
+      <% end %>
+      <%= if @playground_error do %>
+        <% error_bg = if @upper_tab == :code, do: "lsb-bg-slate/20", else: "lsb-bg-white/20" %>
+        <div class={"lsb-absolute lsb-inset-2 lsb-z-10 lsb-backdrop-blur-lg lsb-text-red-600 #{error_bg} lsb-rounded lsb-flex lsb-flex-col lsb-justify-center lsb-items-center lsb-space-y-2"}>
+          <i class="fad fa-xl fa-bomb"></i>
+          <span>Ohoh, I just crashed!</span>
+          <button phx-click="clear-playground-error" class="lsb-inline-flex lsb-items-center lsb-px-2.5 lsb-py-1.5 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500">
+            Dismiss
+          </button>
+        </div>
+      <% end %>
+    </div>
     """
   end
 

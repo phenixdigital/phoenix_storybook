@@ -10,7 +10,8 @@ defmodule PhxLiveStorybook.EntryLive do
      assign(socket,
        otp_app: session["otp_app"],
        backend_module: session["backend_module"],
-       playground_preview_pid: nil
+       playground_preview_pid: nil,
+       playground_error: nil
      )}
   end
 
@@ -43,7 +44,8 @@ defmodule PhxLiveStorybook.EntryLive do
            entry: entry,
            entry_path: entry_path,
            page_title: entry.name,
-           tab: current_tab(params, entry)
+           tab: current_tab(params, entry),
+           playground_error: nil
          )
          |> push_event("close-sidebar", %{"id" => "#sidebar"})}
     end
@@ -51,17 +53,6 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
-  end
-
-  def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do
-    entry_path =
-      live_storybook_path(
-        socket,
-        :entry,
-        String.split(socket.assigns.entry.absolute_path, "/", trim: true)
-      )
-
-    {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
   end
 
   defp current_tab(params, entry) do
@@ -175,8 +166,29 @@ defmodule PhxLiveStorybook.EntryLive do
     socket.assigns.backend_module.all_leaves() |> Enum.at(0)
   end
 
+  def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do
+    entry_path =
+      live_storybook_path(
+        socket,
+        :entry,
+        String.split(socket.assigns.entry.absolute_path, "/", trim: true)
+      )
+
+    {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
+  end
+
+  def handle_event("clear-playground-error", _, socket) do
+    {:noreply, assign(socket, :playground_error, nil)}
+  end
+
   def handle_info({:playground_preview_pid, pid}, socket) do
+    Process.monitor(pid)
     {:noreply, assign(socket, :playground_preview_pid, pid)}
+  end
+
+  def handle_info({:DOWN, _ref, :process, pid, reason}, socket)
+      when socket.assigns.playground_preview_pid == pid do
+    {:noreply, assign(socket, :playground_error, reason)}
   end
 end
 

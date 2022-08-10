@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   use Phoenix.HTML
   import Phoenix.LiveView.Helpers
 
+  alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryTabNotFound, Story, StoryGroup}
@@ -43,7 +44,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
           <!-- Story code -->
           <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm">
-            <div class="copy-code-btn lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
+            <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="fa fa-copy"></i>
             </div>
             <%= @backend_module.render_code(@entry.module(), story_id) %>
@@ -69,6 +70,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
       entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
       story={default_story(@entry)}
       playground_preview_pid={@playground_preview_pid}
+      playground_error={@playground_error}
     />
     """
   end
