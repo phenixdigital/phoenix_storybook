@@ -187,7 +187,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     slots =
       assigns
       |> Map.get(:playground_slots, [])
-      |> Enum.filter(&String.starts_with?(&1, "<:#{slot_id}"))
+      |> Enum.filter(&String.match?(&1, ~r/^<:#{slot_id}[>\s]/))
 
     if Enum.any?(slots) do
       Enum.join(slots, "\n")
