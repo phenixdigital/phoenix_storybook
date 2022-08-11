@@ -16,6 +16,7 @@ defmodule PhxLiveStorybook.Attr do
     * `:integer` - any integer
     * `:float` - any float
     * `:list` - a List of any arbitrary types
+    * Any struct module
   - `required`: `true` if the attribute is mandatory.
   - `doc`: a text documentation for this attribute.
   - `default`: attribute default value.

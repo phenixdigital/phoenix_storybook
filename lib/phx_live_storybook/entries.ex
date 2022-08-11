@@ -11,8 +11,8 @@ defmodule PhxLiveStorybook.ComponentEntry do
     :description,
     :function,
     :component,
-    :attributes,
-    :stories
+    attributes: [],
+    stories: []
   ]
 end
 
@@ -40,6 +40,7 @@ end
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
+  alias PhxLiveStorybook.EntriesValidator
 
   @doc false
   def entries(path, folders_config) do
@@ -111,7 +112,7 @@ defmodule PhxLiveStorybook.Entries do
   defp component_entry(path, module, absolute_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
-    %ComponentEntry{
+    entry = %ComponentEntry{
       module: module,
       type: module.storybook_type(),
       path: path,
@@ -125,6 +126,9 @@ defmodule PhxLiveStorybook.Entries do
       attributes: module.attributes(),
       stories: module.stories()
     }
+
+    EntriesValidator.validate!(entry)
+    entry
   end
 
   defp page_entry(path, module, absolute_path) do

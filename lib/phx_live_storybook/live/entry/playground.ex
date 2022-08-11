@@ -69,7 +69,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
-    <div class="lsb-relative">
+    <div class="lsb-relative lsb-min-h-32">
       <%= live_render @socket, PlaygroundPreviewLive,
         id: "#{Macro.underscore(@entry.module)}-playground-preview",
         session: %{"entry_path" => @entry_path, "story_id" => @story.id, "backend_module" => to_string(@backend_module)}
