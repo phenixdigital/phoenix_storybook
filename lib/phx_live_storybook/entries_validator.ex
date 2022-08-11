@@ -217,8 +217,6 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_type!(_file, nil, _type, _message), do: :ok
-
   defp validate_type!(file, term, type, message) do
     unless match_attr_type?(term, type), do: compile_error!(file, message)
   end

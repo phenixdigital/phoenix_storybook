@@ -60,7 +60,9 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
           %Attr{id: :boolean, type: :boolean},
           %Attr{id: :integer, type: :integer},
           %Attr{id: :float, type: :float},
-          %Attr{id: :list, type: :list}
+          %Attr{id: :list, type: :list},
+          %Attr{id: :block, type: :block},
+          %Attr{id: :slot, type: :slot}
         ]
       }
 
@@ -76,6 +78,12 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = entry_with_attr(id: :wrong, type: :wrong_type)
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "invalid type :wrong_type for attr :wrong"
+    end
+
+    test "non atom types will raise" do
+      entry = entry_with_attr(id: :wrong, type: "wrong_type")
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "invalid type \"wrong_type\" for attr :wrong"
     end
   end
 
@@ -99,10 +107,16 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
   describe "attribute type and default do match" do
     test "with correct defaults, it wont raise" do
+      entry = entry_with_attr(type: :integer, default: nil)
+      assert validate(entry) == :ok
+
       entry = entry_with_attr(type: :atom, default: :foo)
       assert validate(entry) == :ok
 
       entry = entry_with_attr(type: :string, default: "foo")
+      assert validate(entry) == :ok
+
+      entry = entry_with_attr(type: :boolean, default: false)
       assert validate(entry) == :ok
 
       entry = entry_with_attr(type: :integer, default: 12)
@@ -118,6 +132,12 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       assert validate(entry) == :ok
 
       entry = entry_with_attr(type: :any, default: 12.0)
+      assert validate(entry) == :ok
+
+      entry = entry_with_attr(type: :block, default: "<block/>")
+      assert validate(entry) == :ok
+
+      entry = entry_with_attr(type: :slot, default: "<:slot/>")
       assert validate(entry) == :ok
 
       entry = entry_with_attr(type: MyModuleStruct, default: %MyModuleStruct{})
