@@ -26,7 +26,7 @@ Three kind of entries are supported:
 
 - `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
-- `example` to show how your components can be used and mixed togethers in real UI pages. (not available now)
+- `example` to show how your components can be used and mixed together in real UI pages. (not available now)
 
 Almost everything, from sidebar rendering to component preview, is performed at compilation time.
 
