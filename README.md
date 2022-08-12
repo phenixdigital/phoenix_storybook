@@ -26,7 +26,7 @@ Three kind of entries are supported:
 
 - `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
-- `example` to show how your components can be used and mixed togethers in real UI pages. (not available now)
+- `example` to show how your components can be used and mixed together in real UI pages. (not available now)
 
 Almost everything, from sidebar rendering to component preview, is performed at compilation time.
 
@@ -121,9 +121,9 @@ config :my_app, MyAppWeb.Storybook,
 
 Then you can start creating some content for your storybook. Storybook can contain 2 different kind of _entries_:
 
-- **component entries**: to document and showcase your components accross different stories (ie. _variants_)
+- **component entries**: to document and showcase your components across different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
-- **examples**: to show how your components can be used and mixed togethers in real UI pages.
+- **examples**: to show how your components can be used and mixed together in real UI pages.
 
 _As of `0.3.0`, only component and page entries are available._
 
