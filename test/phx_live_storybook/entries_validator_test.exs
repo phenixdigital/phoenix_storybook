@@ -6,13 +6,34 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
   defmodule MyModuleStruct, do: defstruct([])
 
+  describe "component entry base attributes" do
+    test "with proper types it wont raise" do
+      entry = %ComponentEntry{name: "name", description: "description", icon: "icon"}
+      assert validate(entry)
+    end
+
+    test "with invalid types it will raise" do
+      entry = %ComponentEntry{name: :name}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry name must be a binary"
+
+      entry = %ComponentEntry{description: :description}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry description must be a binary"
+
+      entry = %ComponentEntry{icon: :icon}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry icon must be a binary"
+    end
+  end
+
   describe "attributes ids" do
     test "atom id wont raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :foo, type: :string}]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "invalid id will raise" do
@@ -33,7 +54,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "duplicate attribute ids will raise" do
@@ -66,12 +87,12 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "valid atom types wont raise" do
       entry = entry_with_attr(id: :custom_struct, type: MyModuleStruct)
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "invalid atom types will raise" do
@@ -90,12 +111,12 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
   describe "attribute doc" do
     test "nil doc wont raise" do
       entry = entry_with_attr(type: :string, doc: nil)
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "binary doc wont raise" do
       entry = entry_with_attr(type: :string, doc: "some documentation")
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "invalid doc will raise" do
@@ -108,40 +129,40 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
   describe "attribute type and default do match" do
     test "with correct defaults, it wont raise" do
       entry = entry_with_attr(type: :integer, default: nil)
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :atom, default: :foo)
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :string, default: "foo")
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :boolean, default: false)
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :integer, default: 12)
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :float, default: 12.0)
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :list, default: [:foo])
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :any, default: "foo")
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :any, default: 12.0)
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :block, default: "<block/>")
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: :slot, default: "<:slot/>")
-      assert validate(entry) == :ok
+      assert validate(entry)
 
       entry = entry_with_attr(type: MyModuleStruct, default: %MyModuleStruct{})
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "with incorrect defaults, it will raise" do
@@ -173,6 +194,19 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "attribute required must be a boolean" do
+    test "with required true, it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, required: true)
+      assert validate(entry)
+    end
+
+    test "with required 'true', it will raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, required: 'true')
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required for attr :attr must be of type :boolean"
+    end
+  end
+
   describe "attribute cannot be required and provide default at the same time" do
     test "with required true and a default, it will raise" do
       entry = entry_with_attr(id: :attr, type: :atom, default: :foo, required: true)
@@ -182,19 +216,43 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
     test "with required true and no default, it wont raise" do
       entry = entry_with_attr(id: :attr, type: :atom, required: true)
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "with required false and a default, it wont raise" do
       entry = entry_with_attr(id: :attr, type: :atom, default: :foo, required: false)
-      assert validate(entry) == :ok
+      assert validate(entry)
+    end
+  end
+
+  describe "attribute options is a list and is matching declared type" do
+    test "with an empty list it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, options: [])
+      assert validate(entry)
+    end
+
+    test "with a list of matching type, it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, options: [:foo, :bar])
+      assert validate(entry)
+    end
+
+    test "without a list, it will raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, options: :foo)
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "options for attr :attr must be a list of :atom"
+    end
+
+    test "with a list of non matching type, it will raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, options: ["foo", "bar"])
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "options for attr :attr must be a list of :atom"
     end
   end
 
   describe "stories id" do
     test "atom id wont raise" do
       entry = entry_with_story(id: :foo)
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "invalid id will raise" do
@@ -213,7 +271,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "duplicate story ids will raise" do
@@ -237,7 +295,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "duplicate story ids in same group will raise" do
@@ -262,7 +320,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "story attribute with correct definition wont raise" do
@@ -277,7 +335,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "story attribute with invalid definition will raise" do
@@ -315,7 +373,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         ]
       }
 
-      assert validate(entry) == :ok
+      assert validate(entry)
     end
 
     test "story attribute with missing required attributes will raise" do
@@ -345,7 +403,8 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
           type: opts[:type],
           doc: opts[:doc],
           default: opts[:default],
-          required: opts[:required]
+          required: opts[:required],
+          options: opts[:options]
         }
       ]
     }
@@ -362,5 +421,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     }
   end
 
-  defp validate(entry), do: EntriesValidator.validate!(entry)
+  defp validate(entry) do
+    %ComponentEntry{} = EntriesValidator.validate!(entry)
+  end
 end

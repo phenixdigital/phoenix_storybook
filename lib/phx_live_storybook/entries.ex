@@ -112,7 +112,7 @@ defmodule PhxLiveStorybook.Entries do
   defp component_entry(path, module, absolute_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
-    entry = %ComponentEntry{
+    %ComponentEntry{
       module: module,
       type: module.storybook_type(),
       path: path,
@@ -126,9 +126,7 @@ defmodule PhxLiveStorybook.Entries do
       attributes: module.attributes(),
       stories: module.stories()
     }
-
-    EntriesValidator.validate!(entry)
-    entry
+    |> EntriesValidator.validate!()
   end
 
   defp page_entry(path, module, absolute_path) do

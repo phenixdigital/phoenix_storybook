@@ -4,27 +4,37 @@ defmodule PhxLiveStorybook.EntriesValidator do
   alias PhxLiveStorybook.{Attr, ComponentEntry, Story, StoryGroup}
 
   @doc """
-  This validator ensures that:
-  - component attributes ids are valid & unique
-  - component attributes doc are valid
-  - component attributes use proper types
-  - component attributes default values match with their type
-  - component attributes dont have both required and default
-  - component stories ids are valid and unique
-  - component stories attributes match with attribute's type
-  - component stories contain all required attributes
+  This validator ensures that all entries have their properties filled with proper
+  datatypes and that attribute declarations are consistent accross stories.
   """
-  def validate!(%ComponentEntry{path: path, attributes: attributes, stories: stories}) do
+  def validate!(entry = %ComponentEntry{path: path, attributes: attributes, stories: stories}) do
+    validate_entry_name(path, entry)
+    validate_entry_description(path, entry)
+    validate_entry_icon(path, entry)
     validate_attribute_ids(path, attributes)
     validate_attribute_types(path, attributes)
     validate_attribute_doc(path, attributes)
-    validate_default_types(path, attributes)
-    validate_default_or_required(path, attributes)
+    validate_attribute_default_types(path, attributes)
+    validate_attribute_required_type(path, attributes)
+    validate_attribute_default_or_required(path, attributes)
+    validate_attribute_options(path, attributes)
     validate_story_ids(path, stories)
     validate_story_in_group_ids(path, stories)
     validate_story_attribute_types(path, attributes, stories)
-    validate_required_attributes(path, attributes, stories)
-    :ok
+    validate_story_required_attributes(path, attributes, stories)
+    entry
+  end
+
+  defp validate_entry_name(file_path, entry) do
+    validate_type!(file_path, entry.name, :string, "entry name must be a binary")
+  end
+
+  defp validate_entry_description(file_path, entry) do
+    validate_type!(file_path, entry.description, :string, "entry description must be a binary")
+  end
+
+  defp validate_entry_icon(file_path, entry) do
+    validate_type!(file_path, entry.icon, :string, "entry icon must be a binary")
   end
 
   defp validate_attribute_ids(file_path, attributes) do
@@ -87,7 +97,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_default_types(file_path, attributes) do
+  defp validate_attribute_default_types(file_path, attributes) do
     for %Attr{id: attr_id, type: type, default: default} <- attributes do
       validate_type!(
         file_path,
@@ -98,7 +108,18 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_default_or_required(file_path, attributes) do
+  defp validate_attribute_required_type(file_path, attributes) do
+    for %Attr{id: attr_id, required: required} <- attributes do
+      validate_type!(
+        file_path,
+        required,
+        :boolean,
+        "required for attr #{inspect(attr_id)} must be of type :boolean"
+      )
+    end
+  end
+
+  defp validate_attribute_default_or_required(file_path, attributes) do
     for %Attr{id: attr_id, default: default, required: required} <- attributes do
       if required && !is_nil(default) do
         compile_error!(
@@ -106,6 +127,14 @@ defmodule PhxLiveStorybook.EntriesValidator do
           "only one of :required or :default must be given for attr #{inspect(attr_id)}"
         )
       end
+    end
+  end
+
+  defp validate_attribute_options(file_path, attributes) do
+    for %Attr{id: attr_id, type: type, options: options} <- attributes, !is_nil(options) do
+      msg = "options for attr #{inspect(attr_id)} must be a list of #{inspect(type)}"
+      validate_type!(file_path, options, :list, msg)
+      for opt <- options, do: validate_type!(file_path, opt, type, msg)
     end
   end
 
@@ -187,7 +216,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_required_attributes(path, attributes, stories) do
+  defp validate_story_required_attributes(path, attributes, stories) do
     required_attributes =
       for %Attr{id: attr_id, required: true} <- attributes, into: MapSet.new(), do: attr_id
 
