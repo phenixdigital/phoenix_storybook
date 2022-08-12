@@ -121,7 +121,7 @@ config :my_app, MyAppWeb.Storybook,
 
 Then you can start creating some content for your storybook. Storybook can contain 2 different kind of _entries_:
 
-- **component entries**: to document and showcase your components accross different stories (ie. _variants_)
+- **component entries**: to document and showcase your components across different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **examples**: to show how your components can be used and mixed together in real UI pages.
 
