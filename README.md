@@ -123,7 +123,7 @@ Then you can start creating some content for your storybook. Storybook can conta
 
 - **component entries**: to document and showcase your components accross different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
-- **examples**: to show how your components can be used and mixed togethers in real UI pages.
+- **examples**: to show how your components can be used and mixed together in real UI pages.
 
 _As of `0.3.0`, only component and page entries are available._
 
