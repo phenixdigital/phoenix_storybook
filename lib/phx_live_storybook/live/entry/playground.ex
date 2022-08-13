@@ -71,7 +71,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     ~H"""
     <div class="lsb-relative lsb-min-h-32">
       <%= live_render @socket, PlaygroundPreviewLive,
-        id: "#{Macro.underscore(@entry.module)}-playground-preview",
+        id: playground_preview_id(@entry),
         session: %{"entry_path" => @entry_path, "story_id" => @story.id, "backend_module" => to_string(@backend_module)}
       %>
       <%= if @upper_tab == :code do %>
@@ -199,6 +199,11 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp form_id(entry) do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-form"
+  end
+
+  defp playground_preview_id(entry) do
+    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+    "#{module}-playground-preview"
   end
 
   defp type_badge(assigns = %{type: :string}) do

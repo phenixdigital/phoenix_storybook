@@ -3,11 +3,11 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
-  @endpoint PhxLiveStorybook.TestEndpoint
+  @endpoint PhxLiveStorybook.EntryLiveTestEndpoint
   @moduletag :capture_log
 
   setup do
-    start_supervised!(PhxLiveStorybook.TestEndpoint)
+    start_supervised!(PhxLiveStorybook.EntryLiveTestEndpoint)
     {:ok, conn: build_conn()}
   end
 
