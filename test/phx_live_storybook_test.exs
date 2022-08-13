@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybookTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   import Phoenix.LiveView.Helpers
   import Phoenix.LiveViewTest
@@ -26,7 +26,7 @@ defmodule PhxLiveStorybookTest do
                  type: :component,
                  name: "A Component",
                  path: content_path("flat_list/a_component.exs"),
-                 absolute_path: "/a_component",
+                 storybook_path: "/a_component",
                  attributes: [],
                  stories: []
                },
@@ -36,7 +36,7 @@ defmodule PhxLiveStorybookTest do
                  type: :live_component,
                  name: "B Component",
                  path: content_path("flat_list/b_component.exs"),
-                 absolute_path: "/b_component",
+                 storybook_path: "/b_component",
                  attributes: [],
                  stories: []
                }
@@ -52,7 +52,7 @@ defmodule PhxLiveStorybookTest do
                module: Elixir.TreeStorybook.APage,
                name: "A Page",
                description: "a page",
-               absolute_path: "/a_page",
+               storybook_path: "/a_page",
                icon: "fa fa-page",
                navigation: []
              } = Enum.at(entries, 0)
@@ -62,7 +62,7 @@ defmodule PhxLiveStorybookTest do
                module: Elixir.TreeStorybook.BPage,
                name: "B Page",
                description: "b page",
-               absolute_path: "/b_page",
+               storybook_path: "/b_page",
                icon: "fa fa-page",
                navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
              } = Enum.at(entries, 1)
@@ -73,7 +73,7 @@ defmodule PhxLiveStorybookTest do
                type: :component,
                name: "A Component",
                description: "a component description",
-               absolute_path: "/a_component",
+               storybook_path: "/a_component",
                attributes: [
                  %PhxLiveStorybook.Attr{
                    id: :label,
@@ -103,7 +103,7 @@ defmodule PhxLiveStorybookTest do
                type: :live_component,
                component: BComponent,
                description: "b component description",
-               absolute_path: "/b_component",
+               storybook_path: "/b_component",
                stories: [
                  %PhxLiveStorybook.Story{
                    attributes: %{label: "hello"},
@@ -120,7 +120,7 @@ defmodule PhxLiveStorybookTest do
 
       assert %PhxLiveStorybook.FolderEntry{
                name: "a_folder",
-               absolute_path: "/a_folder",
+               storybook_path: "/a_folder",
                icon: "fa-icon",
                nice_name: "A folder",
                sub_entries: [
@@ -135,7 +135,7 @@ defmodule PhxLiveStorybookTest do
 
       assert %PhxLiveStorybook.FolderEntry{
                name: "b_folder",
-               absolute_path: "/b_folder",
+               storybook_path: "/b_folder",
                nice_name: "Config Name",
                sub_entries: [
                  %PhxLiveStorybook.ComponentEntry{
@@ -158,13 +158,13 @@ defmodule PhxLiveStorybookTest do
                  name: "empty_a",
                  nice_name: "Empty a",
                  sub_entries: [],
-                 absolute_path: "/empty_a"
+                 storybook_path: "/empty_a"
                },
                %FolderEntry{
                  name: "empty_b",
                  nice_name: "Empty b",
                  sub_entries: [],
-                 absolute_path: "/empty_b"
+                 storybook_path: "/empty_b"
                }
              ]
     end
@@ -245,7 +245,7 @@ defmodule PhxLiveStorybookTest do
     test "with a tree it should return all leaves" do
       assert TreeBStorybook.all_leaves() == [
                %ComponentEntry{
-                 absolute_path: "/b_folder/bb_folder/b_ba_component",
+                 storybook_path: "/b_folder/bb_folder/b_ba_component",
                  module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
                  type: :component,
                  module_name: "BBaComponent",
@@ -255,7 +255,7 @@ defmodule PhxLiveStorybookTest do
                  stories: []
                },
                %ComponentEntry{
-                 absolute_path: "/b_folder/bb_folder/bbb_component",
+                 storybook_path: "/b_folder/bb_folder/bbb_component",
                  module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
                  type: :component,
                  module_name: "BbbComponent",
@@ -276,7 +276,7 @@ defmodule PhxLiveStorybookTest do
     end
   end
 
-  defp content_path(absolute_path) do
-    ["fixtures", "storybook_content", absolute_path] |> Path.join() |> Path.expand(__DIR__)
+  defp content_path(storybook_path) do
+    ["fixtures", "storybook_content", storybook_path] |> Path.join() |> Path.expand(__DIR__)
   end
 end

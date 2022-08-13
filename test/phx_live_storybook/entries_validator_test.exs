@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.EntriesValidatorTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.{Attr, ComponentEntry, Story, StoryGroup}
   alias PhxLiveStorybook.EntriesValidator

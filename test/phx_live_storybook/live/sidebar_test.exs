@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.SidebarTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Floki, only: [find: 2]
 

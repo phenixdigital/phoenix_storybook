@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.RouterTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   import Phoenix.ConnTest
 
