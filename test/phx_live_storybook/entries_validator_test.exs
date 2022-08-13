@@ -27,6 +27,50 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "entry's component is a module" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{component: MyComponent}
+      assert validate(entry)
+    end
+
+    test "with invalit type it will raise" do
+      entry = %ComponentEntry{component: "my_component"}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry component must be a module"
+    end
+  end
+
+  describe "entry's function is a function" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{function: & &1}
+      assert validate(entry)
+    end
+
+    test "with invalid type it will raise" do
+      entry = %ComponentEntry{function: "my function"}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry function must be a function"
+    end
+  end
+
+  describe "entry attributes are list of Attrs" do
+    test "with proper attr type it wont raise" do
+      entry = %ComponentEntry{attributes: [%Attr{id: :foo, type: :string}]}
+      assert validate(entry)
+    end
+
+    test "with empty list it wont raise" do
+      entry = %ComponentEntry{attributes: []}
+      assert validate(entry)
+    end
+
+    test "with invalid type it will raise" do
+      entry = %ComponentEntry{attributes: [:foo]}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry attributes must be a list of %Attr{}"
+    end
+  end
+
   describe "attributes ids" do
     test "atom id wont raise" do
       entry = %ComponentEntry{
@@ -311,6 +355,113 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "story description is a binary" do
+    test "with a binary description it wont raise" do
+      entry = entry_with_story(id: :story_id, description: "valid")
+      assert validate(entry)
+    end
+
+    test "with a binary description in a story group, it wont raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, description: "valid")
+      assert validate(entry)
+    end
+
+    test "with invalid type it will raise" do
+      entry = entry_with_story(id: :story_id, description: :not_valid)
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "description in story :story_id must be a binary"
+    end
+
+    test "with invalid type in a story group it will raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, description: :not_valid)
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "description in story :story_id, group :group_id must be a binary"
+    end
+  end
+
+  describe "story list is a list of %Story{} or %StoryGroup{}" do
+    test "with a mix of story and story_group it won't raise" do
+      entry = %ComponentEntry{
+        stories: [
+          %Story{id: :foo},
+          %StoryGroup{id: :group_1, stories: []}
+        ]
+      }
+
+      assert validate(entry)
+    end
+
+    test "with an empty list it won't raise" do
+      entry = %ComponentEntry{stories: []}
+      assert validate(entry)
+    end
+
+    test "with an invalid type it will raise" do
+      entry = %ComponentEntry{stories: %Story{id: :foo}}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "stories must be a list of %Story{} or %StoryGroup{}"
+    end
+  end
+
+  describe "story list in a group is a list of %Story{}" do
+    test "with a list of stories it won't raise" do
+      entry = %ComponentEntry{
+        stories: [
+          %StoryGroup{id: :group_1, stories: [%Story{id: :story_1}, %Story{id: :story_2}]}
+        ]
+      }
+
+      assert validate(entry)
+    end
+
+    test "with an empty list it won't raise" do
+      entry = %ComponentEntry{
+        stories: [
+          %StoryGroup{id: :group_1, stories: []}
+        ]
+      }
+
+      assert validate(entry)
+    end
+
+    test "with a nested %StoryGroup{} it will raise" do
+      entry = %ComponentEntry{
+        stories: [
+          %StoryGroup{id: :group_1, stories: [%StoryGroup{id: :nested_group, stories: []}]}
+        ]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "stories in group :group_1 must be a list of %Story{}"
+    end
+  end
+
+  describe "story attributes is a map" do
+    test "with a map it won't raise" do
+      entry = entry_with_story(attributes: %{})
+      assert validate(entry)
+    end
+
+    test "with a list it will raise" do
+      entry = entry_with_story(id: :story_id, attributes: [])
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "attributes in story :story_id must be a map"
+    end
+  end
+
+  describe "nested story attributes is a map" do
+    test "with a map it won't raise" do
+      entry = entry_with_story_in_group(:group_id, attributes: %{})
+      assert validate(entry)
+    end
+
+    test "with a list it will raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, attributes: [])
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "attributes in story :story_id, group :group_id must be a map"
+    end
+  end
+
   describe "story attributes match with their definition" do
     test "story attribute without definition wont raise" do
       entry = %ComponentEntry{
@@ -415,7 +566,25 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       stories: [
         %Story{
           id: opts[:id],
+          description: opts[:description],
           attributes: opts[:attributes] || %{}
+        }
+      ]
+    }
+  end
+
+  defp entry_with_story_in_group(group_id, opts) do
+    %ComponentEntry{
+      stories: [
+        %StoryGroup{
+          id: group_id,
+          stories: [
+            %Story{
+              id: opts[:id],
+              description: opts[:description],
+              attributes: opts[:attributes] || %{}
+            }
+          ]
         }
       ]
     }

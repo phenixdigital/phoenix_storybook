@@ -11,6 +11,9 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_entry_name(path, entry)
     validate_entry_description(path, entry)
     validate_entry_icon(path, entry)
+    validate_entry_component(path, entry)
+    validate_entry_function(path, entry)
+    validate_attribute_list_type(path, entry)
     validate_attribute_ids(path, attributes)
     validate_attribute_types(path, attributes)
     validate_attribute_doc(path, attributes)
@@ -18,8 +21,14 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_attribute_required_type(path, attributes)
     validate_attribute_default_or_required(path, attributes)
     validate_attribute_options(path, attributes)
+    validate_story_list_type(path, stories)
+    validate_story_in_group_list_type(path, stories)
     validate_story_ids(path, stories)
     validate_story_in_group_ids(path, stories)
+    validate_story_description(path, stories)
+    validate_story_in_group_description(path, stories)
+    validate_story_attributes_map_type(path, stories)
+    validate_story_in_group_attributes_map_type(path, stories)
     validate_story_attribute_types(path, attributes, stories)
     validate_story_required_attributes(path, attributes, stories)
     entry
@@ -35,6 +44,20 @@ defmodule PhxLiveStorybook.EntriesValidator do
 
   defp validate_entry_icon(file_path, entry) do
     validate_type!(file_path, entry.icon, :string, "entry icon must be a binary")
+  end
+
+  defp validate_entry_component(file_path, entry) do
+    validate_type!(file_path, entry.component, :atom, "entry component must be a module")
+  end
+
+  defp validate_entry_function(file_path, entry) do
+    validate_type!(file_path, entry.function, :function, "entry function must be a function")
+  end
+
+  defp validate_attribute_list_type(file_path, entry) do
+    msg = "entry attributes must be a list of %Attr{}"
+    validate_type!(file_path, entry.attributes, :list, msg)
+    for attr <- entry.attributes, do: validate_type!(file_path, attr, Attr, msg)
   end
 
   defp validate_attribute_ids(file_path, attributes) do
@@ -138,6 +161,20 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
+  defp validate_story_list_type(file_path, stories) do
+    msg = "entry stories must be a list of %Story{} or %StoryGroup{}"
+    validate_type!(file_path, stories, :list, msg)
+    for story <- stories, do: validate_type!(file_path, story, [Story, StoryGroup], msg)
+  end
+
+  defp validate_story_in_group_list_type(file_path, stories) do
+    for %StoryGroup{id: group_id, stories: stories} <- stories do
+      msg = "stories in group #{inspect(group_id)} must be a list of %Story{}"
+      validate_type!(file_path, stories, :list, msg)
+      for story <- stories, do: validate_type!(file_path, story, Story, msg)
+    end
+  end
+
   defp validate_story_ids(file_path, stories) do
     for %Story{id: story_id} <- stories, reduce: MapSet.new() do
       acc ->
@@ -176,6 +213,39 @@ defmodule PhxLiveStorybook.EntriesValidator do
         else
           MapSet.put(acc, {group_id, story_id})
         end
+    end
+  end
+
+  defp validate_story_description(file_path, stories) do
+    for %Story{id: story_id, description: description} <- stories do
+      msg = "description in story #{inspect(story_id)} must be a binary"
+      validate_type!(file_path, description, :string, msg)
+    end
+  end
+
+  defp validate_story_in_group_description(file_path, stories) do
+    for %StoryGroup{id: group_id, stories: stories} <- stories,
+        %Story{id: story_id, description: description} <- stories do
+      msg =
+        "description in story #{inspect(story_id)}, group #{inspect(group_id)} must be a binary"
+
+      validate_type!(file_path, description, :string, msg)
+    end
+  end
+
+  defp validate_story_attributes_map_type(file_path, stories) do
+    for %Story{id: story_id, attributes: attributes} <- stories do
+      msg = "attributes in story #{inspect(story_id)} must be a map"
+      validate_type!(file_path, attributes, :map, msg)
+    end
+  end
+
+  defp validate_story_in_group_attributes_map_type(file_path, stories) do
+    for %StoryGroup{id: group_id, stories: stories} <- stories,
+        %Story{id: story_id, attributes: attributes} <- stories do
+      msg = "attributes in story #{inspect(story_id)}, group #{inspect(group_id)} must be a map"
+
+      validate_type!(file_path, attributes, :map, msg)
     end
   end
 
@@ -246,6 +316,10 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
+  defp validate_type!(file, term, types, message) when is_list(types) do
+    unless Enum.any?(types, &match_attr_type?(term, &1)), do: compile_error!(file, message)
+  end
+
   defp validate_type!(file, term, type, message) do
     unless match_attr_type?(term, type), do: compile_error!(file, message)
   end
@@ -258,8 +332,10 @@ defmodule PhxLiveStorybook.EntriesValidator do
   defp match_attr_type?(term, :float) when is_float(term), do: true
   defp match_attr_type?(term, :boolean) when is_boolean(term), do: true
   defp match_attr_type?(term, :list) when is_list(term), do: true
+  defp match_attr_type?(term, :map) when is_map(term), do: true
   defp match_attr_type?(term, :block) when is_binary(term), do: true
   defp match_attr_type?(term, :slot) when is_binary(term), do: true
+  defp match_attr_type?(term, :function) when is_function(term), do: true
   defp match_attr_type?(term, struct) when is_struct(term, struct), do: true
   defp match_attr_type?(_term, _type), do: false
 
