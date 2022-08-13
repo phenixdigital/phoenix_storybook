@@ -8,7 +8,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
   @doc false
   # Precompiling component preview & code snippet for every component / story couple.
-  def component_quotes(entries) do
+  def component_quotes(entries, caller_file) do
     entries = Entries.all_leaves(entries)
 
     header_quote =
@@ -45,7 +45,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
                       reraise CompileError,
                               [
                                 description: "an error occured while rendering story #{story.id}",
-                                file: module.file_path
+                                file: caller_file
                               ],
                               __STACKTRACE__
                   end
@@ -55,19 +55,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  try do
-                    CodeRenderer.render_story_code(module.function(), story)
-                    |> to_raw_html()
-                  rescue
-                    _exception ->
-                      reraise CompileError,
-                              [
-                                description:
-                                  "an error occured while rendering code from story #{story.id}",
-                                file: module.file_path
-                              ],
-                              __STACKTRACE__
-                  end
+                  CodeRenderer.render_story_code(module.function(), story)
+                  |> to_raw_html()
                 )
               end
             end
@@ -86,19 +75,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  try do
-                    CodeRenderer.render_story_code(module.component(), story)
-                    |> to_raw_html()
-                  rescue
-                    _exception ->
-                      reraise CompileError,
-                              [
-                                description:
-                                  "an error occured while rendering code from story #{story.id}",
-                                file: module.file_path
-                              ],
-                              __STACKTRACE__
-                  end
+                  CodeRenderer.render_story_code(module.component(), story)
+                  |> to_raw_html()
                 )
               end
             end

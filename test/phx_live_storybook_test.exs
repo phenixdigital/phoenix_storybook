@@ -199,6 +199,13 @@ defmodule PhxLiveStorybookTest do
                %Phoenix.LiveView.Component{id: "ab_component-group-world"}
              ] = TreeStorybook.render_story(AbComponent, :group).dynamic.([])
     end
+
+    test "it raises a compile error if component rendering raises" do
+      assert_raise CompileError, ~r/an error occured while rendering story story/, fn ->
+        defmodule RenderComponentCrashStorybook,
+          do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+      end
+    end
   end
 
   describe "render_code/2" do
@@ -226,6 +233,22 @@ defmodule PhxLiveStorybookTest do
 
       code = TreeStorybook.render_code(AbComponent, :group)
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+  end
+
+  describe "render_page/1" do
+    alias Elixir.TreeStorybook.APage
+
+    test "it should return HEEX for the page" do
+      assert TreeStorybook.render_page(APage, nil) |> rendered_to_string() =~
+               "<span>A Page</span>"
+    end
+
+    test "it raises a compile error if a page rendering raises" do
+      assert_raise CompileError, ~r/an error occured while rendering page/, fn ->
+        defmodule RenderPageCrashStorybook,
+          do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+      end
     end
   end
 

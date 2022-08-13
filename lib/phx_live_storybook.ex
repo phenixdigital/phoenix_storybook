@@ -87,9 +87,9 @@ defmodule PhxLiveStorybook do
       recompilation_quotes(backend_module, otp_app),
       ConfigQuotes.config_quotes(backend_module, otp_app),
       EntriesQuotes.entries_quotes(entries),
-      ComponentQuotes.component_quotes(entries),
+      ComponentQuotes.component_quotes(entries, __CALLER__.file),
       SourceQuotes.source_quotes(entries),
-      PageQuotes.page_quotes(entries)
+      PageQuotes.page_quotes(entries, __CALLER__.file)
     ]
   end
 
