@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.ComponentEntry do
   defstruct [
     :module,
     :path,
-    :absolute_path,
+    :storybook_path,
     :type,
     :name,
     :module_name,
@@ -24,7 +24,7 @@ defmodule PhxLiveStorybook.PageEntry do
     :module,
     :path,
     :module_name,
-    :absolute_path,
+    :storybook_path,
     :icon,
     :navigation
   ]
@@ -32,7 +32,7 @@ end
 
 defmodule PhxLiveStorybook.FolderEntry do
   @moduledoc false
-  defstruct [:name, :nice_name, :sub_entries, :absolute_path, :icon]
+  defstruct [:name, :nice_name, :sub_entries, :storybook_path, :icon]
 end
 
 # This module performs a recursive scan of all files/folders under :content_path
@@ -51,22 +51,22 @@ defmodule PhxLiveStorybook.Entries do
     end
   end
 
-  defp recursive_scan(path, folders_config, absolute_path \\ "") do
+  defp recursive_scan(path, folders_config, storybook_path \\ "") do
     for file_name <- path |> File.ls!() |> Enum.sort(:desc),
         file_path = Path.join(path, file_name),
         reduce: [] do
       acc ->
         cond do
           File.dir?(file_path) ->
-            absolute_path = "#{absolute_path}/#{file_name}"
-            folder_config = Keyword.get(folders_config, String.to_atom(absolute_path), [])
+            storybook_path = "#{storybook_path}/#{file_name}"
+            folder_config = Keyword.get(folders_config, String.to_atom(storybook_path), [])
 
             [
               folder_entry(
                 file_name,
                 folder_config,
-                absolute_path,
-                recursive_scan(file_path, folders_config, absolute_path)
+                storybook_path,
+                recursive_scan(file_path, folders_config, storybook_path)
               )
               | acc
             ]
@@ -83,10 +83,10 @@ defmodule PhxLiveStorybook.Entries do
                 acc
 
               type when type in [:component, :live_component] ->
-                [component_entry(file_path, entry_module, absolute_path) | acc]
+                [component_entry(file_path, entry_module, storybook_path) | acc]
 
               :page ->
-                [page_entry(file_path, entry_module, absolute_path) | acc]
+                [page_entry(file_path, entry_module, storybook_path) | acc]
             end
 
           true ->
@@ -96,27 +96,27 @@ defmodule PhxLiveStorybook.Entries do
     |> sort_entries()
   end
 
-  defp folder_entry(file_name, folder_config, absolute_path, sub_entries) do
+  defp folder_entry(file_name, folder_config, storybook_path, sub_entries) do
     %FolderEntry{
       name: file_name,
       nice_name:
         Keyword.get_lazy(folder_config, :name, fn ->
           file_name |> String.capitalize() |> String.replace("_", " ")
         end),
-      absolute_path: absolute_path,
+      storybook_path: storybook_path,
       sub_entries: sub_entries,
       icon: folder_config[:icon]
     }
   end
 
-  defp component_entry(path, module, absolute_path) do
+  defp component_entry(path, module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
     %ComponentEntry{
       module: module,
       type: module.storybook_type(),
       path: path,
-      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
+      storybook_path: "#{storybook_path}/#{Macro.underscore(module_name)}",
       name: module.name(),
       module_name: module_name,
       description: module.description(),
@@ -129,13 +129,13 @@ defmodule PhxLiveStorybook.Entries do
     |> EntriesValidator.validate!()
   end
 
-  defp page_entry(path, module, absolute_path) do
+  defp page_entry(path, module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
     %PageEntry{
       module: module,
       path: path,
-      absolute_path: "#{absolute_path}/#{Macro.underscore(module_name)}",
+      storybook_path: "#{storybook_path}/#{Macro.underscore(module_name)}",
       module_name: module_name,
       name: module.name(),
       description: module.description(),

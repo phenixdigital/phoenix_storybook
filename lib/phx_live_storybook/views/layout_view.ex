@@ -79,7 +79,7 @@ defmodule PhxLiveStorybook.LayoutView do
     backend_module = backend_module(socket)
 
     {_, breadcrumb} =
-      for path_item <- String.split(entry.absolute_path, "/", trim: true), reduce: {"", []} do
+      for path_item <- String.split(entry.storybook_path, "/", trim: true), reduce: {"", []} do
         {path, breadcrumb} ->
           path = path <> "/" <> path_item
 

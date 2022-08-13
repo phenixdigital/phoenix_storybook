@@ -35,8 +35,8 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   end
 
   defp load_entry(backend_module, entry_param) do
-    entry_absolute_path = "/#{Enum.join(entry_param, "/")}"
-    backend_module.find_entry_by_path(entry_absolute_path)
+    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
+    backend_module.find_entry_by_path(entry_storybook_path)
   end
 
   defp fun_or_component(%ComponentEntry{type: :live_component, component: component}),

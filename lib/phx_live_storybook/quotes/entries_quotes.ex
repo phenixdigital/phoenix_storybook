@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Quotes.EntriesQuotes do
       for entry <- Entries.flat_list(entries) do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
-          def find_entry_by_path(unquote(entry.absolute_path)) do
+          def find_entry_by_path(unquote(entry.storybook_path)) do
             unquote(Macro.escape(entry))
           end
         end

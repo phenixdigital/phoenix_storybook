@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.EntryLive do
              live_storybook_path(
                socket,
                :entry,
-               String.split(entry.absolute_path, "/", trim: true)
+               String.split(entry.storybook_path, "/", trim: true)
              )
          )}
     end
@@ -158,8 +158,8 @@ defmodule PhxLiveStorybook.EntryLive do
   defp active_text(_tab, _current_tab), do: "-lsb-ml-0.5"
 
   defp load_entry(socket, entry_param) do
-    entry_absolute_path = "/#{Enum.join(entry_param, "/")}"
-    socket.assigns.backend_module.find_entry_by_path(entry_absolute_path)
+    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
+    socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
   defp first_component_entry(socket) do
@@ -171,7 +171,7 @@ defmodule PhxLiveStorybook.EntryLive do
       live_storybook_path(
         socket,
         :entry,
-        String.split(socket.assigns.entry.absolute_path, "/", trim: true)
+        String.split(socket.assigns.entry.storybook_path, "/", trim: true)
       )
 
     {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
