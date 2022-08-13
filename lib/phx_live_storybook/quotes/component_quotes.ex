@@ -33,20 +33,41 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_story(unquote(module), unquote(story.id)) do
                 unquote(
-                  ComponentRenderer.render_story(
-                    module.function(),
-                    story,
-                    unique_story_id
-                  )
-                  |> to_raw_html()
+                  try do
+                    ComponentRenderer.render_story(
+                      module.function(),
+                      story,
+                      unique_story_id
+                    )
+                    |> to_raw_html()
+                  rescue
+                    _exception ->
+                      reraise CompileError,
+                              [
+                                description: "an error occured while rendering story #{story.id}",
+                                file: module.file_path
+                              ],
+                              __STACKTRACE__
+                  end
                 )
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_story_code(module.function(), story)
-                  |> to_raw_html()
+                  try do
+                    CodeRenderer.render_story_code(module.function(), story)
+                    |> to_raw_html()
+                  rescue
+                    _exception ->
+                      reraise CompileError,
+                              [
+                                description:
+                                  "an error occured while rendering code from story #{story.id}",
+                                file: module.file_path
+                              ],
+                              __STACKTRACE__
+                  end
                 )
               end
             end
@@ -65,8 +86,19 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_story_code(module.component(), story)
-                  |> to_raw_html()
+                  try do
+                    CodeRenderer.render_story_code(module.component(), story)
+                    |> to_raw_html()
+                  rescue
+                    _exception ->
+                      reraise CompileError,
+                              [
+                                description:
+                                  "an error occured while rendering code from story #{story.id}",
+                                file: module.file_path
+                              ],
+                              __STACKTRACE__
+                  end
                 )
               end
             end

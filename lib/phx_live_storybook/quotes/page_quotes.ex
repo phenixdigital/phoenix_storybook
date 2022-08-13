@@ -15,7 +15,20 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
           def render_page(unquote(module), unquote(tab)) do
-            unquote(module.render(%{tab: tab}) |> to_raw_html())
+            unquote(
+              try do
+                module.render(%{tab: tab}) |> to_raw_html()
+              rescue
+                _exception ->
+                  reraise CompileError,
+                          [
+                            description:
+                              "an error occured while rendering page tab #{inspect(tab)}",
+                            file: module.file_path
+                          ],
+                          __STACKTRACE__
+              end
+            )
           end
         end
       end
