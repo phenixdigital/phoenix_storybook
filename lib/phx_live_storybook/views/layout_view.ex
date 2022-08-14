@@ -3,6 +3,7 @@ defmodule PhxLiveStorybook.LayoutView do
   use PhxLiveStorybook.Web, :view
 
   alias Makeup.Styles.HTML.StyleMap
+  alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   js_path = Path.join(__DIR__, "../../../dist/js/app.js")
