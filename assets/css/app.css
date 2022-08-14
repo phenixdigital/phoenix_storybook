@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .wait-for-icons {
-  /* display: none; */
+  display: none;
 }
 
 .fontawesome-i2svg-active .wait-for-icons {
