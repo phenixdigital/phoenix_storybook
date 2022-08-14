@@ -3,7 +3,6 @@ defmodule PhxLiveStorybook.LayoutView do
   use PhxLiveStorybook.Web, :view
 
   alias Makeup.Styles.HTML.StyleMap
-  alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   js_path = Path.join(__DIR__, "../../../dist/js/app.js")
@@ -61,18 +60,6 @@ defmodule PhxLiveStorybook.LayoutView do
   defp application_static_path(conn, path) do
     router = conn.private.application_router
     :"#{router}.Helpers".static_path(conn, path)
-  end
-
-  defp show_sidebar do
-    %JS{}
-    |> JS.remove_class("lsb-hidden", to: "#sidebar")
-    |> JS.remove_class("lsb-hidden", to: "#sidebar-overlay")
-  end
-
-  defp close_sidebar do
-    %JS{}
-    |> JS.add_class("lsb-hidden", to: "#sidebar")
-    |> JS.add_class("lsb-hidden", to: "#sidebar-overlay")
   end
 
   defp breadcrumb(socket, entry) do

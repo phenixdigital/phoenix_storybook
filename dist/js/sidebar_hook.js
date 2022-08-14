@@ -1,1 +1,1 @@
-(()=>{var a={mounted(){let e=document.querySelector("#sidebar"),d=document.querySelector("#sidebar-overlay");this.handleEvent("close-sidebar",s=>{e.classList.add("lsb-hidden"),d.classList.add("lsb-hidden")})}};})();
+(()=>{var a={mounted(){let e=document.querySelector("#sidebar"),s=document.querySelector("#sidebar-overlay");this.handleEvent("lsb:open-sidebar",d=>{e.classList.remove("lsb-hidden"),s.classList.remove("lsb-hidden")}),this.handleEvent("lsb:close-sidebar",d=>{e.classList.add("lsb-hidden"),s.classList.add("lsb-hidden")})}};})();

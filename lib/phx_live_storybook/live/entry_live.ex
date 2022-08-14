@@ -47,7 +47,7 @@ defmodule PhxLiveStorybook.EntryLive do
            tab: current_tab(params, entry),
            playground_error: nil
          )
-         |> push_event("close-sidebar", %{"id" => "#sidebar"})}
+         |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
     end
   end
 
@@ -164,6 +164,14 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp first_component_entry(socket) do
     socket.assigns.backend_module.all_leaves() |> Enum.at(0)
+  end
+
+  def handle_event("open-sidebar", _, socket) do
+    {:noreply, push_event(socket, "lsb:open-sidebar", %{"id" => "#sidebar"})}
+  end
+
+  def handle_event("close-sidebar", _, socket) do
+    {:noreply, push_event(socket, "lsb:close-sidebar", %{"id" => "#sidebar"})}
   end
 
   def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do

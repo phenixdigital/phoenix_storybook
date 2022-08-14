@@ -2,7 +2,6 @@ defmodule PhxLiveStorybook.Sidebar do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
-  alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   def mount(socket) do
@@ -64,7 +63,7 @@ defmodule PhxLiveStorybook.Sidebar do
       class="lsb-hidden lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-80 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
     >
 
-      <i class="far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click={close_sidebar()}></i>
+      <i class="far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click="close-sidebar"></i>
 
       <nav class="lsb-flex-1 xl:lsb-sticky">
         <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
@@ -79,12 +78,6 @@ defmodule PhxLiveStorybook.Sidebar do
       </div>
     </section>
     """
-  end
-
-  defp close_sidebar(js \\ %JS{}) do
-    js
-    |> JS.add_class("lsb-hidden", to: "#sidebar")
-    |> JS.add_class("lsb-hidden", to: "#sidebar-overlay")
   end
 
   defp render_entries(assigns) do

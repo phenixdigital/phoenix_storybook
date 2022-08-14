@@ -63,7 +63,6 @@ defmodule PhxLiveStorybookTest do
                name: "B Page",
                description: "b page",
                storybook_path: "/b_page",
-               icon: "fa fa-page",
                navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
              } = Enum.at(entries, 1)
 

@@ -10,7 +10,7 @@
   </div>
   
   <nav class="lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer">
-    <i class="far fa-bars fa-lg lsb-px-6" phx-click={show_sidebar()}></i>
+    <i class="far fa-bars fa-lg lsb-px-6" phx-click="open-sidebar"></i>
     <%= if assigns[:entry] do %>
       <%= render_breadcrumb(@socket, @entry) %>
     <% end %>
@@ -24,7 +24,7 @@
   </div>
 </div>
 
-<div id="sidebar-overlay" phx-click={close_sidebar()} class="lsb-absolute lsb-hidden lg:lsb-hidden lsb-inset-0 lsb-z-10 lsb-backdrop-blur-sm lsb-bg-black/20"></div>
+<div id="sidebar-overlay" phx-click="close-sidebar" class="lsb-absolute lsb-hidden lg:lsb-hidden lsb-inset-0 lsb-z-10 lsb-backdrop-blur-sm lsb-bg-black/20"></div>
     
 <.live_component 
   id="sidebar" module={PhxLiveStorybook.Sidebar}
