@@ -84,7 +84,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp component_code_heex(function, attributes, block, slots) when is_function(function) do
     fun = function_name(function)
-    self_closed? = is_nil(block) and is_nil(slots)
+    self_closed? = is_nil(block) and Enum.empty?(slots)
 
     """
     #{"<.#{fun}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
@@ -95,7 +95,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp component_code_heex(module, attributes, block, slots) when is_atom(module) do
     mod = module_name(module)
-    self_closed? = is_nil(block) and is_nil(slots)
+    self_closed? = is_nil(block) and Enum.empty?(slots)
 
     """
     #{"<.live_component module={#{mod}}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
