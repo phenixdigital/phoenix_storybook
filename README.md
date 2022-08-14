@@ -11,8 +11,8 @@
 PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your Phoenix LiveView components.
 
 - Explore all your components, and showcase them with different stories.
-- Browse your components documentation, with their supported attributes (_soon_).
-- Learn how components behave by using an interactive playground (_soon_).
+- Browse your components documentation, with their supported attributes (coming in 0.3.0).
+- Learn how components behave by using an interactive playground (coming in 0.3.0).
 
 ![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshot.png)
 
@@ -24,9 +24,9 @@ It performs an automatic discovery of your storybook content under a specified f
 
 Three kind of entries are supported:
 
-- `component` to describe your stateless function components.
-- `live_component` to describe your live components.
+- `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
+- `example` to show how your components can be used and mixed together in real UI pages. (not available now)
 
 Almost everything, from sidebar rendering to component preview, is performed at compilation time.
 
@@ -119,11 +119,11 @@ config :my_app, MyAppWeb.Storybook,
 
 ### 6. Create some content.
 
-Then you can start creating some content for your storybook. Storybook can contain 3 different kind of _entries_:
+Then you can start creating some content for your storybook. Storybook can contain 2 different kind of _entries_:
 
-- **component entries**: to document and showcase your components.
+- **component entries**: to document and showcase your components across different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
-- **samples**: to show how your components can be used and mixed togethers in real UI pages.
+- **examples**: to show how your components can be used and mixed together in real UI pages.
 
 _As of `0.3.0`, only component and page entries are available._
 
