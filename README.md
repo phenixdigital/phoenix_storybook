@@ -127,12 +127,12 @@ Then you can start creating some content for your storybook. Storybook can conta
 
 _As of `0.3.0`, only component and page entries are available._
 
-Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
+Entries are described as Elixir modules created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
 
 Here is an example of a stateless (function) component entry:
 
 ```elixir
-# storybook/components/button.exs
+# lib/storybook/components/button.ex
 defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
@@ -141,6 +141,13 @@ defmodule MyAppWeb.Storybook.Components.Button do
 
   def function, do: &Button.button/1
   def description, do: "A simple generic button."
+
+  def attributes do
+    [
+      %Attr{id: :label, type: :string, doc: "The button label", required: true},
+      %Attr{id: :color, type: :atom, default: :gray, options: [:gray, :green, :red]}
+    ]
+  end
 
   def stories do
     [
@@ -153,9 +160,8 @@ defmodule MyAppWeb.Storybook.Components.Button do
       %Story{
         id: :green_button,
         attributes: %{
-          :label => "Still a button",
-          :"bg-color" => "bg-green-600",
-          :"hover-bg-color" => "bg-green-700"
+          label: "A green button",
+          color: :green
         }
       }
     ]
@@ -172,7 +178,7 @@ All config settings, only the `:content_path` key is mandatory.
 config :my_app, MyAppWeb.Storybook,
 
   # Path to your storybook entries (required).
-  content_path: Path.expand("../storybook", __DIR__),
+  content_path: Path.expand("../lib/storybook", __DIR__),
 
   # Path to your components stylesheet.
   css_path: "/assets/my_components.css",

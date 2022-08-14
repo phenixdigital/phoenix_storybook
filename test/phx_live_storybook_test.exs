@@ -25,7 +25,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "AComponent",
                  type: :component,
                  name: "A Component",
-                 path: content_path("flat_list/a_component.exs"),
+                 path: content_path("flat_list/a_component.ex"),
                  storybook_path: "/a_component",
                  attributes: [],
                  stories: []
@@ -35,7 +35,7 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BComponent",
                  type: :live_component,
                  name: "B Component",
-                 path: content_path("flat_list/b_component.exs"),
+                 path: content_path("flat_list/b_component.ex"),
                  storybook_path: "/b_component",
                  attributes: [],
                  stories: []
@@ -272,7 +272,7 @@ defmodule PhxLiveStorybookTest do
                  type: :component,
                  module_name: "BBaComponent",
                  name: "B Ba Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
+                 path: content_path("tree_b/b_folder/bb_folder/bba_component.ex"),
                  attributes: [],
                  stories: []
                },
@@ -282,7 +282,7 @@ defmodule PhxLiveStorybookTest do
                  type: :component,
                  module_name: "BbbComponent",
                  name: "Bbb Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
+                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.ex"),
                  attributes: [],
                  stories: []
                }

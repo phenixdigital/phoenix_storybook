@@ -71,12 +71,9 @@ defmodule PhxLiveStorybook.Entries do
               | acc
             ]
 
-          Path.extname(file_path) == ".exs" ->
+          Path.extname(file_path) == ".ex" ->
             entry_module = entry_module(file_path)
-
-            unless Code.ensure_loaded?(entry_module) do
-              Code.eval_file(file_path)
-            end
+            Code.ensure_compiled(entry_module)
 
             case entry_type(entry_module) do
               nil ->

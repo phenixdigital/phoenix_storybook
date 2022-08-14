@@ -7,7 +7,7 @@ defmodule PhxLiveStorybook.Entry do
   In order to populate your storybook, just create _entry_ scripts under your
   content path, and implement their required behaviour.
 
-  Entries must be created as `.exs` files.
+  Entries must be created as `.ex` files.
 
   ## Usage
 
@@ -19,7 +19,7 @@ defmodule PhxLiveStorybook.Entry do
   - `PhxLiveStorybook.Attr` documentation for attributes.
 
   ```elixir
-  # storybook/my_component.exs
+  # lib/storybook/my_component.ex
   defmodule MyAppWeb.Storybook.MyComponent do
     use PhxLiveStorybook.Entry, :component
 
@@ -41,7 +41,7 @@ defmodule PhxLiveStorybook.Entry do
   instead of `function/0`.
 
   ```elixir
-  # storybook/my_live_component.exs
+  # lib/storybook/my_live_component.ex
   defmodule MyAppWeb.Storybook.MyLiveComponent do
     use PhxLiveStorybook.Entry, :live_component
 
@@ -67,7 +67,7 @@ defmodule PhxLiveStorybook.Entry do
   in `render/1` assigns.
 
   ```elixir
-  # storybook/my_page.exs
+  # lib/storybook/my_page.ex
   defmodule MyAppWeb.Storybook.MyPage do
     use PhxLiveStorybook.Entry, :page
 
