@@ -21,6 +21,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_attribute_required_type(path, attributes)
     validate_attribute_default_or_required(path, attributes)
     validate_attribute_options(path, attributes)
+    validate_attribute_block_unicity(path, attributes)
     validate_story_list_type(path, stories)
     validate_story_in_group_list_type(path, stories)
     validate_story_ids(path, stories)
@@ -31,6 +32,8 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_story_in_group_attributes_map_type(path, stories)
     validate_story_attribute_types(path, attributes, stories)
     validate_story_required_attributes(path, attributes, stories)
+    validate_story_required_block(path, attributes, stories)
+    validate_story_required_slots(path, attributes, stories)
     entry
   end
 
@@ -156,8 +159,14 @@ defmodule PhxLiveStorybook.EntriesValidator do
   defp validate_attribute_options(file_path, attributes) do
     for %Attr{id: attr_id, type: type, options: options} <- attributes, !is_nil(options) do
       msg = "options for attr #{inspect(attr_id)} must be a list of #{inspect(type)}"
-      validate_type!(file_path, options, :list, msg)
+      validate_type!(file_path, options, [:list, :range], msg)
       for opt <- options, do: validate_type!(file_path, opt, type, msg)
+    end
+  end
+
+  defp validate_attribute_block_unicity(file_path, attributes) do
+    if Enum.count(attributes, &(&1.type == :block)) > 1 do
+      compile_error!(file_path, "at most a single block attribute can be declared")
     end
   end
 
@@ -252,48 +261,77 @@ defmodule PhxLiveStorybook.EntriesValidator do
   defp validate_story_attribute_types(file_path, attributes, stories) do
     attr_types = for %Attr{id: attr_id, type: type} <- attributes, into: %{}, do: {attr_id, type}
 
-    for %Story{id: story_id, attributes: attributes} <- stories,
-        {attr_id, attr_value} <- attributes do
-      case Map.get(attr_types, attr_id) do
-        nil ->
-          :ok
+    for %Story{id: story_id, attributes: attributes, block: block, slots: slots} <- stories do
+      for {attr_id, attr_value} <- attributes do
+        case Map.get(attr_types, attr_id) do
+          nil ->
+            :ok
 
-        type ->
-          validate_type!(
-            file_path,
-            attr_value,
-            type,
-            "attribute #{inspect(attr_id)} in story #{inspect(story_id)} must be of type: #{inspect(type)}"
-          )
+          type ->
+            validate_type!(
+              file_path,
+              attr_value,
+              type,
+              "attribute #{inspect(attr_id)} in story #{inspect(story_id)} must be of type: #{inspect(type)}"
+            )
+        end
       end
+
+      msg = "slots in story #{inspect(story_id)} must be a list of binary"
+      validate_type!(file_path, slots, :list, msg)
+      for slot <- slots, do: validate_type!(file_path, slot, :string, msg)
+
+      validate_type!(
+        file_path,
+        block,
+        :block,
+        "block in story #{inspect(story_id)} must be a binary"
+      )
     end
 
     for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, attributes: attributes} <- stories,
-        {attr_id, attr_value} <- attributes do
-      case Map.get(attr_types, attr_id) do
-        nil ->
-          :ok
+        %Story{id: story_id, attributes: attributes, block: block, slots: slots} <- stories do
+      for {attr_id, attr_value} <- attributes do
+        case Map.get(attr_types, attr_id) do
+          nil ->
+            :ok
 
-        type ->
-          validate_type!(
-            file_path,
-            attr_value,
-            type,
-            "attribute #{inspect(attr_id)} in story #{inspect(story_id)}, group #{inspect(group_id)} must be of type: #{inspect(type)}"
-          )
+          type ->
+            validate_type!(
+              file_path,
+              attr_value,
+              type,
+              "attribute #{inspect(attr_id)} in story #{inspect(story_id)}, group #{inspect(group_id)} must be of type: #{inspect(type)}"
+            )
+        end
       end
+
+      msg =
+        "slots in story #{inspect(story_id)}, group #{inspect(group_id)} must be a list of binary"
+
+      validate_type!(file_path, slots, :list, msg)
+      for slot <- slots, do: validate_type!(file_path, slot, :string, msg)
+
+      validate_type!(
+        file_path,
+        block,
+        :block,
+        "block in story #{inspect(story_id)}, group #{inspect(group_id)} must be a binary"
+      )
     end
   end
 
   defp validate_story_required_attributes(path, attributes, stories) do
     required_attributes =
-      for %Attr{id: attr_id, required: true} <- attributes, into: MapSet.new(), do: attr_id
+      for %Attr{id: attr_id, type: type, required: true} <- attributes,
+          type not in [:slot, :block],
+          into: MapSet.new(),
+          do: attr_id
 
     for %Story{id: story_id, attributes: attributes} <- stories,
         attributes_keys = Map.keys(attributes) do
       for required_attribute <- required_attributes do
-        if !Enum.member?(attributes_keys, required_attribute) do
+        unless Enum.member?(attributes_keys, required_attribute) do
           compile_error!(
             path,
             "required attribute #{inspect(required_attribute)} missing from story #{inspect(story_id)}"
@@ -306,10 +344,65 @@ defmodule PhxLiveStorybook.EntriesValidator do
         %Story{id: story_id, attributes: attributes} <- stories,
         attributes_keys = Map.keys(attributes) do
       for required_attribute <- required_attributes do
-        if !Enum.member?(attributes_keys, required_attribute) do
+        unless Enum.member?(attributes_keys, required_attribute) do
           compile_error!(
             path,
             "required attribute #{inspect(required_attribute)} missing from story #{inspect(story_id)}, group #{inspect(group_id)}"
+          )
+        end
+      end
+    end
+  end
+
+  defp validate_story_required_block(path, attributes, stories) do
+    has_required_block? = Enum.any?(attributes, &(&1.type == :block && &1.required))
+
+    if has_required_block? do
+      for story = %Story{id: story_id} <- stories do
+        unless story.block do
+          compile_error!(
+            path,
+            "required block missing from story #{inspect(story_id)}"
+          )
+        end
+      end
+
+      for %StoryGroup{id: group_id, stories: stories} <- stories,
+          story = %Story{id: story_id} <- stories do
+        unless story.block do
+          compile_error!(
+            path,
+            "required block missing from story #{inspect(story_id)}, group #{inspect(group_id)}"
+          )
+        end
+      end
+    end
+  end
+
+  defp validate_story_required_slots(path, attributes, stories) do
+    required_slots =
+      for %Attr{id: attr_id, type: :slot, required: true} <- attributes,
+          into: MapSet.new(),
+          do: attr_id
+
+    for %Story{id: story_id, slots: slots} <- stories do
+      for required_slot <- required_slots do
+        unless Enum.any?(slots, &matching_slot?(required_slot, &1)) do
+          compile_error!(
+            path,
+            "required slot #{inspect(required_slot)} missing from story #{inspect(story_id)}"
+          )
+        end
+      end
+    end
+
+    for %StoryGroup{id: group_id, stories: stories} <- stories,
+        %Story{id: story_id, slots: slots} <- stories do
+      for required_slot <- required_slots do
+        unless Enum.any?(slots, &matching_slot?(required_slot, &1)) do
+          compile_error!(
+            path,
+            "required slot #{inspect(required_slot)} missing from story #{inspect(story_id)}, group #{inspect(group_id)}"
           )
         end
       end
@@ -332,6 +425,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
   defp match_attr_type?(term, :float) when is_float(term), do: true
   defp match_attr_type?(term, :boolean) when is_boolean(term), do: true
   defp match_attr_type?(term, :list) when is_list(term), do: true
+  defp match_attr_type?(_min.._max, :range), do: true
   defp match_attr_type?(term, :map) when is_map(term), do: true
   defp match_attr_type?(term, :block) when is_binary(term), do: true
   defp match_attr_type?(term, :slot) when is_binary(term), do: true
@@ -341,5 +435,9 @@ defmodule PhxLiveStorybook.EntriesValidator do
 
   defp compile_error!(file, msg) do
     raise CompileError, file: file, description: msg
+  end
+
+  defp matching_slot?(slot_id, slot) do
+    Regex.match?(~r|<:#{slot_id}.*</:#{slot_id}>|s, slot)
   end
 end

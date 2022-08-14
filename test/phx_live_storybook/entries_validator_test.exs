@@ -280,6 +280,11 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       assert validate(entry)
     end
 
+    test "with a list of integer and a range, it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :integer, options: 1..10)
+      assert validate(entry)
+    end
+
     test "without a list, it will raise" do
       entry = entry_with_attr(id: :attr, type: :atom, options: :foo)
       e = assert_raise CompileError, fn -> validate(entry) end
@@ -290,6 +295,25 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = entry_with_attr(id: :attr, type: :atom, options: ["foo", "bar"])
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "options for attr :attr must be a list of :atom"
+    end
+  end
+
+  describe "attribute block unicity" do
+    test "with a single block it wont raise" do
+      entry = entry_with_attr(id: :block, type: :block)
+      assert validate(entry)
+    end
+
+    test "with two blocks it will raise" do
+      entry = %ComponentEntry{
+        attributes: [
+          %Attr{id: :block_1, type: :block},
+          %Attr{id: :block_2, type: :block}
+        ]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "at most a single block attribute can be declared"
     end
   end
 
@@ -506,10 +530,29 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "attribute :bar in story :foo, group :group must be of type: :atom"
     end
+
+    test "story with invalid block type will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :block, type: :block}],
+        stories: [%Story{id: :story, block: :not_a_block}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "block in story :story must be a binary"
+    end
+
+    test "story with invalid slot type will raise" do
+      entry = %ComponentEntry{
+        stories: [%Story{id: :story, slots: [:not_a_slot]}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "slots in story :story must be a list of binary"
+    end
   end
 
   describe "required story attributes" do
-    test "story attribute with all required attributes wont raise" do
+    test "story with all required attributes wont raise" do
       entry = %ComponentEntry{
         attributes: [
           %Attr{id: :foo, type: :atom, required: true},
@@ -527,7 +570,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       assert validate(entry)
     end
 
-    test "story attribute with missing required attributes will raise" do
+    test "story with missing required attributes will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :bar, type: :atom, required: true}],
         stories: [%Story{id: :foo, attributes: %{}}]
@@ -543,6 +586,90 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "required attribute :bar missing from story :foo, group :group"
+    end
+
+    test "story with required block wont raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :block, type: :block, required: true}],
+        stories: [%Story{id: :foo, block: "provided"}]
+      }
+
+      assert validate(entry)
+    end
+
+    test "story without required block will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :block, type: :block, required: true}],
+        stories: [%Story{id: :foo}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required block missing from story :foo"
+    end
+
+    test "nested story without required block will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :block, type: :block, required: true}],
+        stories: [%StoryGroup{id: :group, stories: [%Story{id: :foo}]}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required block missing from story :foo, group :group"
+    end
+
+    test "story with required slot wont raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :slot, type: :slot, required: true}],
+        stories: [%Story{id: :foo, slots: ["<:slot>provided</:slot>"]}]
+      }
+
+      assert validate(entry)
+    end
+
+    test "story without required slot will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :slot, type: :slot, required: true}],
+        stories: [%Story{id: :foo}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required slot :slot missing from story :foo"
+
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :slot, type: :slot, required: true}],
+        stories: [%Story{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required slot :slot missing from story :foo"
+    end
+
+    test "nested story without required slot will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :slot, type: :slot, required: true}],
+        stories: [%StoryGroup{id: :group, stories: [%Story{id: :foo}]}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required slot :slot missing from story :foo, group :group"
+
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :slot, type: :slot, required: true}],
+        stories: [
+          %StoryGroup{
+            id: :group,
+            stories: [%Story{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
+          }
+        ]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "required slot :slot missing from story :foo, group :group"
+    end
+  end
+
+  describe "validate block type" do
+    test "a single block must be declared" do
     end
   end
 
