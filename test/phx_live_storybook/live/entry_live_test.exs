@@ -92,25 +92,32 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   test "navigate in sidebar", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/storybook/a_folder/aa_component")
 
-    assert view |> element("a", "A Component") |> render_click() =~ "a component description"
+    assert view |> element("#sidebar a", "A Component") |> render_click() =~
+             "a component description"
 
     # reaching items under "A folder" which is open by default (cf. config.exs)
-    assert view |> element("a", "Aa Component") |> render_click() =~ "Aa component description"
-    assert view |> element("a", "Ab Component") |> render_click() =~ "Ab component description"
+    assert view |> element("#sidebar a", "Aa Component") |> render_click() =~
+             "Aa component description"
+
+    assert view |> element("#sidebar a", "Ab Component") |> render_click() =~
+             "Ab component description"
 
     # B folder is closed, items inside are not visible
-    refute has_element?(view, "a", "Ba Component")
-    refute has_element?(view, "a", "Bb Component")
+    refute has_element?(view, "#sidebar a", "Ba Component")
+    refute has_element?(view, "#sidebar a", "Bb Component")
 
     # opening "B folder" then reaching items inside
-    element(view, "div", "B folder") |> render_click()
+    element(view, "#sidebar div", "B folder") |> render_click()
 
-    assert view |> element("a", "Ba Component") |> render_click() =~ "Ba component description"
-    assert view |> element("a", "Bb Component") |> render_click() =~ "Bb component description"
+    assert view |> element("#sidebar a", "Ba Component") |> render_click() =~
+             "Ba component description"
+
+    assert view |> element("#sidebar a", "Bb Component") |> render_click() =~
+             "Bb component description"
 
     # closing "B folder"
-    element(view, "div", "B folder") |> render_click()
-    refute has_element?(view, "a", "Ba Component")
-    refute has_element?(view, "a", "Bb Component")
+    element(view, "#sidebar div", "B folder") |> render_click()
+    refute has_element?(view, "#sidebar a", "Ba Component")
+    refute has_element?(view, "#sidebar a", "Bb Component")
   end
 end
