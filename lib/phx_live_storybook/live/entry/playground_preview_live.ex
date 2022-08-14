@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     end
 
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
-    story = Enum.find(entry.stories, %{attributes: %{}}, &(&1.id == session["story_id"]))
+    story = Enum.find(entry.stories, %{attributes: %{}, block: nil, slots: nil}, &(&1.id == session["story_id"]))
 
     {:ok,
      assign(socket,

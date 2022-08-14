@@ -47,15 +47,6 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     assert html =~ "Aa component description"
   end
 
-  @tag :skip
-  test "renders component entry and navigate to documentation tab", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/storybook/a_component")
-
-    html = view |> element("a", "Documentation") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=documentation")
-    assert html =~ "Coming soon"
-  end
-
   test "renders component entry and navigate to source tab", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/storybook/a_component")
 

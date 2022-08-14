@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   import Phoenix.LiveViewTest
 
   @endpoint PhxLiveStorybook.PlaygroundLiveTestEndpoint
+  @moduletag :capture_log
 
   setup do
     start_supervised!(PhxLiveStorybook.PlaygroundLiveTestEndpoint)
@@ -41,6 +42,23 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       |> render_change()
 
       assert view |> element("pre") |> render() =~ "world"
+
+      view |> element("a", "Preview") |> render_click()
+      assert view |> element("#playground-preview-live-1") |> render() =~ "a component: world"
+    end
+  end
+
+  describe "empty playground" do
+    test "with no stories, it does not crash", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/storybook/b_folder/ba_component?tab=playground")
+      assert html =~ "Ba Component"
+    end
+
+    test "with no attributes, it prints a placeholder", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/storybook/b_folder/ba_component?tab=playground")
+
+      assert html =~
+               ~r|<p>In order to use playground, you must define attributes in your.*Ba Component.*entry\.</p>|
     end
   end
 end

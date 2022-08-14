@@ -11,9 +11,15 @@ defmodule PhxLiveStorybook.Entry.Playground do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_new(:playground_attrs, fn -> assigns.story.attributes end)
-     |> assign_new(:playground_block, fn -> assigns.story.block end)
-     |> assign_new(:playground_slots, fn -> assigns.story.slots end)
+     |> assign_new(:playground_attrs, fn ->
+       if assigns.story, do: assigns.story.attributes, else: %{}
+     end)
+     |> assign_new(:playground_block, fn ->
+       if assigns.story, do: assigns.story.block, else: nil
+     end)
+     |> assign_new(:playground_slots, fn ->
+       if assigns.story, do: assigns.story.slots, else: nil
+     end)
      |> assign(
        upper_tab: :preview,
        lower_tab: :attributes
@@ -72,7 +78,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     <div class="lsb-relative lsb-min-h-32">
       <%= live_render @socket, PlaygroundPreviewLive,
         id: playground_preview_id(@entry),
-        session: %{"entry_path" => @entry_path, "story_id" => @story.id, "backend_module" => to_string(@backend_module)}
+        session: %{"entry_path" => @entry_path, "story_id" => (if @story, do: @story.id, else: nil), "backend_module" => to_string(@backend_module)}
       %>
       <%= if @upper_tab == :code do %>
         <div class="lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm lsb-justify-evenly">
@@ -114,6 +120,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
                 </tr>
               </thead>
               <tbody class="lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
+                <%= if Enum.empty?(@entry.attributes) do %>
+                <tr>
+                  <td colspan="5" class="lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
+                    <i class="lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
+                    <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @entry.name %></code> entry.</p>
+                  </td>
+                </tr>
+                <% end %>
                 <%= for attr <- @entry.attributes, attr.type not in [:block, :slot] do %>
                   <tr>
                     <td class="lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
