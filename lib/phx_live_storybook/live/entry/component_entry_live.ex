@@ -78,7 +78,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   def render(_assigns = %{tab: tab}),
     do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
 
-  defp default_story(%ComponentEntry{stories: [story | _]}), do: story
+  defp default_story(%ComponentEntry{stories: [story = %Story{} | _]}), do: story
   defp default_story(_), do: nil
 
   defp anchor_id(%{id: id}) do

@@ -18,7 +18,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
        if assigns.story, do: assigns.story.block, else: nil
      end)
      |> assign_new(:playground_slots, fn ->
-       if assigns.story, do: assigns.story.slots, else: nil
+       if assigns.story, do: assigns.story.slots, else: []
      end)
      |> assign(
        upper_tab: :preview,
@@ -92,7 +92,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
         <% error_bg = if @upper_tab == :code, do: "lsb-bg-slate/20", else: "lsb-bg-white/20" %>
         <div class={"lsb-absolute lsb-inset-2 lsb-z-10 lsb-backdrop-blur-lg lsb-text-red-600 #{error_bg} lsb-rounded lsb-flex lsb-flex-col lsb-justify-center lsb-items-center lsb-space-y-2"}>
           <i class="fad fa-xl fa-bomb"></i>
-          <span>Ohoh, I just crashed!</span>
+          <span class="lsb-font-medium">Ohoh, I just crashed!</span>
           <button phx-click="clear-playground-error" class="lsb-inline-flex lsb-items-center lsb-px-2.5 lsb-py-1.5 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500">
             Dismiss
           </button>
@@ -139,7 +139,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                     <td class="lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500">
                       <.type_badge type={attr.type}/>
                     </td>
-                    <td class="lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%=String.trim(attr.doc)%></td>
+                    <td class="lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                     <td class="lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500">
                       <span class="lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
                     </td>
@@ -159,7 +159,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                     <td class="lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500">
                       <.type_badge type={attr.type}/>
                     </td>
-                    <td colspan="3" class="lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%=String.trim(attr.doc)%></td>
+                    <td colspan="3" class="lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                   </tr>
                   <%= if block_or_slot = block_or_slot(assigns, attr) do %>
                     <tr style="border-top: 0 !important;">
@@ -222,61 +222,63 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp type_badge(assigns = %{type: :string}) do
     ~H"""
-    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :atom}) do
     ~H"""
-    <span class={"lsb-bg-blue-100 lsb-text-blue-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-blue-100 lsb-text-blue-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :boolean}) do
     ~H"""
-    <span class={"lsb-bg-slate-500 lsb-text-white #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-slate-500 lsb-text-white #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :integer}) do
     ~H"""
-    <span class={"lsb-bg-green-100 lsb-text-green-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-green-100 lsb-text-green-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :float}) do
     ~H"""
-    <span class={"lsb-bg-teal-100 lsb-text-teal-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-teal-100 lsb-text-teal-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :list}) do
     ~H"""
-    <span class={"lsb-bg-purple-100 lsb-text-purple-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-purple-100 lsb-text-purple-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :block}) do
     ~H"""
-    <span class={"lsb-bg-pink-100 lsb-text-pink-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-pink-100 lsb-text-pink-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: :slot}) do
     ~H"""
-    <span class={"lsb-bg-rose-100 lsb-text-rose-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-rose-100 lsb-text-rose-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge(assigns = %{type: _type}) do
     ~H"""
-    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= @type %></span>
+    <span class={"lsb-bg-amber-100 lsb-text-amber-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
   defp type_badge_class do
     "lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"
   end
+
+  defp type_label(type), do: Macro.to_string(type)
 
   defp attr_input(
          assigns = %{

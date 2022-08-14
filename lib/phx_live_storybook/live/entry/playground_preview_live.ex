@@ -11,7 +11,13 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     end
 
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
-    story = Enum.find(entry.stories, %{attributes: %{}, block: nil, slots: nil}, &(&1.id == session["story_id"]))
+
+    story =
+      Enum.find(
+        entry.stories,
+        %{attributes: %{}, block: nil, slots: nil},
+        &(&1.id == session["story_id"])
+      )
 
     {:ok,
      assign(socket,
@@ -21,15 +27,13 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
        slots: story.slots,
        sequence: 0,
        show_class: ""
-     )}
+     ), layout: false}
   end
 
   def render(assigns) do
     ~H"""
     <div id={"playground-preview-live-#{@sequence}"} class={"#{@show_class} lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-white lsb-shadow-sm lsb-justify-evenly"}>
-      <%= if assigns[:entry] do %>
-        <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs, @block, @slots) %>
-      <% end %>
+      <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs, @block, @slots) %>
     </div>
     """
   end
