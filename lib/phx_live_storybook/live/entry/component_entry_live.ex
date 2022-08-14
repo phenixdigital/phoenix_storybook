@@ -4,12 +4,15 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
   use Phoenix.HTML
   import Phoenix.LiveView.Helpers
 
+  alias Phoenix.LiveView.JS
+  alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryTabNotFound, Story, StoryGroup}
 
   def navigation_tabs do
     [
       {:stories, "Stories", "far fa-eye"},
-      {:documentation, "Documentation", "far fa-book"},
+      {:playground, "Playground", "far fa-dice"},
       {:source, "Source", "far fa-file-code"}
     ]
   end
@@ -18,7 +21,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
   def render(assigns = %{tab: :stories}) do
     ~H"""
-    <div class="lsb-space-y-12 lsb-pt-8">
+    <div class="lsb-space-y-12 lsb-pt-8 lsb-pb-12">
       <%= for story = %{id: story_id, description: description} when is_struct(story, Story) or is_struct(story, StoryGroup) <- @entry.stories() do %>
         <div id={anchor_id(story)} class="lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
@@ -41,7 +44,7 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
           <!-- Story code -->
           <div class="lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm">
-            <div class="copy-code-btn lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
+            <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="fa fa-copy"></i>
             </div>
             <%= @backend_module.render_code(@entry.module(), story_id) %>
@@ -49,21 +52,6 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
 
         </div>
       <% end %>
-    </div>
-    """
-  end
-
-  def render(assigns = %{tab: :documentation}) do
-    ~H"""
-    <div class="lsb-w-full lsb-text-center lsb-text-slate-400 lg:lsb-pt-20 lg:lsb-px-40">
-      <i class="hover:lsb-text-indigo-400 fas fa-traffic-cone fa-5x fa-bounce" style="--fa-animation-iteration-count: 2;"></i>
-      <h2 class="lsb-mt-8 lsb-text-lg">Coming soon</h2>
-      <p class="lsb-text-left lg:lsb-pt-12 lsb-text-slate-500">
-        Here, you'll soon be able to explore your component properties, see their related
-        documentation and experiment with them in an interactive playground.
-        <br/><br/>
-        This will most likely rely on <code>live_view</code> <code>0.18.0</code> declarative assigns feature.
-      </p>
     </div>
     """
   end
@@ -76,8 +64,22 @@ defmodule PhxLiveStorybook.Entry.ComponentEntryLive do
     """
   end
 
+  def render(assigns = %{tab: :playground}) do
+    ~H"""
+    <.live_component module={Playground} id="playground"
+      entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
+      story={default_story(@entry)}
+      playground_preview_pid={@playground_preview_pid}
+      playground_error={@playground_error}
+    />
+    """
+  end
+
   def render(_assigns = %{tab: tab}),
     do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
+
+  defp default_story(%ComponentEntry{stories: [story = %Story{} | _]}), do: story
+  defp default_story(_), do: nil
 
   defp anchor_id(%{id: id}) do
     id |> to_string() |> String.replace("_", "-")

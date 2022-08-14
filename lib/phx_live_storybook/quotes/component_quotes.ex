@@ -8,7 +8,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
   @doc false
   # Precompiling component preview & code snippet for every component / story couple.
-  def component_quotes(entries) do
+  def component_quotes(entries, caller_file) do
     entries = Entries.all_leaves(entries)
 
     header_quote =
@@ -33,19 +33,29 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_story(unquote(module), unquote(story.id)) do
                 unquote(
-                  ComponentRenderer.render_story(
-                    module.function(),
-                    story,
-                    unique_story_id
-                  )
-                  |> to_raw_html()
+                  try do
+                    ComponentRenderer.render_story(
+                      module.function(),
+                      story,
+                      unique_story_id
+                    )
+                    |> to_raw_html()
+                  rescue
+                    _exception ->
+                      reraise CompileError,
+                              [
+                                description: "an error occured while rendering story #{story.id}",
+                                file: caller_file
+                              ],
+                              __STACKTRACE__
+                  end
                 )
               end
 
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_component_code(module.function(), story)
+                  CodeRenderer.render_story_code(module.function(), story)
                   |> to_raw_html()
                 )
               end
@@ -65,7 +75,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_component_code(module.component(), story)
+                  CodeRenderer.render_story_code(module.component(), story)
                   |> to_raw_html()
                 )
               end

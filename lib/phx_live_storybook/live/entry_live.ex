@@ -9,7 +9,9 @@ defmodule PhxLiveStorybook.EntryLive do
     {:ok,
      assign(socket,
        otp_app: session["otp_app"],
-       backend_module: session["backend_module"]
+       backend_module: session["backend_module"],
+       playground_preview_pid: nil,
+       playground_error: nil
      )}
   end
 
@@ -25,7 +27,7 @@ defmodule PhxLiveStorybook.EntryLive do
              live_storybook_path(
                socket,
                :entry,
-               String.split(entry.absolute_path, "/", trim: true)
+               String.split(entry.storybook_path, "/", trim: true)
              )
          )}
     end
@@ -42,7 +44,8 @@ defmodule PhxLiveStorybook.EntryLive do
            entry: entry,
            entry_path: entry_path,
            page_title: entry.name,
-           tab: current_tab(params, entry)
+           tab: current_tab(params, entry),
+           playground_error: nil
          )
          |> push_event("close-sidebar", %{"id" => "#sidebar"})}
     end
@@ -50,17 +53,6 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
-  end
-
-  def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do
-    entry_path =
-      live_storybook_path(
-        socket,
-        :entry,
-        String.split(socket.assigns.entry.absolute_path, "/", trim: true)
-      )
-
-    {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
   end
 
   defp current_tab(params, entry) do
@@ -117,7 +109,7 @@ defmodule PhxLiveStorybook.EntryLive do
     <div class="lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
       <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="entry-nav-form lg:lsb-hidden">
-        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md" %>
+        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md", value: @tab %>
       </.form>
 
       <!-- :lg+ version of navigation tabs -->
@@ -166,12 +158,37 @@ defmodule PhxLiveStorybook.EntryLive do
   defp active_text(_tab, _current_tab), do: "-lsb-ml-0.5"
 
   defp load_entry(socket, entry_param) do
-    entry_absolute_path = "/#{Enum.join(entry_param, "/")}"
-    socket.assigns.backend_module.find_entry_by_path(entry_absolute_path)
+    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
+    socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
   defp first_component_entry(socket) do
     socket.assigns.backend_module.all_leaves() |> Enum.at(0)
+  end
+
+  def handle_event("tab-navigation", %{"navigation" => %{"tab" => tab}}, socket) do
+    entry_path =
+      live_storybook_path(
+        socket,
+        :entry,
+        String.split(socket.assigns.entry.storybook_path, "/", trim: true)
+      )
+
+    {:noreply, push_patch(socket, to: "#{entry_path}?tab=#{tab}")}
+  end
+
+  def handle_event("clear-playground-error", _, socket) do
+    {:noreply, assign(socket, :playground_error, nil)}
+  end
+
+  def handle_info({:playground_preview_pid, pid}, socket) do
+    Process.monitor(pid)
+    {:noreply, assign(socket, :playground_preview_pid, pid)}
+  end
+
+  def handle_info({:DOWN, _ref, :process, pid, reason}, socket)
+      when socket.assigns.playground_preview_pid == pid do
+    {:noreply, assign(socket, :playground_error, reason)}
   end
 end
 

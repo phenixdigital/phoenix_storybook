@@ -6,7 +6,7 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
 
   @doc false
   # Precompiling component preview & code snippet for every component / story couple.
-  def page_quotes(entries) do
+  def page_quotes(entries, caller_file) do
     page_quotes =
       for %PageEntry{module: module, navigation: navigation} <- Entries.all_leaves(entries),
           navigation = Enum.map(navigation, &elem(&1, 0)),
@@ -15,7 +15,20 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
           def render_page(unquote(module), unquote(tab)) do
-            unquote(module.render(%{tab: tab}) |> to_raw_html())
+            unquote(
+              try do
+                module.render(%{tab: tab}) |> to_raw_html()
+              rescue
+                _exception ->
+                  reraise CompileError,
+                          [
+                            description:
+                              "an error occured while rendering page tab #{inspect(tab)}",
+                            file: caller_file
+                          ],
+                          __STACKTRACE__
+              end
+            )
           end
         end
       end

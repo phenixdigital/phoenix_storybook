@@ -28,7 +28,7 @@ defmodule PhxLiveStorybook.Sidebar do
   defp root_entry(backend_module) do
     %FolderEntry{
       sub_entries: backend_module.entries(),
-      absolute_path: "",
+      storybook_path: "",
       name: "root",
       nice_name: "Storybook",
       icon: "fal fa-book-open"
@@ -93,8 +93,8 @@ defmodule PhxLiveStorybook.Sidebar do
       <%= for entry <- @entries do %>
         <li>
           <%= case entry do %>
-            <% %FolderEntry{nice_name: nice_name, absolute_path: absolute_path, sub_entries: sub_entries, icon: folder_icon} -> %>
-              <% folder_path = @root_path <> absolute_path %>
+            <% %FolderEntry{nice_name: nice_name, storybook_path: storybook_path, sub_entries: sub_entries, icon: folder_icon} -> %>
+              <% folder_path = @root_path <> storybook_path %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div class="lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
                 phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={folder_path}
@@ -117,11 +117,11 @@ defmodule PhxLiveStorybook.Sidebar do
               </div>
 
               <%= if open_folder? or @root do %>
-                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [absolute_path], root: false)) %>
+                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [storybook_path], root: false)) %>
               <% end %>
 
-            <% %ComponentEntry{name: name, absolute_path: absolute_path, icon: icon} -> %>
-              <% entry_path =  @root_path <> absolute_path %>
+            <% %ComponentEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
+              <% entry_path =  @root_path <> storybook_path %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
@@ -129,8 +129,8 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= live_patch(name, to: entry_path) %>
               </div>
 
-            <% %PageEntry{name: name, absolute_path: absolute_path, icon: icon} -> %>
-              <% entry_path =  @root_path <> absolute_path %>
+            <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
+              <% entry_path =  @root_path <> storybook_path %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>

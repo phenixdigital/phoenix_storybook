@@ -18,19 +18,19 @@ defmodule PhxLiveStorybook.Story do
             label: "A dropdown",
 
           },
-          slots: \"\"\"
-          <:entry path="#" label="Account settings"/>
-          <:entry path="#" label="Support"/>
-          <:entry path="#" label="License"/>
-          \"\"\"
+          slots: [
+            ~s|<:entry path="#" label="Account settings"/>|,
+            ~s|<:entry path="#" label="Support"/>|,
+            ~s|<:entry path="#" label="License"/>|
+          ]
         }
       ]
     end
   ```
   """
 
-  @enforce_keys [:id, :attributes]
-  defstruct [:id, :description, :attributes, :slots, :block]
+  @enforce_keys [:id]
+  defstruct [:id, :description, :block, slots: [], attributes: %{}]
 end
 
 defmodule PhxLiveStorybook.StoryGroup do

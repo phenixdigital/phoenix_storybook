@@ -4,6 +4,17 @@ defmodule TreeStorybook.AComponent do
 
   def description, do: "a component description"
 
+  def attributes do
+    [
+      %Attr{
+        id: :label,
+        type: :string,
+        doc: "component label",
+        required: true
+      }
+    ]
+  end
+
   def stories do
     [
       %Story{

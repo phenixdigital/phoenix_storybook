@@ -14,7 +14,9 @@ if config_env() == :test do
         {"EmptyFoldersStorybook", "empty_folders", []},
         {"TreeStorybook", "tree",
          ["/a_folder": [icon: "fa-icon"], "/b_folder": [open: true, name: "Config Name"]]},
-        {"TreeBStorybook", "tree_b", []}
+        {"TreeBStorybook", "tree_b", []},
+        {"RenderComponentCrashStorybook", "render_component_crash", []},
+        {"RenderPageCrashStorybook", "render_page_crash", []}
       ] do
     config :phx_live_storybook, :"#{test_module}.#{storybook_module}",
       content_path: Path.expand("../test/fixtures/storybook_content/#{content_path}", __DIR__),

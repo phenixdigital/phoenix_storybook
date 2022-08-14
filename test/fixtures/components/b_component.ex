@@ -5,9 +5,7 @@ defmodule BComponent do
     ~H"""
     <span>
       b component: <%= @label %>
-      <%= if assigns[:block] do %>
-        <%= @block %>
-      <% end %>
+      <%= render_block(@inner_block) %>
     </span>
     """
   end

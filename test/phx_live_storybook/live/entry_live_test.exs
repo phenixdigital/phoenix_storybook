@@ -1,13 +1,13 @@
 defmodule PhxLiveStorybook.EntryLiveTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
-  @endpoint PhxLiveStorybook.TestEndpoint
+  @endpoint PhxLiveStorybook.EntryLiveTestEndpoint
   @moduletag :capture_log
 
   setup do
-    start_supervised!(PhxLiveStorybook.TestEndpoint)
+    start_supervised!(PhxLiveStorybook.EntryLiveTestEndpoint)
     {:ok, conn: build_conn()}
   end
 
@@ -45,14 +45,6 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     {:ok, _view, html} = live(conn, "/storybook/a_folder/aa_component")
     assert html =~ "Aa Component"
     assert html =~ "Aa component description"
-  end
-
-  test "renders component entry and navigate to documentation tab", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/storybook/a_component")
-
-    html = view |> element("a", "Documentation") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=documentation")
-    assert html =~ "Coming soon"
   end
 
   test "renders component entry and navigate to source tab", %{conn: conn} do

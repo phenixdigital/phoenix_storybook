@@ -17,7 +17,6 @@ export const EntryHook = {
 
   updated() {
     this.bindAnchorLinks();
-    this.bindCopyCodeLinks();
   },
   bindAnchorLinks() {
     document.querySelectorAll(".entry-anchor-link").forEach((link) => {
@@ -36,24 +35,23 @@ export const EntryHook = {
     const iconClass = "fa-copy";
     const iconActiveClass = "fa-check";
 
-    document.querySelectorAll(".copy-code-btn").forEach((button) => {
-      button.addEventListener("click", (event) => {
+    window.addEventListener("lsb:copy-code", (e) => {
+      let button = e.target;
+      let icon = button.querySelector(".svg-inline--fa");
+      button.classList.add(...buttonActiveClasses);
+      button.classList.remove(...buttonClasses);
+      icon.classList.add(iconActiveClass);
+      icon.classList.remove(iconClass);
+
+      this.copyToClipboard(button.nextElementSibling.textContent);
+
+      setTimeout(() => {
         let icon = button.querySelector(".svg-inline--fa");
-        button.classList.add(...buttonActiveClasses);
-        button.classList.remove(...buttonClasses);
-        icon.classList.add(iconActiveClass);
-        icon.classList.remove(iconClass);
-
-        this.copyToClipboard(button.nextElementSibling.textContent);
-
-        setTimeout(() => {
-          let icon = button.querySelector(".svg-inline--fa");
-          icon.classList.add(iconClass);
-          icon.classList.remove(iconActiveClass);
-          button.classList.add(...buttonClasses);
-          button.classList.remove(...buttonActiveClasses);
-        }, 1000);
-      });
+        icon.classList.add(iconClass);
+        icon.classList.remove(iconActiveClass);
+        button.classList.add(...buttonClasses);
+        button.classList.remove(...buttonActiveClasses);
+      }, 1000);
     });
   },
   copyToClipboard(text) {
