@@ -3,13 +3,12 @@ defmodule PhxLiveStorybook.Quotes.SourceQuotes do
 
   alias Phoenix.HTML.Safe
   alias PhxLiveStorybook.ComponentEntry
-  alias PhxLiveStorybook.Entries
   alias PhxLiveStorybook.Rendering.CodeRenderer
 
   @doc false
-  def source_quotes(entries) do
+  def source_quotes(leave_entries) do
     quotes =
-      for %ComponentEntry{module: module} <- Entries.all_leaves(entries) do
+      for %ComponentEntry{module: module} <- leave_entries do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
           def render_source(unquote(module)) do
