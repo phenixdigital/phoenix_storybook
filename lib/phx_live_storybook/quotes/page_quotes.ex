@@ -2,13 +2,13 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
   @moduledoc false
 
   alias Phoenix.HTML.Safe
-  alias PhxLiveStorybook.{Entries, PageEntry}
+  alias PhxLiveStorybook.PageEntry
 
   @doc false
   # Precompiling component preview & code snippet for every component / story couple.
-  def page_quotes(entries, caller_file) do
+  def page_quotes(leave_entries, caller_file) do
     page_quotes =
-      for %PageEntry{module: module, navigation: navigation} <- Entries.all_leaves(entries),
+      for %PageEntry{module: module, navigation: navigation} <- leave_entries,
           navigation = Enum.map(navigation, &elem(&1, 0)),
           navigation = if(navigation == [], do: [nil], else: navigation),
           tab <- navigation do

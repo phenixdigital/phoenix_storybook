@@ -3,14 +3,11 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
   alias Phoenix.HTML.Safe
   alias PhxLiveStorybook.ComponentEntry
-  alias PhxLiveStorybook.Entries
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
 
   @doc false
   # Precompiling component preview & code snippet for every component / story couple.
-  def component_quotes(entries, caller_file) do
-    entries = Entries.all_leaves(entries)
-
+  def component_quotes(leave_entries, caller_file) do
     header_quote =
       quote do
         def render_code(module, story_id)
@@ -23,7 +20,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             module: module,
             module_name: module_name,
             stories: stories
-          } <- entries,
+          } <- leave_entries,
           story <- stories do
         unique_story_id = Macro.underscore("#{module_name}-#{story.id}")
 
