@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/phenixdigital/phx_live_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phx_live_storybook)
 [![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phx_live_storybook.svg)](https://github.com/phenixdigital/phx_live_storybook/releases/)
 
-📚 [Online Documentation](https://hexdocs.pm/phx_live_storybook) &nbsp; - &nbsp; 🔎 [Online Demo](http://phx-live-storybook-sample.fly.dev/storybook)
+📚 [Documentation](https://hexdocs.pm/phx_live_storybook) &nbsp; - &nbsp; 🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
 
 <!-- MDOC !-->
 
@@ -47,9 +47,9 @@ Add the following to your mix.exs and run mix deps.get:
 
 ```elixir
 def deps do
- [
- {:phx_live_storybook, "~> 0.2.0"}
- ]
+  [
+    {:phx_live_storybook, "~> 0.2.0"}
+  ]
 end
 ```
 
@@ -60,7 +60,7 @@ Create a new module under your application lib folder.
 ```elixir
 # lib/my_app_web/storybook.ex
 defmodule MyAppWeb.Storybook do
- use PhxLiveStorybook, otp_app: :my_app
+  use PhxLiveStorybook, otp_app: :my_app
 end
 ```
 
@@ -79,8 +79,8 @@ import PhxLiveStorybook.Router
 
 # outside of your main scope & of your :browser pipeline
 live_storybook "/storybook",
- otp_app: :my_app,
- backend_module: MyAppWeb.Storybook
+  otp_app: :my_app,
+  backend_module: MyAppWeb.Storybook
 ```
 
 ### 4. Make your components assets available
@@ -102,6 +102,8 @@ import * as Uploaders from "./uploaders";
 })();
 ```
 
+ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
+
 ### 5. Configure your storybook
 
 In your configuration files, add the following.
@@ -110,9 +112,9 @@ In your configuration files, add the following.
 # config/config.exs
 
 config :my_app, MyAppWeb.Storybook,
- content_path: Path.expand("../storybook", __DIR__),
- css_path: "/assets/my_components.css",
- js_path: "/assets/my_components.js"
+  content_path: Path.expand("../storybook", __DIR__),
+  css_path: "/assets/my_components.css",
+  js_path: "/assets/my_components.js"
 ```
 
 ### 6. Create some content.
@@ -132,32 +134,30 @@ Here is an example of a stateless (function) component entry:
 ```elixir
 # storybook/components/button.exs
 defmodule MyAppWeb.Storybook.Components.Button do
- alias MyAppWeb.Components.Button
+  alias MyAppWeb.Components.Button
 
- # :live_component or :page are also available
- use PhxLiveStorybook.Entry, :component
+  # :live_component or :page are also available
+  use PhxLiveStorybook.Entry, :component
 
- def function, do: &Button.button/1
- def description, do: "A simple generic button."
+  def function, do: &Button.button/1
+  def description, do: "A simple generic button."
 
- def stories do
- [
- %Story{
- id: :default,
- attributes: %{
- label: "A button"
- }
- },
- %Story{
- id: :green_button,
- attributes: %{
- :label => "Still a button",
- :"bg-color" => "bg-green-600",
- :"hover-bg-color" => "bg-green-700"
- }
- }
- ]
- end
+  def stories do [
+    %Story{
+      id: :default,
+      attributes: %{
+        label: "A button"
+      }
+    },
+    %Story{
+      id: :green_button,
+      attributes: %{
+        label: "Still a button",
+        color: :green
+      }
+    }
+  ]
+  end
 end
 ```
 
@@ -169,30 +169,30 @@ All config settings, only the `:content_path` key is mandatory.
 # config/config.exs
 config :my_app, MyAppWeb.Storybook,
 
- # Path to your storybook entries (required).
- content_path: Path.expand("../storybook", __DIR__),
+  # Path to your storybook entries (required).
+  content_path: Path.expand("../storybook", __DIR__),
 
- # Path to your components stylesheet.
- css_path: "/assets/my_components.css",
+  # Path to your components stylesheet.
+  css_path: "/assets/my_components.css",
 
- # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
- # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
- js_path: "/assets/my_components.js",
+  # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
+  # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
+  js_path: "/assets/my_components.js",
 
- # Custom storybook title. Default is "Live Storybook".
- title: "My Live Storybook",
+  # Custom storybook title. Default is "Live Storybook".
+  title: "My Live Storybook",
 
- # Folder settings.
- # Each folder is designated by its relative path from the storybook mounting point.
- # For each folder you can:
- # - make it open by default in the sidebar, with `open: true`.
- # - give it a custom name in the sidebar
- # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
- folders: [
- "/": [icon: "fas fa-banana"],
- "/components": [icon: "far fa-toolbox", open: true],
- "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
- ]
+  # Folder settings.
+  # Each folder is designated by its relative path from the storybook mounting point.
+  # For each folder you can:
+  # - make it open by default in the sidebar, with `open: true`.
+  # - give it a custom name in the sidebar
+  # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
+  folders: [
+    "/": [icon: "fas fa-banana"],
+    "/components": [icon: "far fa-toolbox", open: true],
+    "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
+  ]
 ```
 
 <!-- MDOC !-->
