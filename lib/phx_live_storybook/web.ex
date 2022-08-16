@@ -2,6 +2,17 @@ defmodule PhxLiveStorybook.Web do
   @moduledoc false
 
   @doc false
+  def controller do
+    quote do
+      @moduledoc false
+
+      use Phoenix.Controller, namespace: PhxLiveStorybook
+      import Plug.Conn
+      unquote(view_helpers())
+    end
+  end
+
+  @doc false
   def view do
     quote do
       @moduledoc false

@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.RouterTest do
   use ExUnit.Case, async: true
 
-  import Phoenix.ConnTest
+  import Phoenix.ConnTest, only: [build_conn: 0]
 
   alias PhxLiveStorybook.TestRouter.Helpers, as: Routes
 
@@ -15,14 +15,7 @@ defmodule PhxLiveStorybook.RouterTest do
         use Phoenix.Router
         import PhxLiveStorybook.Router
 
-        pipeline :browser do
-          plug(:fetch_session)
-        end
-
-        scope "/", ThisWontBeUsed, as: :this_wont_be_used do
-          pipe_through(:browser)
-          live_storybook("/storybook", otp_app: :phx_live_storybook)
-        end
+        live_storybook("/storybook", otp_app: :phx_live_storybook)
       end
     end)
   end
@@ -33,14 +26,7 @@ defmodule PhxLiveStorybook.RouterTest do
         use Phoenix.Router
         import PhxLiveStorybook.Router
 
-        pipeline :browser do
-          plug(:fetch_session)
-        end
-
-        scope "/", ThisWontBeUsed, as: :this_wont_be_used do
-          pipe_through(:browser)
-          live_storybook("/storybook", backend_module: PhxLiveStorybook.TestStorybook)
-        end
+        live_storybook("/storybook", backend_module: PhxLiveStorybook.TestStorybook)
       end
     end)
   end

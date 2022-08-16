@@ -8,18 +8,10 @@ defmodule PhxLiveStorybook.TestRouter do
   use Phoenix.Router
   import PhxLiveStorybook.Router
 
-  pipeline :browser do
-    plug(:fetch_session)
-  end
-
-  scope "/", ThisWontBeUsed, as: :this_wont_be_used do
-    pipe_through(:browser)
-
-    live_storybook("/storybook",
-      otp_app: :phx_live_storybook,
-      backend_module: PhxLiveStorybook.TestStorybook
-    )
-  end
+  live_storybook("/storybook",
+    otp_app: :phx_live_storybook,
+    backend_module: PhxLiveStorybook.TestStorybook
+  )
 end
 
 for endpoint <- [

@@ -48,19 +48,47 @@ defmodule PhxLiveStorybook.Router do
 
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
-        {session_name, session_opts, route_opts} = PhxLiveStorybook.Router.__options__(opts)
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        live_session session_name, session_opts do
-          live("/", PhxLiveStorybook.EntryLive, :home, route_opts)
-          live("/*entry", PhxLiveStorybook.EntryLive, :entry, route_opts)
+        pipeline :storybook_browser do
+          plug(:accepts, ["html"])
+          plug(:fetch_session)
+          plug(:protect_from_forgery)
+        end
+
+        scope path: "/", as: :storybook do
+          get("/assets/:asset", PhxLiveStorybook.AssetsController, :show)
+        end
+
+        scope path: "/" do
+          pipe_through(:storybook_browser)
+
+          {session_name, session_opts, route_opts} =
+            PhxLiveStorybook.Router.__options__(opts, :live_storybook_iframe, :root_iframe)
+
+          live_session session_name, session_opts do
+            live(
+              "/iframe/entry/*entry",
+              PhxLiveStorybook.ComponentIframeLive,
+              :entry_iframe,
+              route_opts
+            )
+          end
+
+          {session_name, session_opts, route_opts} =
+            PhxLiveStorybook.Router.__options__(opts, :live_storybook, :root)
+
+          live_session session_name, session_opts do
+            live("/", PhxLiveStorybook.EntryLive, :home, route_opts)
+            live("/*entry", PhxLiveStorybook.EntryLive, :entry, route_opts)
+          end
         end
       end
     end
   end
 
   @doc false
-  def __options__(opts) do
+  def __options__(opts, session_name, root_layout) do
     live_socket_path = Keyword.get(opts, :live_socket_path, "/live")
 
     otp_app =
@@ -72,9 +100,9 @@ defmodule PhxLiveStorybook.Router do
       end)
 
     {
-      :live_storybook,
+      session_name,
       [
-        root_layout: {PhxLiveStorybook.LayoutView, :root},
+        root_layout: {PhxLiveStorybook.LayoutView, root_layout},
         session: %{"backend_module" => backend_module, "otp_app" => otp_app}
       ],
       [
