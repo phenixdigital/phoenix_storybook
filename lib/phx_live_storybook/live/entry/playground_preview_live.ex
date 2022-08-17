@@ -32,7 +32,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   def render(assigns) do
     ~H"""
-    <div id={"playground-preview-live-#{@sequence}"} class={"#{@show_class} lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-white lsb-shadow-sm lsb-justify-evenly"}>
+    <div id={"playground-preview-live-#{@sequence}"} class={"#{@show_class} lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-white lsb-shadow-sm lsb-justify-evenly"}>
       <div class="lsb-sandbox">
         <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs, @block, @slots) %>
       </div>

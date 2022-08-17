@@ -158,7 +158,7 @@ defmodule PhxLiveStorybook.Entry do
       @impl unquote(component_behaviour(live?))
       def stories, do: []
 
-      defoverridable name: 0, description: 0, icon: 0, stories: 0, attributes: 0
+      defoverridable name: 0, description: 0, icon: 0, container: 0, stories: 0, attributes: 0
     end
   end
 
@@ -190,7 +190,7 @@ defmodule PhxLiveStorybook.Entry do
 
       def render(_assigns), do: false
 
-      defoverridable name: 0, description: 0, icon: 0, navigation: 0, render: 1
+      defoverridable name: 0, description: 0, icon: 0, navigation: 0, container: 0, render: 1
     end
   end
 

@@ -179,9 +179,17 @@ defmodule PhxLiveStorybook.EntryLive do
 
           <!-- Story component preview -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm lsb-justify-evenly">
-            <div class="lsb-sandbox">
-              <%= @backend_module.render_story(@entry.module(), story_id) %>
-            </div>
+            <%= if @entry.container() == :iframe do %>
+              <iframe
+                id={iframe_id(@entry, story)}
+                src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: story.id)}
+                class="lsb-w-full lsb-border-0"
+              />
+            <% else %>
+              <div class="lsb-sandbox">
+                <%= @backend_module.render_story(@entry.module(), story_id) %>
+              </div>
+            <% end %>
           </div>
 
           <!-- Story code -->
@@ -231,10 +239,10 @@ defmodule PhxLiveStorybook.EntryLive do
   defp default_story(%ComponentEntry{stories: [story = %Story{} | _]}), do: story
   defp default_story(_), do: nil
 
-  # defp iframe_id(entry, story) do
-  #   module = entry.module |> Macro.underscore() |> String.replace("/", "_")
-  #   "iframe-#{module}-story-#{story.id}"
-  # end
+  defp iframe_id(entry, story) do
+    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+    "iframe-#{module}-story-#{story.id}"
+  end
 
   defp anchor_id(%{id: id}) do
     id |> to_string() |> String.replace("_", "-")

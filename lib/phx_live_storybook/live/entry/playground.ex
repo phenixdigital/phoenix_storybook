@@ -76,10 +76,18 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
     <div class="lsb lsb-relative lsb-min-h-32">
-      <%= live_render @socket, PlaygroundPreviewLive,
-        id: playground_preview_id(@entry),
-        session: %{"entry_path" => @entry_path, "story_id" => (if @story, do: @story.id, else: nil), "backend_module" => to_string(@backend_module)}
-      %>
+      <%= if @entry.container() == :iframe do %>
+        <iframe
+          id={playground_preview_id(@entry)}
+          src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: @story.id, playground: true)}
+          class="lsb-w-full lsb-border-0"
+        />
+      <% else %>
+        <%= live_render @socket, PlaygroundPreviewLive,
+          id: playground_preview_id(@entry),
+          session: %{"entry_path" => @entry_path, "story_id" => (if @story, do: @story.id, else: nil), "backend_module" => to_string(@backend_module)}
+        %>
+      <% end %>
       <%= if @upper_tab == :code do %>
         <div class="lsb lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm lsb-justify-evenly">
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
