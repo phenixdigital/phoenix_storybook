@@ -23,7 +23,8 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            playground: params["playground"],
            entry_path: entry_path,
            entry: entry,
-           story_id: String.to_atom(story_id)
+           story_id: String.to_atom(story_id),
+           parent_pid: parse_pid(params["parent_pid"])
          )}
     end
   end
@@ -33,12 +34,19 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
+  defp parse_pid(nil), do: nil
+
+  defp parse_pid(pid) do
+    [_, a, b, c, _] = String.split(pid, ["<", ".", ">"])
+    :c.pid(String.to_integer(a), String.to_integer(b), String.to_integer(c))
+  end
+
   def render(assigns) do
     ~H"""
     <%= if @playground do %>
       <%= live_render @socket, PlaygroundPreviewLive,
         id: playground_preview_id(@entry),
-        session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module)}
+        session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "parent_pid" => @parent_pid}
       %>
     <% else %>
       <div style="display: flex; justify-content: center; align-items: center; height: 100%;">

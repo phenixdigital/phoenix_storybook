@@ -2,7 +2,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
-  alias Phoenix.LiveView.JS
+  alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.Rendering.CodeRenderer
@@ -75,23 +75,31 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
-    <div class="lsb lsb-relative lsb-min-h-32">
-      <%= if @entry.container() == :iframe do %>
-        <iframe
-          id={playground_preview_id(@entry)}
-          src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: @story.id, playground: true)}
-          class="lsb-w-full lsb-border-0"
-        />
-      <% else %>
-        <%= live_render @socket, PlaygroundPreviewLive,
-          id: playground_preview_id(@entry),
-          session: %{"entry_path" => @entry_path, "story_id" => (if @story, do: @story.id, else: nil), "backend_module" => to_string(@backend_module)}
-        %>
-      <% end %>
+    <div class={"lsb lsb-relative lsb-min-h-32"}>
+      <div class={"lsb  #{if @upper_tab != :preview, do: "lsb-hidden"}"}>
+        <%= if @entry.container() == :iframe do %>
+          <iframe
+            id={playground_preview_id(@entry)}
+            src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: @story.id, playground: true, parent_pid: inspect(self()))}
+            class="lsb-w-full lsb-border-0"
+            onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > 128) o.style.height=height+'px'; }(this));"
+          />
+        <% else %>
+          <%= live_render @socket, PlaygroundPreviewLive,
+            id: playground_preview_id(@entry),
+            session: %{
+              "entry_path" => @entry_path,
+              "story_id" => (if @story, do: @story.id, else: nil),
+              "backend_module" => to_string(@backend_module),
+              "parent_pid" => self()
+            }
+          %>
+        <% end %>
+      </div>
       <%= if @upper_tab == :code do %>
-        <div class="lsb lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm lsb-justify-evenly">
+        <div class="lsb lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm">
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-            <i class="lsb fa fa-copy"></i>
+            <i class="lsb fa fa-copy lsb-text-inherit"></i>
           </div>
           <%= CodeRenderer.render_component_code(fun_or_component(@entry), @playground_attrs, @playground_block, @playground_slots) %>
         </div>
@@ -99,9 +107,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
       <%= if @playground_error do %>
         <% error_bg = if @upper_tab == :code, do: "lsb-bg-slate/20", else: "lsb-bg-white/20" %>
         <div class={"lsb lsb-absolute lsb-inset-2 lsb-z-10 lsb-backdrop-blur-lg lsb-text-red-600 #{error_bg} lsb-rounded lsb-flex lsb-flex-col lsb-justify-center lsb-items-center lsb-space-y-2"}>
-          <i class="lsb fad fa-xl fa-bomb"></i>
-          <span class="lsb lsb-font-medium">Ohoh, I just crashed!</span>
-          <button phx-click="clear-playground-error" class="lsb lsb-inline-flex lsb-items-center lsb-px-2.5 lsb-py-1.5 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500">
+          <i class="lsb fad fa-xl fa-bomb lsb-text-red-600"></i>
+          <span class="lsb lsb-drop-shadow lsb-font-medium">Ohoh, I just crashed!</span>
+          <button phx-click="clear-playground-error" class="lsb lsb-inline-flex lsb-items-center lsb-px-2 lsb-py-1 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500">
             Dismiss
           </button>
         </div>
@@ -169,14 +177,12 @@ defmodule PhxLiveStorybook.Entry.Playground do
                     </td>
                     <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                   </tr>
-                  <%= if block_or_slot = block_or_slot(assigns, attr) do %>
-                    <tr class="lsb !lsb-border-t-0">
-                      <td colspan="2" class="lsb"></td>
-                      <td colspan="3" class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-pb-3 lsb-text-sm lsb-font-medium lsb-text-gray-900">
-                        <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot %></pre>
-                      </td>
-                    </tr>
-                  <% end %>
+                  <tr class="lsb !lsb-border-t-0">
+                    <td colspan="2" class="lsb"></td>
+                    <td colspan="3" class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-pb-3 lsb-text-sm lsb-font-medium lsb-text-gray-900">
+                      <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
+                    </td>
+                  </tr>
                 <% end %>
               </tbody>
             </table>
@@ -397,12 +403,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp fun_or_component(%ComponentEntry{type: :component, function: function}),
     do: function
 
-  def handle_event("upper-tab-navigation", %{"tab" => tab}, socket = %{assigns: assigns}) do
-    case tab do
-      "preview" -> send(assigns.playground_preview_pid, :show)
-      "code" -> send(assigns.playground_preview_pid, :hide)
-    end
-
+  def handle_event("upper-tab-navigation", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, :upper_tab, String.to_atom(tab))}
   end
 
@@ -425,9 +426,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           end
       end
 
-    if assigns.playground_preview_pid do
-      send(assigns.playground_preview_pid, {:new_attrs, playground_attrs})
-    end
+    send_attributes(playground_attrs)
 
     {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
@@ -438,12 +437,16 @@ defmodule PhxLiveStorybook.Entry.Playground do
         socket = %{assigns: assigns}
       ) do
     playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
-
-    if assigns.playground_preview_pid do
-      send(assigns.playground_preview_pid, {:new_attrs, playground_attrs})
-    end
-
+    send_attributes(playground_attrs)
     {:noreply, assign(socket, :playground_attrs, playground_attrs)}
+  end
+
+  defp send_attributes(attributes) do
+    PubSub.broadcast!(
+      PhxLiveStorybook.PubSub,
+      "playground",
+      {:new_attributes, self(), attributes}
+    )
   end
 
   defp cast_value(%ComponentEntry{attributes: attributes}, attr_id, value) do

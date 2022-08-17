@@ -1,18 +1,22 @@
 defmodule PhxLiveStorybook.EntryLive do
   use PhxLiveStorybook.Web, :live_view
 
-  alias Phoenix.LiveView.JS
+  alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.{ComponentEntry, PageEntry, Story, StoryGroup}
   alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
 
   def mount(_params, session, socket) do
+    if connected?(socket) do
+      PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
+    end
+
     {:ok,
      assign(socket,
        otp_app: session["otp_app"],
        backend_module: session["backend_module"],
-       playground_preview_pid: nil,
-       playground_error: nil
+       playground_error: nil,
+       playground_preview_pid: nil
      )}
   end
 
@@ -184,6 +188,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 id={iframe_id(@entry, story)}
                 src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: story.id)}
                 class="lsb-w-full lsb-border-0"
+                onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
               <div class="lsb-sandbox">
@@ -195,7 +200,7 @@ defmodule PhxLiveStorybook.EntryLive do
           <!-- Story code -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm lsb-flex lsb-flex-col lsb-justify-center">
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-              <i class="lsb fa fa-copy"></i>
+              <i class="lsb fa fa-copy lsb-text-inherit"></i>
             </div>
             <%= @backend_module.render_code(@entry.module(), story_id) %>
           </div>
@@ -219,7 +224,6 @@ defmodule PhxLiveStorybook.EntryLive do
     <.live_component module={Playground} id="playground"
       entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
       story={default_story(@entry)}
-      playground_preview_pid={@playground_preview_pid}
       playground_error={@playground_error}
     />
     """
@@ -280,6 +284,8 @@ defmodule PhxLiveStorybook.EntryLive do
       when socket.assigns.playground_preview_pid == pid do
     {:noreply, assign(socket, :playground_error, reason)}
   end
+
+  def handle_info(_, socket), do: {:noreply, socket}
 end
 
 defmodule PhxLiveStorybook.EntryNotFound do
