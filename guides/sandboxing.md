@@ -38,9 +38,9 @@ You can also use this script to inject whatever content you want into document `
 
 `PhxLiveStorybook` is using [TailwindCSS](https://tailwindcss.com) with [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix): `lsb-`. (which means that instead of using `bg-blue-400` the storybook uses `lsb-bg-blue-400`).
 
-Besides preflight stripping, absolutely no styling is applied on raw HTML elements. So unless your
-components use `lsb-` prefixed classes there should be no styling leak from the storybook to your
-components.
+Only elements with the `.lsb` class are preflighted, in order to let your component styling as-is.
+
+So unless your components use `lsb` or `lsb-` prefixed classes there should be no styling leak from the storybook to you components.
 
 ## 3. How you should provide the style of your components?
 
@@ -97,7 +97,7 @@ defmodule MyAppWeb.Storybook.Components.Button do
  use PhxLiveStorybook.Entry, :component
 
  def function, do: &Button.button/1
- def iframe, do: true
+ def container, do: :iframe
 
  # ...
 end

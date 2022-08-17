@@ -11,6 +11,7 @@ defmodule PhxLiveStorybook.ComponentEntry do
     :description,
     :function,
     :component,
+    :container,
     attributes: [],
     stories: []
   ]
@@ -123,6 +124,7 @@ defmodule PhxLiveStorybook.Entries do
       icon: module.icon(),
       component: call_if_exported(module, :component),
       function: call_if_exported(module, :function),
+      container: module.container(),
       attributes: module.attributes(),
       stories: module.stories()
     }

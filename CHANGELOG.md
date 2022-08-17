@@ -8,7 +8,7 @@
   and outside of your `:browser` pipeline.
 - feature: new Playground tab to play with your components! To use it, you just need to declare
   attributes in your component entries.
-- feature: you can opt-in iframe rendering for any of your component
+- feature: you can opt-in iframe rendering for any of your component with `def container, do: :iframe`
 - improvement: storybook is now fully responsive.
 - improvement: meaningful errors are raised during compilation if your entries are invalid.
 - improvement: improved storybook CSS isolation. It should no longer leak within your components.
