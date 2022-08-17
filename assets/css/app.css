@@ -2,16 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.wait-for-icons {
+.lsb-wait-for-icons {
   display: none;
 }
 
-.fontawesome-i2svg-active .wait-for-icons {
+.fontawesome-i2svg-active .lsb-wait-for-icons {
   display: initial;
-}
-
-.lsb-entry {
-  @apply -lsb-ml-2;
 }
 
 .lsb-bg-pattern {

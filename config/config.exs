@@ -29,3 +29,5 @@ if config_env() == :test do
 end
 
 config :phx_live_storybook, :env, config_env()
+
+config :phoenix, :json_library, Jason

@@ -162,7 +162,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                     <td colspan="3" class="lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                   </tr>
                   <%= if block_or_slot = block_or_slot(assigns, attr) do %>
-                    <tr style="border-top: 0 !important;">
+                    <tr class="!lsb-border-t-0">
                       <td colspan="2"></td>
                       <td colspan="3" class="lsb-whitespace-nowrap lsb-pr-3 lsb-pb-3 lsb-text-sm lsb-font-medium lsb-text-gray-900">
                         <pre class="lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot %></pre>
@@ -295,7 +295,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     ~H"""
     <button type="button" phx-click={on_toggle_click(f, attr_id, value)} class={"#{bg_class} lsb-relative lsb-inline-flex lsb-flex-shrink-0 lsb-h-6 lsb-w-11 lsb-border-2 lsb-border-transparent lsb-rounded-full lsb-cursor-pointer lsb-transition-colors lsb-ease-in-out lsb-duration-200 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-indigo-500"} phx-target={@myself} role="switch">
       <%= hidden_input(f, attr_id, value: value) %>
-      <span class={"#{translate_class} lsb-pointer-events-none lsb-inline-block lsb-h-5 lsb-w-5 lsb-rounded-full lsb-bg-white lsb-shadow lsb-transform lsb-ring-0 lsb-transition lsb-ease-in-out lsb-duration-200"}></span>
+      <span class={"#{translate_class} form-input lsb-pointer-events-none lsb-inline-block lsb-h-5 lsb-w-5 lsb-rounded-full lsb-bg-white lsb-shadow lsb-transform lsb-ring-0 lsb-transition lsb-ease-in-out lsb-duration-200"}></span>
     </button>
     """
   end
@@ -327,7 +327,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
          }
        ) do
     ~H"""
-    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), min: min, max: max, class: "lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), min: min, max: max, class: "lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -341,7 +341,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
          }
        ) do
     ~H"""
-    <%= text_input(f, attr_id, value: Map.get(playground_attrs, attr_id), class: "lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(f, attr_id, value: Map.get(playground_attrs, attr_id), class: "lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -358,7 +358,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     value = if is_nil(value), do: "", else: inspect(value)
 
     ~H"""
-    <%= text_input(f, attr_id, value: value, disabled: true, class: "lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(f, attr_id, value: value, disabled: true, class: "lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -374,7 +374,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
     ~H"""
     <%= select(f, attr_id, options, value: Map.get(playground_attrs, attr_id),
-      class: "lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-rounded-md") %>
+      class: "lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-rounded-md") %>
     """
   end
 

@@ -13,7 +13,7 @@ defmodule PhxLiveStorybook.Router do
   which you can use to link directly to the dashboard, such as:
 
   ```elixir
-  <%= link "Storybook", to: live_storybook_path(conn, :home) %>
+  <%= link "Storybook", to: live_storybook_path(conn, :root) %>
   ```
 
   Note you should only use `link/2` to link to the storybook (and not
@@ -50,25 +50,30 @@ defmodule PhxLiveStorybook.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
+        pipeline :storybook_assets do
+          plug(Plug.Static,
+            at: Path.join(path, "assets"),
+            from: :phx_live_storybook,
+            only: ~w(css js images),
+            gzip: true
+          )
+        end
+
         pipeline :storybook_browser do
           plug(:accepts, ["html"])
           plug(:fetch_session)
           plug(:protect_from_forgery)
         end
 
-        scope path: "/", as: :storybook do
-          get("/assets/:asset", PhxLiveStorybook.AssetsController, :show)
-        end
-
         scope path: "/" do
-          pipe_through(:storybook_browser)
+          pipe_through([:storybook_assets, :storybook_browser])
 
           {session_name, session_opts, route_opts} =
             PhxLiveStorybook.Router.__options__(opts, :live_storybook_iframe, :root_iframe)
 
           live_session session_name, session_opts do
             live(
-              "/iframe/entry/*entry",
+              "/iframe/*entry",
               PhxLiveStorybook.ComponentIframeLive,
               :entry_iframe,
               route_opts
@@ -79,7 +84,7 @@ defmodule PhxLiveStorybook.Router do
             PhxLiveStorybook.Router.__options__(opts, :live_storybook, :root)
 
           live_session session_name, session_opts do
-            live("/", PhxLiveStorybook.EntryLive, :home, route_opts)
+            live("/", PhxLiveStorybook.EntryLive, :root, route_opts)
             live("/*entry", PhxLiveStorybook.EntryLive, :entry, route_opts)
           end
         end

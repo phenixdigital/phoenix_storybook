@@ -8,7 +8,11 @@ module.exports = {
     },
   },
 
-  plugins: [require("tailwindcss-font-inter"), require("@tailwindcss/forms")],
+  plugins: [
+    require("tailwindcss-font-inter"),
+    require("@tailwindcss/forms")({
+      strategy: "class",
+    }),
+  ],
   prefix: "lsb-",
-  important: true,
 };

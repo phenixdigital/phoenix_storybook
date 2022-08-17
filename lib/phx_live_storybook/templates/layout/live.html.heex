@@ -2,7 +2,7 @@
 <header class="lsb-fixed lsb-top-0 lsb-w-full lsb-z-10 lsb-shadow-md lsb-shadow-slate-900/5 lsb-backdrop-blur-lg lsb-bg-white/50">
   <div class="lsb-h-16 lsb-w-full">
     <div class="lsb-absolute lsb-top-5 lsb-left-6 lg:lsb-left-8 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
-      <%= live_patch to: live_storybook_path(@socket, :home) do %>
+      <%= live_patch to: live_storybook_path(@socket, :root) do %>
         <i class="fa-regular fa-book-open"></i>
         <span class="lsb-ml-1"><%= title(@socket) %></span>
       <% end %>
@@ -20,7 +20,7 @@
 
 <div class="lsb-absolute lsb-opacity-20 lsb-top-0 lsb-inset-x-0 lsb-flex lsb-justify-center lsb-overflow-hidden lsb-pointer-events-none">
   <div class="lsb-w-[108rem] lsb-flex-none lsb-flex lsb-justify-end">
-    <%= render "_background.html", class: "lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none" %>
+    <img src={asset_path(@socket, "images/background.png")} class="lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none"/>
   </div>
 </div>
 

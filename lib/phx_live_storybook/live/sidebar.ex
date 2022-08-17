@@ -9,7 +9,7 @@ defmodule PhxLiveStorybook.Sidebar do
   end
 
   def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
-    root_path = live_storybook_path(socket, :home)
+    root_path = live_storybook_path(socket, :root)
     current_path = if current_path, do: [root_path | current_path], else: [root_path]
 
     {:ok,

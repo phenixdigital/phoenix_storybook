@@ -6,7 +6,17 @@ defmodule PhxLiveStorybook.RouterTest do
   alias PhxLiveStorybook.TestRouter.Helpers, as: Routes
 
   test "generates helper for home" do
-    assert Routes.live_storybook_path(build_conn(), :home) == "/storybook"
+    assert Routes.live_storybook_path(build_conn(), :root) == "/storybook"
+  end
+
+  test "generates helper for entry" do
+    assert Routes.live_storybook_path(build_conn(), :entry, ["components", "button"]) ==
+             "/storybook/components/button"
+  end
+
+  test "generates helper for entry iframe" do
+    assert Routes.live_storybook_path(build_conn(), :entry_iframe, ["components", "button"]) ==
+             "/storybook/iframe/components/button"
   end
 
   test "raises when backend_module is missing" do
