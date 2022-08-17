@@ -86,11 +86,11 @@ defmodule PhxLiveStorybook.SidebarTest do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
 
       # test default folder name (properly humanized)
-      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")
+      [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")
       assert String.contains?(html, "A folder")
 
       # test config folder name
-      [{"span", [], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(6)>div>span")
+      [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(6)>div>span")
       assert String.contains?(html, "Config Name")
     end
   end
