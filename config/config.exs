@@ -18,9 +18,12 @@ if config_env() == :test do
         {"RenderComponentCrashStorybook", "render_component_crash", []},
         {"RenderPageCrashStorybook", "render_page_crash", []}
       ] do
-    config :phx_live_storybook, :"#{test_module}.#{storybook_module}",
-      content_path: Path.expand("../test/fixtures/storybook_content/#{content_path}", __DIR__),
-      folders: folders
+    opts = [
+      content_path: Path.expand("../test/fixtures/storybook_content/#{content_path}", __DIR__)
+    ]
+
+    opts = if Enum.any?(folders), do: Keyword.put(opts, :folders, folders), else: opts
+    config :phx_live_storybook, :"#{test_module}.#{storybook_module}", opts
   end
 
   config :phx_live_storybook, PhxLiveStorybook.TestStorybook,

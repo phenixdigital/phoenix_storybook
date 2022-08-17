@@ -145,7 +145,9 @@ defmodule PhxLiveStorybook do
     content_path =
       otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:content_path)
 
-    folders_config = otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders)
+    folders_config =
+      otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders, [])
+
     Entries.entries(content_path, folders_config)
   end
 end
