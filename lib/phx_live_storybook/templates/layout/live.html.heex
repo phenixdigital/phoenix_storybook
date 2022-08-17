@@ -1,16 +1,16 @@
 
-<header class="lsb-fixed lsb-top-0 lsb-w-full lsb-z-10 lsb-shadow-md lsb-shadow-slate-900/5 lsb-backdrop-blur-lg lsb-bg-white/50">
-  <div class="lsb-h-16 lsb-w-full">
-    <div class="lsb-absolute lsb-top-5 lsb-left-6 lg:lsb-left-8 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
-      <%= live_patch to: live_storybook_path(@socket, :root) do %>
-        <i class="fa-regular fa-book-open"></i>
-        <span class="lsb-ml-1"><%= title(@socket) %></span>
+<header class="lsb lsb-fixed lsb-top-0 lsb-w-full lsb-z-10 lsb-shadow-md lsb-shadow-slate-900/5 lsb-backdrop-blur-lg lsb-bg-white/50">
+  <div class="lsb lsb-h-16 lsb-w-full">
+    <div class="lsb lsb-absolute lsb-top-5 lsb-left-6 lg:lsb-left-8 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
+      <%= live_patch to: live_storybook_path(@socket, :root), class: "lsb" do %>
+        <i class="lsb fa-regular fa-book-open lsb-text-indigo-600"></i>
+        <span class="lsb lsb-ml-1 lsb-text-indigo-600"><%= title(@socket) %></span>
       <% end %>
     </div>
   </div>
   
-  <nav class="lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer">
-    <i class="far fa-bars fa-lg lsb-px-6" phx-click={JS.dispatch("lsb:open-sidebar")}></i>
+  <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer">
+    <i class="lsb far fa-bars fa-lg lsb-px-6" phx-click={JS.dispatch("lsb:open-sidebar")}></i>
     <%= if assigns[:entry] do %>
       <%= render_breadcrumb(@socket, @entry) %>
     <% end %>
@@ -18,15 +18,15 @@
 
 </header>
 
-<div class="lsb-absolute lsb-opacity-20 lsb-top-0 lsb-inset-x-0 lsb-flex lsb-justify-center lsb-overflow-hidden lsb-pointer-events-none">
-  <div class="lsb-w-[108rem] lsb-flex-none lsb-flex lsb-justify-end">
-    <img src={asset_path(@socket, "images/background.png")} class="lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none"/>
+<div class="lsb lsb-absolute lsb-opacity-20 lsb-top-0 lsb-inset-x-0 lsb-flex lsb-justify-center lsb-overflow-hidden lsb-pointer-events-none">
+  <div class="lsb lsb-w-[108rem] lsb-flex-none lsb-flex lsb-justify-end">
+    <img src={asset_path(@socket, "images/background.png")} class="lsb lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none"/>
   </div>
 </div>
 
-<div id="sidebar-overlay" phx-click={JS.dispatch("lsb:close-sidebar")} class="lsb-absolute lsb-hidden lg:lsb-hidden lsb-inset-0 lsb-z-10 lsb-backdrop-blur-sm lsb-bg-black/20"></div>
+<div id="sidebar-overlay" phx-click={JS.dispatch("lsb:close-sidebar")} class="lsb lsb-absolute lsb-hidden lg:lsb-hidden lsb-inset-0 lsb-z-10 lsb-backdrop-blur-sm lsb-bg-black/20"></div>
     
-<div id="sidebar-container" class="lsb-hidden lg:lsb-block">
+<div id="sidebar-container" class="lsb lsb-hidden lg:lsb-block">
   <.live_component 
     id="sidebar" module={PhxLiveStorybook.Sidebar}
     backend_module={@backend_module}
@@ -34,6 +34,6 @@
   />
 </div>
 
-<div id="live-container" class="lsb-pt-28 lg:lsb-pt-16 lsb-left-0 lg:lsb-left-60 lsb-absolute lsb-h-screen lsb-w-full lg:lsb-w-[calc(100%_-_15rem)] lsb-px-4 lg:lsb-px-12 lsb-overflow-auto">
+<div id="live-container" class="lsb lsb-pt-28 lg:lsb-pt-16 lsb-left-0 lg:lsb-left-60 lsb-absolute lsb-h-screen lsb-w-full lg:lsb-w-[calc(100%_-_15rem)] lsb-px-4 lg:lsb-px-12 lsb-overflow-auto">
   <%= @inner_content %>
 </div>

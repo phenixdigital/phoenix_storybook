@@ -14,5 +14,9 @@ module.exports = {
       strategy: "class",
     }),
   ],
+  corePlugins: {
+    preflight: false,
+  },
+  important: ".lsb",
   prefix: "lsb-",
 };

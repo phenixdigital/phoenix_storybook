@@ -60,18 +60,18 @@ defmodule PhxLiveStorybook.Sidebar do
   def render(assigns) do
     ~H"""
     <section id="sidebar" phx-hook="SidebarHook"
-      class="lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-80 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
+      class="lsb lsb-text-gray-600 lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-80 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
     >
 
-      <i class="far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click="close-sidebar"></i>
+      <i class="lsb far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click="close-sidebar"></i>
 
-      <nav class="lsb-flex-1 xl:lsb-sticky">
+      <nav class="lsb lsb-flex-1 xl:lsb-sticky">
         <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
       </nav>
 
-      <div class="lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
-        <%= link to: "https://github.com/phenixdigital/phx_live_storybook", target: "_blank" do %>
-          <i class="fa fa-github"></i>
+      <div class="lsb lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
+        <%= link to: "https://github.com/phenixdigital/phx_live_storybook", target: "_blank", class: "lsb" do %>
+          <i class="lsb fa fa-github"></i>
           -
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
@@ -82,29 +82,29 @@ defmodule PhxLiveStorybook.Sidebar do
 
   defp render_entries(assigns) do
     ~H"""
-    <ul class="lsb-ml-3">
+    <ul class="lsb !lsb-ml-3">
       <%= for entry <- @entries do %>
-        <li>
+        <li class="lsb">
           <%= case entry do %>
             <% %FolderEntry{nice_name: nice_name, storybook_path: storybook_path, sub_entries: sub_entries, icon: folder_icon} -> %>
               <% folder_path = @root_path <> storybook_path %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
-              <div class="lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
+              <div class="lsb lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer hover:lsb-text-indigo-600"
                 phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={folder_path}
               >
                 <%= unless @root do %>
                   <%= if open_folder? do %>
-                    <i class="fas fa-caret-down lsb-pl-1 lsb-pr-2"></i>
+                    <i class="lsb fas fa-caret-down lsb-pl-1 lsb-pr-2"></i>
                   <% else %>
-                    <i class="fas fa-caret-right lsb-pl-1 lsb-pr-2"></i>
+                    <i class="lsb fas fa-caret-right lsb-pl-1 lsb-pr-2"></i>
                   <% end %>
                 <% end %>
 
                 <%= if folder_icon do %>
-                  <i class={"#{folder_icon} fa-fw lsb-pr-1.5"}></i>
+                  <i class={"lsb #{folder_icon} fa-fw lsb-pr-1.5"}></i>
                 <% end %>
 
-                <span>
+                <span class="lsb">
                   <%= nice_name %>
                 </span>
               </div>
@@ -119,16 +119,16 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= live_patch(name, to: entry_path) %>
+                <%= live_patch(name, to: entry_path, class: "lsb") %>
               </div>
 
             <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
               <% entry_path =  @root_path <> storybook_path %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
-                  <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
+                  <i class={"lsb #{icon} fa-fw -lsb-ml-1 lsb-pr-1.5"}></i>
                 <% end %>
-                <%= live_patch(name, to: entry_path) %>
+                <%= live_patch(name, to: entry_path, class: "lsb") %>
               </div>
           <% end %>
         </li>
@@ -139,7 +139,7 @@ defmodule PhxLiveStorybook.Sidebar do
 
   defp entry_class(current_path, entry_path) do
     entry_class =
-      "-lsb-ml-[12px] lsb-block lsb-border-l lsb-py-2 lg:lsb-py-1 lsb-pl-4 hover:lsb-border-indigo-600 hover:lsb-text-indigo-600 hover:lsb-border-l-1.5"
+      "lsb -lsb-ml-[12px] lsb-block lsb-border-l lsb-py-2 lg:lsb-py-1 lsb-pl-4 hover:lsb-border-indigo-600 hover:lsb-text-indigo-600 hover:lsb-border-l-1.5"
 
     if current_path == entry_path do
       entry_class <> " lsb-font-bold lsb-border-indigo-600 lsb-text-indigo-700 lsb-border-l-1.5"
