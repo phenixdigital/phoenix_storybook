@@ -43,7 +43,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:preview, "Preview", "fad fa-eye"}, {:code, "Code", "fad fa-code"}] do %>
           <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@upper_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
-            <i class={"lsb #{icon} lsb-pr-1"}></i>
+            <i class={"lsb #{active_link(@upper_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
           </a>
         <% end %>
@@ -58,7 +58,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}] do %>
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
-            <i class={"lsb #{icon} lsb-pr-1"}></i>
+            <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
           </a>
         <% end %>

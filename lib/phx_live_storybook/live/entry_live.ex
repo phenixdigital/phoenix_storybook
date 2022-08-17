@@ -83,7 +83,7 @@ defmodule PhxLiveStorybook.EntryLive do
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @entry.icon do %>
-              <i class={"lsb #{icon} lsb-pr-2"}></i>
+              <i class={"lsb #{icon} lsb-pr-2 lsb-text-indigo-600"}></i>
             <% end %>
             <%= @entry.name() %>
           </h2>
