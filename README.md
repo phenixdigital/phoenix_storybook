@@ -165,7 +165,7 @@ end
 
 ### Configuration
 
-All config settings, only the `:content_path` key is mandatory.
+All config settings. The `:content_path` and `:folders` keys are mandatory.
 
 ```elixir
 # config/config.exs
