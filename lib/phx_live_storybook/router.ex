@@ -54,7 +54,7 @@ defmodule PhxLiveStorybook.Router do
           plug(Plug.Static,
             at: Path.join(path, "assets"),
             from: :phx_live_storybook,
-            only: ~w(css js images),
+            only: ~w(css js images favicon),
             gzip: true
           )
         end
