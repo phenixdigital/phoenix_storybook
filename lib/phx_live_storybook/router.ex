@@ -43,8 +43,11 @@ defmodule PhxLiveStorybook.Router do
   end
   ```
   """
+  @gzip_assets Application.compile_env(:phx_live_storybook, :gzip_assets, false)
+
   defmacro live_storybook(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
+    gzip_assets? = @gzip_assets
 
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
@@ -55,7 +58,7 @@ defmodule PhxLiveStorybook.Router do
             at: Path.join(path, "assets"),
             from: :phx_live_storybook,
             only: ~w(css js images favicon),
-            gzip: true
+            gzip: gzip_assets?
           )
         end
 
