@@ -191,7 +191,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class="lsb-sandbox">
+              <div class="lsb-sandbox lsb-flex lsb-flex-wrap lsb-gap-2">
                 <%= @backend_module.render_story(@entry.module(), story_id) %>
               </div>
             <% end %>
