@@ -242,7 +242,7 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp default_story(%ComponentEntry{stories: [story = %Story{} | _]}), do: story
+  defp default_story(%ComponentEntry{stories: [story | _]}), do: story
   defp default_story(_), do: nil
 
   defp iframe_id(entry, story) do

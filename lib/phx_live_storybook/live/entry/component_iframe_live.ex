@@ -23,7 +23,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            playground: params["playground"],
            entry_path: entry_path,
            entry: entry,
-           story_id: String.to_atom(story_id),
+           story_id: parse_story_id(story_id),
            parent_pid: parse_pid(params["parent_pid"])
          )}
     end
@@ -32,6 +32,14 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
   defp load_entry(socket, entry_param) do
     entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
+  end
+
+  defp parse_story_id(story_id) do
+    story_id
+    |> String.split(~w([ , : ]))
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(&String.to_atom/1)
   end
 
   defp parse_pid(nil), do: nil

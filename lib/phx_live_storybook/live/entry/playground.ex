@@ -6,24 +6,47 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.Rendering.CodeRenderer
+  alias PhxLiveStorybook.{Story, StoryGroup}
 
   def update(assigns, socket) do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_new(:playground_attrs, fn ->
-       if assigns.story, do: assigns.story.attributes, else: %{}
-     end)
-     |> assign_new(:playground_block, fn ->
-       if assigns.story, do: assigns.story.block, else: nil
-     end)
-     |> assign_new(:playground_slots, fn ->
-       if assigns.story, do: assigns.story.slots, else: []
-     end)
-     |> assign(
-       upper_tab: :preview,
-       lower_tab: :attributes
-     )}
+     |> assign_story_attributes()
+     |> assign(upper_tab: :preview, lower_tab: :attributes)}
+  end
+
+  defp assign_story_attributes(socket = %{assigns: assigns}) do
+    case assigns.story do
+      story = %Story{} ->
+        assign_story_attributes(socket, story, story.id)
+
+      %StoryGroup{id: group_id, stories: [story | _]} ->
+        assign_story_attributes(socket, story, [group_id, story.id])
+
+      _ ->
+        assign_story_attributes(socket, nil, nil)
+    end
+  end
+
+  defp assign_story_attributes(socket, nil, nil) do
+    assign(socket,
+      story_id: nil,
+      story: nil,
+      playground_attrs: %{},
+      playground_block: nil,
+      playground_slots: []
+    )
+  end
+
+  defp assign_story_attributes(socket, story, story_id) do
+    assign(socket,
+      story: story,
+      story_id: story_id,
+      playground_attrs: story.attributes,
+      playground_block: story.block,
+      playground_slots: story.slots
+    )
   end
 
   def render(assigns) do
@@ -80,7 +103,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
         <%= if @entry.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@entry)}
-            src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: @story.id, playground: true, parent_pid: inspect(self()))}
+            src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: inspect(@story_id), playground: true, parent_pid: inspect(self()))}
             height="128"
             class="lsb-w-full lsb-border-0"
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
@@ -90,7 +113,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
             id: playground_preview_id(@entry),
             session: %{
               "entry_path" => @entry_path,
-              "story_id" => (if @story, do: @story.id, else: nil),
+              "story_id" => @story_id,
               "backend_module" => to_string(@backend_module),
               "parent_pid" => self()
             }

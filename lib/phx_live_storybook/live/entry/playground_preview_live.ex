@@ -5,6 +5,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   alias Phoenix.PubSub
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Rendering.ComponentRenderer
+  alias PhxLiveStorybook.{Story, StoryGroup}
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
@@ -14,12 +15,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
       PubSub.broadcast!(PhxLiveStorybook.PubSub, "playground", {:playground_preview_pid, self()})
     end
 
-    story =
-      Enum.find(
-        entry.stories,
-        %{attributes: %{}, block: nil, slots: nil},
-        &(&1.id == session["story_id"])
-      )
+    story = find_story(entry.stories, session["story_id"])
 
     {:ok,
      assign(socket,
@@ -30,6 +26,28 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
        parent_pid: session["parent_pid"],
        sequence: 0
      ), layout: false}
+  end
+
+  defp find_story(stories, [group_id, story_id]) do
+    Enum.find_value(
+      stories,
+      %{attributes: %{}, block: nil, slots: nil},
+      fn
+        %StoryGroup{id: id, stories: stories} when id == group_id -> find_story(stories, story_id)
+        _ -> nil
+      end
+    )
+  end
+
+  defp find_story(stories, story_id) do
+    Enum.find_value(
+      stories,
+      %{attributes: %{}, block: nil, slots: nil},
+      fn
+        story = %Story{id: id} when id == story_id -> story
+        _ -> nil
+      end
+    )
   end
 
   def render(assigns) do
