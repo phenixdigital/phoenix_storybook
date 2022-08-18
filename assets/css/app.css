@@ -27,7 +27,9 @@
 }
 
 .lsb-sandbox {
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  margin: 0;
+  font-family: serif, system-ui, sans-serif;
+  @apply lsb-flex lsb-flex-col lsb-gap-y-[5px];
 }
 
 @layer base {

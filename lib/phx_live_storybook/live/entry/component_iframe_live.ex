@@ -46,10 +46,11 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     <%= if @playground do %>
       <%= live_render @socket, PlaygroundPreviewLive,
         id: playground_preview_id(@entry),
-        session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "parent_pid" => @parent_pid}
+        session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "parent_pid" => @parent_pid},
+        container: {:div, style: "height: 100vh;"}
       %>
     <% else %>
-      <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
         <%= @backend_module.render_story(@entry.module, @story_id) %>
       </div>
     <% end %>

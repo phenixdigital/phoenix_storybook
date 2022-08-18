@@ -75,14 +75,15 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
-    <div class={"lsb lsb-relative lsb-min-h-32"}>
-      <div class={"lsb  #{if @upper_tab != :preview, do: "lsb-hidden"}"}>
+    <div class={"lsb lsb-relative"}>
+      <div class={"lsb lsb-min-h-32 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-bg-white lsb-shadow-sm #{if @upper_tab != :preview, do: "lsb-hidden"}"}>
         <%= if @entry.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@entry)}
             src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: @story.id, playground: true, parent_pid: inspect(self()))}
+            height="128"
             class="lsb-w-full lsb-border-0"
-            onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > 128) o.style.height=height+'px'; }(this));"
+            onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
           />
         <% else %>
           <%= live_render @socket, PlaygroundPreviewLive,
