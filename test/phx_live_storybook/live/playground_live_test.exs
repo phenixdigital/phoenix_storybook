@@ -48,6 +48,13 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     end
   end
 
+  describe "component in an iframe" do
+    test "renders the playground preview iframe", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/storybook/b_component?tab=playground")
+      assert html =~ ~S|<iframe id="tree_storybook_b_component-playground-preview"|
+    end
+  end
+
   describe "empty playground" do
     test "with no stories, it does not crash", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/b_folder/ba_component?tab=playground")

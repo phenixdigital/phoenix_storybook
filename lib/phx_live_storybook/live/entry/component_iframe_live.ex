@@ -1,5 +1,6 @@
 defmodule PhxLiveStorybook.ComponentIframeLive do
-  use Phoenix.LiveView, container: {:div, style: "height: 100%;"}
+  # , container: {:div, style: "height: 100%;"}
+  use Phoenix.LiveView
 
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.EntryNotFound
@@ -12,7 +13,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
      ), layout: {PhxLiveStorybook.LayoutView, "live_iframe.html"}}
   end
 
-  def handle_params(params = %{"entry" => entry_path, "story_id" => story_id}, _uri, socket) do
+  def handle_params(params = %{"entry" => entry_path}, _uri, socket) do
     case load_entry(socket, entry_path) do
       nil ->
         raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
@@ -23,7 +24,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            playground: params["playground"],
            entry_path: entry_path,
            entry: entry,
-           story_id: parse_story_id(story_id),
+           story_id: parse_story_id(params["story_id"]),
            parent_pid: parse_pid(params["parent_pid"])
          )}
     end
@@ -34,12 +35,20 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
+  defp parse_story_id(nil), do: nil
+
   defp parse_story_id(story_id) do
-    story_id
-    |> String.split(~w([ , : ]))
-    |> Enum.map(&String.trim/1)
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.map(&String.to_atom/1)
+    ids =
+      story_id
+      |> String.split(~w([ , : ]))
+      |> Enum.map(&String.trim/1)
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.map(&String.to_atom/1)
+
+    case ids do
+      [story_id] -> story_id
+      [_group_id, _story_id] -> ids
+    end
   end
 
   defp parse_pid(nil), do: nil
@@ -51,16 +60,18 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
 
   def render(assigns) do
     ~H"""
-    <%= if @playground do %>
-      <%= live_render @socket, PlaygroundPreviewLive,
-        id: playground_preview_id(@entry),
-        session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "parent_pid" => @parent_pid},
-        container: {:div, style: "height: 100vh;"}
-      %>
-    <% else %>
-      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-        <%= @backend_module.render_story(@entry.module, @story_id) %>
-      </div>
+    <%= if @story_id do %>
+      <%= if @playground do %>
+        <%= live_render @socket, PlaygroundPreviewLive,
+          id: playground_preview_id(@entry),
+          session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "parent_pid" => @parent_pid},
+          container: {:div, style: "height: 100vh;"}
+        %>
+      <% else %>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
+          <%= @backend_module.render_story(@entry.module, @story_id) %>
+        </div>
+      <% end %>
     <% end %>
     """
   end
