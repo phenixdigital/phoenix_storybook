@@ -72,6 +72,12 @@ module.exports = {
 @tailwind utilities;
 
 @layer utilities {
+  /* this style will be generated as .lsb-sandbox * { ... } */
+  * {
+    font-family: "MyComponentsFont";
+    @apply text-slate-600;
+  }
+
   /* this style will be generated as .lsb-sandbox h1 { ... } */
   h1 {
     @apply text-2xl font-bold text-slate-700 mt-2 mb-6;
@@ -79,7 +85,7 @@ module.exports = {
 
   /* this style will be generated as .lsb-sandbox h2 { ... } */
   h2 {
-    @apply text-xl font-bold text-slate-500 mt-2 mb-4;
+    @apply text-xl font-bold text-slate-700 mt-2 mb-4;
   }
 }
 ```
