@@ -15,7 +15,7 @@ PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI inte
 - Learn how components behave by using an interactive playground (coming in 0.3.0).
 
 ![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshots/screenshot-01.jpg)
-![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshots/screenshot-01.jpg)
+![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshots/screenshot-02.jpg)
 
 ## How does it work?
 
