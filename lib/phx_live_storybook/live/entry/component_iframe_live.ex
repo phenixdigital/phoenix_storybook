@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.ComponentIframeLive do
-  # , container: {:div, style: "height: 100%;"}
+  @moduledoc false
   use Phoenix.LiveView
 
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
