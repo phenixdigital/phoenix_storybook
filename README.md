@@ -49,7 +49,7 @@ Add the following to your mix.exs and run mix deps.get:
 ```elixir
 def deps do
   [
-    {:phx_live_storybook, "~> 0.2.0"}
+    {:phx_live_storybook, "~> 0.3.0"}
   ]
 end
 ```

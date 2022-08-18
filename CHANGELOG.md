@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.3.0 (not released)
+## v0.3.0 (2022-08-18)
 
 - change (breaking!): entries must know be written as `.exs` files. Otherwise they will be ignored.
 - change (breaking!): `variations` have been rebranded as `stories`.
