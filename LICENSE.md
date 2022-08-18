@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2019 Michael Crumm, Chris McCord, José Valim
+Copyright (c) 2022 Christian Blavier.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

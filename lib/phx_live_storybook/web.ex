@@ -2,6 +2,17 @@ defmodule PhxLiveStorybook.Web do
   @moduledoc false
 
   @doc false
+  def controller do
+    quote do
+      @moduledoc false
+
+      use Phoenix.Controller, namespace: PhxLiveStorybook
+      import Plug.Conn
+      unquote(view_helpers())
+    end
+  end
+
+  @doc false
   def view do
     quote do
       @moduledoc false
@@ -41,7 +52,7 @@ defmodule PhxLiveStorybook.Web do
 
       # Import convenience functions for LiveView rendering
       import Phoenix.LiveView.Helpers
-      import PhxLiveStorybook.Helpers
+      import PhxLiveStorybook.StorybookHelpers
 
       alias PhxLiveStorybook.Router.Helpers, as: Routes
     end

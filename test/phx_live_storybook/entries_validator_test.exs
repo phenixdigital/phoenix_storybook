@@ -53,6 +53,26 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "entry's container is either :div or :iframe" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{container: :div}
+      assert validate(entry)
+
+      entry = %ComponentEntry{container: :iframe}
+      assert validate(entry)
+    end
+
+    test "with invalid value it will raise" do
+      entry = %ComponentEntry{container: :span}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry container must be either :div or :iframe"
+
+      entry = %ComponentEntry{container: "iframe"}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry container must be either :div or :iframe"
+    end
+  end
+
   describe "entry attributes are list of Attrs" do
     test "with proper attr type it wont raise" do
       entry = %ComponentEntry{attributes: [%Attr{id: :foo, type: :string}]}

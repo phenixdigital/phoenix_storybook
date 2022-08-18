@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
+  <head>
+    <%= if path = storybook_js_path(@conn) do %>
+      <script phx-track-static type="text/javascript" src={application_static_path(@conn, path)}></script>
+    <% end %>
+    <script type="text/javascript" src={asset_path(@conn, "js/iframe.js")}></script>  
+
+    <%= if path = storybook_css_path(@conn) do %>
+      <link phx-track-static rel="stylesheet" href={application_static_path(@conn, path)}/>
+    <% end %>
+  </head>
+  
+  <body class="lsb-sandbox" style="margin: 0;">
+    <%= @inner_content %>
+  </body>
+</html>

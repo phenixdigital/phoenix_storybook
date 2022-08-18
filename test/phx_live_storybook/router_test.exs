@@ -1,12 +1,22 @@
 defmodule PhxLiveStorybook.RouterTest do
   use ExUnit.Case, async: true
 
-  import Phoenix.ConnTest
+  import Phoenix.ConnTest, only: [build_conn: 0]
 
   alias PhxLiveStorybook.TestRouter.Helpers, as: Routes
 
   test "generates helper for home" do
-    assert Routes.live_storybook_path(build_conn(), :home) == "/storybook"
+    assert Routes.live_storybook_path(build_conn(), :root) == "/storybook"
+  end
+
+  test "generates helper for entry" do
+    assert Routes.live_storybook_path(build_conn(), :entry, ["components", "button"]) ==
+             "/storybook/components/button"
+  end
+
+  test "generates helper for entry iframe" do
+    assert Routes.live_storybook_path(build_conn(), :entry_iframe, ["components", "button"]) ==
+             "/storybook/iframe/components/button"
   end
 
   test "raises when backend_module is missing" do
@@ -15,14 +25,7 @@ defmodule PhxLiveStorybook.RouterTest do
         use Phoenix.Router
         import PhxLiveStorybook.Router
 
-        pipeline :browser do
-          plug(:fetch_session)
-        end
-
-        scope "/", ThisWontBeUsed, as: :this_wont_be_used do
-          pipe_through(:browser)
-          live_storybook("/storybook", otp_app: :phx_live_storybook)
-        end
+        live_storybook("/storybook", otp_app: :phx_live_storybook)
       end
     end)
   end
@@ -33,14 +36,7 @@ defmodule PhxLiveStorybook.RouterTest do
         use Phoenix.Router
         import PhxLiveStorybook.Router
 
-        pipeline :browser do
-          plug(:fetch_session)
-        end
-
-        scope "/", ThisWontBeUsed, as: :this_wont_be_used do
-          pipe_through(:browser)
-          live_storybook("/storybook", backend_module: PhxLiveStorybook.TestStorybook)
-        end
+        live_storybook("/storybook", backend_module: PhxLiveStorybook.TestStorybook)
       end
     end)
   end

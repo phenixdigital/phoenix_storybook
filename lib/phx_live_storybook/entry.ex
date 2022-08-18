@@ -99,6 +99,7 @@ defmodule PhxLiveStorybook.Entry do
     @callback name() :: String.t()
     @callback description() :: String.t()
     @callback icon() :: String.t()
+    @callback container() :: atom()
   end
 
   defmodule ComponentBehaviour do
@@ -148,13 +149,16 @@ defmodule PhxLiveStorybook.Entry do
       @impl EntryBehaviour
       def icon, do: nil
 
+      @impl EntryBehaviour
+      def container, do: :div
+
       @impl unquote(component_behaviour(live?))
       def attributes, do: []
 
       @impl unquote(component_behaviour(live?))
       def stories, do: []
 
-      defoverridable name: 0, description: 0, icon: 0, stories: 0, attributes: 0
+      defoverridable name: 0, description: 0, icon: 0, container: 0, stories: 0, attributes: 0
     end
   end
 
@@ -178,12 +182,15 @@ defmodule PhxLiveStorybook.Entry do
       @impl EntryBehaviour
       def icon, do: nil
 
+      @impl EntryBehaviour
+      def container, do: :div
+
       @impl PageBehaviour
       def navigation, do: []
 
       def render(_assigns), do: false
 
-      defoverridable name: 0, description: 0, icon: 0, navigation: 0, render: 1
+      defoverridable name: 0, description: 0, icon: 0, navigation: 0, container: 0, render: 1
     end
   end
 

@@ -4,26 +4,17 @@ defmodule PhxLiveStorybook.LayoutView do
 
   alias Makeup.Styles.HTML.StyleMap
   alias Phoenix.LiveView.JS
+  alias PhxLiveStorybook.AssetHelpers
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
-  js_path = Path.join(__DIR__, "../../../dist/js/app.js")
-  css_path = Path.join(__DIR__, "../../../dist/css/app.css")
-
-  @external_resource js_path
-  @external_resource css_path
-
-  @app_js File.read!(js_path)
-  @app_css File.read!(css_path)
-
-  def render("app.js", _), do: @app_js
-  def render("app.css", _), do: @app_css
+  @env Application.compile_env(:phx_live_storybook, :env)
 
   defp makeup_stylesheet(conn) do
     style = storybook_setting(conn, :makeup_style, :monokai_style)
     apply(StyleMap, style, []) |> Makeup.stylesheet()
   end
 
-  defp live_socket_path(conn) do
+  defp live_socket_path(conn = %Plug.Conn{}) do
     [Enum.map(conn.script_name, &["/" | &1]) | conn.private.live_socket_path]
   end
 
@@ -59,9 +50,25 @@ defmodule PhxLiveStorybook.LayoutView do
   defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module
 
   defp application_static_path(conn, path) do
-    router = conn.private.application_router
-    :"#{router}.Helpers".static_path(conn, path)
+    routes(conn).static_path(conn, path)
   end
+
+  defp asset_path(conn_or_socket, path) do
+    live_storybook_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
+  end
+
+  @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phx_live_storybook))
+  @external_resource @manifest_path
+  @manifest AssetHelpers.parse_manifest(@manifest_path, @env)
+  defp asset_file_name(asset, :prod) do
+    if String.ends_with?(asset, [".js", ".css"]) do
+      @manifest |> AssetHelpers.asset_file_name(asset, :prod)
+    else
+      asset
+    end
+  end
+
+  defp asset_file_name(path, _env), do: path
 
   defp breadcrumb(socket, entry) do
     backend_module = backend_module(socket)

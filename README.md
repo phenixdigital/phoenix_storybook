@@ -4,14 +4,14 @@
 [![codecov](https://codecov.io/gh/phenixdigital/phx_live_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phx_live_storybook)
 [![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phx_live_storybook.svg)](https://github.com/phenixdigital/phx_live_storybook/releases/)
 
-📚 [Online Documentation](https://hexdocs.pm/phx_live_storybook) &nbsp; - &nbsp; 🔎 [Online Demo](http://phx-live-storybook-sample.fly.dev/storybook)
+📚 [Documentation](https://hexdocs.pm/phx_live_storybook) &nbsp; - &nbsp; 🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
 
 <!-- MDOC !-->
 
 PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your Phoenix LiveView components.
 
 - Explore all your components, and showcase them with different stories.
-- Browse your components documentation, with their supported attributes (coming in 0.3.0).
+- Browse your component's documentation, with their supported attributes (coming in 0.3.0).
 - Learn how components behave by using an interactive playground (coming in 0.3.0).
 
 ![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshot.png)
@@ -20,13 +20,13 @@ PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI inte
 
 PhxLiveStorybook is mounted in your application router and serves its UI at the mounting point of your choice.
 
-It performs an automatic discovery of your storybook content under a specified folder (`:content_path`) and then automatically generate storybook navigation sidebar. Every module detected in your content folder, will be loaded and identified as a storybook entry.
+It performs automatic discovery of your storybook content under a specified folder (`:content_path`) and then automatically generates a storybook navigation sidebar. Every module detected in your content folder will be loaded and identified as a storybook entry.
 
-Three kind of entries are supported:
+Three kinds of entries are supported:
 
 - `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
-- `example` to show how your components can be used and mixed together in real UI pages. (not available now)
+- `example` to show how your components can be used and mixed in real UI pages. (not available now)
 
 Almost everything, from sidebar rendering to component preview, is performed at compilation time.
 
@@ -36,7 +36,7 @@ To start using `PhxLiveStorybook` in your phoenix application you will need to f
 
 1. Add the `phx_live_storybook` dependency
 2. Create your storybook backend module
-3. Add storybook access in your router
+3. Add storybook access to your router
 4. Make your components assets available
 5. Configure your storybook
 6. Create some content.
@@ -77,17 +77,15 @@ import PhxLiveStorybook.Router
 
 ...
 
-scope "/" do
-  pipe_through :browser
-  live_storybook "/storybook",
-    otp_app: :my_app,
-    backend_module: MyAppWeb.Storybook
-end
+# outside of your main scope & of your :browser pipeline
+live_storybook "/storybook",
+  otp_app: :my_app,
+  backend_module: MyAppWeb.Storybook
 ```
 
 ### 4. Make your components assets available
 
-Build a new css bundle dedicated to your live_view components: this bundle will be used both by your app and the storybook.
+Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your app and the storybook.
 
 In this README, we use `assets/css/my_components.css` as an example.
 
@@ -104,6 +102,8 @@ import * as Uploaders from "./uploaders";
 })();
 ```
 
+ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
+
 ### 5. Configure your storybook
 
 In your configuration files, add the following.
@@ -119,11 +119,11 @@ config :my_app, MyAppWeb.Storybook,
 
 ### 6. Create some content.
 
-Then you can start creating some content for your storybook. Storybook can contain 2 different kind of _entries_:
+Then you can start creating some content for your storybook. Storybook can contain 2 different kinds of _entries_:
 
 - **component entries**: to document and showcase your components across different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
-- **examples**: to show how your components can be used and mixed together in real UI pages.
+- **examples**: to show how your components can be used and mixed in real UI pages.
 
 _As of `0.3.0`, only component and page entries are available._
 
@@ -142,23 +142,21 @@ defmodule MyAppWeb.Storybook.Components.Button do
   def function, do: &Button.button/1
   def description, do: "A simple generic button."
 
-  def stories do
-    [
-      %Story{
-        id: :default,
-        attributes: %{
-          label: "A button"
-        }
-      },
-      %Story{
-        id: :green_button,
-        attributes: %{
-          :label => "Still a button",
-          :"bg-color" => "bg-green-600",
-          :"hover-bg-color" => "bg-green-700"
-        }
+  def stories do [
+    %Story{
+      id: :default,
+      attributes: %{
+        label: "A button"
       }
-    ]
+    },
+    %Story{
+      id: :green_button,
+      attributes: %{
+        label: "Still a button",
+        color: :green
+      }
+    }
+  ]
   end
 end
 ```
@@ -178,7 +176,7 @@ config :my_app, MyAppWeb.Storybook,
   css_path: "/assets/my_components.css",
 
   # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
-  # JS. It's mainly intended to define your own LiveView Hooks in `window.storybook.Hooks`.
+  # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
   js_path: "/assets/my_components.js",
 
   # Custom storybook title. Default is "Live Storybook".
@@ -187,7 +185,7 @@ config :my_app, MyAppWeb.Storybook,
   # Folder settings.
   # Each folder is designated by its relative path from the storybook mounting point.
   # For each folder you can:
-  # - make it open by defaut in the sidebar, with `open: true`.
+  # - make it open by default in the sidebar, with `open: true`.
   # - give it a custom name in the sidebar
   # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
   folders: [

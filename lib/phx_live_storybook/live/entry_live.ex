@@ -1,17 +1,22 @@
 defmodule PhxLiveStorybook.EntryLive do
   use PhxLiveStorybook.Web, :live_view
 
-  alias PhxLiveStorybook.{ComponentEntry, PageEntry}
-  alias PhxLiveStorybook.Entry.{ComponentEntryLive, PageEntryLive}
-  alias PhxLiveStorybook.EntryNotFound
+  alias Phoenix.{LiveView.JS, PubSub}
+  alias PhxLiveStorybook.{ComponentEntry, PageEntry, Story, StoryGroup}
+  alias PhxLiveStorybook.Entry.Playground
+  alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
 
   def mount(_params, session, socket) do
+    if connected?(socket) do
+      PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
+    end
+
     {:ok,
      assign(socket,
        otp_app: session["otp_app"],
        backend_module: session["backend_module"],
-       playground_preview_pid: nil,
-       playground_error: nil
+       playground_error: nil,
+       playground_preview_pid: nil
      )}
   end
 
@@ -55,34 +60,41 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, socket}
   end
 
+  defp first_component_entry(socket) do
+    socket.assigns.backend_module.all_leaves() |> Enum.at(0)
+  end
+
+  defp load_entry(socket, entry_param) do
+    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
+    socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
+  end
+
   defp current_tab(params, entry) do
     case Map.get(params, "tab") do
-      nil ->
-        case entry do
-          %ComponentEntry{} -> ComponentEntryLive.default_tab()
-          %PageEntry{} -> PageEntryLive.default_tab(entry)
-        end
-
-      tab ->
-        String.to_atom(tab)
+      nil -> default_tab(entry)
+      tab -> String.to_atom(tab)
     end
   end
 
+  defp default_tab(%ComponentEntry{}), do: :stories
+  defp default_tab(%PageEntry{navigation: []}), do: nil
+  defp default_tab(%PageEntry{navigation: [{tab, _, _} | _]}), do: tab
+
   def render(assigns = %{entry: _entry}) do
     ~H"""
-    <div class="lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
-      <div>
-        <div class="lsb-flex lsb-my-6 lsb-items-center">
-          <h2 class="lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
+    <div class="lsb lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
+      <div class="lsb">
+        <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
+          <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @entry.icon do %>
-              <i class={"#{icon} lsb-pr-2"}></i>
+              <i class={"lsb #{icon} lsb-pr-2 lsb-text-indigo-600"}></i>
             <% end %>
             <%= @entry.name() %>
           </h2>
 
-          <%=  @entry |> navigation_tabs(assigns) |> render_navigation_tabs(assigns) %>
+          <%=  @entry |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
-        <div class="lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+        <div class="lsb lsb-text-lg lsb-leading-7 lsb-text-slate-700">
           <%= @entry.description() %>
         </div>
       </div>
@@ -94,31 +106,33 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def render(assigns), do: ~H""
 
-  defp navigation_tabs(%ComponentEntry{}, _assigns) do
-    ComponentEntryLive.navigation_tabs()
+  defp navigation_tabs(%ComponentEntry{}) do
+    [
+      {:stories, "Stories", "far fa-eye"},
+      {:playground, "Playground", "far fa-dice"},
+      {:source, "Source", "far fa-file-code"}
+    ]
   end
 
-  defp navigation_tabs(%PageEntry{}, assigns) do
-    PageEntryLive.navigation_tabs(assigns)
-  end
+  defp navigation_tabs(%PageEntry{navigation: navigation}), do: navigation
 
   defp render_navigation_tabs([], assigns), do: ~H""
 
   defp render_navigation_tabs(tabs, assigns) do
     ~H"""
-    <div class="lsb-flex lsb-flex-items-center">
+    <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
-      <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="entry-nav-form lg:lsb-hidden">
-        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm rounded-md", value: @tab %>
+      <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="lsb entry-nav-form lg:lsb-hidden">
+        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "tab-navigation", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
       </.form>
 
       <!-- :lg+ version of navigation tabs -->
-      <nav class="entry-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
+      <nav class="lsb entry-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
         <%= for {tab, label, icon} <- tabs do %>
-          <%= live_patch to: "?tab=#{tab}", class: "lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}" do %>
+          <%= live_patch to: "?tab=#{tab}", class: "lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}" do %>
             <span class={active_span(@tab, tab)}>
-              <i class={"#{icon} lg:lsb-mr-2 group-hover:lsb-text-indigo-600"}></i>
-              <span class={"group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
+              <i class={"lsb #{icon} lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}></i>
+              <span class={"lsb group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
                 <%= label %>
               </span>
             </span>
@@ -129,41 +143,115 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp navigation_select_options(tabs) do
-    for {tab, label, _icon} <- tabs, do: {label, tab}
-  end
-
-  defp render_content(%ComponentEntry{}, assigns) do
-    ComponentEntryLive.render(assigns)
-  end
-
-  defp render_content(%PageEntry{}, assigns) do
-    PageEntryLive.render(assigns)
-  end
-
-  defp active_link(same, same), do: "lsb-bg-white lsb-opacity-100"
+  defp active_link(same, same), do: "lsb lsb-bg-white lsb-opacity-100"
 
   defp active_link(_tab, _current_tab) do
-    "lsb-ml-0.5 lsb-p-1.5 lg:lsb-pl-2.5 lg:lsb-pr-3.5 lsb-items-center lsb-text-slate-600"
+    "lsb lsb-ml-0.5 lsb-p-1.5 lg:lsb-pl-2.5 lg:lsb-pr-3.5 lsb-items-center lsb-text-slate-600"
   end
 
   defp active_span(same, same) do
-    "lsb-h-full lsb-rounded-md lsb-flex lsb-items-center lsb-bg-white lsb-shadow-sm \
+    "lsb lsb-h-full lsb-rounded-md lsb-flex lsb-items-center lsb-bg-white lsb-shadow-sm \
     lsb-ring-opacity-5 lsb-text-indigo-600 lsb-p-1.5 lg:lsb-pl-2.5 lg:lsb-pr-3.5"
   end
 
   defp active_span(_tab, _current_tab), do: ""
 
-  defp active_text(same, same), do: ""
-  defp active_text(_tab, _current_tab), do: "-lsb-ml-0.5"
+  defp active_text(same, same), do: "lsb-text-indigo-600"
+  defp active_text(_tab, _current_tab), do: "lsb -lsb-ml-0.5"
 
-  defp load_entry(socket, entry_param) do
-    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
-    socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
+  defp navigation_select_options(tabs) do
+    for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp first_component_entry(socket) do
-    socket.assigns.backend_module.all_leaves() |> Enum.at(0)
+  defp render_content(%ComponentEntry{}, assigns = %{tab: :stories}) do
+    ~H"""
+    <div class="lsb lsb-space-y-12 lsb-pt-8 lsb-pb-12">
+      <%= for story = %{id: story_id, description: description} when is_struct(story, Story) or is_struct(story, StoryGroup) <- @entry.stories() do %>
+        <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+
+          <!-- Story description -->
+          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group">
+            <%= link to: "##{anchor_id(story)}", class: "lsb entry-anchor-link" do %>
+              <i class="lsb fal fa-link lsb-hidden group-hover:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
+              <%= if description do %>
+                <%= description  %>
+              <% else %>
+                <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+              <% end %>
+            <% end %>
+          </div>
+
+          <!-- Story component preview -->
+          <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
+            <%= if @entry.container() == :iframe do %>
+              <iframe
+                phx-update="ignore"
+                id={iframe_id(@entry, story)}
+                src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: story.id)}
+                class="lsb-w-full lsb-border-0"
+                height="0"
+                onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
+              />
+            <% else %>
+              <div class="lsb-sandbox">
+                <%= @backend_module.render_story(@entry.module(), story_id) %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Story code -->
+          <div class="lsb lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm lsb-flex lsb-flex-col lsb-justify-center">
+            <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
+              <i class="lsb fa fa-copy lsb-text-inherit"></i>
+            </div>
+            <%= @backend_module.render_code(@entry.module(), story_id) %>
+          </div>
+
+        </div>
+      <% end %>
+    </div>
+    """
+  end
+
+  defp render_content(%ComponentEntry{}, assigns = %{tab: :source}) do
+    ~H"""
+    <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
+      <%= @backend_module.render_source(@entry.module) %>
+    </div>
+    """
+  end
+
+  defp render_content(%ComponentEntry{}, assigns = %{tab: :playground}) do
+    ~H"""
+    <.live_component module={Playground} id="playground"
+      entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
+      story={default_story(@entry)}
+      playground_error={@playground_error}
+    />
+    """
+  end
+
+  defp render_content(%ComponentEntry{}, _assigns = %{tab: tab}),
+    do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
+
+  defp render_content(%PageEntry{}, assigns) do
+    ~H"""
+    <div class="lsb lsb-pb-12 lsb-sandbox">
+      <%= raw(@backend_module.render_page(@entry.module, @tab)) %>
+    </div>
+    """
+  end
+
+  defp default_story(%ComponentEntry{stories: [story | _]}), do: story
+  defp default_story(_), do: nil
+
+  defp iframe_id(entry, story) do
+    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+    "iframe-#{module}-story-#{story.id}"
+  end
+
+  defp anchor_id(%{id: id}) do
+    id |> to_string() |> String.replace("_", "-")
   end
 
   def handle_event("open-sidebar", _, socket) do
@@ -198,6 +286,8 @@ defmodule PhxLiveStorybook.EntryLive do
       when socket.assigns.playground_preview_pid == pid do
     {:noreply, assign(socket, :playground_error, reason)}
   end
+
+  def handle_info(_, socket), do: {:noreply, socket}
 end
 
 defmodule PhxLiveStorybook.EntryNotFound do

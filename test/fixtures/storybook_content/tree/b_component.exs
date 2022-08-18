@@ -3,6 +3,7 @@ defmodule TreeStorybook.BComponent do
   def component, do: BComponent
 
   def description, do: "b component description"
+  def container, do: :iframe
 
   def stories do
     [

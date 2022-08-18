@@ -100,17 +100,18 @@ defmodule PhxLiveStorybook do
     content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
     components_pattern = if content_path, do: "#{content_path}/**/*"
 
-    live_component_quotes =
-      for %{component: component} <- leave_entries, !is_nil(component) do
-        quote do
-          require unquote(component)
-        end
-      end
+    modules = for %{component: mod} <- leave_entries, !is_nil(mod), into: MapSet.new(), do: mod
+
+    modules =
+      for %{function: fun} <- leave_entries,
+          !is_nil(fun),
+          into: modules,
+          do: Function.info(fun)[:module]
 
     component_quotes =
-      for %{function: fun} <- leave_entries, !is_nil(fun) do
+      for module <- modules do
         quote do
-          require unquote(Function.info(fun)[:module])
+          require unquote(module)
         end
       end
 
@@ -137,14 +138,16 @@ defmodule PhxLiveStorybook do
         end
       end
 
-    [tree_quote] ++ live_component_quotes ++ component_quotes
+    [tree_quote | component_quotes]
   end
 
   defp entries(backend_module, otp_app) do
     content_path =
       otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:content_path)
 
-    folders_config = otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders)
+    folders_config =
+      otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders, [])
+
     Entries.entries(content_path, folders_config)
   end
 end

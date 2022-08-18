@@ -1,7 +1,7 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
-import { EntryHook } from "./entry_hook";
-import { SidebarHook } from "./sidebar_hook";
+import { EntryHook } from "./lib/entry_hook";
+import { SidebarHook } from "./lib/sidebar_hook";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -30,5 +30,4 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
 });
 
 liveSocket.connect();
-
 window.liveSocket = liveSocket;

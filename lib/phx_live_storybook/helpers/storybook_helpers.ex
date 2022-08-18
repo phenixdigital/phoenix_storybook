@@ -1,22 +1,27 @@
-defmodule PhxLiveStorybook.Helpers do
+defmodule PhxLiveStorybook.StorybookHelpers do
   @moduledoc false
 
-  @doc false
   def live_storybook_path(conn_or_socket, action, params \\ %{})
 
-  @doc false
   def live_storybook_path(conn = %Plug.Conn{}, action, params) do
-    do_live_storybook_path(conn, conn.private.phoenix_router, action, params)
+    routes(conn).live_storybook_path(conn, action, params)
   end
 
-  @doc false
+  def live_storybook_path(%Phoenix.LiveView.Socket{router: nil}, _action, _params), do: ""
+
   def live_storybook_path(socket = %Phoenix.LiveView.Socket{}, action, params) do
-    do_live_storybook_path(socket, socket.router, action, params)
+    routes(socket).live_storybook_path(socket, action, params)
   end
 
-  defp do_live_storybook_path(_conn_or_socket, nil, _action, _params), do: ""
+  def live_storybook_path(socket = %Phoenix.LiveView.Socket{}, action, params, opts) do
+    routes(socket).live_storybook_path(socket, action, params, opts)
+  end
 
-  defp do_live_storybook_path(conn_or_socket, router, action, params) do
-    router.__helpers__().live_storybook_path(conn_or_socket, action, params)
+  def routes(conn = %Plug.Conn{}) do
+    conn.private.application_router.__helpers__()
+  end
+
+  def routes(socket = %Phoenix.LiveView.Socket{}) do
+    socket.router.__helpers__()
   end
 end
