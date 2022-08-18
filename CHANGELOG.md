@@ -2,17 +2,16 @@
 
 ## v0.3.0 (2022-08-18)
 
-- change (breaking!): entries must now be written as `.exs` files. Otherwise they will be ignored.
+- change (breaking!): entries must now be written as `.exs` files. Otherwise, they will be ignored.
 - change (breaking!): `variations` have been rebranded as `stories`.
-- change (breaking!): `live_storybook/2` must be set in your `router.ex` outside your main scope  
+- change (breaking!): `live_storybook/2` must be set in your `router.ex` outside your main scope
   and outside your `:browser` pipeline.
-- feature: new Playground tab to play with your components! To use it, you just need to declare
-  attributes in your component entries.
+- feature: new Playground tab to play with your components! To use it, you must declare attributes in your component entries.
 - feature: you can opt-in iframe rendering for any of your components with `def container, do: :iframe`
 - improvement: storybook is now fully responsive.
 - improvement: meaningful errors are raised during compilation if your entries are invalid.
 - improvement: improved storybook CSS isolation. It should no longer leak within your components.
-- improvement: stateless component entries no longer require to define a `component/0` function.
+- improvement: stateless component entries no longer require defining a `component/0` function.
 - documentation: new `sandboxing.md` guide.
 
 ## v0.2.0 (2022-07-30)
