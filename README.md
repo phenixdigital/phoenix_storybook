@@ -29,7 +29,7 @@ Three kinds of entries are supported:
 - `page` to write & document UI guidelines, or whatever content you want.
 - `example` to show how your components can be used and mixed in real UI pages. (not available now)
 
-Almost everything, from sidebar rendering to component preview, is performed at compilation time.
+Almost everything, from sidebar rendering to component preview, is performed at compile time.
 
 ## Installation
 
