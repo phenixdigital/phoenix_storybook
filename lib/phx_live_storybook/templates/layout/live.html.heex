@@ -9,8 +9,8 @@
     </div>
   </div>
   
-  <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer">
-    <i class="lsb far fa-bars fa-lg lsb-px-6" phx-click={JS.dispatch("lsb:open-sidebar")}></i>
+  <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer lsb-pr-2">
+    <i class="lsb far fa-bars fa-lg lsb-px-4" phx-click={JS.dispatch("lsb:open-sidebar")}></i>
     <%= if assigns[:entry] do %>
       <%= render_breadcrumb(@socket, @entry) %>
     <% end %>
