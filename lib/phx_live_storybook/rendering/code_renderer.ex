@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   Responsible for rendering your components code snippet, for a given
   `PhxLiveStorybook.Story`.
 
-  Uses `Makeup` libray for syntax highlighting.
+  Uses the `Makeup` libray for syntax highlighting.
   """
 
   import Phoenix.LiveView.Helpers

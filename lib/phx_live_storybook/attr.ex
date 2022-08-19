@@ -1,14 +1,14 @@
 defmodule PhxLiveStorybook.Attr do
   @moduledoc """
-  An attr is one of your component attributes. Its structure mimics
-  forthcoming LiveView 0.18.0 declarative assigns.
+  An attr is one of your component attributes. Its structure mimics the
+  upcoming LiveView 0.18.0 declarative assigns.
 
   Attributes declaration will populate the Playground tab of your storybook,
   for each of your components.
 
   Supported keys:
-  - `id`: the attribute id (required). Should match to your component assign.
-  - `type`: the attribute type (required). But be one of:
+  - `id`: the attribute id (required). Should match your component assign.
+  - `type`: the attribute type (required). Must be one of:
     * `:any` - any term
     * `:string` - any binary string
     * `:atom` - any atom

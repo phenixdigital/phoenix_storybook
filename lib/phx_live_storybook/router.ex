@@ -16,12 +16,12 @@ defmodule PhxLiveStorybook.Router do
   <%= link "Storybook", to: live_storybook_path(conn, :root) %>
   ```
 
-  Note you should only use `link/2` to link to the storybook (and not
-  `live_redirect/live_link`, as it has to set its own session on first
-  render.
+  Note that you should only use `link/2` to link to the storybook (and not
+  `live_redirect/live_link`), as it has to set its own session on first
+  rendering.
 
   ## Options
-    * `:otp_app` - _Required_ - OTP Name of your Phoenix application.
+    * `:otp_app` - _Required_ - OTP name of your Phoenix application.
       It must match `:otp_app` of your backend module and settings.
     * `:backend_module` - _Required_ - Name of your backend module.
     * `:live_socket_path` - Configures the socket path. It must match
