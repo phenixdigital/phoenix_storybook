@@ -6,12 +6,12 @@ some context with the storybook: **styling** and **scripts**.
 While the original Storybook for React only [relies on iframes](https://storybook.js.org/docs/react/configure/story-rendering), we found them quite slow and don't want them to be the default
 choice.
 
-This guide will explain :
+This guide will explain:
 
 - what JS context do your components share with the storybook?
 - how is the storybook styled, to prevent most styling clashes?
-- how you should provide the style of your components with scoped styles.
-- how, as a last resort, you can enable iframe rendering.
+- how should you provide the style of your components with scoped styles?
+- how to, as a last resort, enable iframe rendering?
 
 ## 1. What JS context do your components share with the storybook?
 
@@ -36,18 +36,18 @@ You can also use this script to inject whatever content you want into document `
 
 ## 2. How is the storybook styled?
 
-`PhxLiveStorybook` is using [TailwindCSS](https://tailwindcss.com) with [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix): `lsb-`. (which means that instead of using `bg-blue-400` the storybook uses `lsb-bg-blue-400`).
+`PhxLiveStorybook` is using [TailwindCSS](https://tailwindcss.com) with [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix): `lsb-` (which means that instead of using `bg-blue-400` the storybook uses `lsb-bg-blue-400`).
 
 Only elements with the `.lsb` class are preflighted, in order to let your component styling as-is.
 
 So unless your components use `lsb` or `lsb-` prefixed classes there should be no styling leak from the storybook to you components.
 
-## 3. How you should provide the style of your components?
+## 3. How should you provide the style of your components?
 
 You need to inject your component's stylesheets into the storybook. Just (like for JS), set the
 `css_path: "/assets/css/components.css"` option in `config.exs`.
 
-The last part (2.) was about storybook styles not leaking into your components. This part is about the opposite: don't accidentally mess up Storybook styling with your styles.
+The previous part (2.) was about storybook styles not leaking into your components. This part is about the opposite: don't accidentally mess up Storybook styling with your styles.
 
 All containers rendering your components in the storybook (`stories`, `playground`, `pages` ...) have the `.lsb-sandbox` CSS class.
 
@@ -90,7 +90,7 @@ module.exports = {
 }
 ```
 
-## 4. Enable iframe rendering
+## 4. Enabling iframe rendering
 
 As a last resort, if for whatever reason you cannot make your component live within the storybook (an example would be that your component needs to bind listeners on `document`), it is possible to enable iframe rendering, component per component.
 

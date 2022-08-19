@@ -22,7 +22,7 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @callback entries() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
 
   @doc """
-  Returns the all leaves of the storybook content tree (ie. whichever entries are is
+  Returns all the leaves of the storybook content tree (ie. all entries that are
   not a folder)
   """
   @callback all_leaves() :: [%ComponentEntry{} | %PageEntry{}]
@@ -35,27 +35,27 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @doc """
   Renders a specific story for a given component entry.
   Can be a single story or a story group.
-  Returns rendered HEEx template.
+  Returns a rendered HEEx template.
   """
   @callback render_story(entry_module :: any(), story_id :: atom()) ::
               %Rendered{}
 
   @doc """
   Renders code snippet of a specific story for a given component entry.
-  Returns rendered HEEx template.
+  Returns a rendered HEEx template.
   """
   @callback render_code(entry_module :: atom(), story_id :: atom()) ::
               %Rendered{}
 
   @doc """
   Renders source of a component entry.
-  Returns rendered HEEx template.
+  Returns a rendered HEEx template.
   """
   @callback render_source(entry_module :: atom()) :: %Rendered{}
 
   @doc """
   Renders a tab content for a page entry.
-  Returns rendered HEEx template.
+  Returns a rendered HEEx template.
   """
   @callback render_page(entry_module :: atom(), tab :: atom()) :: %Rendered{}
 end
