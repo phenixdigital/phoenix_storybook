@@ -40,7 +40,7 @@ To start using `PhxLiveStorybook` in your phoenix application you will need to f
 3. Add storybook access to your router
 4. Make your components assets available
 5. Configure your storybook
-6. Create some content.
+6. Create some content
 
 ### 1. Add the `phx_live_storybook` dependency
 
@@ -56,7 +56,7 @@ end
 
 ### 2. Create your storybook backend module
 
-Create a new module under your application lib folder.
+Create a new module under your application lib folder:
 
 ```elixir
 # lib/my_app_web/storybook.ex
@@ -67,9 +67,9 @@ end
 
 This backend module ensures the storybook gets recompiled as soon as you update your storybook content (see section 5.)
 
-### 3. Add storybook access in your router
+### 3. Add storybook access to your router
 
-Once installed, update your router's configuration to forward requests to a `PhxLiveStorybook` with a unique name of your choosing:
+Once installed, update your router's configuration to forward requests to a `PhxLiveStorybook` with a unique name of your choice:
 
 ```elixir
 # lib/my_app_web/router.ex
@@ -107,7 +107,7 @@ import * as Uploaders from "./uploaders";
 
 ### 5. Configure your storybook
 
-In your configuration files, add the following.
+In your configuration files, add the following:
 
 ```elixir
 # config/config.exs
@@ -118,9 +118,9 @@ config :my_app, MyAppWeb.Storybook,
   js_path: "/assets/my_components.js"
 ```
 
-### 6. Create some content.
+### 6. Create some content
 
-Then you can start creating some content for your storybook. Storybook can contain 2 different kinds of _entries_:
+Then you can start creating some content for your storybook. Storybook can contain different kinds of _entries_:
 
 - **component entries**: to document and showcase your components across different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
@@ -164,7 +164,7 @@ end
 
 ### Configuration
 
-All config settings, only the `:content_path` key is mandatory.
+Of all config settings, only the `:content_path` key is mandatory.
 
 ```elixir
 # config/config.exs
