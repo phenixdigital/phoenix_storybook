@@ -11,8 +11,8 @@
 PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your Phoenix LiveView components.
 
 - Explore all your components, and showcase them with different stories.
-- Browse your component's documentation, with their supported attributes (coming in 0.3.0).
-- Learn how components behave by using an interactive playground (coming in 0.3.0).
+- Browse your component's documentation, with their supported attributes.
+- Learn how components behave by using an interactive playground.
 
 ![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshots/screenshot-01.jpg)
 ![screenshot](https://github.com/phenixdigital/phx_live_storybook/raw/main/screenshots/screenshot-02.jpg)
