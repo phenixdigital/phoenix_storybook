@@ -152,7 +152,7 @@ defmodule PhxLiveStorybook.Sidebar do
   defp click_action(_open? = true), do: "close-folder"
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
-    Enum.member?(opened_folders, path)
+    MapSet.member?(opened_folders, path)
   end
 
   def handle_event("open-folder", %{"path" => path}, socket) do
