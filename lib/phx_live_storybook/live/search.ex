@@ -17,6 +17,7 @@ defmodule PhxLiveStorybook.Search do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:show, false)
      |> assign(:root_path, root_path)
      |> assign(:all_entries, entries)
      |> assign(:entries, entries)}
