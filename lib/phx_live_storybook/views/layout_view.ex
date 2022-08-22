@@ -90,4 +90,19 @@ defmodule PhxLiveStorybook.LayoutView do
 
     Enum.reverse(breadcrumb)
   end
+
+  defp themes(socket) do
+    backend_module = backend_module(socket)
+    backend_module.config(:themes, nil)
+  end
+
+  defp show_dropdown_transition do
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-0 lsb-scale-95",
+     "lsb-opacity-100 lsb-scale-100"}
+  end
+
+  defp hide_dropdown_transition do
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
+     "lsb-opacity-0 lsb-scale-95"}
+  end
 end

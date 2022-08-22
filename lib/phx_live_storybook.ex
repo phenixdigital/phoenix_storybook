@@ -37,7 +37,7 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Can be a single story or a story group.
   Returns a rendered HEEx template.
   """
-  @callback render_story(entry_module :: any(), story_id :: atom()) ::
+  @callback render_story(entry_module :: any(), story_id :: atom(), theme :: atom()) ::
               %Rendered{}
 
   @doc """
@@ -82,13 +82,15 @@ defmodule PhxLiveStorybook do
     backend_module = __CALLER__.module
     otp_app = opts[:otp_app]
     entries = entries(backend_module, otp_app)
+    themes = config(otp_app, backend_module, :themes, [{nil, nil}])
     leave_entries = Entries.all_leaves(entries)
 
     [
       recompilation_quotes(backend_module, otp_app, leave_entries),
       ConfigQuotes.config_quotes(backend_module, otp_app),
       EntriesQuotes.entries_quotes(entries),
-      ComponentQuotes.component_quotes(leave_entries, __CALLER__.file),
+      ComponentQuotes.render_component_quotes(leave_entries, themes, __CALLER__.file),
+      ComponentQuotes.render_code_quotes(leave_entries),
       SourceQuotes.source_quotes(leave_entries),
       PageQuotes.page_quotes(leave_entries, __CALLER__.file)
     ]
@@ -142,12 +144,12 @@ defmodule PhxLiveStorybook do
   end
 
   defp entries(backend_module, otp_app) do
-    content_path =
-      otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:content_path)
-
-    folders_config =
-      otp_app |> Application.get_env(backend_module, []) |> Keyword.get(:folders, [])
-
+    content_path = config(otp_app, backend_module, :content_path)
+    folders_config = config(otp_app, backend_module, :folders, [])
     Entries.entries(content_path, folders_config)
+  end
+
+  defp config(otp_app, backend_module, key, default \\ nil) do
+    otp_app |> Application.get_env(backend_module, []) |> Keyword.get(key, default)
   end
 end

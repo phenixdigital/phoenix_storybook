@@ -119,7 +119,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
                 <% end %>
-                <%= live_patch(name, to: entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
+                <%= patch_to(assigns, name, entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
 
             <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
@@ -128,7 +128,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon do %>
                   <i class={"lsb #{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
                 <% end %>
-                <%= live_patch(name, to: entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
+                <%= patch_to(assigns, name, entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
           <% end %>
         </li>
@@ -150,6 +150,16 @@ defmodule PhxLiveStorybook.Sidebar do
 
   defp click_action(_open? = false), do: "open-folder"
   defp click_action(_open? = true), do: "close-folder"
+
+  defp patch_to(assigns, label, path, opts) do
+    path =
+      case Map.get(assigns, :theme) do
+        nil -> path
+        theme -> "#{path}?theme=#{theme}"
+      end
+
+    live_patch(label, [{:to, path} | opts])
+  end
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
     Enum.member?(opened_folders, path)

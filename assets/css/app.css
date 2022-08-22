@@ -4,7 +4,7 @@
 
 .lsb {
   font-family: "Inter var", ui-sans-serif, system-ui, sans-serif;
-  @apply lsb-antialiased lsb-text-gray-600;
+  @apply lsb-antialiased lsb-text-gray-600 lsb-text-inherit;
 }
 
 .lsb-wait-for-icons {
