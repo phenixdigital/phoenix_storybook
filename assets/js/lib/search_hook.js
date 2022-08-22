@@ -1,6 +1,8 @@
 export const SearchHook = {
    mounted() {
       const searchContainer = document.querySelector("#search-container");
+      const searchList = document.querySelector("#search-list");
+      const searchInput = document.querySelector("#search-container input");
 
       window.addEventListener('keydown', (e) => {
          if(e.key === 'Enter'){
@@ -8,25 +10,22 @@ export const SearchHook = {
                const link = e.target.children[0]
                this.pushEventTo("#search-container", "navigate", {path: link.pathname});
 
-               searchContainer.classList.add("lsb-ease-in");
-               searchContainer.classList.add("lsb-hidden");
+               this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"))
             }
          }
 
          if(e.metaKey && e.key === 'k'){
-            searchContainer.classList.add("lsb-ease-out");
-            searchContainer.classList.remove("lsb-hidden");
+            this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"))
+            searchInput.focus();
          }
 
          if(e.key === 'Escape'){
-            searchContainer.classList.add("lsb-ease-in");
-            searchContainer.classList.add("lsb-hidden");
+            this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"))
          }
       });
 
-      searchContainer.addEventListener('click', (e) => {
-         searchContainer.classList.add("lsb-ease-in");
-         searchContainer.classList.add("lsb-hidden");
+      searchList.addEventListener('click', (e) => {
+         this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"))
       })
 }
  };
