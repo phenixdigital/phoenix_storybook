@@ -37,12 +37,16 @@ defmodule PhxLiveStorybook.Sidebar do
   defp assign_opened_folders(socket = %{assigns: assigns}, root_path) do
     # reading pre-opened folders from config
     opened_folders =
-      for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
-          folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
-          folder_opts[:open],
-          reduce: assigns.opened_folders do
-        opened_folders ->
-          MapSet.put(opened_folders, "#{root_path}#{folder_path}")
+      if MapSet.size(assigns.opened_folders) == 0 do
+        for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+            folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
+            folder_opts[:open],
+            reduce: assigns.opened_folders do
+          opened_folders ->
+            MapSet.put(opened_folders, "#{root_path}#{folder_path}")
+        end
+      else
+        assigns.opened_folders
       end
 
     # then opening folders based on current request path
