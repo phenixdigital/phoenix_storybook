@@ -15,7 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.2",
-    "esbuild": "^0.15.3",
+    "esbuild": "^0.15.5",
     "npm-run-all": "^4.1.5",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
