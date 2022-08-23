@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.Search do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
+  alias PhxLiveStorybook.LayoutView
   alias Phoenix.LiveView.JS
 
   def mount(socket) do
@@ -33,11 +34,19 @@ defmodule PhxLiveStorybook.Search do
 
   def render(assigns) do
     ~H"""
-    <div id="search-container" phx-hook="SearchHook" phx-show={JS.show(transition: show_transition_classes())} phx-hide={JS.hide(transition: hide_transition_classes())}  class="lsb lsb-hidden lsb-relative lsb-z-10 lsb-duration-300">
+    <div
+      id="search-container"
+      phx-hook="SearchHook"
+      phx-show={JS.show(transition: show_transition_classes())}
+      phx-hide={JS.hide(transition: hide_transition_classes())}
+      class="lsb lsb-hidden lsb-relative lsb-z-10 lsb-duration-300">
+
       <div class="lsb lsb-fixed lsb-inset-0 lsb-backdrop-blur lsb-bg-gray-500 lsb-bg-opacity-25 lsb-transition-opacity"></div>
 
       <div class="lsb lsb-fixed lsb-inset-0 lsb-z-10 lsb-overflow-y-auto lsb-p-4 lsb-sm:p-6 lsb-md:p-20">
-        <div phx-click-away={JS.hide(to: "#search-container", transition: hide_transition_classes())} class="lsb lsb-mx-auto lsb-max-w-xl lsb-transform lsb-divide-y lsb-divide-gray-100 lsb-overflow-hidden lsb-rounded-xl lsb-bg-white lsb-shadow-2xl lsb-transition-all">
+        <div
+          phx-click-away={JS.hide(to: "#search-container", transition: hide_transition_classes())}
+          class="lsb lsb-mx-auto lsb-max-w-xl lsb-transform lsb-divide-y lsb-divide-gray-100 lsb-overflow-hidden lsb-rounded-xl lsb-bg-white lsb-shadow-2xl lsb-transition-all">
 
           <.form let={f} for={:search} phx-debounce={500} id="search-form" class="lsb lsb-relative">
             <i class="fal fa-search lsb lsb-pointer-events-none lsb-absolute lsb-top-3.5 lsb-left-4 lsb-h-5 lsb-w-5 lsb-text-gray-400"></i>
@@ -50,12 +59,15 @@ defmodule PhxLiveStorybook.Search do
             </div>
           <% end %>
 
-          <ul id="search-list" class="lsb lsb-max-h-72 lsb-scroll-py-2 lsb-overflow-y-auto lsb-py-2 lsb-text-sm lsb-text-gray-800">
+          <ul id="search-list" class="lsb lsb-max-h-72 lsb-scroll-py-2 lsb-divide-y lsb-divide-gray-200 lsb-overflow-y-auto lsb-py-2 lsb-text-sm lsb-text-gray-800">
             <%= for {entry, i} <- Enum.with_index(@entries) do %>
               <% entry_path =  @root_path <> entry.storybook_path %>
 
-              <li id={"entry-#{i}"} class="lsb lsb-group lsb-select-none lsb-px-4 lsb-py-2 lsb-cursor-pointer" tabindex="-1">
-                <%= live_patch(entry.name, to: entry_path, class: "lsb") %>
+              <li id={"entry-#{i}"} class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-cursor-pointer" tabindex="-1">
+                <%= live_patch(entry.name, to: entry_path, class: "lsb lsb-font-semibold") %>
+                <div>
+                  <%= LayoutView.render_breadcrumb(@socket, entry, span_class: "lsb-text-xs") %>
+                </div>
               </li>
             <% end %>
           </ul>
