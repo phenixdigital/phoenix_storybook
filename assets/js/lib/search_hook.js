@@ -12,10 +12,10 @@ export const SearchHook = {
          allEntries = searchList.children
          firstEntry = searchList.firstElementChild
          lastEntry = searchList.lastElementChild
-         
-         activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+
+         activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
          activeEntry = firstEntry
-         activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+         activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
       });
 
       observer.observe(searchList, {
@@ -27,7 +27,7 @@ export const SearchHook = {
             this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"))
             searchInput.focus();
 
-            activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
          }
       });
 
@@ -36,9 +36,9 @@ export const SearchHook = {
             if (e.movementX != 0 && e.movementY != 0){
                // This prevents clipping when switching back and forth 
                // between mouse navigation and keyboard navigation
-               activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+               activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
                activeEntry = e.target
-               activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+               activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
             }
          })
       }); 
@@ -63,7 +63,7 @@ export const SearchHook = {
          }
 
          if(e.key === 'ArrowUp'){
-            activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
 
             if (activeEntry == firstEntry){
                activeEntry = lastEntry
@@ -71,12 +71,12 @@ export const SearchHook = {
                activeEntry = activeEntry.previousElementSibling;
             }
 
-            activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
             activeEntry.scrollIntoView({block: "nearest", inline: "nearest"})
          }
 
          if(e.key === 'ArrowDown'){
-            activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
 
             if (activeEntry == lastEntry){
                activeEntry = firstEntry
@@ -84,7 +84,7 @@ export const SearchHook = {
                activeEntry = activeEntry.nextElementSibling;
             }
 
-            activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
             activeEntry.scrollIntoView({block: "nearest", inline: "nearest"})
          }
       })

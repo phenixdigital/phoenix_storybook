@@ -4913,9 +4913,9 @@ within:
         allEntries = searchList.children;
         firstEntry = searchList.firstElementChild;
         lastEntry = searchList.lastElementChild;
-        activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+        activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
         activeEntry = firstEntry;
-        activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+        activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
       });
       observer.observe(searchList, {
         childList: true
@@ -4924,15 +4924,15 @@ within:
         if (e.metaKey && (e.key === "k" || e.key === "K")) {
           this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"));
           searchInput.focus();
-          activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+          activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
         }
       });
       [...allEntries].forEach((entry) => {
         entry.addEventListener("mouseover", (e) => {
           if (e.movementX != 0 && e.movementY != 0) {
-            activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
             activeEntry = e.target;
-            activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+            activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
           }
         });
       });
@@ -4950,23 +4950,23 @@ within:
           e.preventDefault();
         }
         if (e.key === "ArrowUp") {
-          activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+          activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
           if (activeEntry == firstEntry) {
             activeEntry = lastEntry;
           } else {
             activeEntry = activeEntry.previousElementSibling;
           }
-          activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+          activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
           activeEntry.scrollIntoView({ block: "nearest", inline: "nearest" });
         }
         if (e.key === "ArrowDown") {
-          activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+          activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
           if (activeEntry == lastEntry) {
             activeEntry = firstEntry;
           } else {
             activeEntry = activeEntry.nextElementSibling;
           }
-          activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+          activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
           activeEntry.scrollIntoView({ block: "nearest", inline: "nearest" });
         }
       });
