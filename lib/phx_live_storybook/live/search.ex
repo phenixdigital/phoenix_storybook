@@ -55,7 +55,7 @@ defmodule PhxLiveStorybook.Search do
               <% entry_path =  @root_path <> entry.storybook_path %>
 
               <li id={"entry-#{i}"} class="lsb lsb-group lsb-select-none lsb-px-4 lsb-py-2 lsb-cursor-pointer" tabindex="-1">
-                <%= live_patch(entry.name, to: entry_path, class: "lsb group-hover:lsb-text-white") %>
+                <%= live_patch(entry.name, to: entry_path, class: "lsb") %>
               </li>
             <% end %>
           </ul>

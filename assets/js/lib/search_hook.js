@@ -20,6 +20,8 @@ export const SearchHook = {
       [...allEntries].forEach(entry => {
          entry.addEventListener('mouseover', (e) => {
             if (e.movementX != 0 && e.movementY != 0){
+               // This prevents clipping when switching back and forth 
+               // between mouse navigation and keyboard navigation
                activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
                activeEntry = e.target
                activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
