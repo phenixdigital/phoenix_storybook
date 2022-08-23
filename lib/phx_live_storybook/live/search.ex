@@ -34,7 +34,7 @@ defmodule PhxLiveStorybook.Search do
   def render(assigns) do
     ~H"""
     <div id="search-container" phx-hook="SearchHook" phx-show={JS.show(transition: show_transition_classes())} phx-hide={JS.hide(transition: hide_transition_classes())}  class="lsb lsb-hidden lsb-relative lsb-z-10 lsb-duration-300">
-      <div class="lsb lsb-fixed lsb-inset-0 lsb-bg-gray-500 lsb-bg-opacity-25 lsb-transition-opacity"></div>
+      <div class="lsb lsb-fixed lsb-inset-0 lsb-backdrop-blur lsb-bg-gray-500 lsb-bg-opacity-25 lsb-transition-opacity"></div>
 
       <div class="lsb lsb-fixed lsb-inset-0 lsb-z-10 lsb-overflow-y-auto lsb-p-4 lsb-sm:p-6 lsb-md:p-20">
         <div phx-click-away={JS.hide(to: "#search-container", transition: hide_transition_classes())} class="lsb lsb-mx-auto lsb-max-w-xl lsb-transform lsb-divide-y lsb-divide-gray-100 lsb-overflow-hidden lsb-rounded-xl lsb-bg-white lsb-shadow-2xl lsb-transition-all">
