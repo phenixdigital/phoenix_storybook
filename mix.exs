@@ -64,7 +64,8 @@ defmodule PhxLiveStorybook.MixProject do
 
   defp extras do
     [
-      "guides/sandboxing.md"
+      "guides/sandboxing.md",
+      "guides/theming.md"
     ]
   end
 
