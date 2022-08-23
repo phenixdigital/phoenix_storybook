@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.Sidebar do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
+  alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   def mount(socket) do
@@ -67,7 +68,7 @@ defmodule PhxLiveStorybook.Sidebar do
       class="lsb lsb-text-gray-600 lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-0 lsb-w-80 lg:lsb-w-60 lsb-text-lg lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lsb-pt-3 lg:lsb-pt-20 lsb-px-4 lsb-overflow-y-auto"
     >
 
-      <i class="lsb far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click="close-sidebar"></i>
+      <i class="lsb far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click={JS.dispatch("lsb:close-sidebar")}></i>
 
       <nav class="lsb lsb-flex-1 xl:lsb-sticky">
         <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
@@ -123,7 +124,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
                 <% end %>
-                <%= live_patch(name, to: entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
+                <%= patch_to(assigns, name, entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
 
             <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
@@ -132,7 +133,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= if icon do %>
                   <i class={"lsb #{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
                 <% end %>
-                <%= live_patch(name, to: entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
+                <%= patch_to(assigns, name, entry_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
           <% end %>
         </li>
@@ -154,6 +155,16 @@ defmodule PhxLiveStorybook.Sidebar do
 
   defp click_action(_open? = false), do: "open-folder"
   defp click_action(_open? = true), do: "close-folder"
+
+  defp patch_to(assigns, label, path, opts) do
+    path =
+      case Map.get(assigns, :theme) do
+        nil -> path
+        theme -> "#{path}?theme=#{theme}"
+      end
+
+    live_patch(label, [{:to, path} | opts])
+  end
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
     MapSet.member?(opened_folders, path)

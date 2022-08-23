@@ -25,7 +25,8 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            entry_path: entry_path,
            entry: entry,
            story_id: parse_story_id(params["story_id"]),
-           parent_pid: parse_pid(params["parent_pid"])
+           parent_pid: parse_pid(params["parent_pid"]),
+           theme: parse_theme(params["theme"])
          )}
     end
   end
@@ -58,18 +59,22 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     :c.pid(String.to_integer(a), String.to_integer(b), String.to_integer(c))
   end
 
+  defp parse_theme(nil), do: nil
+  defp parse_theme(""), do: nil
+  defp parse_theme(theme), do: String.to_atom(theme)
+
   def render(assigns) do
     ~H"""
     <%= if @story_id do %>
       <%= if @playground do %>
         <%= live_render @socket, PlaygroundPreviewLive,
           id: playground_preview_id(@entry),
-          session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "parent_pid" => @parent_pid},
+          session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "theme" => @theme, "parent_pid" => @parent_pid},
           container: {:div, style: "height: 100vh;"}
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= @backend_module.render_story(@entry.module, @story_id) %>
+          <%= @backend_module.render_story(@entry.module, @story_id, @theme) %>
         </div>
       <% end %>
     <% end %>

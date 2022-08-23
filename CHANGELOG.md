@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.4.0 (2022-08-23)
+
+- feature: theming. You can declare different themes in the application settings. The selected theme
+  will be merged in all components assigns.
+- bugfix: fixed pre-opened folders always reopening themselves after each patch.
+
 ## v0.3.0 (2022-08-18)
 
 - change (breaking!): entries must now be written as `.exs` files. Otherwise, they will be ignored.

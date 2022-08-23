@@ -16,7 +16,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
       live_with_params(
         conn,
         "/storybook/iframe/a_component",
-        %{"story_id" => "hello", "parent_pid" => inspect(self())}
+        %{"story_id" => "hello", "parent_pid" => inspect(self()), "theme" => "default"}
       )
 
     assert html =~ "a component: hello"
@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
       live_with_params(
         conn,
         "/storybook/iframe/a_folder/aa_component",
-        %{"story_id" => "group"}
+        %{"story_id" => "group", "theme" => "colorful"}
       )
 
     assert html =~ "a component: hello"

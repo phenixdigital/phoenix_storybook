@@ -194,7 +194,27 @@ config :my_app, MyAppWeb.Storybook,
     "/components": [icon: "far fa-toolbox", open: true],
     "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
   ]
+
+  # Theme settings.
+  # Each theme must have a name, and an optional dropdown_class.
+  # When set, a dropdown is displayed in storybook header to let the user pick a theme.
+  # The dropdown_class is used to render the theme in the dropdown and identify which current
+  # theme is active.
+  #
+  # The chosen theme key will be passed as an assign to all components.
+  # ex: <.component theme={:colorful}/>
+  #
+  # The chosen theme class will also be added to the `.lsb-sandbox` container.
+  # ex: <div class="lsb-sandbox theme-colorful">...</div>
+  #
+  # If no theme has been selected or if no theme is present in the URL the first one is enabled.
+  themes: [
+    default: [name: "Default"],
+    colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+  ]
 ```
+
+ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
 
 <!-- MDOC !-->
 

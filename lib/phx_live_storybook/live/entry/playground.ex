@@ -103,7 +103,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
         <%= if @entry.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@entry)}
-            src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: inspect(@story_id), playground: true, parent_pid: inspect(self()))}
+            src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: inspect(@story_id), theme: @theme, playground: true, parent_pid: inspect(self()))}
             height="128"
             class="lsb-w-full lsb-border-0"
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
@@ -114,6 +114,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
             session: %{
               "entry_path" => @entry_path,
               "story_id" => @story_id,
+              "theme" => @theme,
               "backend_module" => to_string(@backend_module),
               "parent_pid" => self()
             }

@@ -5,12 +5,11 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
 
-  @doc false
-  # Precompiling component preview & code snippet for every component / story couple.
-  def component_quotes(leave_entries, caller_file) do
+  # Precompiling component preview for every component / story / theme.
+  def render_component_quotes(leave_entries, themes, caller_file) do
     header_quote =
       quote do
-        def render_code(module, story_id)
+        def render_story(module, story_id, theme)
       end
 
     component_quotes =
@@ -21,19 +20,21 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             module_name: module_name,
             stories: stories
           } <- leave_entries,
-          story <- stories do
+          story <- stories,
+          {theme, _label} <- themes do
         unique_story_id = Macro.underscore("#{module_name}-#{story.id}")
 
         case type do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(unquote(module), unquote(story.id)) do
+              def render_story(unquote(module), unquote(story.id), unquote(theme)) do
                 unquote(
                   try do
                     ComponentRenderer.render_story(
                       module.function(),
                       story,
+                      theme,
                       unique_story_id
                     )
                     |> to_raw_html()
@@ -48,7 +49,51 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
                   end
                 )
               end
+            end
 
+          :live_component ->
+            quote do
+              @impl PhxLiveStorybook.BackendBehaviour
+              def render_story(unquote(module), unquote(story.id), unquote(theme)) do
+                ComponentRenderer.render_story(
+                  unquote(component),
+                  unquote(Macro.escape(story)),
+                  unquote(theme),
+                  unquote(unique_story_id)
+                )
+              end
+            end
+        end
+      end
+
+    default_quote =
+      quote do
+        @impl PhxLiveStorybook.BackendBehaviour
+        def render_story(module, story_id, theme) do
+          raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"
+        end
+      end
+
+    [header_quote] ++ component_quotes ++ [default_quote]
+  end
+
+  # Precompiling component code snippet for every component / story.
+  def render_code_quotes(leave_entries) do
+    header_quote =
+      quote do
+        def render_code(module, story_id)
+      end
+
+    component_quotes =
+      for %ComponentEntry{
+            type: type,
+            module: module,
+            stories: stories
+          } <- leave_entries,
+          story <- stories do
+        case type do
+          :component ->
+            quote do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
@@ -60,15 +105,6 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
           :live_component ->
             quote do
-              @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(unquote(module), unquote(story.id)) do
-                ComponentRenderer.render_story(
-                  unquote(component),
-                  unquote(Macro.escape(story)),
-                  unquote(unique_story_id)
-                )
-              end
-
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
@@ -82,11 +118,6 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
     default_quote =
       quote do
-        @impl PhxLiveStorybook.BackendBehaviour
-        def render_story(module, story_id) do
-          raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"
-        end
-
         @impl PhxLiveStorybook.BackendBehaviour
         def render_code(module, story_id) do
           raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"

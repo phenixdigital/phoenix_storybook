@@ -11,17 +11,25 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a story or a group of story for a component.
   """
-  def render_story(fun_or_mod, story = %Story{}, id) do
-    heex = component_heex(fun_or_mod, story.attributes, id, story.block, story.slots)
+  def render_story(fun_or_mod, story = %Story{}, theme, id) do
+    heex =
+      component_heex(
+        fun_or_mod,
+        Map.put(story.attributes, :theme, theme),
+        id,
+        story.block,
+        story.slots
+      )
+
     render_component_heex(fun_or_mod, heex)
   end
 
-  def render_story(fun_or_mod, %StoryGroup{stories: stories}, group_id) do
+  def render_story(fun_or_mod, %StoryGroup{stories: stories}, theme, group_id) do
     heex =
       for story = %Story{id: id} <- stories, into: "" do
         component_heex(
           fun_or_mod,
-          story.attributes,
+          Map.put(story.attributes, :theme, theme),
           "#{group_id}-#{id}",
           story.block,
           story.slots
