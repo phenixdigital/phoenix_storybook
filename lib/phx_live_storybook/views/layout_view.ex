@@ -105,4 +105,7 @@ defmodule PhxLiveStorybook.LayoutView do
     {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
      "lsb-opacity-0 lsb-scale-95"}
   end
+
+  def sandbox_class(%{theme: nil}), do: "lsb-sandbox"
+  def sandbox_class(%{theme: theme}), do: "lsb-sandbox theme-#{theme}"
 end

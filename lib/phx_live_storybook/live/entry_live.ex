@@ -5,6 +5,7 @@ defmodule PhxLiveStorybook.EntryLive do
   alias PhxLiveStorybook.{ComponentEntry, PageEntry, Story, StoryGroup}
   alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
+  alias PhxLiveStorybook.LayoutView
 
   @topic "playground"
 
@@ -199,7 +200,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class="lsb-sandbox">
+              <div class={LayoutView.sandbox_class(assigns)}>
                 <%= @backend_module.render_story(@entry.module(), story_id, @theme) %>
               </div>
             <% end %>
@@ -243,7 +244,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp render_content(%PageEntry{}, assigns) do
     ~H"""
-    <div class="lsb lsb-pb-12 lsb-sandbox">
+    <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(assigns)}"}>
       <%= raw(@backend_module.render_page(@entry.module, @tab)) %>
     </div>
     """
