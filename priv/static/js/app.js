@@ -4905,10 +4905,21 @@ within:
       const searchContainer = document.querySelector("#search-container");
       const searchList = document.querySelector("#search-list");
       const searchInput = document.querySelector("#search-container input");
-      const allEntries = document.querySelector("#search-list").children;
-      const firstEntry = document.querySelector("#search-list").firstElementChild;
-      const lastEntry = document.querySelector("#search-list").lastElementChild;
+      let allEntries = searchList.children;
+      let firstEntry = searchList.firstElementChild;
+      let lastEntry = searchList.lastElementChild;
       let activeEntry = firstEntry;
+      let observer = new MutationObserver((mutations) => {
+        allEntries = searchList.children;
+        firstEntry = searchList.firstElementChild;
+        lastEntry = searchList.lastElementChild;
+        activeEntry.classList.remove("lsb-bg-indigo-600", "lsb-text-white");
+        activeEntry = firstEntry;
+        activeEntry.classList.add("lsb-bg-indigo-600", "lsb-text-white");
+      });
+      observer.observe(searchList, {
+        childList: true
+      });
       window.addEventListener("keydown", (e) => {
         if (e.metaKey && (e.key === "k" || e.key === "K")) {
           this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"));
