@@ -51,8 +51,28 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     {:ok, view, _html} = live(conn, "/storybook/a_component")
 
     html = view |> element("a", "Source") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=source")
+    assert_patched(view, "/storybook/a_component?tab=source&theme=default")
     assert html =~ "defmodule"
+  end
+
+  test "renders component, change theme and navigate", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/storybook/a_component")
+    pid = view.pid
+
+    view |> element("a.lsb-theme", "Colorful") |> render_click()
+    assert_patched(view, "/storybook/a_component?tab=stories&theme=colorful")
+
+    view |> element("a", "Source") |> render_click()
+    assert_patched(view, "/storybook/a_component?tab=source&theme=colorful")
+
+    html = view |> element("a", "Playground") |> render_click()
+    assert_patched(view, "/storybook/a_component?tab=playground&theme=colorful")
+    assert html =~ "a component: hello colorful"
+
+    Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
+    view |> element("a.lsb-theme", "Default") |> render_click()
+    assert_receive {:new_theme, ^pid, :default}
+    assert render(view) =~ "a component: hello default"
   end
 
   test "renders component entry and navigate to source tab with select", %{conn: conn} do
@@ -63,7 +83,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       |> element(".entry-nav-form select")
       |> render_change(%{navigation: %{tab: "source"}})
 
-    assert_patched(view, "/storybook/a_component?tab=source")
+    assert_patched(view, "/storybook/a_component?tab=source&theme=default")
     assert html =~ "defmodule"
   end
 
@@ -79,7 +99,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     assert html =~ "entry-tabs"
 
     html = view |> element("a", "Tab 2") |> render_click()
-    assert_patched(view, "/storybook/b_page?tab=tab_2")
+    assert_patched(view, "/storybook/b_page?tab=tab_2&theme=default")
     assert html =~ "B Page: tab_2"
   end
 

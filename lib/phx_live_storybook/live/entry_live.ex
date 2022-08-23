@@ -261,14 +261,6 @@ defmodule PhxLiveStorybook.EntryLive do
     id |> to_string() |> String.replace("_", "-")
   end
 
-  def handle_event("open-sidebar", _, socket) do
-    {:noreply, push_event(socket, "lsb:open-sidebar", %{"id" => "#sidebar"})}
-  end
-
-  def handle_event("close-sidebar", _, socket) do
-    {:noreply, push_event(socket, "lsb:close-sidebar", %{"id" => "#sidebar"})}
-  end
-
   def handle_event("set-theme", %{"theme" => theme}, socket) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,

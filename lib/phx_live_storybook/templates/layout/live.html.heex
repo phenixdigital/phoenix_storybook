@@ -14,14 +14,22 @@
           <i class="lsb far fa-palette fa-xl"></i>
         </button>
         
-        <div id="lsb-theme-dropdown" class="lsb lsb-hidden lsb-origin-top-right lsb-absolute lsb-right-0 lsb-mt-2 lsb-w-52 lsb-rounded-md lsb-shadow-lg lsb-bg-white lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 lsb-divide-y lsb-divide-gray-100 focus:lsb-outline-none"  phx-click-away={JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}>
+        <div id="lsb-theme-dropdown" class="lsb lsb-hidden lsb-origin-top-right lsb-absolute lsb-right-0 lsb-mt-2 lsb-w-52 lsb-rounded-md lsb-shadow-lg lsb-bg-white lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 lsb-divide-y lsb-divide-gray-100 focus:lsb-outline-none" phx-click-away={JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}>
           <div class="lsb lsb-px-4 lsb-py-3">
             <p class="lsb lsb-text-sm lsb-font-medium lsb-text-indigo-600">Pick a theme</p>
           </div>
           <div class="lsb lsb-py-1">
             <%= for {theme, label} <- themes do %>
-              <a phx-click={JS.push("set-theme", value: %{"theme" => theme}) |> JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}} class="lsb lsb-text-gray-700 hover:lsb-bg-gray-100 lsb-block lsb-px-4 lsb-py-2 lsb-text-sm lsb-cursor-pointer">
-                <%= label %>
+              <a phx-click={JS.push("set-theme", value: %{"theme" => theme}) |> JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}} class="lsb lsb-theme lsb-text-gray-700 hover:lsb-bg-gray-100 lsb-block lsb-px-4 lsb-py-2 lsb-text-sm lsb-cursor-pointer">
+                <%= if assigns[:theme] == theme do %>
+                  <span class="lsb lsb-text-indigo-600">
+                    <i class="lsb fa fa-check lsb-pr-2"></i><%= label %>
+                  </span>
+                <% else %>
+                  <span class="lsb lsb-pl-5">
+                    <%= label %>
+                  </span>
+                <% end %>
               </a>
             <% end %>
           </div>

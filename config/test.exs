@@ -21,4 +21,5 @@ end
 
 config :phx_live_storybook, PhxLiveStorybook.TestStorybook,
   content_path: Path.expand("../test/fixtures/storybook_content/tree", __DIR__),
-  folders: [a_folder: [open: true]]
+  folders: [a_folder: [open: true]],
+  themes: [default: "Default", colorful: "Colorful"]

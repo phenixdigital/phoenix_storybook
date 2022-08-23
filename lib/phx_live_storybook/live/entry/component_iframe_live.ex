@@ -60,6 +60,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
   end
 
   defp parse_theme(nil), do: nil
+  defp parse_theme(""), do: nil
   defp parse_theme(theme), do: String.to_atom(theme)
 
   def render(assigns) do
