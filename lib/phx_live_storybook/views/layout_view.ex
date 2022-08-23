@@ -96,6 +96,16 @@ defmodule PhxLiveStorybook.LayoutView do
     backend_module.config(:themes, nil)
   end
 
+  defp current_theme_dropdown_class(socket, assigns) do
+    themes = themes(socket)
+    current_theme = Map.get(assigns, :theme)
+
+    case Enum.find(themes, fn {theme, _} -> theme == current_theme end) do
+      nil -> ""
+      {_, opts} -> Keyword.get(opts, :dropdown_class)
+    end
+  end
+
   defp show_dropdown_transition do
     {"lsb-ease-out lsb-duration-200", "lsb-opacity-0 lsb-scale-95",
      "lsb-opacity-100 lsb-scale-100"}
