@@ -89,7 +89,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def render(assigns = %{entry: _entry}) do
     ~H"""
-    <div class="lsb lsb-space-y-8 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
+    <div class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
       <div class="lsb">
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
@@ -101,7 +101,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
           <%=  @entry |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
-        <div class="lsb lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+        <div class="lsb lsb-text-base md:lsb-text-lg lsb-leading-7 lsb-text-slate-700">
           <%= @entry.description() %>
         </div>
       </div>
@@ -172,7 +172,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp render_content(%ComponentEntry{}, assigns = %{tab: :stories}) do
     ~H"""
-    <div class="lsb lsb-space-y-12 lsb-pt-8 lsb-pb-12">
+    <div class="lsb lsb-space-y-12 lsb-pb-12">
       <%= for story = %{id: story_id, description: description} when is_struct(story, Story) or is_struct(story, StoryGroup) <- @entry.stories() do %>
         <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 

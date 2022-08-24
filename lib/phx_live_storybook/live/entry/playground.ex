@@ -77,7 +77,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp render_lower_navigation_tabs(assigns) do
     ~H"""
-    <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-12 lsb-mb-6">
+    <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}] do %>
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
@@ -153,9 +153,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
             <table class="lsb lsb-min-w-full lsb-divide-y lsb-divide-gray-300">
               <thead class="lsb lsb-bg-gray-50">
                 <tr>
-                  <%= for header <- ~w(Attribute Type Documentation Default Value) do %>
-                    <th scope="col" class="lsb lsb-py-3.5 first:lsb-pl-6 first:lg:lsb-pl-9 lsb-text-left lsb-text-sm lsb-font-semibold lsb-text-gray-900">
-                      <%= header %>
+                  <%= for {header, th_style, span_style} <- [{"Attribute", "lsb-pl-3 md:lsb-pl-9", "lsb-w-8 md:lsb-w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "lsb-hidden md:lsb-table-cell", ""}, {"Value", "", ""}] do %>
+                    <th scope="col" class={"lsb #{th_style} lsb-py-3.5 lsb-text-left lsb-text-xs md:lsb-text-sm lsb-font-semibold lsb-text-gray-900"}>
+                      <span class={"lsb #{span_style} lsb-truncate lsb-inline-block"}><%= header %></span>
                     </th>
                   <% end %>
                 </tr>
@@ -163,7 +163,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
               <tbody class="lsb lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
                 <%= if Enum.empty?(@entry.attributes) do %>
                 <tr>
-                  <td colspan="5" class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
+                  <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
                     <i class="lsb lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
                     <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @entry.name %></code> entry.</p>
                   </td>
@@ -171,18 +171,21 @@ defmodule PhxLiveStorybook.Entry.Playground do
                 <% end %>
                 <%= for attr <- @entry.attributes, attr.type not in [:block, :slot] do %>
                   <tr>
-                    <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
+                    <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                       <%= if attr.required do %>
                         <.required_badge/>
                       <% end %>
                       <%= attr.id %>
+                      <%= if attr.required do %>
+                        <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
+                      <% end %>
                     </td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500">
+                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500">
                       <.type_badge type={attr.type}/>
                     </td>
-                    <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500">
-                      <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
+                    <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500 lsb-hidden md:lsb-table-cell">
+                      <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
                     </td>
                     <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                       <.attr_input form={f} attr_id={attr.id} type={attr.type} playground_attrs={@playground_attrs} options={attr.options} myself={@myself}/>
@@ -191,20 +194,22 @@ defmodule PhxLiveStorybook.Entry.Playground do
                 <% end %>
                 <%= for attr <- @entry.attributes, attr.type in [:block, :slot] do %>
                   <tr>
-                    <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-6 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
+                    <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                       <%= if attr.required do %>
                         <.required_badge/>
                       <% end %>
                       <%= attr.id %>
+                      <%= if attr.required do %>
+                        <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
+                      <% end %>
                     </td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500">
+                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500">
                       <.type_badge type={attr.type}/>
                     </td>
-                    <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                    <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                   </tr>
                   <tr class="lsb !lsb-border-t-0">
-                    <td colspan="2" class="lsb"></td>
-                    <td colspan="3" class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-pb-3 lsb-text-sm lsb-font-medium lsb-text-gray-900">
+                    <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
                       <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
                     </td>
                   </tr>
@@ -314,7 +319,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   end
 
   defp type_badge_class do
-    "lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs"
+    "lsb lsb-rounded lsb-px-1 md:lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-[0.5em] md:lsb-text-xs"
   end
 
   defp type_label(type), do: Macro.to_string(type)
@@ -352,7 +357,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     step = if type == :integer, do: 1, else: 0.01
 
     ~H"""
-    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), step: step, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500  sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), step: step, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -366,7 +371,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
          }
        ) do
     ~H"""
-    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), min: min, max: max, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -380,7 +385,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
          }
        ) do
     ~H"""
-    <%= text_input(f, attr_id, value: Map.get(playground_attrs, attr_id), class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(f, attr_id, value: Map.get(playground_attrs, attr_id), class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -397,7 +402,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     value = if is_nil(value), do: "", else: inspect(value)
 
     ~H"""
-    <%= text_input(f, attr_id, value: value, disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(f, attr_id, value: value, disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
@@ -413,7 +418,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
     ~H"""
     <%= select(f, attr_id, options, value: Map.get(playground_attrs, attr_id),
-      class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 sm:lsb-text-sm lsb-rounded-md") %>
+      class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
     """
   end
 
