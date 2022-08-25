@@ -955,12 +955,16 @@ img.lsb,
   top: 1rem;
 }
 
-.lsb .lsb-right-5 {
-  right: 1.25rem;
+.lsb .lsb-right-14 {
+  right: 3.5rem;
 }
 
 .lsb .lsb-right-0 {
   right: 0px;
+}
+
+.lsb .lsb-right-5 {
+  right: 1.25rem;
 }
 
 .lsb .lsb-z-10 {
