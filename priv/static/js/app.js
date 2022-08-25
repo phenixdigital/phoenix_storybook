@@ -4902,24 +4902,36 @@ within:
   // js/lib/search_hook.js
   var SearchHook = {
     mounted() {
-      const searchContainer = document.querySelector("#search-container");
-      const searchList = document.querySelector("#search-list");
-      const searchInput = document.querySelector("#search-container input");
-      let allEntries = searchList.children;
-      let firstEntry = searchList.firstElementChild;
-      let lastEntry = searchList.lastElementChild;
-      let activeEntry = firstEntry;
+      const searchContainer2 = document.querySelector("#search-container");
+      const searchList2 = document.querySelector("#search-list");
+      const searchInput2 = document.querySelector("#search-container input");
+      let allEntries2;
+      let firstEntry2;
+      let lastEntry2;
+      let activeEntry2;
+      if (searchList2) {
+        allEntries2 = searchList2.children;
+        firstEntry2 = searchList2.firstElementChild;
+        lastEntry2 = searchList2.lastElementChild;
+        activeEntry2 = firstEntry2;
+        this.observeList(searchList2);
+        this.addListener();
+        this.addMouseListener();
+        this.addSearchListeners();
+      }
+    },
+    observeList(searchList2) {
       let observer = new MutationObserver((mutations) => {
-        allEntries = searchList.children;
-        firstEntry = searchList.firstElementChild;
-        lastEntry = searchList.lastElementChild;
+        firstEntry = searchList2.firstElementChild;
         activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
         activeEntry = firstEntry;
         activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
       });
-      observer.observe(searchList, {
+      observer.observe(searchList2, {
         childList: true
       });
+    },
+    addListener() {
       window.addEventListener("keydown", (e) => {
         if (e.metaKey && (e.key === "k" || e.key === "K")) {
           this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"));
@@ -4927,6 +4939,8 @@ within:
           activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
         }
       });
+    },
+    addMouseListener() {
       [...allEntries].forEach((entry) => {
         entry.addEventListener("mouseover", (e) => {
           if (e.movementX != 0 && e.movementY != 0) {
@@ -4936,6 +4950,8 @@ within:
           }
         });
       });
+    },
+    addSearchListeners() {
       searchContainer.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
