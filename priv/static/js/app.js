@@ -4913,26 +4913,27 @@ within:
         allEntries = searchList.children;
         firstEntry = searchList.firstElementChild;
         lastEntry = searchList.lastElementChild;
-        activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
+        this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"));
         activeEntry = firstEntry;
-        activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
+        this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
       });
       observer.observe(searchList, {
         childList: true
       });
       window.addEventListener("keydown", (e) => {
-        if (e.metaKey && (e.key === "k" || e.key === "K")) {
+        if (e.metaKey && (e.key === "k" || e.key === "K") || e.key === "/") {
+          e.preventDefault();
           this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"));
           searchInput.focus();
-          activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
         }
       });
       [...allEntries].forEach((entry) => {
         entry.addEventListener("mouseover", (e) => {
-          if (e.movementX != 0 && e.movementY != 0) {
-            activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
+          if (e.movementX != 0 && e.movementY != 0 && e.target == entry) {
+            this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"));
             activeEntry = e.target;
-            activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
+            this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
           }
         });
       });
@@ -4950,23 +4951,23 @@ within:
           e.preventDefault();
         }
         if (e.key === "ArrowUp") {
-          activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"));
           if (activeEntry == firstEntry) {
             activeEntry = lastEntry;
           } else {
             activeEntry = activeEntry.previousElementSibling;
           }
-          activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
           activeEntry.scrollIntoView({ block: "nearest", inline: "nearest" });
         }
         if (e.key === "ArrowDown") {
-          activeEntry.classList.remove("lsb-bg-slate-50", "lsb-text-indigo-600");
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"));
           if (activeEntry == lastEntry) {
             activeEntry = firstEntry;
           } else {
             activeEntry = activeEntry.nextElementSibling;
           }
-          activeEntry.classList.add("lsb-bg-slate-50", "lsb-text-indigo-600");
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
           activeEntry.scrollIntoView({ block: "nearest", inline: "nearest" });
         }
       });

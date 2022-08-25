@@ -66,7 +66,13 @@ defmodule PhxLiveStorybook.Search do
             <%= for {entry, i} <- Enum.with_index(@entries) do %>
               <% entry_path =  @root_path <> entry.storybook_path %>
 
-              <li id={"entry-#{i}"} class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-cursor-pointer" tabindex="-1">
+              <li
+                id={"entry-#{i}"}
+                phx-highlight={JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600")}
+                phx-baseline={JS.remove_class("lsb-bg-slate-50 lsb-text-indigo-600")}
+                class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-cursor-pointer"
+                tabindex="-1">
+
                 <%= live_patch(entry.name, to: entry_path, class: "lsb lsb-font-semibold") %>
                 <div>
                   <%= LayoutView.render_breadcrumb(@socket, entry, span_class: "lsb-text-xs") %>
