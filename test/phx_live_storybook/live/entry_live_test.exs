@@ -140,4 +140,30 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     refute has_element?(view, "#sidebar a", "Ba Component")
     refute has_element?(view, "#sidebar a", "Bb Component")
   end
+
+  describe "search modal" do
+    test "filters the search list based on user input", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/a_page")
+
+      assert has_element?(view, "#search-container a", "A Component")
+      assert has_element?(view, "#search-container a", "Ab Component")
+
+      view
+      |> with_target("#search-container")
+      |> render_change("search", %{"search" => %{"input" => "A Component"}})
+
+      assert has_element?(view, "#search-container a", "A Component")
+      refute has_element?(view, "#search-container a", "Ab Component")
+    end
+
+    test "navigates to a specified entry", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/a_page")
+
+      view
+      |> with_target("#search-container")
+      |> render_change("navigate", %{"path" => "/storybook/a_component"})
+
+      assert_patched(view, "/storybook/a_component")
+    end
+  end
 end
