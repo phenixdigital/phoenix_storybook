@@ -9,7 +9,7 @@
     </div>
 
     <%= if themes = themes(@socket) do %>
-      <div class="lsb lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
+      <div class="lsb lsb-absolute lsb-top-4 lsb-right-14 lsb-inline-block ">
         <button type="button" class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
           <i class={"lsb far fa-palette fa-xl #{current_theme_dropdown_class(@socket, assigns)}"}></i>
         </button>
@@ -36,6 +36,12 @@
         </div>
       </div>
     <% end %>
+  </div>
+
+  <div class="lsb lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
+    <button type="button" phx-click={JS.show(to: "#search-container")} class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500">
+      <i class="lsb fal fa-magnifying-glass fa-xl"></i>
+    </button>
   </div>
   
   <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer lsb-pr-2">
