@@ -17,8 +17,8 @@ defmodule PhxLiveStorybook.Search do
      socket
      |> assign(assigns)
      |> assign(:root_path, root_path)
-     |> assign(:all_entries, List.flatten([entries,entries,entries,entries,entries]))
-     |> assign(:entries, List.flatten([entries,entries,entries,entries,entries]))
+     |> assign(:all_entries, entries)
+     |> assign(:entries, entries)
     }
   end
 
