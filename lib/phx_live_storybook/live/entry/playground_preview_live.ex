@@ -58,7 +58,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     ~H"""
     <div id={"playground-preview-live-#{@sequence}"} style="height: 100%;">
       <div class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
-        <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), Map.put(@attrs, :theme, @theme), @block, @slots) %>
+        <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), Map.put(@attrs, :theme, @theme), @block, @slots, @entry.template()) %>
       </div>
     </div>
     """

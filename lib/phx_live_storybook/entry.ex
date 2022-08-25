@@ -108,6 +108,7 @@ defmodule PhxLiveStorybook.Entry do
     @callback function() :: function()
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback stories() :: [PhxLiveStorybook.Story.t()]
+    @callback template() :: %Phoenix.LiveView.Rendered{}
   end
 
   defmodule LiveComponentBehaviour do
@@ -116,6 +117,7 @@ defmodule PhxLiveStorybook.Entry do
     @callback component() :: atom()
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback stories() :: [PhxLiveStorybook.Story.t()]
+    @callback template() :: %Phoenix.LiveView.Rendered{}
   end
 
   defmodule PageBehaviour do
@@ -158,7 +160,16 @@ defmodule PhxLiveStorybook.Entry do
       @impl unquote(component_behaviour(live?))
       def stories, do: []
 
-      defoverridable name: 0, description: 0, icon: 0, container: 0, stories: 0, attributes: 0
+      @impl unquote(component_behaviour(live?))
+      def template, do: nil
+
+      defoverridable name: 0,
+                     description: 0,
+                     icon: 0,
+                     container: 0,
+                     stories: 0,
+                     attributes: 0,
+                     template: 0
     end
   end
 

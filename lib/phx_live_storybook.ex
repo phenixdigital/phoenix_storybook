@@ -37,7 +37,12 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Can be a single story or a story group.
   Returns a rendered HEEx template.
   """
-  @callback render_story(entry_module :: any(), story_id :: atom(), theme :: atom()) ::
+  @callback render_story(
+              entry_module :: any(),
+              story_id :: atom(),
+              template :: %Rendered{},
+              theme :: atom()
+            ) ::
               %Rendered{}
 
   @doc """

@@ -74,7 +74,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= @backend_module.render_story(@entry.module, @story_id, @theme) %>
+          <%= @backend_module.render_story(@entry.module(), @story_id, @entry.template(), @theme) %>
         </div>
       <% end %>
     <% end %>

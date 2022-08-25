@@ -11,11 +11,12 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a story or a group of story for a component.
   """
-  def render_story(fun_or_mod, story = %Story{}, theme, id) do
+  def render_story(fun_or_mod, story = %Story{}, template, theme, id) do
     heex =
       component_heex(
         fun_or_mod,
         Map.put(story.attributes, :theme, theme),
+        template,
         id,
         story.block,
         story.slots
@@ -24,12 +25,13 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex)
   end
 
-  def render_story(fun_or_mod, %StoryGroup{stories: stories}, theme, group_id) do
+  def render_story(fun_or_mod, %StoryGroup{stories: stories}, template, theme, group_id) do
     heex =
       for story = %Story{id: id} <- stories, into: "" do
         component_heex(
           fun_or_mod,
           Map.put(story.attributes, :theme, theme),
+          template,
           "#{group_id}-#{id}",
           story.block,
           story.slots
@@ -42,12 +44,12 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a component.
   """
-  def render_component(id, fun_or_mod, assigns, block, slots) do
-    heex = component_heex(fun_or_mod, assigns, id, block, slots)
+  def render_component(id, fun_or_mod, assigns, block, slots, template) do
+    heex = component_heex(fun_or_mod, assigns, template, id, block, slots)
     render_component_heex(fun_or_mod, heex)
   end
 
-  defp component_heex(fun, assigns, id, block, slots) when is_function(fun) do
+  defp component_heex(fun, assigns, _template, id, block, slots) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(assigns, id)}>
       #{block}
@@ -56,7 +58,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     """
   end
 
-  defp component_heex(module, assigns, id, block, slots) when is_atom(module) do
+  defp component_heex(module, assigns, _template, id, block, slots) when is_atom(module) do
     """
     <.live_component module={#{inspect(module)}} #{attributes_markup(assigns, id)}>
       #{block}

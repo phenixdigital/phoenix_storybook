@@ -201,7 +201,7 @@ defmodule PhxLiveStorybook.EntryLive do
               />
             <% else %>
               <div class={LayoutView.sandbox_class(assigns)}>
-                <%= @backend_module.render_story(@entry.module(), story_id, @theme) %>
+                <%= @backend_module.render_story(@entry.module(), story_id, @entry.template(), @theme) %>
               </div>
             <% end %>
           </div>

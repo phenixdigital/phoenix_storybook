@@ -176,29 +176,29 @@ defmodule PhxLiveStorybookTest do
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/story couple" do
-      assert TreeStorybook.render_story(AComponent, :hello, nil) |> rendered_to_string() ==
+      assert TreeStorybook.render_story(AComponent, :hello) |> rendered_to_string() ==
                "<span data-index=\"42\">a component: hello</span>"
 
-      assert TreeStorybook.render_story(AComponent, :world, nil) |> rendered_to_string() ==
+      assert TreeStorybook.render_story(AComponent, :world) |> rendered_to_string() ==
                "<span data-index=\"37\">a component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "b_component-hello"}] =
-               TreeStorybook.render_story(BComponent, :hello, nil).dynamic.([])
+               TreeStorybook.render_story(BComponent, :hello).dynamic.([])
 
       assert [%Phoenix.LiveView.Component{id: "b_component-world"}] =
-               TreeStorybook.render_story(BComponent, :world, nil).dynamic.([])
+               TreeStorybook.render_story(BComponent, :world).dynamic.([])
     end
 
     test "it also works for a story group" do
-      assert TreeStorybook.render_story(AaComponent, :group, nil) |> rendered_to_string() ==
+      assert TreeStorybook.render_story(AaComponent, :group) |> rendered_to_string() ==
                "<span data-index=\"42\">a component: hello</span>\n<span data-index=\"37\">a component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [
                %Phoenix.LiveView.Component{id: "ab_component-group-hello"},
                %Phoenix.LiveView.Component{id: "ab_component-group-world"}
-             ] = TreeStorybook.render_story(AbComponent, :group, nil).dynamic.([])
+             ] = TreeStorybook.render_story(AbComponent, :group).dynamic.([])
     end
 
     test "it raises a compile error if component rendering raises" do

@@ -9,7 +9,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   def render_component_quotes(leave_entries, themes, caller_file) do
     header_quote =
       quote do
-        def render_story(module, story_id, theme)
+        def render_story(module, story_id, template \\ nil, theme \\ nil)
       end
 
     component_quotes =
@@ -18,7 +18,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             component: component,
             module: module,
             module_name: module_name,
-            stories: stories
+            stories: stories,
+            template: template
           } <- leave_entries,
           story <- stories,
           {theme, _label} <- themes do
@@ -28,12 +29,18 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(unquote(module), unquote(story.id), unquote(theme)) do
+              def render_story(
+                    unquote(module),
+                    unquote(story.id),
+                    unquote(template),
+                    unquote(theme)
+                  ) do
                 unquote(
                   try do
                     ComponentRenderer.render_story(
                       module.function(),
                       story,
+                      template,
                       theme,
                       unique_story_id
                     )
@@ -54,10 +61,16 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           :live_component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(unquote(module), unquote(story.id), unquote(theme)) do
+              def render_story(
+                    unquote(module),
+                    unquote(story.id),
+                    unquote(template),
+                    unquote(theme)
+                  ) do
                 ComponentRenderer.render_story(
                   unquote(component),
                   unquote(Macro.escape(story)),
+                  unquote(template),
                   unquote(theme),
                   unquote(unique_story_id)
                 )
@@ -66,15 +79,21 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
         end
       end
 
-    default_quote =
-      quote do
-        @impl PhxLiveStorybook.BackendBehaviour
-        def render_story(module, story_id, theme) do
-          raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"
-        end
+    component_quotes =
+      if Enum.any?(component_quotes) do
+        component_quotes
+      else
+        [
+          quote do
+            @impl PhxLiveStorybook.BackendBehaviour
+            def render_story(_module, _story_id, _template, _theme) do
+              raise "no story has been defined yet in this storybook"
+            end
+          end
+        ]
       end
 
-    [header_quote] ++ component_quotes ++ [default_quote]
+    [header_quote | component_quotes]
   end
 
   # Precompiling component code snippet for every component / story.
@@ -116,15 +135,21 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
         end
       end
 
-    default_quote =
-      quote do
-        @impl PhxLiveStorybook.BackendBehaviour
-        def render_code(module, story_id) do
-          raise "unknown story #{inspect(story_id)} for module #{inspect(module)}"
-        end
+    component_quotes =
+      if Enum.any?(component_quotes) do
+        component_quotes
+      else
+        [
+          quote do
+            @impl PhxLiveStorybook.BackendBehaviour
+            def render_code(_module, _story_id) do
+              raise "no story has been defined yet in this storybook"
+            end
+          end
+        ]
       end
 
-    [header_quote] ++ component_quotes ++ [default_quote]
+    [header_quote | component_quotes]
   end
 
   defp to_raw_html(heex) do
