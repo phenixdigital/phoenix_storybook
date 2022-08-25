@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.4.0 (2022-08-23)
+## v0.4.0 (not yet released)
 
 - feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
 - improvement: storybook playground is now responsive.
