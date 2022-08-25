@@ -2878,7 +2878,316 @@ img.lsb,
   letter-spacing: -0.064300686em;
 }
 
-.lsb .lsb-font-inter .lsb-text-lg .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-lg.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-lg .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-lg.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsbing: -0.006223544em;
+.lsb .lsb-font-inter .lsb-text-lg .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-lg.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-lg .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-lg.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-lg, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-lg {
+  line-height: 1.75rem;
+  font-size: 1.125rem;
+  letter-spacing: -0.039300686em;
+}
+
+.lsb .lsb-font-inter .lsb-text-lg .lsb-tracking-normal, .lsb .lsb-font-inter .lsb-text-lg.lsb-tracking-normal, .lsb .lsb-font-inter.lsb-text-lg .lsb-tracking-normal, .lsb .lsb-font-inter.lsb-text-lg.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .lsb-text-lg, .lsb .lsb-tracking-normal .lsb-font-inter.lsb-text-lg {
+  line-height: 1.75rem;
+  font-size: 1.125rem;
+  letter-spacing: -0.014300686em;
+}
+
+.lsb .lsb-font-inter .lsb-text-lg .lsb-tracking-wide, .lsb .lsb-font-inter .lsb-text-lg.lsb-tracking-wide, .lsb .lsb-font-inter.lsb-text-lg .lsb-tracking-wide, .lsb .lsb-font-inter.lsb-text-lg.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .lsb-text-lg, .lsb .lsb-tracking-wide .lsb-font-inter.lsb-text-lg {
+  line-height: 1.75rem;
+  font-size: 1.125rem;
+  letter-spacing: 0.010699314em;
+}
+
+.lsb .lsb-font-inter .lsb-text-lg .lsb-tracking-wider, .lsb .lsb-font-inter .lsb-text-lg.lsb-tracking-wider, .lsb .lsb-font-inter.lsb-text-lg .lsb-tracking-wider, .lsb .lsb-font-inter.lsb-text-lg.lsb-tracking-wider, .lsb .lsb-tracking-wider .lsb-font-inter .lsb-text-lg, .lsb .lsb-tracking-wider .lsb-font-inter.lsb-text-lg {
+  line-height: 1.75rem;
+  font-size: 1.125rem;
+  letter-spacing: 0.035699314em;
+}
+
+.lsb .lsb-font-inter .lsb-text-lg .lsb-tracking-widest, .lsb .lsb-font-inter .lsb-text-lg.lsb-tracking-widest, .lsb .lsb-font-inter.lsb-text-lg .lsb-tracking-widest, .lsb .lsb-font-inter.lsb-text-lg.lsb-tracking-widest, .lsb .lsb-tracking-widest .lsb-font-inter .lsb-text-lg, .lsb .lsb-tracking-widest .lsb-font-inter.lsb-text-lg {
+  line-height: 1.75rem;
+  font-size: 1.125rem;
+  letter-spacing: 0.085699314em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl, .lsb .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: -0.016657339em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl .lsb-tracking-tighter, .lsb .lsb-font-inter .lsb-text-xl.lsb-tracking-tighter, .lsb .lsb-font-inter.lsb-text-xl .lsb-tracking-tighter, .lsb .lsb-font-inter.lsb-text-xl.lsb-tracking-tighter, .lsb .lsb-tracking-tighter .lsb-font-inter .lsb-text-xl, .lsb .lsb-tracking-tighter .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: -0.066657339em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: -0.041657339em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl .lsb-tracking-normal, .lsb .lsb-font-inter .lsb-text-xl.lsb-tracking-normal, .lsb .lsb-font-inter.lsb-text-xl .lsb-tracking-normal, .lsb .lsb-font-inter.lsb-text-xl.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .lsb-text-xl, .lsb .lsb-tracking-normal .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: -0.016657339em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl .lsb-tracking-wide, .lsb .lsb-font-inter .lsb-text-xl.lsb-tracking-wide, .lsb .lsb-font-inter.lsb-text-xl .lsb-tracking-wide, .lsb .lsb-font-inter.lsb-text-xl.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .lsb-text-xl, .lsb .lsb-tracking-wide .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.008342661em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl .lsb-tracking-wider, .lsb .lsb-font-inter .lsb-text-xl.lsb-tracking-wider, .lsb .lsb-font-inter.lsb-text-xl .lsb-tracking-wider, .lsb .lsb-font-inter.lsb-text-xl.lsb-tracking-wider, .lsb .lsb-tracking-wider .lsb-font-inter .lsb-text-xl, .lsb .lsb-tracking-wider .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.033342661em;
+}
+
+.lsb .lsb-font-inter .lsb-text-xl .lsb-tracking-widest, .lsb .lsb-font-inter .lsb-text-xl.lsb-tracking-widest, .lsb .lsb-font-inter.lsb-text-xl .lsb-tracking-widest, .lsb .lsb-font-inter.lsb-text-xl.lsb-tracking-widest, .lsb .lsb-tracking-widest .lsb-font-inter .lsb-text-xl, .lsb .lsb-tracking-widest .lsb-font-inter.lsb-text-xl {
+  line-height: 1.75rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.083342661em;
+}
+
+.lsb .lsb-font-inter .lsb-text-2xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-2xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-2xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-2xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-2xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-2xl {
+  line-height: 2rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.044492328em;
+}
+
+.lsb .lsb-font-inter .lsb-text-3xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-3xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-3xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-3xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-3xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-3xl {
+  line-height: 2.25rem;
+  font-size: 1.875rem;
+  letter-spacing: -0.046314537em;
+}
+
+.lsb .lsb-font-inter .lsb-text-4xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-4xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-4xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-4xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-4xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-4xl {
+  line-height: 2.5rem;
+  font-size: 2.25rem;
+  letter-spacing: -0.046954113em;
+}
+
+.lsb .lsb-font-inter .lsb-text-5xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-5xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-5xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-5xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-5xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-5xl {
+  line-height: 1;
+  font-size: 3rem;
+  letter-spacing: -0.047257389em;
+}
+
+.lsb .lsb-font-inter .lsb-text-6xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-6xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-6xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-6xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-6xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-6xl {
+  line-height: 1;
+  font-size: 3.75rem;
+  letter-spacing: -0.047294751em;
+}
+
+.lsb .lsb-font-inter .lsb-text-7xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-7xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-7xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-7xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-7xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-7xl {
+  line-height: 1;
+  font-size: 4.5rem;
+  letter-spacing: -0.047299353em;
+}
+
+.lsb .lsb-font-inter .lsb-text-8xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-8xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-8xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-8xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-8xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-8xl {
+  line-height: 1;
+  font-size: 6rem;
+  letter-spacing: -0.04729999em;
+}
+
+.lsb .lsb-font-inter .lsb-text-9xl .lsb-tracking-tight, .lsb .lsb-font-inter .lsb-text-9xl.lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-9xl .lsb-tracking-tight, .lsb .lsb-font-inter.lsb-text-9xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lsb-text-9xl, .lsb .lsb-tracking-tight .lsb-font-inter.lsb-text-9xl {
+  line-height: 1;
+  font-size: 8rem;
+  letter-spacing: -0.0473em;
+}
+
+.lsb {
+  font-family: "Inter var", ui-sans-serif, system-ui, sans-serif;
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity));
+  color: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.lsb-wait-for-icons {
+  display: none;
+}
+
+.fontawesome-i2svg-active .lsb-wait-for-icons {
+  display: initial;
+}
+
+.svg-inline--fa.lsb {
+  display: var(--fa-display, inline-block);
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+}
+
+.svg-inline--fa.lsb.lsb-hidden {
+  display: none;
+}
+
+.lsb-sandbox {
+  margin: 0;
+  font-family: serif, system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 5px;
+}
+
+.lsb .last\:lsb-whitespace-nowrap:last-child {
+  white-space: nowrap;
+}
+
+.lsb .hover\:lsb-border-slate-200:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(226 232 240 / var(--tw-border-opacity));
+}
+
+.lsb .hover\:lsb-border-indigo-600:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(79 70 229 / var(--tw-border-opacity));
+}
+
+.lsb .hover\:lsb-border-gray-300:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.lsb .hover\:lsb-bg-red-700:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+}
+
+.lsb .hover\:lsb-bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.lsb .hover\:lsb-font-semibold:hover {
+  font-weight: 600;
+}
+
+.lsb .hover\:lsb-font-bold:hover {
+  font-weight: 700;
+}
+
+.lsb .hover\:lsb-text-slate-100:hover {
+  --tw-text-opacity: 1;
+  color: rgb(241 245 249 / var(--tw-text-opacity));
+}
+
+.lsb .hover\:lsb-text-indigo-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
+}
+
+.lsb .hover\:lsb-text-gray-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
+}
+
+.lsb .hover\:lsb-text-green-400:hover {
+  --tw-text-opacity: 1;
+  color: rgb(74 222 128 / var(--tw-text-opacity));
+}
+
+.lsb .hover\:lsb-text-indigo-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
+}
+
+.lsb .focus\:lsb-border-indigo-600:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(79 70 229 / var(--tw-border-opacity));
+}
+
+.lsb .focus\:lsb-border-indigo-500:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(99 102 241 / var(--tw-border-opacity));
+}
+
+.lsb .focus\:lsb-outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.lsb .focus\:lsb-ring-0:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.lsb .focus\:lsb-ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.lsb .focus\:lsb-ring-indigo-600:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(79 70 229 / var(--tw-ring-opacity));
+}
+
+.lsb .focus\:lsb-ring-red-500:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(239 68 68 / var(--tw-ring-opacity));
+}
+
+.lsb .focus\:lsb-ring-indigo-500:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
+}
+
+.lsb .focus\:lsb-ring-offset-2:focus {
+  --tw-ring-offset-width: 2px;
+}
+
+.lsb .focus\:lsb-ring-offset-gray-100:focus {
+  --tw-ring-offset-color: #f3f4f6;
+}
+
+.lsb .lsb-group:hover .group-hover\:lsb-block {
+  display: block;
+}
+
+.lsb .lsb-group:hover .group-hover\:lsb-text-indigo-600 {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
+}
+
+@media (min-width: 640px) {
+  .lsb .sm\:lsb-pl-6 {
+    padding-left: 1.5rem;
+  }
+
+  .lsb .sm\:lsb-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .lsb .lsb-font-inter .sm\:lsb-text-sm, .lsb .lsb-font-inter.sm\:lsb-text-sm {
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: -0.006223544em;
+  }
+
+  .lsb .lsb-font-inter .sm\:lsb-text-sm .lsb-tracking-tighter, .lsb .lsb-font-inter .sm\:lsb-text-sm.lsb-tracking-tighter, .lsb .lsb-font-inter.sm\:lsb-text-sm .lsb-tracking-tighter, .lsb .lsb-font-inter.sm\:lsb-text-sm.lsb-tracking-tighter, .lsb .lsb-tracking-tighter .lsb-font-inter .sm\:lsb-text-sm, .lsb .lsb-tracking-tighter .lsb-font-inter.sm\:lsb-text-sm {
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: -0.056223544em;
+  }
+
+  .lsb .lsb-font-inter .sm\:lsb-text-sm .lsb-tracking-tight, .lsb .lsb-font-inter .sm\:lsb-text-sm.lsb-tracking-tight, .lsb .lsb-font-inter.sm\:lsb-text-sm .lsb-tracking-tight, .lsb .lsb-font-inter.sm\:lsb-text-sm.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .sm\:lsb-text-sm, .lsb .lsb-tracking-tight .lsb-font-inter.sm\:lsb-text-sm {
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: -0.031223544em;
+  }
+
+  .lsb .lsb-font-inter .sm\:lsb-text-sm .lsb-tracking-normal, .lsb .lsb-font-inter .sm\:lsb-text-sm.lsb-tracking-normal, .lsb .lsb-font-inter.sm\:lsb-text-sm .lsb-tracking-normal, .lsb .lsb-font-inter.sm\:lsb-text-sm.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .sm\:lsb-text-sm, .lsb .lsb-tracking-normal .lsb-font-inter.sm\:lsb-text-sm {
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: -0.006223544em;
   }
 
   .lsb .lsb-font-inter .sm\:lsb-text-sm .lsb-tracking-wide, .lsb .lsb-font-inter .sm\:lsb-text-sm.lsb-tracking-wide, .lsb .lsb-font-inter.sm\:lsb-text-sm .lsb-tracking-wide, .lsb .lsb-font-inter.sm\:lsb-text-sm.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .sm\:lsb-text-sm, .lsb .lsb-tracking-wide .lsb-font-inter.sm\:lsb-text-sm {
@@ -3085,293 +3394,6 @@ img.lsb,
     line-height: 1.25rem;
     font-size: 0.875rem;
     letter-spacing: 0.093776456em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: -0.014300686em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg .lsb-tracking-tighter, .lsb .lsb-font-inter .md\:lsb-text-lg.lsb-tracking-tighter, .lsb .lsb-font-inter.md\:lsb-text-lg .lsb-tracking-tighter, .lsb .lsb-font-inter.md\:lsb-text-lg.lsb-tracking-tighter, .lsb .lsb-tracking-tighter .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-tracking-tighter .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: -0.064300686em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg .lsb-tracking-tight, .lsb .lsb-font-inter .md\:lsb-text-lg.lsb-tracking-tight, .lsb .lsb-font-inter.md\:lsb-text-lg .lsb-tracking-tight, .lsb .lsb-font-inter.md\:lsb-text-lg.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-tracking-tight .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: -0.039300686em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg .lsb-tracking-normal, .lsb .lsb-font-inter .md\:lsb-text-lg.lsb-tracking-normal, .lsb .lsb-font-inter.md\:lsb-text-lg .lsb-tracking-normal, .lsb .lsb-font-inter.md\:lsb-text-lg.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-tracking-normal .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: -0.014300686em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg .lsb-tracking-wide, .lsb .lsb-font-inter .md\:lsb-text-lg.lsb-tracking-wide, .lsb .lsb-font-inter.md\:lsb-text-lg .lsb-tracking-wide, .lsb .lsb-font-inter.md\:lsb-text-lg.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-tracking-wide .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: 0.010699314em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg .lsb-tracking-wider, .lsb .lsb-font-inter .md\:lsb-text-lg.lsb-tracking-wider, .lsb .lsb-font-inter.md\:lsb-text-lg .lsb-tracking-wider, .lsb .lsb-font-inter.md\:lsb-text-lg.lsb-tracking-wider, .lsb .lsb-tracking-wider .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-tracking-wider .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: 0.035699314em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-lg .lsb-tracking-widest, .lsb .lsb-font-inter .md\:lsb-text-lg.lsb-tracking-widest, .lsb .lsb-font-inter.md\:lsb-text-lg .lsb-tracking-widest, .lsb .lsb-font-inter.md\:lsb-text-lg.lsb-tracking-widest, .lsb .lsb-tracking-widest .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-tracking-widest .lsb-font-inter.md\:lsb-text-lg {
-    line-height: 1.75rem;
-    font-size: 1.125rem;
-    letter-spacing: 0.085699314em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: -0.019492328em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl .lsb-tracking-tighter, .lsb .lsb-font-inter .md\:lsb-text-2xl.lsb-tracking-tighter, .lsb .lsb-font-inter.md\:lsb-text-2xl .lsb-tracking-tighter, .lsb .lsb-font-inter.md\:lsb-text-2xl.lsb-tracking-tighter, .lsb .lsb-tracking-tighter .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-tracking-tighter .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: -0.069492328em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl .lsb-tracking-tight, .lsb .lsb-font-inter .md\:lsb-text-2xl.lsb-tracking-tight, .lsb .lsb-font-inter.md\:lsb-text-2xl .lsb-tracking-tight, .lsb .lsb-font-inter.md\:lsb-text-2xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-tracking-tight .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: -0.044492328em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl .lsb-tracking-normal, .lsb .lsb-font-inter .md\:lsb-text-2xl.lsb-tracking-normal, .lsb .lsb-font-inter.md\:lsb-text-2xl .lsb-tracking-normal, .lsb .lsb-font-inter.md\:lsb-text-2xl.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-tracking-normal .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: -0.019492328em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl .lsb-tracking-wide, .lsb .lsb-font-inter .md\:lsb-text-2xl.lsb-tracking-wide, .lsb .lsb-font-inter.md\:lsb-text-2xl .lsb-tracking-wide, .lsb .lsb-font-inter.md\:lsb-text-2xl.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-tracking-wide .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: 0.005507672em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl .lsb-tracking-wider, .lsb .lsb-font-inter .md\:lsb-text-2xl.lsb-tracking-wider, .lsb .lsb-font-inter.md\:lsb-text-2xl .lsb-tracking-wider, .lsb .lsb-font-inter.md\:lsb-text-2xl.lsb-tracking-wider, .lsb .lsb-tracking-wider .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-tracking-wider .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: 0.030507672em;
-  }
-
-  .lsb .lsb-font-inter .md\:lsb-text-2xl .lsb-tracking-widest, .lsb .lsb-font-inter .md\:lsb-text-2xl.lsb-tracking-widest, .lsb .lsb-font-inter.md\:lsb-text-2xl .lsb-tracking-widest, .lsb .lsb-font-inter.md\:lsb-text-2xl.lsb-tracking-widest, .lsb .lsb-tracking-widest .lsb-font-inter .md\:lsb-text-2xl, .lsb .lsb-tracking-widest .lsb-font-inter.md\:lsb-text-2xl {
-    line-height: 2rem;
-    font-size: 1.5rem;
-    letter-spacing: 0.080507672em;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lsb .lg\:lsb-left-60 {
-    left: 15rem;
-  }
-
-  .lsb .lg\:lsb-z-0 {
-    z-index: 0;
-  }
-
-  .lsb .lg\:lsb-col-span-2 {
-    grid-column: span 2 / span 2;
-  }
-
-  .lsb .lg\:lsb-col-span-3 {
-    grid-column: span 3 / span 3;
-  }
-
-  .lsb .lg\:lsb-mr-2 {
-    margin-right: 0.5rem;
-  }
-
-  .lsb .lg\:lsb-mb-0 {
-    margin-bottom: 0px;
-  }
-
-  .lsb .lg\:lsb-block {
-    display: block;
-  }
-
-  .lsb .lg\:lsb-flex {
-    display: flex;
-  }
-
-  .lsb .lg\:lsb-hidden {
-    display: none;
-  }
-
-  .lsb .lg\:lsb-h-\[calc\(100vh_-_4rem\)\] {
-    height: calc(100vh - 4rem);
-  }
-
-  .lsb .lg\:lsb-w-60 {
-    width: 15rem;
-  }
-
-  .lsb .lg\:lsb-w-\[calc\(100\%_-_15rem\)\] {
-    width: calc(100% - 15rem);
-  }
-
-  .lsb .lg\:lsb-py-1\.5 {
-    padding-top: 0.375rem;
-    padding-bottom: 0.375rem;
-  }
-
-  .lsb .lg\:lsb-py-1 {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-  }
-
-  .lsb .lg\:lsb-px-12 {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-
-  .lsb .lg\:lsb-pl-2\.5 {
-    padding-left: 0.625rem;
-  }
-
-  .lsb .lg\:lsb-pr-3\.5 {
-    padding-right: 0.875rem;
-  }
-
-  .lsb .lg\:lsb-pl-2 {
-    padding-left: 0.5rem;
-  }
-
-  .lsb .lg\:lsb-pr-3 {
-    padding-right: 0.75rem;
-  }
-
-  .lsb .lg\:lsb-pt-20 {
-    padding-top: 5rem;
-  }
-
-  .lsb .lg\:lsb-pt-16 {
-    padding-top: 4rem;
-  }
-
-  .lsb .lg\:lsb-text-3xl {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
-  }
-
-  .lsb .lg\:lsb-text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: -0.006223544em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm .lsb-tracking-tighter, .lsb .lsb-font-inter .lg\:lsb-text-sm.lsb-tracking-tighter, .lsb .lsb-font-inter.lg\:lsb-text-sm .lsb-tracking-tighter, .lsb .lsb-font-inter.lg\:lsb-text-sm.lsb-tracking-tighter, .lsb .lsb-tracking-tighter .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-tracking-tighter .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: -0.056223544em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm .lsb-tracking-tight, .lsb .lsb-font-inter .lg\:lsb-text-sm.lsb-tracking-tight, .lsb .lsb-font-inter.lg\:lsb-text-sm .lsb-tracking-tight, .lsb .lsb-font-inter.lg\:lsb-text-sm.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-tracking-tight .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: -0.031223544em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm .lsb-tracking-normal, .lsb .lsb-font-inter .lg\:lsb-text-sm.lsb-tracking-normal, .lsb .lsb-font-inter.lg\:lsb-text-sm .lsb-tracking-normal, .lsb .lsb-font-inter.lg\:lsb-text-sm.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-tracking-normal .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: -0.006223544em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm .lsb-tracking-wide, .lsb .lsb-font-inter .lg\:lsb-text-sm.lsb-tracking-wide, .lsb .lsb-font-inter.lg\:lsb-text-sm .lsb-tracking-wide, .lsb .lsb-font-inter.lg\:lsb-text-sm.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-tracking-wide .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: 0.018776456em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm .lsb-tracking-wider, .lsb .lsb-font-inter .lg\:lsb-text-sm.lsb-tracking-wider, .lsb .lsb-font-inter.lg\:lsb-text-sm .lsb-tracking-wider, .lsb .lsb-font-inter.lg\:lsb-text-sm.lsb-tracking-wider, .lsb .lsb-tracking-wider .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-tracking-wider .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: 0.043776456em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-sm .lsb-tracking-widest, .lsb .lsb-font-inter .lg\:lsb-text-sm.lsb-tracking-widest, .lsb .lsb-font-inter.lg\:lsb-text-sm .lsb-tracking-widest, .lsb .lsb-font-inter.lg\:lsb-text-sm.lsb-tracking-widest, .lsb .lsb-tracking-widest .lsb-font-inter .lg\:lsb-text-sm, .lsb .lsb-tracking-widest .lsb-font-inter.lg\:lsb-text-sm {
-    line-height: 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: 0.093776456em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: -0.021314537em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl .lsb-tracking-tighter, .lsb .lsb-font-inter .lg\:lsb-text-3xl.lsb-tracking-tighter, .lsb .lsb-font-inter.lg\:lsb-text-3xl .lsb-tracking-tighter, .lsb .lsb-font-inter.lg\:lsb-text-3xl.lsb-tracking-tighter, .lsb .lsb-tracking-tighter .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-tracking-tighter .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: -0.071314537em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl .lsb-tracking-tight, .lsb .lsb-font-inter .lg\:lsb-text-3xl.lsb-tracking-tight, .lsb .lsb-font-inter.lg\:lsb-text-3xl .lsb-tracking-tight, .lsb .lsb-font-inter.lg\:lsb-text-3xl.lsb-tracking-tight, .lsb .lsb-tracking-tight .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-tracking-tight .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: -0.046314537em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl .lsb-tracking-normal, .lsb .lsb-font-inter .lg\:lsb-text-3xl.lsb-tracking-normal, .lsb .lsb-font-inter.lg\:lsb-text-3xl .lsb-tracking-normal, .lsb .lsb-font-inter.lg\:lsb-text-3xl.lsb-tracking-normal, .lsb .lsb-tracking-normal .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-tracking-normal .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: -0.021314537em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl .lsb-tracking-wide, .lsb .lsb-font-inter .lg\:lsb-text-3xl.lsb-tracking-wide, .lsb .lsb-font-inter.lg\:lsb-text-3xl .lsb-tracking-wide, .lsb .lsb-font-inter.lg\:lsb-text-3xl.lsb-tracking-wide, .lsb .lsb-tracking-wide .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-tracking-wide .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: 0.003685463em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl .lsb-tracking-wider, .lsb .lsb-font-inter .lg\:lsb-text-3xl.lsb-tracking-wider, .lsb .lsb-font-inter.lg\:lsb-text-3xl .lsb-tracking-wider, .lsb .lsb-font-inter.lg\:lsb-text-3xl.lsb-tracking-wider, .lsb .lsb-tracking-wider .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-tracking-wider .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: 0.028685463em;
-  }
-
-  .lsb .lsb-font-inter .lg\:lsb-text-3xl .lsb-tracking-widest, .lsb .lsb-font-inter .lg\:lsb-text-3xl.lsb-tracking-widest, .lsb .lsb-font-inter.lg\:lsb-text-3xl .lsb-tracking-widest, .lsb .lsb-font-inter.lg\:lsb-text-3xl.lsb-tracking-widest, .lsb .lsb-tracking-widest .lsb-font-inter .lg\:lsb-text-3xl, .lsb .lsb-tracking-widest .lsb-font-inter.lg\:lsb-text-3xl {
-    line-height: 2.25rem;
-    font-size: 1.875rem;
-    letter-spacing: 0.078685463em;
-  }
-
-  .lsb .lsb-group:hover .group-hover\:lg\:lsb-inline {
-    display: inline;
-  }
-}
-
-@media (min-width: 1280px) {
-  .lsb .xl\:lsb-sticky {
-    position: -webkit-sticky;
-    position: sticky;
-  }
-}
-
-.lsb .\[\&\:not\(\:last-child\)\]\:lsb-truncate:not(:last-child) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-g: 0.093776456em;
   }
 
   .lsb .lsb-font-inter .md\:lsb-text-lg, .lsb .lsb-font-inter.md\:lsb-text-lg {

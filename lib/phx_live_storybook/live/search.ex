@@ -2,8 +2,8 @@ defmodule PhxLiveStorybook.Search do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_component
 
-  alias PhxLiveStorybook.LayoutView
   alias Phoenix.LiveView.JS
+  alias PhxLiveStorybook.LayoutView
 
   def mount(socket) do
     {:ok, socket}
@@ -18,18 +18,21 @@ defmodule PhxLiveStorybook.Search do
      |> assign(assigns)
      |> assign(:root_path, root_path)
      |> assign(:all_entries, entries)
-     |> assign(:entries, entries)
-    }
+     |> assign(:entries, entries)}
   end
 
   def handle_event("navigate", %{"path" => path}, socket) do
-   {:noreply, push_patch(socket, to: path)}
+    {:noreply, push_patch(socket, to: path)}
   end
 
   def handle_event("search", %{"search" => %{"input" => input}}, socket) do
-    entries = Enum.filter(socket.assigns.all_entries, &String.contains?(String.downcase(&1.name), String.downcase(input)))
+    entries =
+      Enum.filter(
+        socket.assigns.all_entries,
+        &String.contains?(String.downcase(&1.name), String.downcase(input))
+      )
 
-   {:noreply, assign(socket, :entries, entries)}
+    {:noreply, assign(socket, :entries, entries)}
   end
 
   def render(assigns) do
@@ -78,10 +81,12 @@ defmodule PhxLiveStorybook.Search do
   end
 
   defp show_transition_classes do
-    {"lsb-ease-out lsb-duration-1000", "lsb-opacity-0 lsb-scale-95", "lsb-opacity-100 lsb-scale-100"}
+    {"lsb-ease-out lsb-duration-1000", "lsb-opacity-0 lsb-scale-95",
+     "lsb-opacity-100 lsb-scale-100"}
   end
 
   defp hide_transition_classes do
-    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100", "lsb-opacity-0 lsb-scale-95"}
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
+     "lsb-opacity-0 lsb-scale-95"}
   end
 end

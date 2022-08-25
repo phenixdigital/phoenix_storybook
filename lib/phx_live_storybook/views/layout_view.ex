@@ -13,8 +13,11 @@ defmodule PhxLiveStorybook.LayoutView do
     breadcrumb(socket, entry)
     |> Enum.intersperse(:separator)
     |> Enum.map_join("", fn
-      :separator -> ~s|<i class="fat fa-angle-right lsb lsb-px-2 lsb-text-slate-500"></i>|
-      entry_name -> ~s|<span class="lsb [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap #{opts[:span_class]}">#{entry_name}</span>|
+      :separator ->
+        ~s|<i class="fat fa-angle-right lsb lsb-px-2 lsb-text-slate-500"></i>|
+
+      entry_name ->
+        ~s|<span class="lsb [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap #{opts[:span_class]}">#{entry_name}</span>|
     end)
     |> raw()
   end
