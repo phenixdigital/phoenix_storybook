@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.SearchTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   import Phoenix.LiveViewTest
   import Floki, only: [find: 2]
 
