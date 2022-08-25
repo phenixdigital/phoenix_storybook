@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" phx-socket={live_socket_path(@conn)}>
+<html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
   <head>
     <%= if path = storybook_js_path(@conn) do %>
       <script phx-track-static type="text/javascript" src={application_static_path(@conn, path)}></script>
@@ -11,7 +11,7 @@
     <% end %>
   </head>
   
-  <body class="lsb-sandbox" style="height: 100%;">
+  <body class={sandbox_class(assigns)} style="margin: 0;">
     <%= @inner_content %>
   </body>
 </html>

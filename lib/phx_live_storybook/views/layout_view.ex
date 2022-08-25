@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.LayoutView do
     |> Enum.intersperse(:separator)
     |> Enum.map_join("", fn
       :separator -> ~s|<i class="fat fa-angle-right lsb lsb-px-2 lsb-text-slate-500"></i>|
-      entry_name -> ~s|<span class="lsb #{opts[:span_class]}">#{entry_name}</span>|
+      entry_name -> ~s|<span class="lsb [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap #{opts[:span_class]}">#{entry_name}</span>|
     end)
     |> raw()
   end
@@ -87,4 +87,32 @@ defmodule PhxLiveStorybook.LayoutView do
 
     Enum.reverse(breadcrumb)
   end
+
+  defp themes(socket) do
+    backend_module = backend_module(socket)
+    backend_module.config(:themes, nil)
+  end
+
+  defp current_theme_dropdown_class(socket, assigns) do
+    themes = themes(socket)
+    current_theme = Map.get(assigns, :theme)
+
+    case Enum.find(themes, fn {theme, _} -> theme == current_theme end) do
+      nil -> ""
+      {_, opts} -> Keyword.get(opts, :dropdown_class)
+    end
+  end
+
+  defp show_dropdown_transition do
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-0 lsb-scale-95",
+     "lsb-opacity-100 lsb-scale-100"}
+  end
+
+  defp hide_dropdown_transition do
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
+     "lsb-opacity-0 lsb-scale-95"}
+  end
+
+  def sandbox_class(%{theme: nil}), do: "lsb-sandbox"
+  def sandbox_class(%{theme: theme}), do: "lsb-sandbox theme-#{theme}"
 end

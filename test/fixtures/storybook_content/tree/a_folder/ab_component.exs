@@ -12,29 +12,29 @@ defmodule TreeStorybook.AFolder.AbComponent do
 
   def stories do
     [
-      %Story{
-        id: :default,
-        attributes: %{label: "hello"},
-        block: """
-        <span>inner block</span>
-        """
-      },
       %StoryGroup{
         id: :group,
         stories: [
           %Story{
             id: :hello,
             description: "Hello story",
-            attributes: %{label: "hello"}
-          },
-          %Story{
-            id: :world,
-            attributes: %{label: "world"},
+            attributes: %{label: "hello"},
             block: """
             <span>inner block</span>
             """
+          },
+          %Story{
+            id: :world,
+            attributes: %{label: "world"}
           }
         ]
+      },
+      %Story{
+        id: :default,
+        attributes: %{label: "hello"},
+        block: """
+        <span>inner block</span>
+        """
       }
     ]
   end

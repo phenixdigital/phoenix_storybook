@@ -37,7 +37,7 @@ defmodule PhxLiveStorybook.Entry do
 
   ### Live Component
 
-  Very similar components, excepted you need to define a `component/0  function
+  Very similar to components, except that you need to define a `component/0` function
   instead of `function/0`.
 
   ```elixir

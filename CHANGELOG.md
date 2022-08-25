@@ -1,19 +1,25 @@
 # CHANGELOG
 
-## v0.3.0 (not released)
+## v0.4.0 (not yet released)
 
-- change (breaking!): entries must know be written as `.exs` files. Otherwise they will be ignored.
+- feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
+- improvement: storybook playground is now responsive.
+- bugfix: fixed pre-opened folders always reopening themselves after each patch.
+- documentation: new [`theming.md`](guides/theming.md) guide.
+
+## v0.3.0 (2022-08-18)
+
+- change (breaking!): entries must now be written as `.exs` files. Otherwise, they will be ignored.
 - change (breaking!): `variations` have been rebranded as `stories`.
-- change (breaking!): `live_storybook/2` must be set in your `router.ex` outside of your main scope  
-  and outside of your `:browser` pipeline.
-- feature: new Playground tab to play with your components! To use it, you just need to declare
-  attributes in your component entries.
-- feature: you can opt-in iframe rendering for any of your component with `def container, do: :iframe`
+- change (breaking!): `live_storybook/2` must be set in your `router.ex` outside your main scope
+  and outside your `:browser` pipeline.
+- feature: new Playground tab to play with your components! To use it, you must declare attributes in your component entries.
+- feature: you can opt-in iframe rendering for any of your components with `def container, do: :iframe`
 - improvement: storybook is now fully responsive.
 - improvement: meaningful errors are raised during compilation if your entries are invalid.
 - improvement: improved storybook CSS isolation. It should no longer leak within your components.
-- improvement: stateless component entries no longer require to define a `component/0` function.
-- documentation: new `sandboxing.md` guide.
+- improvement: stateless component entries no longer require defining a `component/0` function.
+- documentation: new [`sandboxing.md`](guides/sandboxing.md) guide.
 
 ## v0.2.0 (2022-07-30)
 

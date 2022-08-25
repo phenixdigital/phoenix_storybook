@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   Responsible for rendering your components code snippet, for a given
   `PhxLiveStorybook.Story`.
 
-  Uses `Makeup` libray for syntax highlighting.
+  Uses the `Makeup` libray for syntax highlighting.
   """
 
   import Phoenix.LiveView.Helpers
@@ -80,7 +80,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp pre_class,
     do:
-      "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+      "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
   defp component_code_heex(function, attributes, block, slots) when is_function(function) do
     fun = function_name(function)

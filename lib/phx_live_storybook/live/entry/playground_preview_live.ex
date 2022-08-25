@@ -4,22 +4,21 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   alias Phoenix.PubSub
   alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
+  alias PhxLiveStorybook.{Story, StoryGroup}
+
+  @topic "playground"
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
 
     if connected?(socket) do
-      PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
-      PubSub.broadcast!(PhxLiveStorybook.PubSub, "playground", {:playground_preview_pid, self()})
+      PubSub.subscribe(PhxLiveStorybook.PubSub, @topic)
+      PubSub.broadcast!(PhxLiveStorybook.PubSub, @topic, {:playground_preview_pid, self()})
     end
 
-    story =
-      Enum.find(
-        entry.stories,
-        %{attributes: %{}, block: nil, slots: nil},
-        &(&1.id == session["story_id"])
-      )
+    story = find_story(entry.stories, session["story_id"])
 
     {:ok,
      assign(socket,
@@ -28,15 +27,38 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
        block: story.block,
        slots: story.slots,
        parent_pid: session["parent_pid"],
+       theme: session["theme"],
        sequence: 0
      ), layout: false}
   end
 
+  defp find_story(stories, [group_id, story_id]) do
+    Enum.find_value(
+      stories,
+      %{attributes: %{}, block: nil, slots: nil},
+      fn
+        %StoryGroup{id: id, stories: stories} when id == group_id -> find_story(stories, story_id)
+        _ -> nil
+      end
+    )
+  end
+
+  defp find_story(stories, story_id) do
+    Enum.find_value(
+      stories,
+      %{attributes: %{}, block: nil, slots: nil},
+      fn
+        story = %Story{id: id} when id == story_id -> story
+        _ -> nil
+      end
+    )
+  end
+
   def render(assigns) do
     ~H"""
-    <div id={"playground-preview-live-#{@sequence}"} class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-min-h-32 lsb-bg-white lsb-shadow-sm lsb-justify-evenly">
-      <div class="lsb lsb-sandbox">
-        <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs, @block, @slots) %>
+    <div id={"playground-preview-live-#{@sequence}"} style="height: 100%;">
+      <div class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
+        <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), Map.put(@attrs, :theme, @theme), @block, @slots) %>
       </div>
     </div>
     """
@@ -56,6 +78,11 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   def handle_info({:new_attributes, pid, attrs}, socket = %{assigns: assigns})
       when pid == assigns.parent_pid do
     {:noreply, assign(socket, attrs: attrs, sequence: socket.assigns.sequence + 1)}
+  end
+
+  def handle_info({:new_theme, pid, theme}, socket = %{assigns: assigns})
+      when pid == assigns.parent_pid do
+    {:noreply, assign(socket, theme: theme, sequence: socket.assigns.sequence + 1)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
