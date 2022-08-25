@@ -49,7 +49,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex)
   end
 
-  defp component_heex(fun, assigns, _template, id, block, slots) when is_function(fun) do
+  defp component_heex(fun, assigns, nil, id, block, slots) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(assigns, id)}>
       #{block}
@@ -58,13 +58,21 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     """
   end
 
-  defp component_heex(module, assigns, _template, id, block, slots) when is_atom(module) do
+  defp component_heex(module, assigns, nil, id, block, slots) when is_atom(module) do
     """
     <.live_component module={#{inspect(module)}} #{attributes_markup(assigns, id)}>
       #{block}
       #{slots}
     </.live_component>
     """
+  end
+
+  defp component_heex(fun_or_mod, assigns, template, id, block, slots) do
+    String.replace(
+      template,
+      ~r|<\.story[^\/]*\/>|,
+      component_heex(fun_or_mod, assigns, nil, id, block, slots)
+    )
   end
 
   defp attributes_markup(attributes, id) do
@@ -81,12 +89,21 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
     {evaluated, _} =
       Code.eval_quoted(quoted_code, [assigns: []],
-        aliases: [],
+        aliases: aliases(fun_or_mod),
         requires: [Kernel],
         functions: eval_quoted_functions(fun_or_mod)
       )
 
     LiveViewEngine.live_to_iodata(evaluated)
+  end
+
+  defp aliases(fun) when is_function(fun) do
+    fun |> function_module() |> aliases()
+  end
+
+  defp aliases(mod) when is_atom(mod) do
+    alias_name = mod |> Module.split() |> Enum.at(-1) |> String.to_atom()
+    [{:"Elixir.#{alias_name}", mod}]
   end
 
   defp eval_quoted_functions(fun) when is_function(fun) do
