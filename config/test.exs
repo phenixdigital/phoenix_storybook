@@ -1,6 +1,10 @@
 import Config
 
-for test_module <- [PhxLiveStorybookTest, PhxLiveStorybook.SidebarTest, PhxLiveStorybook.SearchTest],
+for test_module <- [
+      PhxLiveStorybookTest,
+      PhxLiveStorybook.SidebarTest,
+      PhxLiveStorybook.SearchTest
+    ],
     {storybook_module, content_path, folders} <- [
       {"FlatListStorybook", "flat_list", []},
       {"EmptyFilesStorybook", "empty_files", []},

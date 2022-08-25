@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.SearchTest do
     test "has no entry" do
       {_document, html} = render_search(EmptyFilesStorybook)
 
-      assert EmptyFilesStorybook.entries == []
+      assert EmptyFilesStorybook.entries() == []
       assert String.contains?(html, "No entries found")
     end
 
