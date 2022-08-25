@@ -4913,9 +4913,11 @@ within:
         allEntries = searchList.children;
         firstEntry = searchList.firstElementChild;
         lastEntry = searchList.lastElementChild;
-        this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"));
-        activeEntry = firstEntry;
-        this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
+        if (allEntries.length > 0) {
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"));
+          activeEntry = firstEntry;
+          this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"));
+        }
       });
       observer.observe(searchList, {
         childList: true

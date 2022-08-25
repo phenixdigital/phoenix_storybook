@@ -13,9 +13,11 @@ export const SearchHook = {
          firstEntry = searchList.firstElementChild
          lastEntry = searchList.lastElementChild
          
-         this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"))
-         activeEntry = firstEntry
-         this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"))
+         if(allEntries.length > 0){
+            this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-baseline"))
+            activeEntry = firstEntry
+            this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"))
+         }
       });
 
       observer.observe(searchList, {
@@ -25,7 +27,7 @@ export const SearchHook = {
       window.addEventListener('keydown', (e) => {
          if((e.metaKey && (e.key === 'k' || e.key === 'K')) || e.key === '/'){
             e.preventDefault();
-            
+
             this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"))
             searchInput.focus();
             this.liveSocket.execJS(activeEntry, activeEntry.getAttribute("phx-highlight"))
