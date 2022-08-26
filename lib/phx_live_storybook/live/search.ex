@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.Search do
 
   alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.LayoutView
+  alias PhxLiveStorybook.SearchHelper
 
   def mount(socket) do
     {:ok, socket}
@@ -25,11 +26,15 @@ defmodule PhxLiveStorybook.Search do
     {:noreply, push_patch(socket, to: path)}
   end
 
+  def handle_event("search", %{"search" => %{"input" => ""}}, socket) do
+    {:noreply, assign(socket, :entries, socket.assigns.all_entries)}
+  end
+
   def handle_event("search", %{"search" => %{"input" => input}}, socket) do
     entries =
       Enum.filter(
         socket.assigns.all_entries,
-        &String.contains?(String.downcase(&1.name), String.downcase(input))
+        &(SearchHelper.search(input, &1.storybook_path) |> elem(0))
       )
 
     {:noreply, assign(socket, :entries, entries)}
@@ -53,7 +58,7 @@ defmodule PhxLiveStorybook.Search do
 
           <.form let={f} for={:search} phx-debounce={500} id="search-form" class="lsb lsb-relative">
             <i class="fal fa-search lsb lsb-pointer-events-none lsb-absolute lsb-top-3.5 lsb-left-4 lsb-h-5 lsb-w-5 lsb-text-gray-400"></i>
-            <%= text_input f, :input, "phx-change": "search", "phx-target": @myself, placeholder: "Search...", autocomplete: "off",  class: "lsb lsb-h-12 lsb-w-full lsb-border-0 lsb-bg-transparent lsb-pl-11 lsb-pr-4 lsb-text-gray-800 lsb-placeholder-gray-400 lsb-outline-none focus:lsb-ring-0 sm:lsb-text-sm"%>
+            <%= text_input f, :input, id: "search-input", "phx-change": "search", "phx-target": @myself, placeholder: "Search...", autocomplete: "off",  class: "lsb lsb-h-12 lsb-w-full lsb-border-0 lsb-bg-transparent lsb-pl-11 lsb-pr-4 lsb-text-gray-800 lsb-placeholder-gray-400 lsb-outline-none focus:lsb-ring-0 sm:lsb-text-sm"%>
           </.form>
 
           <%= if Enum.empty?(@entries) do %>
@@ -70,11 +75,11 @@ defmodule PhxLiveStorybook.Search do
                 id={"entry-#{i}"}
                 phx-highlight={JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600")}
                 phx-baseline={JS.remove_class("lsb-bg-slate-50 lsb-text-indigo-600")}
-                class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-cursor-pointer"
+                class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-space-x-4 lsb-cursor-pointer"
                 tabindex="-1">
 
-                <%= live_patch(entry.name, to: entry_path, class: "lsb lsb-font-semibold") %>
-                <div>
+                <%= live_patch(entry.name, to: entry_path, class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
+                <div class="lsb lsb-truncate">
                   <%= LayoutView.render_breadcrumb(@socket, entry, span_class: "lsb-text-xs") %>
                 </div>
               </li>

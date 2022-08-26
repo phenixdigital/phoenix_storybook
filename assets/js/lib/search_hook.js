@@ -2,7 +2,8 @@ export const SearchHook = {
    mounted() {
       const searchContainer = document.querySelector("#search-container");
       const searchList = document.querySelector("#search-list");
-      const searchInput = document.querySelector("#search-container input");
+      const searchInput = document.querySelector("#search-input");
+
       let allEntries = searchList.children
       let firstEntry = searchList.firstElementChild
       let lastEntry = searchList.lastElementChild
@@ -52,6 +53,8 @@ export const SearchHook = {
             e.preventDefault();
             const link = activeEntry.firstElementChild
 
+            
+            this.resetInput(searchInput)
             this.pushEventTo("#search-container", "navigate", {path: link.pathname});
             this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"))
          }
@@ -95,11 +98,21 @@ export const SearchHook = {
 
       searchList.addEventListener('click', (e) => {
          const link = activeEntry.firstElementChild
-
+         
+         this.resetInput(searchInput)
          this.pushEventTo("#search-container", "navigate", {path: link.pathname});
          this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"))
       })
-   }
 
+      searchInput.addEventListener('lsb:focus-input', (e) => {
+         // small timeout so the input is focused after the modal is shown.
+         setTimeout(() => e.target.focus(), 50)
+      });
+   },
+
+   resetInput(searchInput){
+      searchInput.value = ''
+      this.pushEventTo("#search-container", "search", {search: {input: ""}});
+   }
  };
  
