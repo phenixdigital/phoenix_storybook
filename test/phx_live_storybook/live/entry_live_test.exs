@@ -147,13 +147,16 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
       assert has_element?(view, "#search-container a", "A Component")
       assert has_element?(view, "#search-container a", "Ab Component")
+      open_browser(view)
 
       view
       |> with_target("#search-container")
-      |> render_change("search", %{"search" => %{"input" => "A Component"}})
+      |> render_change("search", %{"search" => %{"input" => "AComponent"}})
 
+      open_browser(view)
       assert has_element?(view, "#search-container a", "A Component")
-      refute has_element?(view, "#search-container a", "Ab Component")
+      assert has_element?(view, "#search-container a", "Ab Component")
+      refute has_element?(view, "#search-container a", "B Component")
     end
 
     test "navigates to a specified entry", %{conn: conn} do
