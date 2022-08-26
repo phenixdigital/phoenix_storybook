@@ -2,6 +2,7 @@
 
 ## v0.4.0 (not yet released)
 
+- feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
