@@ -1,12 +1,10 @@
 defmodule PhxLiveStorybook.SidebarTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Floki, only: [find: 2]
 
   alias PhxLiveStorybook.Sidebar
-
-  defmodule FlatListStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule TreeStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  alias PhxLiveStorybook.{FlatListStorybook, TreeStorybook}
 
   describe "storybook with flat list of entries" do
     test "sidebar contains those 2 entries" do
