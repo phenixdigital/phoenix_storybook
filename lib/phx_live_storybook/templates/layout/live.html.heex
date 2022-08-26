@@ -9,7 +9,7 @@
     </div>
 
     <%= if themes = themes(@socket) do %>
-      <div class="lsb lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
+      <div class="lsb lsb-absolute lsb-top-4 lsb-right-14 lsb-inline-block ">
         <button type="button" class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
           <i class={"lsb far fa-palette fa-xl #{current_theme_dropdown_class(@socket, assigns)}"}></i>
         </button>
@@ -37,6 +37,12 @@
       </div>
     <% end %>
   </div>
+
+  <div class="lsb lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
+    <button type="button" phx-click={JS.show(to: "#search-container") |> JS.dispatch("lsb:focus-input", to: "#search-input") |> JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600", to: "#entry-0")} class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500">
+      <i class="lsb fal fa-magnifying-glass fa-xl"></i>
+    </button>
+  </div>
   
   <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer lsb-pr-2">
     <i class="lsb far fa-bars fa-lg lsb-px-4" phx-click={JS.dispatch("lsb:open-sidebar")}></i>
@@ -63,6 +69,11 @@
     theme={assigns[:theme]}
   />
 </div>
+
+<.live_component 
+  id="search" module={PhxLiveStorybook.Search}
+  backend_module={@backend_module}
+/>
 
 <div id="live-container" class="lsb lsb-pt-28 lg:lsb-pt-16 lsb-left-0 lg:lsb-left-60 lsb-absolute lsb-h-screen lsb-w-full lg:lsb-w-[calc(100%_-_15rem)] lsb-px-4 lg:lsb-px-12 lsb-overflow-auto">
   <%= @inner_content %>

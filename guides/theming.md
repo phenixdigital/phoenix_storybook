@@ -71,3 +71,20 @@ defmodule ThemeHelpers do
   end
 end
 ```
+
+## 4. CSS theming
+
+The storybook is applying a `theme-*` CSS class to your components/page containers and you should do as well to your application HTML body element.
+
+It will allow you to style raw HTML elements
+
+```css
+body.theme-colorful {
+  font-family: // ...
+}
+
+.theme-colorful h1 {
+  font-family: // ...
+  font-size: // ...
+}
+```

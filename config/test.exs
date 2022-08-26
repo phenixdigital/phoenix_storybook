@@ -1,7 +1,6 @@
 import Config
 
-for test_module <- [PhxLiveStorybookTest, PhxLiveStorybook.SidebarTest],
-    {storybook_module, content_path, folders} <- [
+for {storybook_module, content_path, folders} <- [
       {"FlatListStorybook", "flat_list", []},
       {"EmptyFilesStorybook", "empty_files", []},
       {"EmptyFoldersStorybook", "empty_folders", []},
@@ -16,7 +15,7 @@ for test_module <- [PhxLiveStorybookTest, PhxLiveStorybook.SidebarTest],
   ]
 
   opts = if Enum.any?(folders), do: Keyword.put(opts, :folders, folders), else: opts
-  config :phx_live_storybook, :"#{test_module}.#{storybook_module}", opts
+  config :phx_live_storybook, :"#{PhxLiveStorybook}.#{storybook_module}", opts
 end
 
 config :phx_live_storybook, PhxLiveStorybook.TestStorybook,

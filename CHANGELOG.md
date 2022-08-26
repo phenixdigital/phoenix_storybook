@@ -1,10 +1,12 @@
 # CHANGELOG
 
-## v0.4.0 (2022-08-23)
+## v0.4.0 (not yet released)
 
+- feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
+- documentation: new [`theming.md`](guides/theming.md) guide.
 
 ## v0.3.0 (2022-08-18)
 
@@ -18,7 +20,7 @@
 - improvement: meaningful errors are raised during compilation if your entries are invalid.
 - improvement: improved storybook CSS isolation. It should no longer leak within your components.
 - improvement: stateless component entries no longer require defining a `component/0` function.
-- documentation: new `sandboxing.md` guide.
+- documentation: new [`sandboxing.md`](guides/sandboxing.md) guide.
 
 ## v0.2.0 (2022-07-30)
 

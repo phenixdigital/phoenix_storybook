@@ -9,6 +9,19 @@ defmodule PhxLiveStorybook.LayoutView do
 
   @env Application.compile_env(:phx_live_storybook, :env)
 
+  def render_breadcrumb(socket, entry, opts \\ []) do
+    breadcrumb(socket, entry)
+    |> Enum.intersperse(:separator)
+    |> Enum.map_join("", fn
+      :separator ->
+        ~s|<i class="fat fa-angle-right lsb lsb-px-2 lsb-text-slate-500"></i>|
+
+      entry_name ->
+        ~s|<span class="lsb [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap #{opts[:span_class]}">#{entry_name}</span>|
+    end)
+    |> raw()
+  end
+
   defp makeup_stylesheet(conn) do
     style = storybook_setting(conn, :makeup_style, :monokai_style)
     apply(StyleMap, style, []) |> Makeup.stylesheet()
@@ -31,19 +44,6 @@ defmodule PhxLiveStorybook.LayoutView do
     otp_app = otp_app(conn_or_socket)
     backend_module = backend_module(conn_or_socket)
     Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
-  end
-
-  defp render_breadcrumb(socket, entry) do
-    breadcrumb(socket, entry)
-    |> Enum.intersperse(:separator)
-    |> Enum.map_join("", fn
-      :separator ->
-        ~s|<i class="fat fa-angle-right lsb-px-2 lsb-text-slate-500"></i>|
-
-      entry_name ->
-        ~s|<span class="[&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap">#{entry_name}</span>|
-    end)
-    |> raw()
   end
 
   defp otp_app(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.otp_app
