@@ -1,12 +1,10 @@
 defmodule PhxLiveStorybook.SearchTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Floki, only: [find: 2]
 
   alias PhxLiveStorybook.Search
-
-  defmodule EmptyFilesStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule FlatListStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  alias PhxLiveStorybook.{EmptyFilesStorybook, FlatListStorybook}
 
   describe "search list entries" do
     test "has no entry" do

@@ -6,12 +6,14 @@ defmodule PhxLiveStorybookTest do
 
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
 
-  defmodule NoContentStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule TreeStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule TreeBStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule FlatListStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule EmptyFilesStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule EmptyFoldersStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  alias PhxLiveStorybook.{
+    EmptyFilesStorybook,
+    EmptyFoldersStorybook,
+    FlatListStorybook,
+    NoContentStorybook,
+    TreeStorybook,
+    TreeBStorybook
+  }
 
   describe "entries/0" do
     test "when no content path set it should return no entries" do
@@ -206,7 +208,7 @@ defmodule PhxLiveStorybookTest do
 
     test "it raises a compile error if component rendering raises" do
       assert_raise CompileError, ~r/an error occured while rendering story story/, fn ->
-        defmodule RenderComponentCrashStorybook,
+        defmodule Elixir.PhxLiveStorybook.RenderComponentCrashStorybook,
           do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
       end
     end
@@ -249,7 +251,7 @@ defmodule PhxLiveStorybookTest do
 
     test "it raises a compile error if a page rendering raises" do
       assert_raise CompileError, ~r/an error occured while rendering page/, fn ->
-        defmodule RenderPageCrashStorybook,
+        defmodule Elixir.PhxLiveStorybook.RenderPageCrashStorybook,
           do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
       end
     end
