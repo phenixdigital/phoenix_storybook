@@ -57,6 +57,8 @@ defmodule PhxLiveStorybook.Entry do
   end
   ```
 
+  ℹ️ Learn more on components in the [components guide](guides/components.md).
+
   ### Page
 
   A page is a fairly simple entry that can be used to write whatever
