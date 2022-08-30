@@ -109,16 +109,16 @@ defmodule PhxLiveStorybook.Entry.Playground do
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
           />
         <% else %>
-          <%= live_render @socket, PlaygroundPreviewLive,
-            id: playground_preview_id(@entry),
-            session: %{
-              "entry_path" => @entry_path,
-              "story_id" => @story_id,
-              "theme" => @theme,
-              "backend_module" => to_string(@backend_module),
-              "parent_pid" => self()
-            }
-          %>
+        <%= live_render @socket, PlaygroundPreviewLive,
+        id: playground_preview_id(@entry),
+        session: %{
+          "entry_path" => @entry_path,
+          "story_id" => @story_id,
+          "theme" => @theme,
+          "backend_module" => to_string(@backend_module),
+          "parent_pid" => self()
+        }
+      %>
         <% end %>
       </div>
       <%= if @upper_tab == :code do %>

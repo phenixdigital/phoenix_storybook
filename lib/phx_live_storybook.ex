@@ -40,7 +40,6 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @callback render_story(
               entry_module :: any(),
               story_id :: atom(),
-              template :: %Rendered{},
               theme :: atom()
             ) ::
               %Rendered{}

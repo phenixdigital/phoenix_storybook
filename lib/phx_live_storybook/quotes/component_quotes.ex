@@ -9,13 +9,14 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   def render_component_quotes(leave_entries, themes, caller_file) do
     header_quote =
       quote do
-        def render_story(module, story_id, template \\ nil, theme \\ nil)
+        def render_story(module, story_id, extra_assigns \\ %{theme: nil})
       end
 
     component_quotes =
       for %ComponentEntry{
             type: type,
             component: component,
+            function: function,
             module: module,
             module_name: module_name,
             stories: stories,
@@ -27,53 +28,84 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
         case type do
           :component ->
-            quote do
-              @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(
-                    unquote(module),
-                    unquote(story.id),
+            if template do
+              quote do
+                @impl PhxLiveStorybook.BackendBehaviour
+                def render_story(
+                      unquote(module),
+                      unquote(story.id),
+                      extra_assigns = %{theme: unquote(theme)}
+                    ) do
+                  ComponentRenderer.render_story_within_template(
                     unquote(template),
-                    unquote(theme)
-                  ) do
-                unquote(
-                  try do
-                    ComponentRenderer.render_story(
-                      module.function(),
-                      story,
-                      template,
-                      theme,
-                      unique_story_id
-                    )
-                    |> to_raw_html()
-                  rescue
-                    _exception ->
-                      reraise CompileError,
-                              [
-                                description: "an error occured while rendering story #{story.id}",
-                                file: caller_file
-                              ],
-                              __STACKTRACE__
-                  end
-                )
+                    unquote(function),
+                    unquote(Macro.escape(story)),
+                    Map.put(extra_assigns, :id, unquote(unique_story_id))
+                  )
+                end
+              end
+            else
+              quote do
+                @impl PhxLiveStorybook.BackendBehaviour
+                def render_story(
+                      unquote(module),
+                      unquote(story.id),
+                      %{theme: unquote(theme)}
+                    ) do
+                  unquote(
+                    try do
+                      ComponentRenderer.render_story(
+                        module.function(),
+                        story,
+                        %{theme: theme, id: unique_story_id}
+                      )
+                      |> to_raw_html()
+                    rescue
+                      _exception ->
+                        reraise CompileError,
+                                [
+                                  description:
+                                    "an error occured while rendering story #{story.id}",
+                                  file: caller_file
+                                ],
+                                __STACKTRACE__
+                    end
+                  )
+                end
               end
             end
 
           :live_component ->
-            quote do
-              @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(
-                    unquote(module),
-                    unquote(story.id),
+            if template do
+              quote do
+                @impl PhxLiveStorybook.BackendBehaviour
+                def render_story(
+                      unquote(module),
+                      unquote(story.id),
+                      extra_assigns = %{theme: unquote(theme)}
+                    ) do
+                  ComponentRenderer.render_story_within_template(
                     unquote(template),
-                    unquote(theme)
-                  ) do
-                ComponentRenderer.render_story(
-                  unquote(component),
-                  unquote(Macro.escape(story)),
-                  unquote(template),
-                  unquote(theme),
-                  unquote(unique_story_id)
-                )
+                    unquote(component),
+                    unquote(Macro.escape(story)),
+                    Map.put(extra_assigns, :id, unquote(unique_story_id))
+                  )
+                end
+              end
+            else
+              quote do
+                @impl PhxLiveStorybook.BackendBehaviour
+                def render_story(
+                      unquote(module),
+                      unquote(story.id),
+                      extra_assigns = %{theme: unquote(theme)}
+                    ) do
+                  ComponentRenderer.render_story(
+                    unquote(component),
+                    unquote(Macro.escape(story)),
+                    Map.put(extra_assigns, :id, unquote(unique_story_id))
+                  )
+                end
               end
             end
         end
@@ -86,7 +118,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
         [
           quote do
             @impl PhxLiveStorybook.BackendBehaviour
-            def render_story(_module, _story_id, _template, _theme) do
+            def render_story(_module, _story_id, _theme) do
               raise "no story has been defined yet in this storybook"
             end
           end
