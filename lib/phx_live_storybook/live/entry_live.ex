@@ -43,7 +43,7 @@ defmodule PhxLiveStorybook.EntryLive do
            page_title: entry.name,
            tab: current_tab(params, entry),
            theme: current_theme(params, socket),
-           story_assigns: init_story_assigns(entry),
+           story_extra_assigns: init_story_extra_assigns(entry),
            playground_error: nil
          )
          |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
@@ -88,11 +88,11 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  defp init_story_assigns(%ComponentEntry{stories: stories}) do
+  defp init_story_extra_assigns(%ComponentEntry{stories: stories}) do
     for %{id: story_id} <- stories, into: %{}, do: {story_id, %{}}
   end
 
-  defp init_story_assigns(_), do: nil
+  defp init_story_extra_assigns(_), do: nil
 
   def render(assigns = %{entry: _entry}) do
     ~H"""
@@ -181,7 +181,7 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb lsb-space-y-12 lsb-pb-12">
       <%= for story = %{id: story_id, description: description} <- @entry.stories(),
-      story_extra_assigns = Map.get(assigns.story_assigns, story_id, %{}) do %>
+      story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id, %{}) do %>
         <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Story description -->
@@ -302,11 +302,14 @@ defmodule PhxLiveStorybook.EntryLive do
           raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
       end
 
-    story_assigns = Map.get(assigns.story_assigns, story_id)
-    story_assigns = Map.put(story_assigns, String.to_atom(assign), to_value(value))
+    story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id)
+    story_extra_assigns = Map.put(story_extra_assigns, String.to_atom(assign), to_value(value))
 
     {:noreply,
-     assign(socket, :story_assigns, %{assigns.story_assigns | story_id => story_assigns})}
+     assign(socket, :story_extra_assigns, %{
+       assigns.story_extra_assigns
+       | story_id => story_extra_assigns
+     })}
   end
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
@@ -319,12 +322,15 @@ defmodule PhxLiveStorybook.EntryLive do
           raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
       end
 
-    story_assigns = Map.get(assigns.story_assigns, story_id)
-    current_value = Map.get(story_assigns, String.to_atom(assign))
-    story_assigns = Map.put(story_assigns, String.to_atom(assign), !current_value)
+    story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id)
+    current_value = Map.get(story_extra_assigns, String.to_atom(assign))
+    story_extra_assigns = Map.put(story_extra_assigns, String.to_atom(assign), !current_value)
 
     {:noreply,
-     assign(socket, :story_assigns, %{assigns.story_assigns | story_id => story_assigns})}
+     assign(socket, :story_extra_assigns, %{
+       assigns.story_extra_assigns
+       | story_id => story_extra_assigns
+     })}
   end
 
   def handle_info({:playground_preview_pid, pid}, socket) do

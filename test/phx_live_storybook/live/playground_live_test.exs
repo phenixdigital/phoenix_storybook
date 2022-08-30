@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   describe "simple component with one field" do
     test "renders playground", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_component?tab=playground")
-      assert view |> element("#playground-preview-live-0") |> render() =~ "a component: hello"
+      assert view |> element("#playground-preview-live") |> render() =~ "a component: hello"
     end
 
     test "playground preview is updated as form is changed", %{conn: conn} do
@@ -24,7 +24,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_a_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
-      assert view |> element("#playground-preview-live-1") |> render() =~ "a component: world"
+      assert view |> element("#playground-preview-live") |> render() =~ "a component: world"
     end
 
     test "renders playground code a simple component", %{conn: conn} do
@@ -44,7 +44,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert view |> element("pre") |> render() =~ "world"
 
       view |> element("a", "Preview") |> render_click()
-      assert view |> element("#playground-preview-live-1") |> render() =~ "a component: world"
+      assert view |> element("#playground-preview-live") |> render() =~ "a component: world"
     end
   end
 
@@ -73,7 +73,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     test "it shows the component preview", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
 
-      assert view |> element("#playground-preview-live-0") |> render() =~
+      assert view |> element("#playground-preview-live") |> render() =~
                "c component: default label"
     end
 
@@ -82,7 +82,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
       view |> element("a", "Code") |> render_click()
 
-      assert view |> element("#playground-preview-live-0") |> render() =~
+      assert view |> element("#playground-preview-live") |> render() =~
                "c component: default label"
 
       assert view |> element("pre.highlight") |> render() =~ ".c_component"
@@ -90,9 +90,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
     test "component can be updated with a toggle switch", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
-      assert view |> element("#playground-preview-live-0") |> render() =~ "toggle: false"
+      assert view |> element("#playground-preview-live") |> render() =~ "toggle: false"
       view |> element("button[role=switch]") |> render_click()
-      assert view |> element("#playground-preview-live-1") |> render() =~ "toggle: true"
+      assert view |> element("#playground-preview-live") |> render() =~ "toggle: true"
     end
 
     test "component can be updated by selecting an option", %{conn: conn} do
@@ -104,7 +104,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       })
       |> render_change()
 
-      assert view |> element("#playground-preview-live-1") |> render() =~ "option: opt3"
+      assert view |> element("#playground-preview-live") |> render() =~ "option: opt3"
     end
 
     test "required label is still defined in code when empty", %{conn: conn} do
@@ -126,7 +126,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     test "it shows the component preview", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_folder/ab_component?tab=playground")
 
-      html = view |> element("#playground-preview-live-0") |> render()
+      html = view |> element("#playground-preview-live") |> render()
       assert html =~ "b component: hello"
       assert html =~ "inner block"
     end

@@ -84,6 +84,23 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex)
   end
 
+  @doc """
+  Renders a component.
+  """
+  def render_component_within_template(template, id, fun_or_mod, assigns, block, slots) do
+    heex =
+      template_heex(
+        template,
+        id,
+        fun_or_mod,
+        assigns,
+        block,
+        slots
+      )
+
+    render_component_heex(fun_or_mod, heex)
+  end
+
   defp component_heex(fun, assigns, block, slots) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(assigns)}>

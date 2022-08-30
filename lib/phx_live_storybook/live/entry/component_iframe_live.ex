@@ -26,7 +26,8 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            entry: entry,
            story_id: parse_story_id(params["story_id"]),
            parent_pid: parse_pid(params["parent_pid"]),
-           theme: parse_theme(params["theme"])
+           theme: parse_theme(params["theme"]),
+           extra_assigns: %{}
          )}
     end
   end
@@ -64,6 +65,9 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
   defp parse_theme(theme), do: String.to_atom(theme)
 
   def render(assigns) do
+    assigns =
+      assign(assigns, component_assigns: Map.merge(%{theme: assigns.theme}, assigns.extra_assigns))
+
     ~H"""
     <%= if @story_id do %>
       <%= if @playground do %>
@@ -74,7 +78,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= @backend_module.render_story(@entry.module(), @story_id, %{theme: @theme}) %>
+          <%= @backend_module.render_story(@entry.module(), @story_id, @component_assigns) %>
         </div>
       <% end %>
     <% end %>
@@ -85,4 +89,47 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
   end
+
+  def handle_event(
+        "set-story-assign/" <> assign_params,
+        _,
+        socket = %{assigns: assigns}
+      ) do
+    {assign, value} =
+      case String.split(assign_params, "/") do
+        [_story_id, assign, value] ->
+          {assign, value}
+
+        _ ->
+          raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
+      end
+
+    extra_assigns = Map.put(assigns.extra_assigns, String.to_atom(assign), to_value(value))
+
+    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+  end
+
+  def handle_event(
+        "toggle-story-assign/" <> assign_params,
+        _,
+        socket = %{assigns: assigns}
+      ) do
+    assign =
+      case String.split(assign_params, "/") do
+        [_story_id, assign] ->
+          assign
+
+        _ ->
+          raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
+      end
+
+    current_value = Map.get(assigns.extra_assigns, String.to_atom(assign))
+    extra_assigns = Map.put(assigns.extra_assigns, String.to_atom(assign), !current_value)
+
+    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+  end
+
+  defp to_value("true"), do: true
+  defp to_value("false"), do: false
+  defp to_value(val), do: val
 end
