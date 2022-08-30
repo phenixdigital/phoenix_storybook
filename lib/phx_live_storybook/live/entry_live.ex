@@ -338,7 +338,7 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_preview_pid, pid)}
   end
 
-  def handle_info({:DOWN, _ref, :process, pid, reason = {:undef, _}}, socket)
+  def handle_info({:DOWN, _ref, :process, pid, reason}, socket)
       when socket.assigns.playground_preview_pid == pid do
     {:noreply, assign(socket, :playground_error, reason)}
   end
