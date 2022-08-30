@@ -72,7 +72,7 @@ defmodule PhxLiveStorybook.MixProject do
   defp package do
     [
       maintainers: ["Christian Blavier"],
-      files: ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md),
+      files: ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md CONTRIBUTING.md),
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phenixdigital/phx_live_storybook"}
     ]
