@@ -14,6 +14,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_entry_component(path, entry)
     validate_entry_function(path, entry)
     validate_entry_container(path, entry)
+    validate_entry_template(path, entry)
     validate_attribute_list_type(path, entry)
     validate_attribute_ids(path, attributes)
     validate_attribute_types(path, attributes)
@@ -62,6 +63,10 @@ defmodule PhxLiveStorybook.EntriesValidator do
     unless entry.container in ~w(nil div iframe)a do
       compile_error!(file_path, "entry container must be either :div or :iframe")
     end
+  end
+
+  defp validate_entry_template(file_path, entry) do
+    validate_type!(file_path, entry.template, :string, "entry template must be a binary")
   end
 
   defp validate_attribute_list_type(file_path, entry) do
