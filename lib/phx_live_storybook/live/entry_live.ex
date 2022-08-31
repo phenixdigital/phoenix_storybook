@@ -6,6 +6,7 @@ defmodule PhxLiveStorybook.EntryLive do
   alias PhxLiveStorybook.Entry.Playground
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
   alias PhxLiveStorybook.LayoutView
+  alias PhxLiveStorybook.{Story, StoryGroup}
 
   @topic "playground"
 
@@ -89,7 +90,12 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp init_story_extra_assigns(%ComponentEntry{stories: stories}) do
-    for %{id: story_id} <- stories, into: %{}, do: {story_id, %{}}
+    extra_assigns = for %Story{id: story_id} <- stories, into: %{}, do: {story_id, %{}}
+
+    for %StoryGroup{id: group_id, stories: stories} <- stories,
+        %Story{id: story_id} <- stories,
+        into: extra_assigns,
+        do: {{group_id, story_id}, %{}}
   end
 
   defp init_story_extra_assigns(_), do: nil
@@ -181,7 +187,7 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb lsb-space-y-12 lsb-pb-12">
       <%= for story = %{id: story_id, description: description} <- @entry.stories(),
-      story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id, %{}) do %>
+              story_extra_assigns = story_extra_assigns(story, assigns) do %>
         <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Story description -->
@@ -209,7 +215,7 @@ defmodule PhxLiveStorybook.EntryLive do
               />
             <% else %>
               <div class={LayoutView.sandbox_class(assigns)}>
-                <%= @backend_module.render_story(@entry.module(), story_id, Map.merge(%{theme: @theme}, story_extra_assigns)) %>
+                <%= @backend_module.render_story(@entry.module(), story_id, story_extra_assigns) %>
               </div>
             <% end %>
           </div>
@@ -258,6 +264,19 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
+  defp story_extra_assigns(%Story{id: story_id}, assigns) do
+    assigns.story_extra_assigns
+    |> Map.get(story_id, %{})
+    |> Map.put(:theme, assigns.theme)
+  end
+
+  defp story_extra_assigns(%StoryGroup{id: group_id}, assigns) do
+    for {{^group_id, story_id}, extra_assigns} <- assigns.story_extra_assigns, into: %{} do
+      {story_id, Map.merge(extra_assigns, %{id: "#{group_id}-#{story_id}", theme: assigns.theme})}
+    end
+    |> Map.put(:theme, assigns.theme)
+  end
+
   defp default_story(%ComponentEntry{stories: [story | _]}), do: story
   defp default_story(_), do: nil
 
@@ -296,10 +315,18 @@ defmodule PhxLiveStorybook.EntryLive do
     {story_id, assign, value} =
       case String.split(assign_params, "/") do
         [story_id, assign, value] ->
-          {String.to_atom(story_id), assign, value}
+          {story_id, assign, value}
 
         _ ->
           raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
+      end
+
+    story_id =
+      if String.contains?(story_id, ":") do
+        [group_id, story_id] = String.split(story_id, ":")
+        {String.to_atom(group_id), String.to_atom(story_id)}
+      else
+        String.to_atom(story_id)
       end
 
     story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id)
@@ -316,10 +343,18 @@ defmodule PhxLiveStorybook.EntryLive do
     {story_id, assign} =
       case String.split(assign_params, "/") do
         [story_id, assign] ->
-          {String.to_atom(story_id), assign}
+          {story_id, assign}
 
         _ ->
           raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
+      end
+
+    story_id =
+      if String.contains?(story_id, ":") do
+        [group_id, story_id] = String.split(story_id, ":")
+        {String.to_atom(group_id), String.to_atom(story_id)}
+      else
+        String.to_atom(story_id)
       end
 
     story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id)

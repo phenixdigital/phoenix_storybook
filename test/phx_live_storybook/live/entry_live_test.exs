@@ -120,7 +120,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert html =~ "defmodule"
     end
 
-    test "component with template", %{conn: conn} do
+    test "component story with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component")
       hello_element = element(view, "#hello .lsb-sandbox")
       world_element = element(view, "#world .lsb-sandbox")
@@ -150,7 +150,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert render(world_element) =~ "template_component: foo / status: false"
     end
 
-    test "live_component with template", %{conn: conn} do
+    test "live_component story with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_live_component")
       hello_element = element(view, "#hello .lsb-sandbox")
       world_element = element(view, "#world .lsb-sandbox")
@@ -172,6 +172,24 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
       view |> element("#world #set-foo") |> render_click()
       assert render(world_element) =~ "template_live_component: foo / status: false"
+    end
+
+    test "component story_group with template", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/templates/template_component")
+
+      story_one = element(view, ~s|[id="group:one"] span|)
+      story_two = element(view, ~s|[id="group:two"] span|)
+
+      assert render(story_one) =~ "template_component: one / status: false"
+      assert render(story_two) =~ "template_component: two / status: false"
+
+      view |> element(~s|[id="group:one"] #set-bar|) |> render_click()
+      assert render(story_one) =~ "template_component: bar / status: false"
+      assert render(story_two) =~ "template_component: two / status: false"
+
+      view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
+      assert render(story_one) =~ "template_component: bar / status: false"
+      assert render(story_two) =~ "template_component: two / status: true"
     end
   end
 

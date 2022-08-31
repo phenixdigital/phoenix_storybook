@@ -57,15 +57,15 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         template,
         fun_or_mod,
         %StoryGroup{id: group_id, stories: stories},
-        extra_assigns
+        group_extra_assigns
       ) do
     heex =
       for story = %Story{id: story_id} <- stories, into: "" do
-        extra_assigns = %{extra_assigns | id: "#{extra_assigns.id}-#{story_id}"}
+        extra_assigns = Map.get(group_extra_assigns, story_id)
 
         template_heex(
           template,
-          group_id,
+          "#{group_id}:#{story_id}",
           fun_or_mod,
           Map.merge(story.attributes, extra_assigns),
           story.block,
@@ -119,9 +119,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     """
   end
 
-  defp template_heex(template, story_or_group_id, fun_or_mod, assigns, block, slots) do
+  defp template_heex(template, story_id, fun_or_mod, assigns, block, slots) do
     template
-    |> String.replace(":story_id", to_string(story_or_group_id))
+    |> String.replace(":story_id", to_string(story_id))
     |> String.replace(
       ~r|<\.story[^\/]*\/>|,
       component_heex(fun_or_mod, assigns, block, slots)
