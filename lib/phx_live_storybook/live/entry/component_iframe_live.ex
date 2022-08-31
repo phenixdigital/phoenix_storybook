@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
 
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.EntryNotFound
+  alias PhxLiveStorybook.ExtraAssignsHelpers
 
   def mount(_params, session, socket) do
     {:ok,
@@ -90,46 +91,17 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     "#{module}-playground-preview"
   end
 
-  def handle_event(
-        "set-story-assign/" <> assign_params,
-        _,
-        socket = %{assigns: assigns}
-      ) do
-    {assign, value} =
-      case String.split(assign_params, "/") do
-        [_story_id, assign, value] ->
-          {assign, value}
-
-        _ ->
-          raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
-      end
-
-    extra_assigns = Map.put(assigns.extra_assigns, String.to_atom(assign), to_value(value))
+  def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+    {_story_id, extra_assigns} =
+      ExtraAssignsHelpers.handle_set_story_assign(assign_params, assigns.extra_assigns, :flat)
 
     {:noreply, assign(socket, extra_assigns: extra_assigns)}
   end
 
-  def handle_event(
-        "toggle-story-assign/" <> assign_params,
-        _,
-        socket = %{assigns: assigns}
-      ) do
-    assign =
-      case String.split(assign_params, "/") do
-        [_story_id, assign] ->
-          assign
-
-        _ ->
-          raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
-      end
-
-    current_value = Map.get(assigns.extra_assigns, String.to_atom(assign))
-    extra_assigns = Map.put(assigns.extra_assigns, String.to_atom(assign), !current_value)
+  def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+    {_story_id, extra_assigns} =
+      ExtraAssignsHelpers.handle_toggle_story_assign(assign_params, assigns.extra_assigns, :flat)
 
     {:noreply, assign(socket, extra_assigns: extra_assigns)}
   end
-
-  defp to_value("true"), do: true
-  defp to_value("false"), do: false
-  defp to_value(val), do: val
 end

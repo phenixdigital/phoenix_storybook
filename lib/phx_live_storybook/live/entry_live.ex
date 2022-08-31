@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.EntryLive do
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.{ComponentEntry, PageEntry}
   alias PhxLiveStorybook.Entry.Playground
+  alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.{Story, StoryGroup}
@@ -312,60 +313,19 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {story_id, assign, value} =
-      case String.split(assign_params, "/") do
-        [story_id, assign, value] ->
-          {story_id, assign, value}
+    {story_id, story_extra_assigns} =
+      ExtraAssignsHelpers.handle_set_story_assign(assign_params, assigns.story_extra_assigns)
 
-        _ ->
-          raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
-      end
-
-    story_id =
-      if String.contains?(story_id, ":") do
-        [group_id, story_id] = String.split(story_id, ":")
-        {String.to_atom(group_id), String.to_atom(story_id)}
-      else
-        String.to_atom(story_id)
-      end
-
-    story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id)
-    story_extra_assigns = Map.put(story_extra_assigns, String.to_atom(assign), to_value(value))
-
-    {:noreply,
-     assign(socket, :story_extra_assigns, %{
-       assigns.story_extra_assigns
-       | story_id => story_extra_assigns
-     })}
+    story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
+    {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
   end
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {story_id, assign} =
-      case String.split(assign_params, "/") do
-        [story_id, assign] ->
-          {story_id, assign}
+    {story_id, story_extra_assigns} =
+      ExtraAssignsHelpers.handle_toggle_story_assign(assign_params, assigns.story_extra_assigns)
 
-        _ ->
-          raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
-      end
-
-    story_id =
-      if String.contains?(story_id, ":") do
-        [group_id, story_id] = String.split(story_id, ":")
-        {String.to_atom(group_id), String.to_atom(story_id)}
-      else
-        String.to_atom(story_id)
-      end
-
-    story_extra_assigns = Map.get(assigns.story_extra_assigns, story_id)
-    current_value = Map.get(story_extra_assigns, String.to_atom(assign))
-    story_extra_assigns = Map.put(story_extra_assigns, String.to_atom(assign), !current_value)
-
-    {:noreply,
-     assign(socket, :story_extra_assigns, %{
-       assigns.story_extra_assigns
-       | story_id => story_extra_assigns
-     })}
+    story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
+    {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
   end
 
   def handle_info({:playground_preview_pid, pid}, socket) do
@@ -385,10 +345,6 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
-
-  defp to_value("true"), do: true
-  defp to_value("false"), do: false
-  defp to_value(val), do: val
 
   defp patch_to(socket = %{assigns: assigns}, entry, params \\ %{}) do
     query =

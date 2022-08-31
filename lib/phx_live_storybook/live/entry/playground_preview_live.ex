@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   alias Phoenix.PubSub
   alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
@@ -99,41 +100,20 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   def handle_info(_, socket), do: {:noreply, socket}
 
   def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {assign, value} =
-      case String.split(assign_params, "/") do
-        [_story_id, assign, value] ->
-          {assign, value}
+    {_story_id, attrs} =
+      ExtraAssignsHelpers.handle_set_story_assign(assign_params, assigns.attrs, :flat)
 
-        _ ->
-          raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
-      end
-
-    attrs = Map.put(assigns.attrs, String.to_atom(assign), to_value(value))
     send_attributes(attrs)
-
     {:noreply, assign(socket, attrs: attrs)}
   end
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    assign =
-      case String.split(assign_params, "/") do
-        [_story_id, assign] ->
-          assign
+    {_story_id, attrs} =
+      ExtraAssignsHelpers.handle_toggle_story_assign(assign_params, assigns.attrs, :flat)
 
-        _ ->
-          raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
-      end
-
-    current_value = Map.get(assigns.attrs, String.to_atom(assign))
-    attrs = Map.put(assigns.attrs, String.to_atom(assign), !current_value)
     send_attributes(attrs)
-
     {:noreply, assign(socket, attrs: attrs)}
   end
-
-  defp to_value("true"), do: true
-  defp to_value("false"), do: false
-  defp to_value(val), do: val
 
   defp send_attributes(attributes) do
     PubSub.broadcast!(
