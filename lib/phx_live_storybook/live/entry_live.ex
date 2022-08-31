@@ -9,6 +9,7 @@ defmodule PhxLiveStorybook.EntryLive do
   def mount(_params, session, socket) do
     if connected?(socket) do
       PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
+      PubSub.subscribe(PhxLiveStorybook.PubSub, "event_logs")
     end
 
     {:ok,
@@ -280,6 +281,16 @@ defmodule PhxLiveStorybook.EntryLive do
   def handle_info({:playground_preview_pid, pid}, socket) do
     Process.monitor(pid)
     {:noreply, assign(socket, :playground_preview_pid, pid)}
+  end
+
+  def handle_info({:live_view_event, measurements, metadata}, socket) do
+    send_update(Playground, id: "playground", new_event: "#{inspect(metadata)}")
+    {:noreply, socket}
+  end
+
+  def handle_info({:live_component_event, measurements, metadata}, socket) do
+    send_update(Playground, id: "playground", new_event: "#{inspect(metadata)}")
+    {:noreply, socket}
   end
 
   def handle_info({:DOWN, _ref, :process, pid, reason}, socket)

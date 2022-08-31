@@ -8,6 +8,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
 
+  def mount(socket) do
+    {:ok, assign(socket, event_logs: [])}
+  end
+
+  def update(%{new_event: event}, socket) do
+    {:ok, update(socket, :event_logs, &[event, &1])}
+  end
+
   def update(assigns, socket) do
     {:ok,
      socket
@@ -79,7 +87,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     ~H"""
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-12 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
-        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}] do %>
+        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}, {:events, "Event Logs", "fad fa-book"}] do %>
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
@@ -138,6 +146,22 @@ defmodule PhxLiveStorybook.Entry.Playground do
           </button>
         </div>
       <% end %>
+    </div>
+    """
+  end
+
+  defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
+    ~H"""
+    <div id={playground_event_logs_id(@entry)} class="lsb lsb-flex lsb-flex-col lsb-mb-8">
+      <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
+        <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
+          <div class="lsb lsb-overflow-hidden lsb-shadow lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 md:lsb-rounded-lg">
+            <%= for log <- @event_logs do %>
+              <%= log %>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -256,6 +280,11 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp playground_preview_id(entry) do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
+  end
+
+  defp playground_event_logs_id(entry) do
+    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+    "#{module}-playground-event-logs"
   end
 
   defp type_badge(assigns = %{type: :string}) do
