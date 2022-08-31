@@ -157,8 +157,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
       assert [playground_preview_view] = live_children(view)
       playground_element = element(playground_preview_view, "#playground-preview-live")
-      html = render(playground_element)
-      assert html =~ "template_component: hello"
+      assert render(playground_element) =~ "template_component: hello"
 
       playground_preview_view |> element("#set-foo") |> render_click()
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -178,5 +177,40 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       playground_preview_view |> element("#set-status-false") |> render_click()
       assert render(playground_element) =~ "template_component: bar / status: false"
     end
+
+    test "playground form is in sync with component assigns", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
+      assert [playground_preview_view] = live_children(view)
+      playground_element = element(playground_preview_view, "#playground-preview-live")
+
+      assert render(playground_element) =~ "template_component: hello"
+      playground_preview_view |> element("#set-foo") |> render_click()
+      assert render(playground_element) =~ "template_component: foo / status: false"
+
+      form_selector = "#tree_storybook_template_component-playground-form"
+      form_label_selector = "#tree_storybook_template_component-playground-form_label"
+      form_toggle_selector = "#tree_storybook_template_component-playground-form_status"
+
+      assert get_element_attribute(view, form_label_selector, "value") == "foo"
+
+      view |> form(form_selector, %{playground: %{label: "bar"}}) |> render_change()
+      assert render(playground_element) =~ "template_component: bar / status: false"
+
+      playground_preview_view |> element("#toggle-status") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: true"
+
+      assert get_element_attribute(view, form_toggle_selector, "value") == "true"
+      view |> form(form_selector, %{playground: %{status: true}}) |> render_change()
+      assert render(playground_element) =~ "template_component: bar / status: true"
+    end
+  end
+
+  defp get_element_attribute(view, selector, attribute) do
+    view
+    |> element(selector)
+    |> render()
+    |> Floki.parse_fragment!()
+    |> Floki.attribute(attribute)
+    |> Enum.at(0)
   end
 end
