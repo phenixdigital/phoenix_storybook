@@ -28,8 +28,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
        block: story.block,
        slots: story.slots,
        parent_pid: session["parent_pid"],
-       theme: session["theme"],
-       extra_assigns: %{}
+       theme: session["theme"]
      ), layout: false}
   end
 
@@ -60,10 +59,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
       assign(
         assigns,
         id: @component_id,
-        component_assigns:
-          assigns.attrs
-          |> Map.merge(%{id: @component_id, theme: assigns.theme})
-          |> Map.merge(assigns.extra_assigns)
+        component_assigns: Map.merge(%{id: @component_id, theme: assigns.theme}, assigns.attrs)
       )
 
     ~H"""
@@ -116,9 +112,10 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
           raise "invalid set-story-assign syntax (should be set-story-assign/:story_id/:assign/:value)"
       end
 
-    extra_assigns = Map.put(assigns.extra_assigns, String.to_atom(assign), to_value(value))
+    attrs = Map.put(assigns.attrs, String.to_atom(assign), to_value(value))
+    send_attributes(attrs)
 
-    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+    {:noreply, assign(socket, attrs: attrs)}
   end
 
   def handle_event(
@@ -136,12 +133,21 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
       end
 
     current_value = Map.get(assigns.extra_assigns, String.to_atom(assign))
-    extra_assigns = Map.put(assigns.extra_assigns, String.to_atom(assign), !current_value)
+    attrs = Map.put(assigns.attrs, String.to_atom(assign), !current_value)
+    send_attributes(attrs)
 
-    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+    {:noreply, assign(socket, attrs: attrs)}
   end
 
   defp to_value("true"), do: true
   defp to_value("false"), do: false
   defp to_value(val), do: val
+
+  defp send_attributes(attributes) do
+    PubSub.broadcast!(
+      PhxLiveStorybook.PubSub,
+      "playground",
+      {:new_attributes, self(), attributes}
+    )
+  end
 end

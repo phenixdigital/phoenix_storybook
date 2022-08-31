@@ -343,6 +343,12 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, reason)}
   end
 
+  def handle_info({:new_attributes, pid, attrs}, socket = %{assigns: assigns})
+      when pid == assigns.playground_preview_pid do
+    send_update(Playground, id: "playground", new_attributes: attrs)
+    {:noreply, socket}
+  end
+
   def handle_info(_, socket), do: {:noreply, socket}
 
   defp to_value("true"), do: true

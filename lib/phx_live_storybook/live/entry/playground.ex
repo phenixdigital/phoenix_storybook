@@ -8,11 +8,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
 
+  @topic "playground"
+
   def update(assigns, socket) do
     {:ok,
      socket
      |> assign(assigns)
      |> assign_story_attributes()
+     |> assign_new_attributes(assigns)
      |> assign(upper_tab: :preview, lower_tab: :attributes)}
   end
 
@@ -48,6 +51,12 @@ defmodule PhxLiveStorybook.Entry.Playground do
       playground_slots: story.slots
     )
   end
+
+  defp assign_new_attributes(socket, _assigns = %{new_attributes: attrs}) do
+    assign(socket, playground_attrs: Map.merge(socket.assigns.playground_attrs, attrs))
+  end
+
+  defp assign_new_attributes(socket, _assigns), do: socket
 
   def render(assigns) do
     ~H"""
@@ -468,13 +477,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
       ) do
     playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
     send_attributes(playground_attrs)
-    {:noreply, assign(socket, :playground_attrs, playground_attrs)}
+
+    {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
 
   defp send_attributes(attributes) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
-      "playground",
+      @topic,
       {:new_attributes, self(), attributes}
     )
   end
