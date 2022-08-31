@@ -216,7 +216,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       |> with_target("#search-container")
       |> render_change("navigate", %{"path" => "/storybook/component"})
 
-      assert_patched(view, "/storybook/component")
+      assert_patch(view, "/storybook/component")
     end
   end
 end
