@@ -57,28 +57,28 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
   describe "empty playground" do
     test "with no stories, it does not crash", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/storybook/b_folder/ba_component?tab=playground")
-      assert html =~ "Ba Component"
+      {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
+      assert html =~ "Component"
     end
 
     test "with no attributes, it prints a placeholder", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/storybook/b_folder/ba_component?tab=playground")
+      {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
 
       assert html =~
-               ~r|<p>In order to use playground, you must define attributes in your.*Ba Component.*entry\.</p>|
+               ~r|<p>In order to use playground, you must define attributes in your.*Component.*entry\.</p>|
     end
   end
 
   describe "component with all kinds of data types" do
     test "it shows the component preview", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
 
       assert view |> element("#playground-preview-live") |> render() =~
                "all_types_component: default label"
     end
 
     test "it show the component code", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
 
       view |> element("a", "Code") |> render_click()
 
@@ -89,17 +89,17 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     end
 
     test "component can be updated with a toggle switch", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
       assert view |> element("#playground-preview-live") |> render() =~ "toggle: false"
       view |> element("button[role=switch]") |> render_click()
       assert view |> element("#playground-preview-live") |> render() =~ "toggle: true"
     end
 
     test "component can be updated by selecting an option", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
 
       view
-      |> form("#tree_storybook_b_folder_bb_component-playground-form", %{
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
         playground: %{option: "opt3"}
       })
       |> render_change()
@@ -108,12 +108,11 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     end
 
     test "required label is still defined in code when empty", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
-
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
       view |> element("a", "Code") |> render_click()
 
       view
-      |> form("#tree_storybook_b_folder_bb_component-playground-form", %{
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
         playground: %{label: ""}
       })
       |> render_change()
@@ -124,15 +123,15 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
   describe "live_component playground" do
     test "it shows the component preview", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_folder/ab_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/a_folder/live_component?tab=playground")
 
       html = view |> element("#playground-preview-live") |> render()
-      assert html =~ "b component: hello"
+      assert html =~ "component: hello"
       assert html =~ "inner block"
     end
 
     test "it shows the component code", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_folder/ab_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/a_folder/live_component?tab=playground")
       view |> element("a", "Code") |> render_click()
       assert view |> element("pre.highlight") |> render() =~ "hello"
     end
@@ -140,12 +139,11 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
   describe "component preview crash handling" do
     test "an error message is displayed when component crashes", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
-
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
       Process.flag(:trap_exit, true)
 
       view
-      |> form("#tree_storybook_b_folder_bb_component-playground-form", %{
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
         playground: %{label: "raise"}
       })
       |> render_change()

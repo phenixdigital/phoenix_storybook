@@ -26,7 +26,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
     {:ok, _view, html} =
       live_with_params(
         conn,
-        "/storybook/iframe/a_folder/aa_component",
+        "/storybook/iframe/a_folder/component",
         %{"story_id" => "group", "theme" => "colorful"}
       )
 
@@ -49,7 +49,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
     {:ok, _view, html} =
       live_with_params(
         conn,
-        "/storybook/iframe/a_folder/aa_component",
+        "/storybook/iframe/a_folder/component",
         %{"story_id" => "[group, hello]", "playground" => true}
       )
 

@@ -42,9 +42,9 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   end
 
   test "renders nested component entry from path", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/storybook/a_folder/aa_component")
-    assert html =~ "Aa Component"
-    assert html =~ "Aa component description"
+    {:ok, _view, html} = live(conn, "/storybook/a_folder/component")
+    assert html =~ "Component"
+    assert html =~ "component description"
   end
 
   test "renders component entry and navigate to source tab", %{conn: conn} do
@@ -110,34 +110,26 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   end
 
   test "navigate in sidebar", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/storybook/a_folder/aa_component")
+    {:ok, view, _html} = live(conn, "/storybook/a_folder/component")
 
-    assert view |> element("#sidebar a", "Live Component") |> render_click() =~
+    assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
              "live component description"
 
     # reaching items under "A folder" which is open by default (cf. config.exs)
-    assert view |> element("#sidebar a", "Aa Component") |> render_click() =~
-             "Aa component description"
-
-    assert view |> element("#sidebar a", "Ab Component") |> render_click() =~
-             "Ab component description"
+    assert view |> element("#sidebar a", "Live Component (a_folder)") |> render_click() =~
+             "Live component description"
 
     # B folder is closed, items inside are not visible
-    refute has_element?(view, "#sidebar a", "Ba Component")
-    refute has_element?(view, "#sidebar a", "Bb Component")
+    refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
 
     # opening "B folder" then reaching items inside
     element(view, "#sidebar div", "B folder") |> render_click()
 
-    assert view |> element("#sidebar a", "Ba Component") |> render_click() =~
-             "Ba component description"
-
-    assert view |> element("#sidebar a", "Bb Component") |> render_click() =~
-             "Bb component description"
+    assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
+             "All types component description"
 
     # closing "B folder"
     element(view, "#sidebar div", "B folder") |> render_click()
-    refute has_element?(view, "#sidebar a", "Ba Component")
-    refute has_element?(view, "#sidebar a", "Bb Component")
+    refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
   end
 end
