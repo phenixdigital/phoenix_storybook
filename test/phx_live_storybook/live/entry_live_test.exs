@@ -197,16 +197,16 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     test "filters the search list based on user input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_page")
 
-      assert has_element?(view, "#search-container a", "A Component")
-      assert has_element?(view, "#search-container a", "Ab Component")
+      assert has_element?(view, "#search-container a", "Component (root)")
+      assert has_element?(view, "#search-container a", "Live Component (root)")
+      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
 
       view
       |> with_target("#search-container")
-      |> render_change("search", %{"search" => %{"input" => "AComponent"}})
+      |> render_change("search", %{"search" => %{"input" => "Live"}})
 
-      assert has_element?(view, "#search-container a", "A Component")
-      assert has_element?(view, "#search-container a", "Ab Component")
-      refute has_element?(view, "#search-container a", "B Component")
+      assert has_element?(view, "#search-container a", "Live Component (root)")
+      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
     end
 
     test "navigates to a specified entry", %{conn: conn} do
@@ -214,9 +214,9 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
       view
       |> with_target("#search-container")
-      |> render_change("navigate", %{"path" => "/storybook/a_component"})
+      |> render_change("navigate", %{"path" => "/storybook/component"})
 
-      assert_patched(view, "/storybook/a_component")
+      assert_patched(view, "/storybook/component")
     end
   end
 end
