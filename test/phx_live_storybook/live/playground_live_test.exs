@@ -151,4 +151,32 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}
     end
   end
+
+  describe "template component in playground" do
+    test "component rendering is updated as template buttons are clicked", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
+      assert [playground_preview_view] = live_children(view)
+      playground_element = element(playground_preview_view, "#playground-preview-live")
+      html = render(playground_element)
+      assert html =~ "template_component: hello"
+
+      playground_preview_view |> element("#set-foo") |> render_click()
+      assert render(playground_element) =~ "template_component: foo / status: false"
+
+      playground_preview_view |> element("#set-bar") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: false"
+
+      playground_preview_view |> element("#toggle-status") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: true"
+
+      playground_preview_view |> element("#toggle-status") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: false"
+
+      playground_preview_view |> element("#set-status-true") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: true"
+
+      playground_preview_view |> element("#set-status-false") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: false"
+    end
+  end
 end

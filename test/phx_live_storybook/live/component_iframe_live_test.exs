@@ -11,49 +11,81 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
     {:ok, conn: build_conn()}
   end
 
-  test "it renders an entry with a story", %{conn: conn} do
-    {:ok, _view, html} =
-      live_with_params(
-        conn,
-        "/storybook/iframe/component",
-        %{"story_id" => "hello", "parent_pid" => inspect(self()), "theme" => "default"}
-      )
+  describe "story rendering" do
+    test "it renders an entry with a story", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/component",
+          %{"story_id" => "hello", "parent_pid" => inspect(self()), "theme" => "default"}
+        )
 
-    assert html =~ "component: hello"
+      assert html =~ "component: hello"
+    end
+
+    test "it renders an entry with a story group", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/a_folder/component",
+          %{"story_id" => "group", "theme" => "colorful"}
+        )
+
+      assert html =~ "component: hello"
+      assert html =~ "component: world"
+    end
+
+    test "story with a template", %{conn: conn} do
+      {:ok, view, html} =
+        live_with_params(conn, "/storybook/iframe/templates/template_iframe_component", %{
+          "story_id" => "hello",
+          "theme" => "default"
+        })
+
+      assert html =~ "template_component: hello / status: false"
+
+      view |> element("#set-foo") |> render_click()
+      assert render(view) =~ "template_component: foo / status: false"
+
+      view |> element("#set-bar") |> render_click()
+      assert render(view) =~ "template_component: bar / status: false"
+
+      view |> element("#toggle-status") |> render_click()
+      assert render(view) =~ "template_component: bar / status: true"
+
+      view |> element("#toggle-status") |> render_click()
+      assert render(view) =~ "template_component: bar / status: false"
+
+      view |> element("#set-status-true") |> render_click()
+      assert render(view) =~ "template_component: bar / status: true"
+
+      view |> element("#set-status-false") |> render_click()
+      assert render(view) =~ "template_component: bar / status: false"
+    end
   end
 
-  test "it renders an entry with a story group", %{conn: conn} do
-    {:ok, _view, html} =
-      live_with_params(
-        conn,
-        "/storybook/iframe/a_folder/component",
-        %{"story_id" => "group", "theme" => "colorful"}
-      )
+  describe "playground" do
+    test "it renders a playground with a story", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/component",
+          %{"story_id" => "hello", "playground" => true}
+        )
 
-    assert html =~ "component: hello"
-    assert html =~ "component: world"
-  end
+      assert html =~ "component: hello"
+    end
 
-  test "it renders a playground with a story", %{conn: conn} do
-    {:ok, _view, html} =
-      live_with_params(
-        conn,
-        "/storybook/iframe/component",
-        %{"story_id" => "hello", "playground" => true}
-      )
+    test "it renders a playground with a story group", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/a_folder/component",
+          %{"story_id" => "[group, hello]", "playground" => true}
+        )
 
-    assert html =~ "component: hello"
-  end
-
-  test "it renders a playground with a story group", %{conn: conn} do
-    {:ok, _view, html} =
-      live_with_params(
-        conn,
-        "/storybook/iframe/a_folder/component",
-        %{"story_id" => "[group, hello]", "playground" => true}
-      )
-
-    assert html =~ "component: hello"
+      assert html =~ "component: hello"
+    end
   end
 
   test "it raises with an unknow entry", %{conn: conn} do

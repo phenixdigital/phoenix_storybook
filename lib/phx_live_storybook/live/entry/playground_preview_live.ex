@@ -98,11 +98,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   def handle_info(_, socket), do: {:noreply, socket}
 
-  def handle_event(
-        "set-story-assign/" <> assign_params,
-        _,
-        socket = %{assigns: assigns}
-      ) do
+  def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {assign, value} =
       case String.split(assign_params, "/") do
         [_story_id, assign, value] ->
@@ -118,11 +114,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     {:noreply, assign(socket, attrs: attrs)}
   end
 
-  def handle_event(
-        "toggle-story-assign/" <> assign_params,
-        _,
-        socket = %{assigns: assigns}
-      ) do
+  def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     assign =
       case String.split(assign_params, "/") do
         [_story_id, assign] ->
@@ -132,7 +124,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
           raise "invalid toggle-story-assign syntax (should be toggle-story-assign/:story_id/:assign)"
       end
 
-    current_value = Map.get(assigns.extra_assigns, String.to_atom(assign))
+    current_value = Map.get(assigns.attrs, String.to_atom(assign))
     attrs = Map.put(assigns.attrs, String.to_atom(assign), !current_value)
     send_attributes(attrs)
 

@@ -47,7 +47,7 @@ defmodule PhxLiveStorybookTest do
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
       entries = TreeStorybook.entries()
-      assert Enum.count(entries) == 6
+      assert Enum.count(entries) == 7
 
       assert %PhxLiveStorybook.PageEntry{
                module_name: "APage",
