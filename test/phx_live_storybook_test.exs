@@ -69,12 +69,12 @@ defmodule PhxLiveStorybookTest do
              } = Enum.at(entries, 1)
 
       assert %PhxLiveStorybook.ComponentEntry{
-               module: Elixir.TreeStorybook.AComponent,
-               module_name: "AComponent",
+               module: Elixir.TreeStorybook.Component,
+               module_name: "Component",
                type: :component,
-               name: "A Component",
-               description: "a component description",
-               storybook_path: "/a_component",
+               name: "Component",
+               description: "component description",
+               storybook_path: "/component",
                attributes: [
                  %PhxLiveStorybook.Attr{
                    id: :label,
@@ -98,13 +98,13 @@ defmodule PhxLiveStorybookTest do
              } = Enum.at(entries, 2)
 
       assert %PhxLiveStorybook.ComponentEntry{
-               module: Elixir.TreeStorybook.BComponent,
-               module_name: "BComponent",
-               name: "B Component",
+               module: Elixir.TreeStorybook.LiveComponent,
+               module_name: "LiveComponent",
+               name: "Live Component",
                type: :live_component,
-               component: BComponent,
-               description: "b component description",
-               storybook_path: "/b_component",
+               component: LiveComponent,
+               description: "live component description",
+               storybook_path: "/live_component",
                stories: [
                  %PhxLiveStorybook.Story{
                    attributes: %{label: "hello"},
@@ -172,27 +172,27 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_story/2" do
-    alias Elixir.TreeStorybook.{AComponent, BComponent}
+    alias Elixir.TreeStorybook.{Component, LiveComponent}
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/story couple" do
-      assert TreeStorybook.render_story(AComponent, :hello) |> rendered_to_string() ==
-               "<span data-index=\"42\">a component: hello</span>"
+      assert TreeStorybook.render_story(Component, :hello) |> rendered_to_string() ==
+               "<span data-index=\"42\">component: hello</span>"
 
-      assert TreeStorybook.render_story(AComponent, :world) |> rendered_to_string() ==
-               "<span data-index=\"37\">a component: world</span>"
+      assert TreeStorybook.render_story(Component, :world) |> rendered_to_string() ==
+               "<span data-index=\"37\">component: world</span>"
 
       # I did not manage to assert against the HTML
-      assert [%Phoenix.LiveView.Component{id: "b_component-hello"}] =
-               TreeStorybook.render_story(BComponent, :hello).dynamic.([])
+      assert [%Phoenix.LiveView.Component{id: "live_component-hello"}] =
+               TreeStorybook.render_story(LiveComponent, :hello).dynamic.([])
 
-      assert [%Phoenix.LiveView.Component{id: "b_component-world"}] =
-               TreeStorybook.render_story(BComponent, :world).dynamic.([])
+      assert [%Phoenix.LiveView.Component{id: "live_component-world"}] =
+               TreeStorybook.render_story(LiveComponent, :world).dynamic.([])
     end
 
     test "it also works for a story group" do
       assert TreeStorybook.render_story(AaComponent, :group) |> rendered_to_string() ==
-               "<span data-index=\"42\">a component: hello</span>\n<span data-index=\"37\">a component: world</span>"
+               "<span data-index=\"42\">component: hello</span>\n<span data-index=\"37\">component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [
@@ -210,20 +210,20 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_code/2" do
-    alias Elixir.TreeStorybook.{AComponent, BComponent}
+    alias Elixir.TreeStorybook.{Component, LiveComponent}
     alias Elixir.TreeStorybook.AFolder.{AaComponent, AbComponent}
 
     test "it should return HEEX for each component/story couple" do
-      assert TreeStorybook.render_code(AComponent, :hello)
+      assert TreeStorybook.render_code(Component, :hello)
              |> rendered_to_string() =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(AComponent, :world)
+      assert TreeStorybook.render_code(Component, :world)
              |> rendered_to_string() =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(BComponent, :hello) |> rendered_to_string() =~
+      assert TreeStorybook.render_code(LiveComponent, :hello) |> rendered_to_string() =~
                ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(BComponent, :world) |> rendered_to_string() =~
+      assert TreeStorybook.render_code(LiveComponent, :world) |> rendered_to_string() =~
                ~r|<pre.*</pre>|s
     end
 
@@ -254,13 +254,13 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_source/1" do
-    alias Elixir.TreeStorybook.{AComponent, BComponent}
+    alias Elixir.TreeStorybook.{Component, LiveComponent}
 
     test "it should return HEEX for each component" do
-      assert TreeStorybook.render_source(AComponent) |> rendered_to_string() =~
+      assert TreeStorybook.render_source(Component) |> rendered_to_string() =~
                ~r/<pre.*Phoenix\.Component.*<\/pre>/s
 
-      assert TreeStorybook.render_source(BComponent) |> rendered_to_string() =~
+      assert TreeStorybook.render_source(LiveComponent) |> rendered_to_string() =~
                ~r/<pre.*Phoenix\.LiveComponent.*<\/pre>/s
     end
   end

@@ -13,45 +13,45 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
   describe "simple component with one field" do
     test "renders playground", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "a component: hello"
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
     end
 
     test "playground preview is updated as form is changed", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
 
       view
-      |> form("#tree_storybook_a_component-playground-form", %{playground: %{label: "world"}})
+      |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
-      assert view |> element("#playground-preview-live") |> render() =~ "a component: world"
+      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
 
     test "renders playground code a simple component", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       view |> element("a", "Code") |> render_click()
       assert view |> element("pre") |> render() =~ "hello"
     end
 
     test "playground code is updated as form is changed", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_component?tab=playground")
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       view |> element("a", "Code") |> render_click()
 
       view
-      |> form("#tree_storybook_a_component-playground-form", %{playground: %{label: "world"}})
+      |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
       assert view |> element("pre") |> render() =~ "world"
 
       view |> element("a", "Preview") |> render_click()
-      assert view |> element("#playground-preview-live") |> render() =~ "a component: world"
+      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
   end
 
   describe "component in an iframe" do
     test "renders the playground preview iframe", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/storybook/b_component?tab=playground")
-      assert html =~ ~S|<iframe id="tree_storybook_b_component-playground-preview"|
+      {:ok, _view, html} = live(conn, "/storybook/live_component?tab=playground")
+      assert html =~ ~S|<iframe id="tree_storybook_live_component-playground-preview"|
     end
   end
 
@@ -74,7 +74,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/bb_component?tab=playground")
 
       assert view |> element("#playground-preview-live") |> render() =~
-               "c component: default label"
+               "all_types_component: default label"
     end
 
     test "it show the component code", %{conn: conn} do
@@ -83,9 +83,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       view |> element("a", "Code") |> render_click()
 
       assert view |> element("#playground-preview-live") |> render() =~
-               "c component: default label"
+               "all_types_component: default label"
 
-      assert view |> element("pre.highlight") |> render() =~ ".c_component"
+      assert view |> element("pre.highlight") |> render() =~ ".all_types_component"
     end
 
     test "component can be updated with a toggle switch", %{conn: conn} do

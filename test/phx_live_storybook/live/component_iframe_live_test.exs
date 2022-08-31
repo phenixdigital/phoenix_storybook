@@ -15,11 +15,11 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
     {:ok, _view, html} =
       live_with_params(
         conn,
-        "/storybook/iframe/a_component",
+        "/storybook/iframe/component",
         %{"story_id" => "hello", "parent_pid" => inspect(self()), "theme" => "default"}
       )
 
-    assert html =~ "a component: hello"
+    assert html =~ "component: hello"
   end
 
   test "it renders an entry with a story group", %{conn: conn} do
@@ -30,19 +30,19 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
         %{"story_id" => "group", "theme" => "colorful"}
       )
 
-    assert html =~ "a component: hello"
-    assert html =~ "a component: world"
+    assert html =~ "component: hello"
+    assert html =~ "component: world"
   end
 
   test "it renders a playground with a story", %{conn: conn} do
     {:ok, _view, html} =
       live_with_params(
         conn,
-        "/storybook/iframe/a_component",
+        "/storybook/iframe/component",
         %{"story_id" => "hello", "playground" => true}
       )
 
-    assert html =~ "a component: hello"
+    assert html =~ "component: hello"
   end
 
   test "it renders a playground with a story group", %{conn: conn} do
@@ -53,7 +53,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
         %{"story_id" => "[group, hello]", "playground" => true}
       )
 
-    assert html =~ "a component: hello"
+    assert html =~ "component: hello"
   end
 
   test "it raises with an unknow entry", %{conn: conn} do

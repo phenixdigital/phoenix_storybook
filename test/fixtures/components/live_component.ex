@@ -1,4 +1,4 @@
-defmodule BComponent do
+defmodule LiveComponent do
   use Phoenix.LiveComponent
 
   def render(assigns) do

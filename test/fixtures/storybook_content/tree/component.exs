@@ -1,8 +1,8 @@
-defmodule TreeStorybook.AComponent do
+defmodule TreeStorybook.Component do
   use PhxLiveStorybook.Entry, :component
-  def function, do: &AComponent.a_component/1
+  def function, do: &Component.component/1
 
-  def description, do: "a component description"
+  def description, do: "component description"
 
   def attributes do
     [

@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   end
 
   test "embeds phx-socket information", %{conn: conn} do
-    assert get(conn, "/storybook/a_component") |> html_response(200) =~ ~s|phx-socket="/live"|
+    assert get(conn, "/storybook/component") |> html_response(200) =~ ~s|phx-socket="/live"|
   end
 
   test "home path redirects to first page", %{conn: conn} do
@@ -26,17 +26,17 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   end
 
   test "renders component entry from path", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/storybook/a_component")
-    assert html =~ "A Component"
-    assert html =~ "a component description"
+    {:ok, _view, html} = live(conn, "/storybook/component")
+    assert html =~ "Component"
+    assert html =~ "component description"
     assert html =~ "Hello story"
     assert html =~ "World story"
   end
 
   test "renders live component entry from path", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/storybook/b_component")
-    assert html =~ "B Component"
-    assert html =~ "b component description"
+    {:ok, _view, html} = live(conn, "/storybook/live_component")
+    assert html =~ "Live Component"
+    assert html =~ "live component description"
     assert html =~ "Hello story"
     assert html =~ "World"
   end
@@ -48,42 +48,42 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   end
 
   test "renders component entry and navigate to source tab", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/storybook/a_component")
+    {:ok, view, _html} = live(conn, "/storybook/component")
 
     html = view |> element("a", "Source") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=source&theme=default")
+    assert_patched(view, "/storybook/component?tab=source&theme=default")
     assert html =~ "defmodule"
   end
 
   test "renders component, change theme and navigate", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/storybook/a_component")
+    {:ok, view, _html} = live(conn, "/storybook/component")
     pid = view.pid
 
     view |> element("a.lsb-theme", "Colorful") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=stories&theme=colorful")
+    assert_patched(view, "/storybook/component?tab=stories&theme=colorful")
 
     view |> element("a", "Source") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=source&theme=colorful")
+    assert_patched(view, "/storybook/component?tab=source&theme=colorful")
 
     html = view |> element("a", "Playground") |> render_click()
-    assert_patched(view, "/storybook/a_component?tab=playground&theme=colorful")
-    assert html =~ "a component: hello colorful"
+    assert_patched(view, "/storybook/component?tab=playground&theme=colorful")
+    assert html =~ "component: hello colorful"
 
     Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
     view |> element("a.lsb-theme", "Default") |> render_click()
     assert_receive {:new_theme, ^pid, :default}
-    assert render(view) =~ "a component: hello default"
+    assert render(view) =~ "component: hello default"
   end
 
   test "renders component entry and navigate to source tab with select", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/storybook/a_component")
+    {:ok, view, _html} = live(conn, "/storybook/component")
 
     html =
       view
       |> element(".entry-nav-form select")
       |> render_change(%{navigation: %{tab: "source"}})
 
-    assert_patched(view, "/storybook/a_component?tab=source&theme=default")
+    assert_patched(view, "/storybook/component?tab=source&theme=default")
     assert html =~ "defmodule"
   end
 
@@ -105,15 +105,15 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
   test "navigate to unknown tab", %{conn: conn} do
     assert_raise PhxLiveStorybook.EntryTabNotFound, fn ->
-      get(conn, "/storybook/a_component", tab: "unknown")
+      get(conn, "/storybook/component", tab: "unknown")
     end
   end
 
   test "navigate in sidebar", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/storybook/a_folder/aa_component")
 
-    assert view |> element("#sidebar a", "A Component") |> render_click() =~
-             "a component description"
+    assert view |> element("#sidebar a", "Live Component") |> render_click() =~
+             "live component description"
 
     # reaching items under "A folder" which is open by default (cf. config.exs)
     assert view |> element("#sidebar a", "Aa Component") |> render_click() =~
