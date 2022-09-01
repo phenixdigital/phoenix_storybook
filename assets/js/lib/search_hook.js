@@ -157,3 +157,4 @@ export const SearchHook = {
     this.pushEventTo("#search-container", "search", { search: { input: "" } });
   },
 };
+
