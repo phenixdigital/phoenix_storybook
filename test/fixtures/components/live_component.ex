@@ -5,7 +5,9 @@ defmodule LiveComponent do
     ~H"""
     <span>
       b component: <%= @label %>
-      <%= render_block(@inner_block) %>
+      <%= if assigns[:inner_block] do %>
+        <%= render_block(@inner_block) %>
+      <% end %>
     </span>
     """
   end
