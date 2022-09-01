@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.SearchHelper do
+defmodule PhxLiveStorybook.SearchHelpers do
   @moduledoc false
   # Credits to https://github.com/tajmone/fuzzy-search/tree/master/fts_fuzzy_match/0.2.0/elixir
 
@@ -19,12 +19,20 @@ defmodule PhxLiveStorybook.SearchHelper do
   # penalty for every letter that doesn't matter
   @unmatched_letter_penalty -1
 
-  def search(pat, str) do
+  def search_by(pattern, list, key) when is_list(list) do
+    list
+    |> Enum.map(&{&1, search(pattern, Map.get(&1, key))})
+    |> Enum.filter(fn {_item, {match?, _score, _matches}} -> match? end)
+    |> Enum.sort_by(fn {_item, {_match?, score, _matches}} -> score end, :desc)
+    |> Enum.map(fn {item, {_match?, _score, _matches}} -> item end)
+  end
+
+  def search(pattern, str) when is_binary(str) do
     _search(
-      pat |> String.codepoints(),
-      str |> String.codepoints(),
+      String.codepoints(pattern),
+      String.codepoints(str),
       0,
-      str |> String.codepoints(),
+      String.codepoints(str),
       1,
       nil
     )
@@ -46,26 +54,17 @@ defmodule PhxLiveStorybook.SearchHelper do
 
   defp _search(pat, str, score, str_begin, rec_count, src_matches) do
     state = %{
-      # rec_match
       rec_match: false,
-      # best_rec_matches
       best_rec_matches: [],
-      # best_rec_score
       best_rec_score: 0,
-      # first_match
       first_match: true,
-      # matches
       matches: [],
-      # src_matches
       src_matches: src_matches
     }
 
     case _while(state, pat, str, str_begin, rec_count) do
-      {:ok, state, pat} ->
-        _calculate_score(state, str_begin, pat, score)
-
-      false ->
-        {false, score, []}
+      {:ok, state, pat} -> _calculate_score(state, str_begin, pat, score)
+      false -> {false, score, []}
     end
   end
 

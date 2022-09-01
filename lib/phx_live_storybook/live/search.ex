@@ -4,7 +4,7 @@ defmodule PhxLiveStorybook.Search do
 
   alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.LayoutView
-  alias PhxLiveStorybook.SearchHelper
+  alias PhxLiveStorybook.SearchHelpers
 
   def mount(socket) do
     {:ok, socket}
@@ -31,12 +31,7 @@ defmodule PhxLiveStorybook.Search do
   end
 
   def handle_event("search", %{"search" => %{"input" => input}}, socket) do
-    entries =
-      Enum.filter(
-        socket.assigns.all_entries,
-        &(SearchHelper.search(input, &1.storybook_path) |> elem(0))
-      )
-
+    entries = SearchHelpers.search_by(input, socket.assigns.all_entries, :storybook_path)
     {:noreply, assign(socket, :entries, entries)}
   end
 
@@ -69,7 +64,7 @@ defmodule PhxLiveStorybook.Search do
 
           <ul id="search-list" class="lsb lsb-max-h-72 lsb-scroll-py-2 lsb-divide-y lsb-divide-gray-200 lsb-overflow-y-auto lsb-pb-2 lsb-text-sm lsb-text-gray-800">
             <%= for {entry, i} <- Enum.with_index(@entries) do %>
-              <% entry_path =  @root_path <> entry.storybook_path %>
+              <% entry_path = @root_path <> entry.storybook_path %>
 
               <li
                 id={"entry-#{i}"}

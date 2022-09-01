@@ -1,19 +1,19 @@
 defmodule PhxLiveStorybook.AssetHelpersTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.AssetHelpers
+  import PhxLiveStorybook.AssetHelpers
 
   describe "parse_manifest/2" do
     test "it parses a valid manifest" do
       path = manifest_path("cache_manifest.json")
-      assert is_map(AssetHelpers.parse_manifest(path, :prod))
+      assert is_map(parse_manifest(path, :prod))
     end
 
     test "it raises when path is invalid" do
       path = manifest_path("unknown.json")
 
       assert_raise RuntimeError, "cannot read manifest #{path}", fn ->
-        AssetHelpers.parse_manifest(path, :prod)
+        parse_manifest(path, :prod)
       end
     end
 
@@ -21,34 +21,34 @@ defmodule PhxLiveStorybook.AssetHelpersTest do
       path = manifest_path("corrupted_manifest.json")
 
       assert_raise RuntimeError, "cannot read manifest #{path}", fn ->
-        AssetHelpers.parse_manifest(path, :prod)
+        parse_manifest(path, :prod)
       end
     end
 
     test "it returns nil when not in production" do
       path = manifest_path("cache_manifest.json")
-      assert is_nil(AssetHelpers.parse_manifest(path, :dev))
+      assert is_nil(parse_manifest(path, :dev))
     end
   end
 
   describe "asset_file_name/3" do
     setup do
-      {:ok, manifest: manifest_path("cache_manifest.json") |> AssetHelpers.parse_manifest(:prod)}
+      {:ok, manifest: manifest_path("cache_manifest.json") |> parse_manifest(:prod)}
     end
 
     test "it returns fingerprinted asset name", %{manifest: manifest} do
-      assert AssetHelpers.asset_file_name(manifest, "js/app.js", :prod) ==
+      assert asset_file_name(manifest, "js/app.js", :prod) ==
                "js/app-95f46e7cf239d376ab8ff27958ffab1a.js"
     end
 
     test "it raises nil with wrong asset", %{manifest: manifest} do
       assert_raise RuntimeError, "cannot find asset js/wrong.js in manifest", fn ->
-        AssetHelpers.asset_file_name(manifest, "js/wrong.js", :prod)
+        asset_file_name(manifest, "js/wrong.js", :prod)
       end
     end
 
     test "it returns nil when not in production", %{manifest: manifest} do
-      assert is_nil(AssetHelpers.asset_file_name(manifest, "js/app.js", :dev))
+      assert is_nil(asset_file_name(manifest, "js/app.js", :dev))
     end
   end
 
