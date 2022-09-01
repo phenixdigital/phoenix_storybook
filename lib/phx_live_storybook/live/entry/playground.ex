@@ -220,11 +220,13 @@ defmodule PhxLiveStorybook.Entry.Playground do
                     </td>
                     <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                   </tr>
-                  <tr class="lsb !lsb-border-t-0">
-                    <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
-                      <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
-                    </td>
-                  </tr>
+                  <%= if block_or_slot(assigns, attr) do %>
+                    <tr class="lsb !lsb-border-t-0">
+                      <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
+                        <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
+                      </td>
+                    </tr>
+                  <% end %>
                 <% end %>
               </tbody>
             </table>
