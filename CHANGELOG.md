@@ -4,9 +4,11 @@
 
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
+- feature: templates. You can provide HTML templates to render stories, which can help with modals, slide-overs... (see this [guide](guides/components.md) for more details)
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
 - documentation: new [`theming.md`](guides/theming.md) guide.
+- documentation: new [`components.md`](guides/components.md) guide.
 
 ## v0.3.0 (2022-08-18)
 
