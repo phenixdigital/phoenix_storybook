@@ -24,7 +24,16 @@ defmodule PhxLiveStorybook.SearchHelpersTest do
   describe "search_by/3" do
     test "simple search" do
       assert [%{t: "abc"}, %{t: "addbc"}] =
-               search_by("ab", [%{t: "addbc"}, %{t: "abc"}, %{t: "xy"}], :t)
+               search_by("ab", [%{t: "addbc"}, %{t: "abc"}, %{t: "xy"}], [:t])
+    end
+
+    test "multi-key search" do
+      assert [%{t: "abc", n: "Wahou"}, %{t: "awaha", n: "bar"}] =
+               search_by(
+                 "wah",
+                 [%{t: "abc", n: "Wahou"}, %{t: "addbc", n: "foo"}, %{t: "awaha", n: "bar"}],
+                 [:t, :n]
+               )
     end
   end
 end

@@ -19,12 +19,21 @@ defmodule PhxLiveStorybook.SearchHelpers do
   # penalty for every letter that doesn't matter
   @unmatched_letter_penalty -1
 
-  def search_by(pattern, list, key) when is_list(list) do
+  def search_by(pattern, list, keys) when is_list(list) do
     list
-    |> Enum.map(&{&1, search(pattern, Map.get(&1, key))})
-    |> Enum.filter(fn {_item, {match?, _score, _matches}} -> match? end)
-    |> Enum.sort_by(fn {_item, {_match?, score, _matches}} -> score end, :desc)
-    |> Enum.map(fn {item, {_match?, _score, _matches}} -> item end)
+    |> Enum.map(fn item ->
+      {match?, score} =
+        for key <- keys, reduce: {false, 0} do
+          {match_acc?, score_acc} ->
+            {match?, score, _} = search(pattern, Map.get(item, key))
+            {match_acc? or match?, max(score, score_acc)}
+        end
+
+      {item, match?, score}
+    end)
+    |> Enum.filter(fn {_item, match?, _score} -> match? end)
+    |> Enum.sort_by(fn {_item, _match?, score} -> score end, :desc)
+    |> Enum.map(fn {item, _match?, _score} -> item end)
   end
 
   def search(pattern, str) when is_binary(str) do

@@ -221,8 +221,25 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
       view
       |> with_target("#search-container")
-      |> render_change("search", %{"search" => %{"input" => "Live"}})
+      |> render_change("search", %{"search" => %{"input" => "a_folder"}})
 
+      refute has_element?(view, "#search-container a", "Component (root)")
+      refute has_element?(view, "#search-container a", "Live Component (root)")
+      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+    end
+
+    test "returns everything on blank input", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/a_page")
+
+      assert has_element?(view, "#search-container a", "Component (root)")
+      assert has_element?(view, "#search-container a", "Live Component (root)")
+      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+
+      view
+      |> with_target("#search-container")
+      |> render_change("search", %{"search" => %{"input" => ""}})
+
+      assert has_element?(view, "#search-container a", "Component (root)")
       assert has_element?(view, "#search-container a", "Live Component (root)")
       assert has_element?(view, "#search-container a", "Live Component (a_folder)")
     end
