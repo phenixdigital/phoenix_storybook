@@ -101,7 +101,12 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {_story_id, attrs} =
-      ExtraAssignsHelpers.handle_set_story_assign(assign_params, assigns.attrs, :flat)
+      ExtraAssignsHelpers.handle_set_story_assign(
+        assign_params,
+        assigns.attrs,
+        assigns.entry,
+        :flat
+      )
 
     send_attributes(attrs)
     {:noreply, assign(socket, attrs: attrs)}
@@ -109,7 +114,12 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {_story_id, attrs} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(assign_params, assigns.attrs, :flat)
+      ExtraAssignsHelpers.handle_toggle_story_assign(
+        assign_params,
+        assigns.attrs,
+        assigns.entry,
+        :flat
+      )
 
     send_attributes(attrs)
     {:noreply, assign(socket, attrs: attrs)}

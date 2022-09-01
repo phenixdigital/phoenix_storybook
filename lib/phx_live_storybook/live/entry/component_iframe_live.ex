@@ -93,14 +93,24 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
 
   def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {_story_id, extra_assigns} =
-      ExtraAssignsHelpers.handle_set_story_assign(assign_params, assigns.extra_assigns, :flat)
+      ExtraAssignsHelpers.handle_set_story_assign(
+        assign_params,
+        assigns.extra_assigns,
+        assigns.entry,
+        :flat
+      )
 
     {:noreply, assign(socket, extra_assigns: extra_assigns)}
   end
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {_story_id, extra_assigns} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(assign_params, assigns.extra_assigns, :flat)
+      ExtraAssignsHelpers.handle_toggle_story_assign(
+        assign_params,
+        assigns.extra_assigns,
+        assigns.entry,
+        :flat
+      )
 
     {:noreply, assign(socket, extra_assigns: extra_assigns)}
   end

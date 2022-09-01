@@ -314,7 +314,11 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {story_id, story_extra_assigns} =
-      ExtraAssignsHelpers.handle_set_story_assign(assign_params, assigns.story_extra_assigns)
+      ExtraAssignsHelpers.handle_set_story_assign(
+        assign_params,
+        assigns.story_extra_assigns,
+        assigns.entry
+      )
 
     story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
     {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
@@ -322,7 +326,11 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
     {story_id, story_extra_assigns} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(assign_params, assigns.story_extra_assigns)
+      ExtraAssignsHelpers.handle_toggle_story_assign(
+        assign_params,
+        assigns.story_extra_assigns,
+        assigns.entry
+      )
 
     story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
     {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
