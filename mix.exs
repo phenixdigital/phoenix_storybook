@@ -81,13 +81,17 @@ defmodule PhxLiveStorybook.MixProject do
 
   defp aliases do
     [
+      coverage: "coveralls.lcov",
       "assets.watch": "cmd npm run watch --prefix assets",
       "assets.build": [
         "cmd npm run build --prefix assets",
         "phx.digest",
         "phx.digest.clean"
       ],
-      coverage: "coveralls.lcov"
+      publish: [
+        "assets.build",
+        "hex.publish"
+      ]
     ]
   end
 end
