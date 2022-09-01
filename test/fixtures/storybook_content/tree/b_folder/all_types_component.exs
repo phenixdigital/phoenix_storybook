@@ -1,8 +1,8 @@
-defmodule TreeStorybook.BFolder.BbComponent do
+defmodule TreeStorybook.BFolder.AllTypesComponent do
   use PhxLiveStorybook.Entry, :component
-  def function, do: &CComponent.c_component/1
-
-  def description, do: "Bb component description"
+  def function, do: &AllTypesComponent.all_types_component/1
+  def name, do: "AllTypesComponent (b_folder)"
+  def description, do: "All types component description"
 
   def attributes do
     [

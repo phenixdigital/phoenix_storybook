@@ -1,8 +1,9 @@
-defmodule TreeStorybook.BComponent do
+defmodule TreeStorybook.LiveComponent do
   use PhxLiveStorybook.Entry, :live_component
-  def component, do: BComponent
+  def component, do: LiveComponent
 
-  def description, do: "b component description"
+  def name, do: "Live Component (root)"
+  def description, do: "live component description"
   def container, do: :iframe
 
   def stories do

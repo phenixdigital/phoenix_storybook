@@ -2,10 +2,12 @@ defmodule PhxLiveStorybook.EntryLive do
   use PhxLiveStorybook.Web, :live_view
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhxLiveStorybook.{ComponentEntry, PageEntry, Story, StoryGroup}
+  alias PhxLiveStorybook.{ComponentEntry, PageEntry}
   alias PhxLiveStorybook.Entry.Playground
+  alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
   alias PhxLiveStorybook.LayoutView
+  alias PhxLiveStorybook.{Story, StoryGroup}
 
   @topic "playground"
 
@@ -43,6 +45,7 @@ defmodule PhxLiveStorybook.EntryLive do
            page_title: entry.name,
            tab: current_tab(params, entry),
            theme: current_theme(params, socket),
+           story_extra_assigns: init_story_extra_assigns(entry),
            playground_error: nil
          )
          |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
@@ -86,6 +89,17 @@ defmodule PhxLiveStorybook.EntryLive do
       [{theme, _} | _] -> theme
     end
   end
+
+  defp init_story_extra_assigns(%ComponentEntry{stories: stories}) do
+    extra_assigns = for %Story{id: story_id} <- stories, into: %{}, do: {story_id, %{}}
+
+    for %StoryGroup{id: group_id, stories: stories} <- stories,
+        %Story{id: story_id} <- stories,
+        into: extra_assigns,
+        do: {{group_id, story_id}, %{}}
+  end
+
+  defp init_story_extra_assigns(_), do: nil
 
   def render(assigns = %{entry: _entry}) do
     ~H"""
@@ -173,7 +187,8 @@ defmodule PhxLiveStorybook.EntryLive do
   defp render_content(%ComponentEntry{}, assigns = %{tab: :stories}) do
     ~H"""
     <div class="lsb lsb-space-y-12 lsb-pb-12">
-      <%= for story = %{id: story_id, description: description} when is_struct(story, Story) or is_struct(story, StoryGroup) <- @entry.stories() do %>
+      <%= for story = %{id: story_id, description: description} <- @entry.stories(),
+              story_extra_assigns = story_extra_assigns(story, assigns) do %>
         <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Story description -->
@@ -201,7 +216,7 @@ defmodule PhxLiveStorybook.EntryLive do
               />
             <% else %>
               <div class={LayoutView.sandbox_class(assigns)}>
-                <%= @backend_module.render_story(@entry.module(), story_id, @theme) %>
+                <%= @backend_module.render_story(@entry.module(), story_id, story_extra_assigns) %>
               </div>
             <% end %>
           </div>
@@ -250,6 +265,19 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
+  defp story_extra_assigns(%Story{id: story_id}, assigns) do
+    assigns.story_extra_assigns
+    |> Map.get(story_id, %{})
+    |> Map.put(:theme, assigns.theme)
+  end
+
+  defp story_extra_assigns(%StoryGroup{id: group_id}, assigns) do
+    for {{^group_id, story_id}, extra_assigns} <- assigns.story_extra_assigns, into: %{} do
+      {story_id, Map.merge(extra_assigns, %{id: "#{group_id}-#{story_id}", theme: assigns.theme})}
+    end
+    |> Map.put(:theme, assigns.theme)
+  end
+
   defp default_story(%ComponentEntry{stories: [story | _]}), do: story
   defp default_story(_), do: nil
 
@@ -284,14 +312,44 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, nil)}
   end
 
+  def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+    {story_id, story_extra_assigns} =
+      ExtraAssignsHelpers.handle_set_story_assign(
+        assign_params,
+        assigns.story_extra_assigns,
+        assigns.entry
+      )
+
+    story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
+    {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
+  end
+
+  def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+    {story_id, story_extra_assigns} =
+      ExtraAssignsHelpers.handle_toggle_story_assign(
+        assign_params,
+        assigns.story_extra_assigns,
+        assigns.entry
+      )
+
+    story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
+    {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
+  end
+
   def handle_info({:playground_preview_pid, pid}, socket) do
     Process.monitor(pid)
     {:noreply, assign(socket, :playground_preview_pid, pid)}
   end
 
-  def handle_info({:DOWN, _ref, :process, pid, reason = {:undef, _}}, socket)
+  def handle_info({:DOWN, _ref, :process, pid, reason}, socket)
       when socket.assigns.playground_preview_pid == pid do
     {:noreply, assign(socket, :playground_error, reason)}
+  end
+
+  def handle_info({:new_attributes, pid, attrs}, socket = %{assigns: assigns})
+      when pid == assigns.playground_preview_pid do
+    send_update(Playground, id: "playground", new_attributes: attrs)
+    {:noreply, socket}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}

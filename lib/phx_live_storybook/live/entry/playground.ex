@@ -8,11 +8,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
 
+  @topic "playground"
+
   def update(assigns, socket) do
     {:ok,
      socket
      |> assign(assigns)
      |> assign_story_attributes()
+     |> assign_new_attributes(assigns)
      |> assign(upper_tab: :preview, lower_tab: :attributes)}
   end
 
@@ -48,6 +51,15 @@ defmodule PhxLiveStorybook.Entry.Playground do
       playground_slots: story.slots
     )
   end
+
+  # new_attributes may be passed by parent (LiveView) send_update.
+  # It happens whenever parent is notified some component assign has been
+  # updated by the component itself.
+  defp assign_new_attributes(socket, _assigns = %{new_attributes: attrs}) do
+    assign(socket, playground_attrs: Map.merge(socket.assigns.playground_attrs, attrs))
+  end
+
+  defp assign_new_attributes(socket, _assigns), do: socket
 
   def render(assigns) do
     ~H"""
@@ -109,16 +121,16 @@ defmodule PhxLiveStorybook.Entry.Playground do
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
           />
         <% else %>
-          <%= live_render @socket, PlaygroundPreviewLive,
-            id: playground_preview_id(@entry),
-            session: %{
-              "entry_path" => @entry_path,
-              "story_id" => @story_id,
-              "theme" => @theme,
-              "backend_module" => to_string(@backend_module),
-              "parent_pid" => self()
-            }
-          %>
+        <%= live_render @socket, PlaygroundPreviewLive,
+        id: playground_preview_id(@entry),
+        session: %{
+          "entry_path" => @entry_path,
+          "story_id" => @story_id,
+          "theme" => @theme,
+          "backend_module" => to_string(@backend_module),
+          "parent_pid" => self()
+        }
+      %>
         <% end %>
       </div>
       <%= if @upper_tab == :code do %>
@@ -324,107 +336,64 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp type_label(type), do: Macro.to_string(type)
 
-  defp attr_input(
-         assigns = %{
-           form: f,
-           attr_id: attr_id,
-           type: :boolean,
-           playground_attrs: playground_attrs
-         }
-       ) do
-    value = Map.get(playground_attrs, attr_id)
-    bg_class = if value, do: "lsb-bg-indigo-600", else: "lsb-bg-gray-200"
-    translate_class = if value, do: "lsb-translate-x-5", else: "lsb-translate-x-0"
+  defp attr_input(assigns = %{type: :boolean}) do
+    value = Map.get(assigns.playground_attrs, assigns.attr_id, false)
+
+    assigns =
+      assign(assigns,
+        value: value,
+        bg_class: if(value, do: "lsb-bg-indigo-600", else: "lsb-bg-gray-200"),
+        translate_class: if(value, do: "lsb-translate-x-5", else: "lsb-translate-x-0")
+      )
 
     ~H"""
-    <button type="button" phx-click={on_toggle_click(f, attr_id, value)} class={"lsb #{bg_class} lsb-relative lsb-inline-flex lsb-flex-shrink-0 lsb-p-0 lsb-h-6 lsb-w-11 lsb-border-2 lsb-border-transparent lsb-rounded-full lsb-cursor-pointer lsb-transition-colors lsb-ease-in-out lsb-duration-200 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-indigo-500"} phx-target={@myself} role="switch">
-      <%= hidden_input(f, attr_id, value: value) %>
-      <span class={"lsb #{translate_class} lsb-form-input lsb-p-0 lsb-border-0 lsb-pointer-events-none lsb-inline-block lsb-h-5 lsb-w-5 lsb-rounded-full lsb-bg-white lsb-shadow lsb-transform lsb-ring-0 lsb-transition lsb-ease-in-out lsb-duration-200"}></span>
+    <button type="button" phx-click={on_toggle_click(@attr_id, @value)} class={"lsb #{@bg_class} lsb-relative lsb-inline-flex lsb-flex-shrink-0 lsb-p-0 lsb-h-6 lsb-w-11 lsb-border-2 lsb-border-transparent lsb-rounded-full lsb-cursor-pointer lsb-transition-colors lsb-ease-in-out lsb-duration-200 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-indigo-500"} phx-target={@myself} role="switch">
+      <%= hidden_input(@form, @attr_id, value: "#{@value}") %>
+      <span class={"lsb #{@translate_class} lsb-form-input lsb-p-0 lsb-border-0 lsb-pointer-events-none lsb-inline-block lsb-h-5 lsb-w-5 lsb-rounded-full lsb-bg-white lsb-shadow lsb-transform lsb-ring-0 lsb-transition lsb-ease-in-out lsb-duration-200"}></span>
     </button>
     """
   end
 
-  defp attr_input(
-         assigns = %{
-           form: f,
-           attr_id: attr_id,
-           type: type,
-           options: nil,
-           playground_attrs: playground_attrs
-         }
-       )
-       when type in [:integer, :float] do
-    step = if type == :integer, do: 1, else: 0.01
+  defp attr_input(assigns = %{type: type, options: nil}) when type in [:integer, :float] do
+    assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
-    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), step: step, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id, value: Map.get(@playground_attrs, @attr_id), step: @step, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(
-         assigns = %{
-           form: f,
-           attr_id: attr_id,
-           type: :integer,
-           options: min..max,
-           playground_attrs: playground_attrs
-         }
-       ) do
+  defp attr_input(assigns = %{type: :integer, options: min..max}) do
     ~H"""
-    <%= number_input(f, attr_id, value: Map.get(playground_attrs, attr_id), min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id, value: Map.get(@playground_attrs, @attr_id), min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(
-         assigns = %{
-           form: f,
-           attr_id: attr_id,
-           type: :string,
-           options: nil,
-           playground_attrs: playground_attrs
-         }
-       ) do
+  defp attr_input(assigns = %{type: :string, options: nil}) do
     ~H"""
-    <%= text_input(f, attr_id, value: Map.get(playground_attrs, attr_id), class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(@form, @attr_id, value: Map.get(@playground_attrs, @attr_id), class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(
-         assigns = %{
-           form: f,
-           attr_id: attr_id,
-           type: _type,
-           options: nil,
-           playground_attrs: playground_attrs
-         }
-       ) do
-    value = Map.get(playground_attrs, attr_id)
-    value = if is_nil(value), do: "", else: inspect(value)
+  defp attr_input(assigns = %{type: _type, options: nil}) do
+    value = Map.get(assigns.playground_attrs, assigns.attr_id)
+    assigns = assign(assigns, value: if(is_nil(value), do: "", else: inspect(value)))
 
     ~H"""
-    <%= text_input(f, attr_id, value: value, disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(@form, @attr_id, value: @value, disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(
-         assigns = %{
-           form: f,
-           attr_id: attr_id,
-           options: options,
-           playground_attrs: playground_attrs
-         }
-       ) do
-    options = [nil | Enum.map(options, &to_string/1)]
+  defp attr_input(assigns = %{options: options}) when not is_nil(options) do
+    assigns = assign(assigns, options: [nil | Enum.map(assigns.options, &to_string/1)])
 
     ~H"""
-    <%= select(f, attr_id, options, value: Map.get(playground_attrs, attr_id),
+    <%= select(@form, @attr_id, @options, value: Map.get(@playground_attrs, @attr_id),
       class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
     """
   end
 
-  defp on_toggle_click(form, attr_id, value) do
-    JS.set_attribute({"value", to_string(!value)}, to: "##{form.id}_#{attr_id}")
-    |> JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
+  defp on_toggle_click(attr_id, value) do
+    JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
   end
 
   defp fun_or_component(%ComponentEntry{type: :live_component, component: component}),
@@ -468,13 +437,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
       ) do
     playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
     send_attributes(playground_attrs)
-    {:noreply, assign(socket, :playground_attrs, playground_attrs)}
+
+    {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
 
   defp send_attributes(attributes) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
-      "playground",
+      @topic,
       {:new_attributes, self(), attributes}
     )
   end

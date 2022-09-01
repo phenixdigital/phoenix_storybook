@@ -26,8 +26,8 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 6 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 6
+      # test sidebar has 7 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 7
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -44,8 +44,8 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 5 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 6
+      # test sidebar has 7 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 7
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -58,7 +58,7 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar with a path has active entry marked as active" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test 1th entry in 1st folder is active (font-bold class)
       [{"div", [{"class", link_class} | _], _}] =
@@ -68,7 +68,7 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar with an icon folder is well displayed" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test 1st folder has 2 icons
       [
@@ -81,7 +81,7 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar folder names are well displayed" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test default folder name (properly humanized)
       [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")

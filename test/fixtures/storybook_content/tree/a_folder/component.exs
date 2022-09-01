@@ -1,8 +1,9 @@
-defmodule TreeStorybook.AFolder.AaComponent do
+defmodule TreeStorybook.AFolder.Component do
   use PhxLiveStorybook.Entry, :component
-  def function, do: &AComponent.a_component/1
+  def function, do: &Component.component/1
   def icon, do: "aa-icon"
 
+  def name, do: "Component (a_folder)"
   def description, do: "Aa component description"
 
   def stories do

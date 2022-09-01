@@ -162,6 +162,8 @@ defmodule MyAppWeb.Storybook.Components.Button do
 end
 ```
 
+ℹ️ Learn more on components in the [components guide](guides/components.md).
+
 ### Configuration
 
 Of all config settings, only the `:content_path` key is mandatory.

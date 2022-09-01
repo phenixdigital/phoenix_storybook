@@ -1,11 +1,11 @@
-defmodule CComponent do
+defmodule AllTypesComponent do
   use Phoenix.Component
 
   defmodule Struct do
     defstruct [:name]
   end
 
-  def c_component(assigns) do
+  def all_types_component(assigns) do
     assigns =
       assigns
       |> assign_new(:label, fn -> "" end)
@@ -23,7 +23,7 @@ defmodule CComponent do
 
     ~H"""
     <div>
-      <p>c component: <%= @label %></p>
+      <p>all_types_component: <%= @label %></p>
       <p>option: <%= @option %></p>
       <p>index_i: <%= @index_i %></p>
       <p>index_i_with_range: <%= @index_i_with_range %></p>

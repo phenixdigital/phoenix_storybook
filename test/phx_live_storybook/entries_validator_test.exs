@@ -73,6 +73,22 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "entry's template is a string" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{template: nil}
+      assert validate(entry)
+
+      entry = %ComponentEntry{template: "<div><.story/></div>"}
+      assert validate(entry)
+    end
+
+    test "with invalid value it will raise" do
+      entry = %ComponentEntry{template: :invalid}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry template must be a binary"
+    end
+  end
+
   describe "entry attributes are list of Attrs" do
     test "with proper attr type it wont raise" do
       entry = %ComponentEntry{attributes: [%Attr{id: :foo, type: :string}]}
