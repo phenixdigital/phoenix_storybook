@@ -32,7 +32,7 @@ defmodule PhxLiveStorybook.Search do
   end
 
   def handle_event("search", %{"search" => %{"input" => input}}, socket) do
-    entries = SearchHelpers.search_by(input, socket.assigns.all_entries, :storybook_path)
+    entries = SearchHelpers.search_by(input, socket.assigns.all_entries, [:storybook_path, :name])
     {:noreply, assign(socket, :entries, entries)}
   end
 
