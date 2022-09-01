@@ -82,14 +82,6 @@ defmodule PhxLiveStorybook.Sidebar do
         </button>
       </div>
 
-      <div class="lsb lsb-bg-white lsb-relative lsb-pointer-events-auto lsb-mb-4">
-        <button phx-click={JS.show(to: "#search-container")} class="lsb lsb-hidden lsb-w-full lg:lsb-flex lsb-items-center lsb-text-sm lsb-leading-6 lsb-text-slate-400 lsb-rounded-md lsb-border lsb-border-1 lsb-border-slate-100 hover:lsb-border-slate-200 lsb-py-1.5 lsb-pl-2 lsb-pr-3">
-          <i class="lsb fal fa-magnifying-glass fa-lg lsb lsb-mr-3 lsb-flex-none lsb-text-slate-400"></i>
-          Quick search...
-          <span class="lsb lsb-ml-auto lsb-pl-3 lsb-flex-none lsb-text-xs lsb-font-semibold lsb-text-slate-400">⌘K</span>
-        </button>
-      </div>
-
       <nav class="lsb lsb-flex-1 xl:lsb-sticky">
         <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
       </nav>
