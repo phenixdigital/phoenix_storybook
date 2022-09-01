@@ -101,12 +101,24 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex)
   end
 
+  defp component_heex(fun, assigns, nil, []) when is_function(fun) do
+    """
+    <.#{function_name(fun)} #{attributes_markup(assigns)}/>
+    """
+  end
+
   defp component_heex(fun, assigns, block, slots) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(assigns)}>
       #{block}
       #{slots}
     </.#{function_name(fun)}>
+    """
+  end
+
+  defp component_heex(module, assigns, nil, []) when is_atom(module) do
+    """
+    <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)}/>
     """
   end
 
@@ -162,7 +174,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   defp eval_quoted_functions(fun) when is_function(fun) do
     [
-      {Phoenix.LiveView.Helpers, [live_component: 1, live_file_input: 2]},
+      {Phoenix.LiveView.Helpers, [live_file_input: 2]},
       {function_module(fun), [{function_name(fun), 1}]}
     ]
   end
