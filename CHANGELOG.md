@@ -9,6 +9,7 @@
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
 - bugfix: empty inner_block are no longer passed to all components.
+- bugfix: fixed closing tag typo in code preview.
 - documentation: new [`theming.md`](guides/theming.md) guide.
 - documentation: new [`components.md`](guides/components.md) guide.
 
