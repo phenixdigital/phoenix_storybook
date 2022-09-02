@@ -24,6 +24,35 @@ end
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
 
+## Aliases & Imports
+
+When using nested components or JS commands, you might need to reference other functions or components.
+Whilst it is possible to use fully qualified module names, you might want to provide custom _aliases_ and _imports_.
+
+Here is an example defining both:
+
+```elixir
+defmodule NestedComponent do
+  use PhxLiveStorybook.Entry, :component
+  def function, do: &NestedComponent.nested_component/1
+
+  def aliases, do: [MyStorybook.Helpers.JSHelpers]
+  def imports, do: [{NestedComponent, nested: 1}]
+
+  def stories do
+    [
+      %Story{
+        id: :default,
+        block: """
+        <.nested phx-click={JSHelpers.toggle()}>hello</.nested>
+        <.nested phx-click={JSHelpers.toggle()}>world</.nested>
+        """
+      }
+    ]
+  end
+end
+```
+
 ## Outer templates
 
 Some components, such as _modals_, _slideovers_, and _notifications_, are not visible from the start: they first need user interaction.

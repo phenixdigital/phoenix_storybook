@@ -53,6 +53,42 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "entry's aliases is a list of atoms" do
+    test "with proper aliases it wont raise" do
+      entry = %ComponentEntry{aliases: []}
+      assert validate(entry)
+
+      entry = %ComponentEntry{aliases: [Foo, Bar]}
+      assert validate(entry)
+    end
+
+    test "with invalid types it will raise" do
+      entry = %ComponentEntry{aliases: ["Foo", "Bar"]}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry aliases must be a list of atoms"
+    end
+  end
+
+  describe "entry's imports is valid" do
+    test "with proper imports it wont raise" do
+      entry = %ComponentEntry{imports: []}
+      assert validate(entry)
+
+      entry = %ComponentEntry{imports: [{Foo, fun: 0, fun: 1}, {Bar, fun: 0, fun: 1}]}
+      assert validate(entry)
+    end
+
+    test "with invalid imports it will raise" do
+      entry = %ComponentEntry{imports: [Foo, Bar]}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry imports must be a list of {atom, [{atom, integer}]}"
+
+      entry = %ComponentEntry{imports: [{Foo, [:fun]}]}
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "entry imports must be a list of {atom, [{atom, integer}]}"
+    end
+  end
+
   describe "entry's container is either :div or :iframe" do
     test "with proper type it wont raise" do
       entry = %ComponentEntry{container: :div}
@@ -701,11 +737,6 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "required slot :slot missing from story :foo, group :group"
-    end
-  end
-
-  describe "validate block type" do
-    test "a single block must be declared" do
     end
   end
 

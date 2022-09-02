@@ -67,9 +67,9 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     <div id="playground-preview-live" style="height: 100%;">
       <div class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
         <%= if @entry.template do %>
-          <%= ComponentRenderer.render_component_within_template(@entry.template, @id, fun_or_component(@entry), @component_assigns, @block, @slots) %>
+          <%= ComponentRenderer.render_component_within_template(@entry.template, @id, fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
         <% else %>
-          <%= ComponentRenderer.render_component(fun_or_component(@entry), @component_assigns, @block, @slots) %>
+          <%= ComponentRenderer.render_component(fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
         <% end %>
       </div>
     </div>

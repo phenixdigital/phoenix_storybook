@@ -4,7 +4,8 @@
 
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
-- feature: templates. You can provide HTML templates to render stories, which can help with modals, slide-overs... (see this [guide](guides/components.md) for more details)
+- feature: templates. You can provide HTML templates to render stories, which can help with modals, slide-overs... (see this [guide](guides/components.md) for more details).
+- feature: Provide custom aliases & imports to your stories/templates (see this [guide](guides/components.md) for more details).
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
 - bugfix: empty inner_block are no longer passed to all components.

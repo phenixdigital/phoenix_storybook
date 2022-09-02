@@ -108,6 +108,8 @@ defmodule PhxLiveStorybook.Entry do
     @moduledoc false
 
     @callback function() :: function()
+    @callback imports() :: [{atom(), [{atom(), integer()}]}]
+    @callback aliases() :: [atom()]
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback stories() :: [PhxLiveStorybook.Story.t()]
     @callback template() :: %Phoenix.LiveView.Rendered{}
@@ -117,6 +119,8 @@ defmodule PhxLiveStorybook.Entry do
     @moduledoc false
 
     @callback component() :: atom()
+    @callback imports() :: [{atom(), [{atom(), integer()}]}]
+    @callback aliases() :: [atom()]
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback stories() :: [PhxLiveStorybook.Story.t()]
     @callback template() :: %Phoenix.LiveView.Rendered{}
@@ -157,6 +161,12 @@ defmodule PhxLiveStorybook.Entry do
       def container, do: :div
 
       @impl unquote(component_behaviour(live?))
+      def imports, do: []
+
+      @impl unquote(component_behaviour(live?))
+      def aliases, do: []
+
+      @impl unquote(component_behaviour(live?))
       def attributes, do: []
 
       @impl unquote(component_behaviour(live?))
@@ -168,6 +178,8 @@ defmodule PhxLiveStorybook.Entry do
       defoverridable name: 0,
                      description: 0,
                      icon: 0,
+                     imports: 0,
+                     aliases: 0,
                      container: 0,
                      stories: 0,
                      attributes: 0,

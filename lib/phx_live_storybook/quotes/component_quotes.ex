@@ -19,6 +19,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             function: function,
             module: module,
             module_name: module_name,
+            imports: imports,
+            aliases: aliases,
             stories: stories,
             template: template
           } <- leave_entries,
@@ -40,7 +42,9 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
                     unquote(template),
                     unquote(function),
                     unquote(Macro.escape(story)),
-                    Map.put(extra_assigns, :id, unquote(unique_story_id))
+                    Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                    imports: unquote(imports),
+                    aliases: unquote(aliases)
                   )
                 end
               end
@@ -57,7 +61,9 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
                       ComponentRenderer.render_story(
                         module.function(),
                         story,
-                        %{theme: theme, id: unique_story_id}
+                        %{theme: theme, id: unique_story_id},
+                        imports: imports,
+                        aliases: aliases
                       )
                       |> to_raw_html()
                     rescue
@@ -88,7 +94,9 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
                     unquote(template),
                     unquote(component),
                     unquote(Macro.escape(story)),
-                    Map.put(extra_assigns, :id, unquote(unique_story_id))
+                    Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                    imports: unquote(imports),
+                    aliases: unquote(aliases)
                   )
                 end
               end
@@ -103,7 +111,9 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
                   ComponentRenderer.render_story(
                     unquote(component),
                     unquote(Macro.escape(story)),
-                    Map.put(extra_assigns, :id, unquote(unique_story_id))
+                    Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                    imports: unquote(imports),
+                    aliases: unquote(aliases)
                   )
                 end
               end

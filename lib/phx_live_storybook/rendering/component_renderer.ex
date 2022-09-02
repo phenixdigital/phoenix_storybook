@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a story or a group of story for a component.
   """
-  def render_story(fun_or_mod, story = %Story{}, extra_assigns) do
+  def render_story(fun_or_mod, story = %Story{}, extra_assigns, opts) do
     heex =
       component_heex(
         fun_or_mod,
@@ -20,10 +20,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         story.slots
       )
 
-    render_component_heex(fun_or_mod, heex)
+    render_component_heex(fun_or_mod, heex, opts)
   end
 
-  def render_story(fun_or_mod, %StoryGroup{stories: stories}, extra_assigns) do
+  def render_story(fun_or_mod, %StoryGroup{stories: stories}, extra_assigns, opts) do
     heex =
       for story = %Story{id: story_id} <- stories, into: "" do
         extra_assigns = %{extra_assigns | id: "#{extra_assigns.id}-#{story_id}"}
@@ -36,10 +36,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         )
       end
 
-    render_component_heex(fun_or_mod, heex)
+    render_component_heex(fun_or_mod, heex, opts)
   end
 
-  def render_story_within_template(template, fun_or_mod, story = %Story{}, extra_assigns) do
+  def render_story_within_template(template, fun_or_mod, story = %Story{}, extra_assigns, opts) do
     heex =
       template_heex(
         template,
@@ -50,14 +50,15 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         story.slots
       )
 
-    render_component_heex(fun_or_mod, heex)
+    render_component_heex(fun_or_mod, heex, opts)
   end
 
   def render_story_within_template(
         template,
         fun_or_mod,
         %StoryGroup{id: group_id, stories: stories},
-        group_extra_assigns
+        group_extra_assigns,
+        opts
       ) do
     heex =
       for story = %Story{id: story_id} <- stories, into: "" do
@@ -73,21 +74,21 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         )
       end
 
-    render_component_heex(fun_or_mod, heex)
+    render_component_heex(fun_or_mod, heex, opts)
   end
 
   @doc """
   Renders a component.
   """
-  def render_component(fun_or_mod, assigns, block, slots) do
+  def render_component(fun_or_mod, assigns, block, slots, opts) do
     heex = component_heex(fun_or_mod, assigns, block, slots)
-    render_component_heex(fun_or_mod, heex)
+    render_component_heex(fun_or_mod, heex, opts)
   end
 
   @doc """
   Renders a component.
   """
-  def render_component_within_template(template, id, fun_or_mod, assigns, block, slots) do
+  def render_component_within_template(template, id, fun_or_mod, assigns, block, slots, opts) do
     heex =
       template_heex(
         template,
@@ -98,7 +99,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         slots
       )
 
-    render_component_heex(fun_or_mod, heex)
+    render_component_heex(fun_or_mod, heex, opts)
   end
 
   defp component_heex(fun, assigns, nil, []) when is_function(fun) do
@@ -147,43 +148,54 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     end)
   end
 
-  defp render_component_heex(fun_or_mod, heex) do
+  defp render_component_heex(fun_or_mod, heex, opts) do
     quoted_code = EEx.compile_string(heex, engine: HTMLEngine)
 
     {evaluated, _} =
       Code.eval_quoted(quoted_code, [assigns: []],
-        aliases: aliases(fun_or_mod),
         requires: [Kernel],
-        functions: eval_quoted_functions(fun_or_mod)
+        aliases: eval_quoted_aliases(opts, fun_or_mod),
+        functions: eval_quoted_functions(opts, fun_or_mod)
       )
 
     LiveViewEngine.live_to_iodata(evaluated)
   end
 
-  defp aliases(fun) when is_function(fun) do
-    fun |> function_module() |> aliases()
+  defp eval_quoted_aliases(opts, fun_or_mod) do
+    aliases = Keyword.get(opts, :aliases, [])
+    eval_quoted_aliases([module(fun_or_mod) | aliases])
   end
 
-  defp aliases(mod) when is_atom(mod) do
-    alias_name = mod |> Module.split() |> Enum.at(-1) |> String.to_atom()
-    aliases = [{:"Elixir.#{alias_name}", mod}]
+  defp eval_quoted_aliases(modules) do
+    for mod <- modules, reduce: [] do
+      aliases ->
+        alias_name = :"Elixir.#{mod |> Module.split() |> Enum.at(-1) |> String.to_atom()}"
 
-    # Code.eval_quoted will enter in an endless loop if we feed him with self-referencing aliases
-    Enum.reject(aliases, fn {mod_alias, mod} -> mod_alias == mod end)
+        if alias_name == mod do
+          aliases
+        else
+          [{alias_name, mod} | aliases]
+        end
+    end
   end
 
-  defp eval_quoted_functions(fun) when is_function(fun) do
+  defp eval_quoted_functions(opts, fun) when is_function(fun) do
     [
       {Phoenix.LiveView.Helpers, [live_file_input: 2]},
       {function_module(fun), [{function_name(fun), 1}]}
-    ]
+    ] ++ extra_imports(opts)
   end
 
-  defp eval_quoted_functions(mod) when is_atom(mod) do
+  defp eval_quoted_functions(opts, mod) when is_atom(mod) do
     [
       {Phoenix.LiveView.Helpers, [live_component: 1, live_file_input: 2]}
-    ]
+    ] ++ extra_imports(opts)
   end
+
+  defp extra_imports(opts), do: Keyword.get(opts, :imports, [])
+
+  defp module(fun) when is_function(fun), do: function_module(fun)
+  defp module(mod) when is_atom(mod), do: mod
 
   defp function_module(fun), do: Function.info(fun)[:module]
   defp function_name(fun), do: Function.info(fun)[:name]

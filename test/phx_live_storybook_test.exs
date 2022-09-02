@@ -27,6 +27,8 @@ defmodule PhxLiveStorybookTest do
                  module_name: "AComponent",
                  type: :component,
                  name: "A Component",
+                 imports: [],
+                 aliases: [],
                  path: content_path("flat_list/a_component.exs"),
                  storybook_path: "/a_component",
                  container: :div,
@@ -38,6 +40,8 @@ defmodule PhxLiveStorybookTest do
                  module_name: "BComponent",
                  type: :live_component,
                  name: "B Component",
+                 imports: [],
+                 aliases: [],
                  path: content_path("flat_list/b_component.exs"),
                  storybook_path: "/b_component",
                  container: :div,
@@ -146,6 +150,9 @@ defmodule PhxLiveStorybookTest do
                  },
                  %PhxLiveStorybook.ComponentEntry{
                    module: Elixir.TreeStorybook.BFolder.Component
+                 },
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.BFolder.NestedComponent
                  }
                ]
              } = Enum.at(entries, 5)
@@ -277,6 +284,8 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
                  type: :component,
                  module_name: "BBaComponent",
+                 imports: [],
+                 aliases: [],
                  name: "B Ba Component",
                  path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
                  container: :div,
@@ -288,6 +297,8 @@ defmodule PhxLiveStorybookTest do
                  module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
                  type: :component,
                  module_name: "BbbComponent",
+                 imports: [],
+                 aliases: [],
                  name: "Bbb Component",
                  path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
                  container: :div,
