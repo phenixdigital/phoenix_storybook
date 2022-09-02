@@ -20,6 +20,7 @@ defmodule PhxLiveStorybook.EntryLive do
      assign(socket,
        otp_app: session["otp_app"],
        backend_module: session["backend_module"],
+       assets_path: session["assets_path"],
        playground_error: nil,
        playground_preview_pid: nil
      )}

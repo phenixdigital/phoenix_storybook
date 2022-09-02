@@ -52,12 +52,16 @@ defmodule PhxLiveStorybook.LayoutView do
   defp backend_module(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.backend_module
   defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module
 
+  defp assets_path(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.assets_path
+  defp assets_path(conn = %Plug.Conn{}), do: conn.private.assets_path
+
   defp application_static_path(conn, path) do
     routes(conn).static_path(conn, path)
   end
 
   defp asset_path(conn_or_socket, path) do
-    live_storybook_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
+    assets_path = assets_path(conn_or_socket)
+    Path.join(assets_path, asset_file_name(path, @env))
   end
 
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phx_live_storybook))

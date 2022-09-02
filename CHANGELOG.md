@@ -2,6 +2,7 @@
 
 ## v0.4.0 (not yet released)
 
+- change (breaking!): `live_storybook/2` is no longer serving assets. You must add `storybook_assets/1` to your router in a non CSRF-protected scope.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
 - feature: templates. You can provide HTML templates to render stories, which can help with modals, slide-overs... (see this [guide](guides/components.md) for more details).

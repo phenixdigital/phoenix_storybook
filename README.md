@@ -75,13 +75,19 @@ Once installed, update your router's configuration to forward requests to a `Phx
 # lib/my_app_web/router.ex
 use MyAppWeb, :router
 import PhxLiveStorybook.Router
-
 ...
+scope "/" do
+  storybook_assets()
+end
 
-# outside of your main scope & of your :browser pipeline
-live_storybook "/storybook",
-  otp_app: :my_app,
-  backend_module: MyAppWeb.Storybook
+scope "/", PhxLiveStorybookSampleWeb do
+  pipe_through(:browser)
+  ...
+  live_storybook("/storybook",
+    otp_app: :my_app,
+    backend_module: MyAppWeb.Storybook
+  )
+end
 ```
 
 ### 4. Make your components assets available

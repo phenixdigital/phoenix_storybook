@@ -9,8 +9,8 @@ defmodule PhxLiveStorybook.Router do
   It expects the `path` the storybook will be mounted at and a set
   of options.
 
-  This will also generate a named helper called `live_dashboard_path/2`
-  which you can use to link directly to the dashboard, such as:
+  This will also generate a named helper called `live_storybook_path/2`
+  which you can use to link directly to the storybook, such as:
 
   ```elixir
   <%= link "Storybook", to: live_storybook_path(conn, :root) %>
@@ -26,6 +26,8 @@ defmodule PhxLiveStorybook.Router do
     * `:backend_module` - _Required_ - Name of your backend module.
     * `:live_socket_path` - Configures the socket path. It must match
       the `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
+    * `:assets_path` - Configures the assets path. It must match
+      the `storybook_assets` in your router.
 
   ## Usage
 
@@ -43,24 +45,12 @@ defmodule PhxLiveStorybook.Router do
   end
   ```
   """
-  @gzip_assets Application.compile_env(:phx_live_storybook, :gzip_assets, false)
-
-  defmacro live_storybook(path, opts \\ []) do
+  defmacro live_storybook(path, opts) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
-    gzip_assets? = @gzip_assets
 
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
-
-        pipeline :storybook_assets do
-          plug(Plug.Static,
-            at: Path.join(path, "assets"),
-            from: :phx_live_storybook,
-            only: ~w(css js images favicon),
-            gzip: gzip_assets?
-          )
-        end
 
         pipeline :storybook_browser do
           plug(:accepts, ["html"])
@@ -69,7 +59,7 @@ defmodule PhxLiveStorybook.Router do
         end
 
         scope path: "/" do
-          pipe_through([:storybook_assets, :storybook_browser])
+          pipe_through(:storybook_browser)
 
           {session_name, session_opts, route_opts} =
             PhxLiveStorybook.Router.__options__(opts, :live_storybook_iframe, :root_iframe)
@@ -95,9 +85,12 @@ defmodule PhxLiveStorybook.Router do
     end
   end
 
+  @default_assets_path "/storybook/assets"
+
   @doc false
   def __options__(opts, session_name, root_layout) do
     live_socket_path = Keyword.get(opts, :live_socket_path, "/live")
+    assets_path = Keyword.get(opts, :assets_path, @default_assets_path)
 
     otp_app =
       Keyword.get_lazy(opts, :otp_app, fn -> raise "Missing mandatory :otp_app option." end)
@@ -111,17 +104,66 @@ defmodule PhxLiveStorybook.Router do
       session_name,
       [
         root_layout: {PhxLiveStorybook.LayoutView, root_layout},
-        session: %{"backend_module" => backend_module, "otp_app" => otp_app}
+        session: %{
+          "backend_module" => backend_module,
+          "otp_app" => otp_app,
+          "assets_path" => assets_path
+        }
       ],
       [
         private: %{
           live_socket_path: live_socket_path,
           otp_app: otp_app,
           backend_module: backend_module,
-          application_router: Keyword.get(opts, :application_router)
+          application_router: Keyword.get(opts, :application_router),
+          assets_path: assets_path
         },
         as: :live_storybook
       ]
     }
+  end
+
+  @gzip_assets Application.compile_env(:phx_live_storybook, :gzip_assets, false)
+
+  @doc """
+  Defines routes for PhxLiveStorybook static assets.
+
+  Static assets should not be CSRF protected. So they need to be mounted in your
+  router in a different pipeline than storybook's.
+
+  It can take the `path` the storybook assets will be mounted at.
+  Default path is `"/storybook/assets"`.
+
+  ## Usage
+
+  ```elixir
+  # lib/my_app_web/router.ex
+  use MyAppWeb, :router
+  import PhxLiveStorybook.Router
+  ...
+
+  scope "/" do
+    storybook_assets()
+  end
+  ```
+  """
+  defmacro storybook_assets(path \\ @default_assets_path) do
+    gzip_assets? = @gzip_assets
+
+    quote bind_quoted: binding() do
+      scope "/", PhxLiveStorybook do
+        pipeline :storybook_assets do
+          plug(Plug.Static,
+            at: path,
+            from: :phx_live_storybook,
+            only: ~w(css js images favicon),
+            gzip: gzip_assets?
+          )
+        end
+
+        pipe_through(:storybook_assets)
+        get("#{path}/*asset", AssetNotFoundController, :asset, as: :storybook_asset)
+      end
+    end
   end
 end
