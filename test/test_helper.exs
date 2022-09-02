@@ -18,6 +18,8 @@ defmodule PhxLiveStorybook.TestRouter do
   use Phoenix.Router
   import PhxLiveStorybook.Router
 
+  storybook_assets()
+
   live_storybook("/storybook",
     otp_app: :phx_live_storybook,
     backend_module: PhxLiveStorybook.TestStorybook
