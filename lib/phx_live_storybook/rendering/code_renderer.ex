@@ -89,7 +89,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
     #{"<.#{fun}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
     #{if block, do: indent_block([block])}#{if slots, do: indent_block(slots)}
-    #{unless self_closed?, do: "<./#{fun}>"}
+    #{unless self_closed?, do: "</.#{fun}>"}
     """
   end
 
@@ -100,7 +100,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
     #{"<.live_component module={#{mod}}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
     #{if block, do: indent_block([block])}#{if slots, do: indent_block(slots)}
-    #{unless self_closed?, do: "<./live_component>"}
+    #{unless self_closed?, do: "</.live_component>"}
     """
   end
 
