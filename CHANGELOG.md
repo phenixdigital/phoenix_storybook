@@ -2,11 +2,15 @@
 
 ## v0.4.0 (not yet released)
 
-- change (breaking!): `live_storybook/2` is no longer serving assets. You must add `storybook_assets/1` to your router in a non CSRF-protected scope.
+- change (breaking!): `live_storybook/2` is no longer serving assets. You must add
+  `storybook_assets/1` to your router in a non CSRF-protected scope.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
-- feature: theming. You can declare different themes in the application settings. The selected theme will be merged in all components assigns.
-- feature: templates. You can provide HTML templates to render stories, which can help with modals, slide-overs... (see this [guide](guides/components.md) for more details).
-- feature: Provide custom aliases & imports to your stories/templates (see this [guide](guides/components.md) for more details).
+- feature: theming. You can declare different themes in the application settings. The selected
+  theme will be merged in all components assigns.
+- feature: templates. You can provide HTML templates to render stories, which can help with modals,
+  slide-overs... (see this [guide](guides/components.md) for more details).
+- feature: Provide custom aliases & imports to your stories/templates
+  (see this [guide](guides/components.md) for more details).
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
 - bugfix: empty inner_block are no longer passed to all components.
@@ -20,7 +24,8 @@
 - change (breaking!): `variations` have been rebranded as `stories`.
 - change (breaking!): `live_storybook/2` must be set in your `router.ex` outside your main scope
   and outside your `:browser` pipeline.
-- feature: new Playground tab to play with your components! To use it, you must declare attributes in your component entries.
+- feature: new Playground tab to play with your components! To use it, you must declare attributes
+  in your component entries.
 - feature: you can opt-in iframe rendering for any of your components with `def container, do: :iframe`
 - improvement: storybook is now fully responsive.
 - improvement: meaningful errors are raised during compilation if your entries are invalid.

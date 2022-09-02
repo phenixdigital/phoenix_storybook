@@ -1,6 +1,7 @@
 # PhxLiveStorybook contributing guide
 
-Please take a moment to review this document in order to make the contribution process easy and effective for everyone involved!
+Please take a moment to review this document in order to make the contribution process easy and
+effective for everyone involved!
 
 ## Using the issue tracker
 
@@ -12,7 +13,8 @@ Use the issues tracker for:
 
 ## Bug Reports
 
-A bug is either a _demonstrable problem_ that is caused by the code in the repository, or indicate missing, unclear, or misleading documentation. Good bug reports are extremely helpful - thank you!
+A bug is either a _demonstrable problem_ that is caused by the code in the repository, or indicate
+missing, unclear, or misleading documentation. Good bug reports are extremely helpful - thank you!
 
 Guidelines for bug reports:
 
@@ -25,7 +27,9 @@ Guidelines for bug reports:
 3. **Isolate and report the problem** &mdash; ideally create a reduced test
    case.
 
-Please try to be as detailed as possible in your report. Please provide steps to reproduce the issue as well as the outcome you were expecting! All these details will help developers to fix any potential bugs.
+Please try to be as detailed as possible in your report. Please provide steps to reproduce the
+issue as well as the outcome you were expecting! All these details will help developers to fix any
+potential bugs.
 
 ## Contributing documentation
 
@@ -87,7 +91,8 @@ in order to craft an excellent pull request
 
 ### Setup your git
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) the project, clone your fork, and configure the remotes:
+1. [Fork](https://help.github.com/articles/fork-a-repo/) the project, clone your fork, and configure
+   the remotes:
 
 ```bash
 # Clone your fork of the repo into the current directory
@@ -117,13 +122,17 @@ And follow [phx_live_storybook_sample README.md](https://github.com/phenixdigita
 
 4. Create a new feature branch (off of `main`) to contain your feature, change, or fix.
 
-**IMPORTANT**: Making changes in `main` is discouraged. You should always keep your local `main` in sync with upstream `main` and make your changes in feature branches.
+**IMPORTANT**: Making changes in `main` is discouraged. You should always keep your local `main` in
+sync with upstream `main` and make your changes in feature branches.
 
 ```bash
 git checkout -b <feature-branch-name>
 ```
 
-5. Commit your changes in logical chunks. Keep your commit messages organized, with a short description in the first line and more detailed information on the following lines. Feel free to use Git's [interactive rebase](https://help.github.com/articles/about-git-rebase/) feature to tidy up your commits before making them public.
+5. Commit your changes in logical chunks. Keep your commit messages organized, with a short
+   description in the first line and more detailed information on the following lines. Feel free to
+   use Git's [interactive rebase](https://help.github.com/articles/about-git-rebase/) feature to
+   tidy up your commits before making them public.
 
 6. Make sure all the tests are still passing.
 
@@ -149,11 +158,14 @@ mix format
 mix credo
 ```
 
-10. [Open a Pull Request](https://help.github.com/articles/about-pull-requests/) with a clear title and description.
+10. [Open a Pull Request](https://help.github.com/articles/about-pull-requests/) with a clear title
+    and description.
 
-11. If you haven't updated your pull request for a while, you should consider rebasing on main and resolving any conflicts.
+11. If you haven't updated your pull request for a while, you should consider rebasing on main and
+    resolving any conflicts.
 
-**IMPORTANT**: _Never ever_ merge upstream `main` into your branches. You should always `git rebase` on `main` to bring your changes up to date when necessary.
+**IMPORTANT**: _Never ever_ merge upstream `main` into your branches. You should always `git rebase`
+on `main` to bring your changes up to date when necessary.
 
 ```bash
 git checkout main

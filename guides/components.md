@@ -26,8 +26,9 @@ end
 
 ## Aliases & Imports
 
-When using nested components or JS commands, you might need to reference other functions or components.
-Whilst it is possible to use fully qualified module names, you might want to provide custom _aliases_ and _imports_.
+When using nested components or JS commands, you might need to reference other functions or
+components. Whilst it is possible to use fully qualified module names, you might want to provide
+custom _aliases_ and _imports_.
 
 Here is an example defining both:
 
@@ -55,13 +56,16 @@ end
 
 ## Outer templates
 
-Some components, such as _modals_, _slideovers_, and _notifications_, are not visible from the start: they first need user interaction.
+Some components, such as _modals_, _slideovers_, and _notifications_, are not visible from the
+start: they first need user interaction.
 
-Such components can be accompanied by an outer template, that will for instance render a button next to the component, to toggle its visibility state.
+Such components can be accompanied by an outer template, that will for instance render a button next
+to the component, to toggle its visibility state.
 
 ### JS-controlled visibility
 
-The simplest case is when component visibility is controlled client-side, by toggling CSS classes/attributes through [JS commands](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html).
+The simplest case is when component visibility is controlled client-side, by toggling CSS
+classes/attributes through [JS commands](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html).
 
 ```elixir
 defmodule Storybook.Components.Modal do
@@ -89,13 +93,16 @@ defmodule Storybook.Components.Modal do
 end
 ```
 
-Every story will be rendered within the defined template, the story itself is injected in place of `<.story/>`.
+Every story will be rendered within the defined template, the story itself is injected in place of
+`<.story/>`.
 
 ### Elixir-controlled visibility
 
-Some components don't rely on JS commands but need external assigns, like a modal that takes a `show={true}` or `show={false}` assign to manage its visibility state.
+Some components don't rely on JS commands but need external assigns, like a modal that takes a
+`show={true}` or `show={false}` assign to manage its visibility state.
 
-`PhxLiveStorybook` handles special `set-story-assign/*` and `toggle-story-assign/*` events that you can leverage to update properties that will be passed to your components as _extra assigns_.
+`PhxLiveStorybook` handles special `set-story-assign/*` and `toggle-story-assign/*` events that you
+can leverage to update properties that will be passed to your components as _extra assigns_.
 
 Syntax is:
 

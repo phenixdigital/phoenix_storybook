@@ -3,8 +3,8 @@
 In `PhxLiveStorybook` your components live within the storybook, so they share
 some context with the storybook: **styling** and **scripts**.
 
-While the original Storybook for React only [relies on iframes](https://storybook.js.org/docs/react/configure/story-rendering), we found them quite slow and don't want them to be the default
-choice.
+While the original Storybook for React only [relies on iframes](https://storybook.js.org/docs/react/configure/story-rendering),
+we found them quite slow and don't want them to be the default choice.
 
 This guide will explain:
 
@@ -19,7 +19,8 @@ This guide will explain:
 This LiveSocket is the same used by your components: you just need to inject it with your
 own `Hooks` and `Uploaders`.
 
-To do so, create a JS file that will declare your `Hooks` and `Uploaders` and set them in `window.storybook`. This script will be loaded immediately before the storybook's script.
+To do so, create a JS file that will declare your `Hooks` and `Uploaders` and set them in
+`window.storybook`. This script will be loaded immediately before the storybook's script.
 
 ```javascript
 // assets/js/my_components.js
@@ -30,30 +31,40 @@ import * as Uploaders from "./uploaders";
 })();
 ```
 
-Then set the `js_path: "/assets/js/components.js"` option to the storybook within your `config.exs` file.
+Then set the `js_path: "/assets/js/components.js"` option to the storybook within your `config.exs`
+file.
 
-You can also use this script to inject whatever content you want into document `HEAD`, such as external scripts.
+You can also use this script to inject whatever content you want into document `HEAD`, such as
+external scripts.
 
 ## 2. How is the storybook styled?
 
-`PhxLiveStorybook` is using [TailwindCSS](https://tailwindcss.com) with [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix): `lsb-` (which means that instead of using `bg-blue-400` the storybook uses `lsb-bg-blue-400`).
+`PhxLiveStorybook` is using [TailwindCSS](https://tailwindcss.com) with
+[preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your
+browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix):
+`lsb-` (which means that instead of using `bg-blue-400` the storybook uses `lsb-bg-blue-400`).
 
 Only elements with the `.lsb` class are preflighted, in order to let your component styling as-is.
 
-So unless your components use `lsb` or `lsb-` prefixed classes there should be no styling leak from the storybook to you components.
+So unless your components use `lsb` or `lsb-` prefixed classes there should be no styling leak from
+the storybook to you components.
 
 ## 3. How should you provide the style of your components?
 
 You need to inject your component's stylesheets into the storybook. Just (like for JS), set the
 `css_path: "/assets/css/components.css"` option in `config.exs`.
 
-The previous part (2.) was about storybook styles not leaking into your components. This part is about the opposite: don't accidentally mess up Storybook styling with your styles.
+The previous part (2.) was about storybook styles not leaking into your components. This part is
+about the opposite: don't accidentally mess up Storybook styling with your styles.
 
-All containers rendering your components in the storybook (`stories`, `playground`, `pages` ...) have the `.lsb-sandbox` CSS class.
+All containers rendering your components in the storybook (`stories`, `playground`, `pages` ...)
+have the `.lsb-sandbox` CSS class.
 
 You can leverage this to scope your styles with this class. Here is how you can do it with `TailwindCSS`:
 
-- use Tailwind [important selector strategy](https://tailwindcss.com/docs/configuration#selector-strategy) with this class. It will prefix all your tailwind classes with `.lsb-sandbox` increasing their specificity, hence their priority.
+- use Tailwind [important selector strategy](https://tailwindcss.com/docs/configuration#selector-strategy)
+  with this class. It will prefix all your tailwind classes with `.lsb-sandbox` increasing their
+  specificity, hence their priority.
 
 ```javascript
 // assets/tailwind.config.js
@@ -63,7 +74,8 @@ module.exports = {
 };
 ```
 
-- nest your custom styles under Tailwind `@layer utilities`. This way, your styling will also benefit from `.lsb-sandbox` scoping.
+- nest your custom styles under Tailwind `@layer utilities`. This way, your styling will also
+  benefit from `.lsb-sandbox` scoping.
 
 ```css
 /* assets/css/components.css */
@@ -92,7 +104,9 @@ module.exports = {
 
 ## 4. Enabling iframe rendering
 
-As a last resort, if for whatever reason you cannot make your component live within the storybook (an example would be that your component needs to bind listeners on `document`), it is possible to enable iframe rendering, component per component.
+As a last resort, if for whatever reason you cannot make your component live within the storybook
+(an example would be that your component needs to bind listeners on `document`), it is possible to
+enable iframe rendering, component per component.
 
 Just add the `iframe` option to it.
 

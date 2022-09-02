@@ -133,7 +133,8 @@ defmodule PhxLiveStorybook do
 
         def paths, do: @paths
 
-        # this file should be recompiled whenever any file under content_path has been created or deleted
+        # this file should be recompiled whenever any file under content_path has been created or
+        # deleted
         def __mix_recompile__? do
           if unquote(components_pattern) do
             unquote(components_pattern) |> Path.wildcard() |> :erlang.md5() !=
