@@ -191,6 +191,20 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert render(story_one) =~ "template_component: bar / status: false"
       assert render(story_two) =~ "template_component: two / status: true"
     end
+
+    test "can open playground from different stories", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component")
+
+      element(view, "#hello a", "Open in playground") |> render_click()
+      assert_patched(view, "/storybook/component?story_id=hello&tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+
+      view |> element("a", "Stories") |> render_click()
+
+      element(view, "#world a", "Open in playground") |> render_click()
+      assert_patched(view, "/storybook/component?story_id=world&tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+    end
   end
 
   describe "page rendering" do
