@@ -46,6 +46,28 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       view |> element("a", "Preview") |> render_click()
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
+
+    test "we can switch to another story from the playground", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+
+      view
+      |> element("#story-selection-form_story_id")
+      |> render_change(%{story: %{story_id: "world"}})
+
+      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+    end
+
+    test "we can switch to another story group from the playground", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/a_folder/live_component?tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+
+      view
+      |> element("#story-selection-form_story_id")
+      |> render_change(%{story: %{story_id: "default"}})
+
+      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+    end
   end
 
   describe "component in an iframe" do

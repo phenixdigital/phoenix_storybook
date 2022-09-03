@@ -7,6 +7,7 @@
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected
   theme will be merged in all components assigns.
+- feature: you can initialize the component playground with any story.
 - feature: templates. You can provide HTML templates to render stories, which can help with modals,
   slide-overs... (see this [guide](guides/components.md) for more details).
 - feature: Provide custom aliases & imports to your stories/templates
