@@ -35,3 +35,4 @@ phx_live_storybook-*.tar
 /assets/node_modules
 
 .vscode
+.tool-versions
