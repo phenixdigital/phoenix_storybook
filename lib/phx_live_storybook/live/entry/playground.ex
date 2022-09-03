@@ -247,10 +247,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
       </div>
     </.form>
     <%= unless Enum.empty?(@entry.attributes) do %>
-      <.form let={f} for={:story} id="story-selection-form" class="lsb lsb-flex lsb-space-x-2 lsb-justify-end lsb-items-center lsb-w-full lsb-mb-6">
-        <%= label f, :story_id, "Open a story:", class: "lsb lsb-text-gray-400 lsb-text-sm" %>
+      <.form let={f} for={:story} id="story-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
+        <%= label f, :story_id, "Open a story", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :story_id, story_options(@entry), "phx-change": "set-story", "phx-target": @myself,
-            class: "lsb lsb-form-select lsb-pl-2 lsb-pr-10 lsb-py-1 lsb-text-sm lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md",
+            class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-text-sm lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
             value: @story_id %>
       </.form>
     <% end %>
