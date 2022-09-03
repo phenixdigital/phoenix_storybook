@@ -67,9 +67,12 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     <div id="playground-preview-live" style="height: 100%;">
       <div class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
         <%= if @entry.template do %>
-          <%= ComponentRenderer.render_component_within_template(@entry.template, @id, fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
+          <%= ComponentRenderer.render_component_within_template(@entry.template, @id,
+              fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports,
+               aliases: @entry.aliases]) %>
         <% else %>
-          <%= ComponentRenderer.render_component(fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
+          <%= ComponentRenderer.render_component(fun_or_component(@entry), @component_assigns,
+              @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
         <% end %>
       </div>
     </div>
@@ -87,9 +90,9 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   defp fun_or_component(%ComponentEntry{type: :component, function: function}),
     do: function
 
-  def handle_info({:new_attributes, pid, attrs}, socket = %{assigns: assigns})
+  def handle_info({:new_attributes, pid, attrs, block, slots}, socket = %{assigns: assigns})
       when pid == assigns.parent_pid do
-    {:noreply, assign(socket, attrs: attrs)}
+    {:noreply, assign(socket, attrs: attrs, block: block, slots: slots)}
   end
 
   def handle_info({:new_theme, pid, theme}, socket = %{assigns: assigns})
