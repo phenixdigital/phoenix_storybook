@@ -155,7 +155,7 @@ defmodule PhxLiveStorybook.EntryLive do
     <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
       <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="lsb entry-nav-form lg:lsb-hidden">
-        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
+        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
       </.form>
 
       <!-- :lg+ version of navigation tabs -->
@@ -203,7 +203,7 @@ defmodule PhxLiveStorybook.EntryLive do
         <div id={anchor_id(story)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Story description -->
-          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group lsb-flex lsb-justify-between">
+          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(story)}", class: "lsb entry-anchor-link" do %>
               <i class="lsb fal fa-link lsb-hidden group-hover:lg:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
               <%= if description do %>
@@ -212,7 +212,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
