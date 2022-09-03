@@ -77,4 +77,5 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
+  def handle_event(_, _, socket), do: {:noreply, socket}
 end

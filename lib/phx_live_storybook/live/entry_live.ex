@@ -4,12 +4,14 @@ defmodule PhxLiveStorybook.EntryLive do
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.{ComponentEntry, PageEntry, Story, StoryGroup}
   alias PhxLiveStorybook.Entry.Playground
+  alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
+  alias PhxLiveStorybook.EventLog
 
   def mount(_params, session, socket) do
     if connected?(socket) do
       PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
-      PubSub.subscribe(PhxLiveStorybook.PubSub, "event_logs")
+      PubSub.subscribe(PhxLiveStorybook.PubSub, "event_logs:#{inspect(self())}")
     end
 
     {:ok,
@@ -283,13 +285,14 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_preview_pid, pid)}
   end
 
-  def handle_info({:live_view_event, measurements, metadata}, socket) do
-    send_update(Playground, id: "playground", new_event: "#{inspect(metadata)}")
+  def handle_info(event_log = %EventLog{type: :component, parent_pid: pid}, socket)
+      when socket.assigns.playground_preview_pid == pid do
+    send_update(Playground, id: "playground", new_event: "#{inspect(event_log)}")
     {:noreply, socket}
   end
 
-  def handle_info({:live_component_event, measurements, metadata}, socket) do
-    send_update(Playground, id: "playground", new_event: "#{inspect(metadata)}")
+  def handle_info(event_log = %EventLog{type: :live_view, view: PlaygroundPreviewLive}, socket) do
+    send_update(Playground, id: "playground", new_event: "#{inspect(event_log)}")
     {:noreply, socket}
   end
 
