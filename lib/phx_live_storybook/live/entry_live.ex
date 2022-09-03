@@ -9,6 +9,8 @@ defmodule PhxLiveStorybook.EntryLive do
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.{Story, StoryGroup}
 
+  import PhxLiveStorybook.NavigationHelpers
+
   @topic "playground"
 
   def mount(_params, session, socket) do
@@ -365,32 +367,6 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
-
-  defp patch_to(socket, entry, params \\ %{}) do
-    path = path_to(socket, entry, params)
-    push_patch(socket, to: path)
-  end
-
-  defp path_to(socket = %{assigns: assigns}, entry, params) do
-    query =
-      assigns
-      |> Map.take([:theme, :tab])
-      |> Map.merge(params)
-      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
-
-    entry_path =
-      live_storybook_path(
-        socket,
-        :entry,
-        String.split(entry.storybook_path, "/", trim: true)
-      )
-
-    if Enum.any?(query) do
-      entry_path <> "?" <> URI.encode_query(query)
-    else
-      entry_path
-    end
-  end
 end
 
 defmodule PhxLiveStorybook.EntryNotFound do

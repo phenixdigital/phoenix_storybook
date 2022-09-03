@@ -8,6 +8,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
 
+  import PhxLiveStorybook.NavigationHelpers
+
   @topic "playground"
 
   def update(assigns, socket) do
@@ -63,7 +65,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   def render(assigns) do
     ~H"""
-    <div class="lsb lsb-flex lsb-flex-col lsb-flex-1">
+    <div id="playground" class="lsb lsb-flex lsb-flex-col lsb-flex-1">
       <%= render_upper_navigation_tabs(assigns) %>
       <%= render_upper_tab_content(assigns) %>
       <%= render_lower_navigation_tabs(assigns) %>
@@ -73,11 +75,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
   end
 
   defp render_upper_navigation_tabs(assigns) do
+    tabs = [{:preview, "Preview", "fad fa-eye"}, {:code, "Code", "fad fa-code"}]
+
     ~H"""
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
-        <%= for {tab, label, icon} <- [{:preview, "Preview", "fad fa-eye"}, {:code, "Code", "fad fa-code"}] do %>
-          <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@upper_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
+        <%= for {tab, label, icon} <- tabs do %>
+          <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself}
+            class={"lsb #{active_link(@upper_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb #{active_link(@upper_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
           </a>
@@ -92,7 +97,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}] do %>
-          <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
+          <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself}
+            class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
           </a>
@@ -115,7 +121,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
         <%= if @entry.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@entry)}
-            src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: inspect(@story_id), theme: @theme, playground: true, parent_pid: inspect(self()))}
+            src={live_storybook_path(@socket, :entry_iframe, @entry_path,
+                story_id: inspect(@story_id), theme: @theme, playground: true,
+                parent_pid: inspect(self()))}
             height="128"
             class="lsb-w-full lsb-border-0"
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
@@ -138,7 +146,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
             <i class="lsb fa fa-copy lsb-text-inherit"></i>
           </div>
-          <%= CodeRenderer.render_component_code(fun_or_component(@entry), @playground_attrs, @playground_block, @playground_slots) %>
+          <%= CodeRenderer.render_component_code(
+              fun_or_component(@entry), @playground_attrs, @playground_block, @playground_slots
+            ) %>
         </div>
       <% end %>
       <%= if @playground_error do %>
@@ -158,83 +168,92 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do
     ~H"""
     <.form for={:playground} let={f} id={form_id(@entry)} phx-change={"playground-change"} phx-target={@myself} class="lsb-text-gray-600 ">
-    <div class="lsb lsb-flex lsb-flex-col lsb-mb-8">
-      <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
-        <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
-          <div class="lsb lsb-overflow-hidden lsb-shadow lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 md:lsb-rounded-lg">
-            <table class="lsb lsb-min-w-full lsb-divide-y lsb-divide-gray-300">
-              <thead class="lsb lsb-bg-gray-50">
-                <tr>
-                  <%= for {header, th_style, span_style} <- [{"Attribute", "lsb-pl-3 md:lsb-pl-9", "lsb-w-8 md:lsb-w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "lsb-hidden md:lsb-table-cell", ""}, {"Value", "", ""}] do %>
-                    <th scope="col" class={"lsb #{th_style} lsb-py-3.5 lsb-text-left lsb-text-xs md:lsb-text-sm lsb-font-semibold lsb-text-gray-900"}>
-                      <span class={"lsb #{span_style} lsb-truncate lsb-inline-block"}><%= header %></span>
-                    </th>
-                  <% end %>
-                </tr>
-              </thead>
-              <tbody class="lsb lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
-                <%= if Enum.empty?(@entry.attributes) do %>
-                <tr>
-                  <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
-                    <i class="lsb lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
-                    <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @entry.name %></code> entry.</p>
-                  </td>
-                </tr>
-                <% end %>
-                <%= for attr <- @entry.attributes, attr.type not in [:block, :slot] do %>
+      <div class="lsb lsb-flex lsb-flex-col lsb-mb-2">
+        <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
+          <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
+            <div class="lsb lsb-overflow-hidden lsb-shadow lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 md:lsb-rounded-lg">
+              <table class="lsb lsb-min-w-full lsb-divide-y lsb-divide-gray-300">
+                <thead class="lsb lsb-bg-gray-50">
                   <tr>
-                    <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
-                      <%= if attr.required do %>
-                        <.required_badge/>
-                      <% end %>
-                      <%= attr.id %>
-                      <%= if attr.required do %>
-                        <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
-                      <% end %>
-                    </td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500">
-                      <.type_badge type={attr.type}/>
-                    </td>
-                    <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500 lsb-hidden md:lsb-table-cell">
-                      <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
-                    </td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
-                      <.attr_input form={f} attr_id={attr.id} type={attr.type} playground_attrs={@playground_attrs} options={attr.options} myself={@myself}/>
+                    <%= for {header, th_style, span_style} <- [{"Attribute", "lsb-pl-3 md:lsb-pl-9", "lsb-w-8 md:lsb-w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "lsb-hidden md:lsb-table-cell", ""}, {"Value", "", ""}] do %>
+                      <th scope="col" class={"lsb #{th_style} lsb-py-3.5 lsb-text-left lsb-text-xs md:lsb-text-sm lsb-font-semibold lsb-text-gray-900"}>
+                        <span class={"lsb #{span_style} lsb-truncate lsb-inline-block"}><%= header %></span>
+                      </th>
+                    <% end %>
+                  </tr>
+                </thead>
+                <tbody class="lsb lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
+                  <%= if Enum.empty?(@entry.attributes) do %>
+                  <tr>
+                    <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
+                      <i class="lsb lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
+                      <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @entry.name %></code> entry.</p>
                     </td>
                   </tr>
-                <% end %>
-                <%= for attr <- @entry.attributes, attr.type in [:block, :slot] do %>
-                  <tr>
-                    <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
-                      <%= if attr.required do %>
-                        <.required_badge/>
+                  <% else %>
+                    <%= for attr <- @entry.attributes, attr.type not in [:block, :slot] do %>
+                      <tr>
+                        <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
+                          <%= if attr.required do %>
+                            <.required_badge/>
+                          <% end %>
+                          <%= attr.id %>
+                          <%= if attr.required do %>
+                            <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
+                          <% end %>
+                        </td>
+                        <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500">
+                          <.type_badge type={attr.type}/>
+                        </td>
+                        <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                        <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500 lsb-hidden md:lsb-table-cell">
+                          <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
+                        </td>
+                        <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
+                          <.attr_input form={f} attr_id={attr.id} type={attr.type} playground_attrs={@playground_attrs} options={attr.options} myself={@myself}/>
+                        </td>
+                      </tr>
+                    <% end %>
+                    <%= for attr <- @entry.attributes, attr.type in [:block, :slot] do %>
+                      <tr>
+                        <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
+                          <%= if attr.required do %>
+                            <.required_badge/>
+                          <% end %>
+                          <%= attr.id %>
+                          <%= if attr.required do %>
+                            <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
+                          <% end %>
+                        </td>
+                        <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500">
+                          <.type_badge type={attr.type}/>
+                        </td>
+                        <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                      </tr>
+                      <%= if block_or_slot(assigns, attr) do %>
+                        <tr class="lsb !lsb-border-t-0">
+                          <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
+                            <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
+                          </td>
+                        </tr>
                       <% end %>
-                      <%= attr.id %>
-                      <%= if attr.required do %>
-                        <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
-                      <% end %>
-                    </td>
-                    <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500">
-                      <.type_badge type={attr.type}/>
-                    </td>
-                    <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
-                  </tr>
-                  <%= if block_or_slot(assigns, attr) do %>
-                    <tr class="lsb !lsb-border-t-0">
-                      <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
-                        <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
-                      </td>
-                    </tr>
+                    <% end %>
                   <% end %>
-                <% end %>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </.form>
+    <%= unless Enum.empty?(@entry.attributes) do %>
+      <.form let={f} for={:story} id="story-selection-form" class="lsb lsb-flex lsb-space-x-2 lsb-justify-end lsb-items-center lsb-w-full lsb-mb-6">
+        <%= label f, :story_id, "Open a story:", class: "lsb lsb-text-gray-400 lsb-text-sm" %>
+        <%= select f, :story_id, story_options(@entry), "phx-change": "set-story", "phx-target": @myself,
+            class: "lsb lsb-form-select lsb-pl-2 lsb-pr-10 lsb-py-1 lsb-text-sm lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md",
+            value: @story_id %>
+      </.form>
+    <% end %>
     """
   end
 
@@ -261,11 +280,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
       |> Map.get(:playground_slots, [])
       |> Enum.filter(&String.match?(&1, ~r/^<:#{slot_id}[>\s]/))
 
-    if Enum.any?(slots) do
-      Enum.join(slots, "\n")
-    else
-      nil
-    end
+    if Enum.any?(slots), do: slots, else: nil
   end
 
   defp form_id(entry) do
@@ -276,6 +291,17 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp playground_preview_id(entry) do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
+  end
+
+  defp story_options(entry) do
+    for story <- entry.stories do
+      label =
+        if story.description,
+          do: story.description,
+          else: story.id |> to_string() |> String.capitalize() |> String.replace("_", " ")
+
+      {label, story.id}
+    end
   end
 
   defp type_badge(assigns = %{type: :string}) do
@@ -427,7 +453,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           end
       end
 
-    send_attributes(playground_attrs)
+    send_attributes(playground_attrs, assigns.playground_block, assigns.playground_slots)
 
     {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
@@ -438,16 +464,31 @@ defmodule PhxLiveStorybook.Entry.Playground do
         socket = %{assigns: assigns}
       ) do
     playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
-    send_attributes(playground_attrs)
+    send_attributes(playground_attrs, assigns.playground_block, assigns.playground_slots)
 
     {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
 
-  defp send_attributes(attributes) do
+  def handle_event("set-story", %{"story" => %{"story_id" => story_id}}, socket) do
+    case Enum.find(socket.assigns.entry.stories, &(to_string(&1.id) == story_id)) do
+      story = %Story{} ->
+        send_attributes(story.attributes, story.block, story.slots)
+
+      %StoryGroup{stories: [story | _]} ->
+        send_attributes(story.attributes, story.block, story.slots)
+
+      _ ->
+        nil
+    end
+
+    {:noreply, patch_to(socket, socket.assigns.entry, %{tab: :playground, story_id: story_id})}
+  end
+
+  defp send_attributes(attributes, block, slots) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       @topic,
-      {:new_attributes, self(), attributes}
+      {:new_attributes, self(), attributes, block, slots}
     )
   end
 

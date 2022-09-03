@@ -75,7 +75,9 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
       <%= if @playground do %>
         <%= live_render @socket, PlaygroundPreviewLive,
           id: playground_preview_id(@entry),
-          session: %{"entry_path" => @entry_path, "story_id" => @story_id, "backend_module" => to_string(@backend_module), "theme" => @theme, "parent_pid" => @parent_pid},
+          session: %{"entry_path" => @entry_path, "story_id" => @story_id,
+          "backend_module" => to_string(@backend_module), "theme" => @theme,
+          "parent_pid" => @parent_pid},
           container: {:div, style: "height: 100vh;"}
         %>
       <% else %>
