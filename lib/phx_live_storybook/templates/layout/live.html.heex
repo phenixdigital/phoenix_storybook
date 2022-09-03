@@ -10,8 +10,8 @@
 
     <%= if themes = themes(@socket) do %>
       <div class="lsb lsb-absolute lsb-top-4 lsb-right-14 lg:lsb-right-5 lsb-inline-block ">
-        <button type="button" class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
-          <i class={"lsb far fa-palette fa-xl #{current_theme_dropdown_class(@socket, assigns)}"}></i>
+        <button type="button" class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
+          <i class={"lsb far fa-palette #{current_theme_dropdown_class(@socket, assigns)}"}></i>
         </button>
         
         <div id="lsb-theme-dropdown" class="lsb lsb-hidden lsb-origin-top-right lsb-absolute lsb-right-0 lsb-mt-2 lsb-w-52 lsb-rounded-md lsb-shadow-lg lsb-bg-white lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 lsb-divide-y lsb-divide-gray-100 focus:lsb-outline-none" phx-click-away={JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}>
@@ -39,8 +39,8 @@
   </div>
 
   <div class="lsb lg:lsb-hidden lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
-    <button type="button" phx-click={JS.show(to: "#search-container") |> JS.dispatch("lsb:focus-input", to: "#search-input") |> JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600", to: "#entry-0")} class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500">
-      <i class="lsb fal fa-magnifying-glass fa-xl"></i>
+    <button type="button" phx-click={JS.show(to: "#search-container") |> JS.dispatch("lsb:focus-input", to: "#search-input") |> JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600", to: "#entry-0")} class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500">
+      <i class="lsb fal fa-magnifying-glass fa"></i>
     </button>
   </div>
   
