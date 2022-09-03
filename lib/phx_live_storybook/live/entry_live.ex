@@ -43,6 +43,7 @@ defmodule PhxLiveStorybook.EntryLive do
          assign(socket,
            entry: entry,
            entry_path: entry_path,
+           story: current_story(entry, params),
            page_title: entry.name,
            tab: current_tab(params, entry),
            theme: current_theme(params, socket),
@@ -65,6 +66,13 @@ defmodule PhxLiveStorybook.EntryLive do
     entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
+
+  defp current_story(%ComponentEntry{stories: stories}, %{"story_id" => story_id}) do
+    Enum.find(stories, &(to_string(&1.id) == story_id))
+  end
+
+  defp current_story(%ComponentEntry{stories: [story | _]}, _), do: story
+  defp current_story(_, _), do: nil
 
   defp current_tab(params, entry) do
     case Map.get(params, "tab") do
@@ -185,15 +193,15 @@ defmodule PhxLiveStorybook.EntryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp render_content(%ComponentEntry{}, assigns = %{tab: :stories}) do
+  defp render_content(entry = %ComponentEntry{}, assigns = %{tab: :stories}) do
     ~H"""
     <div class="lsb lsb-space-y-12 lsb-pb-12">
       <%= for story = %{id: story_id, description: description} <- @entry.stories(),
               story_extra_assigns = story_extra_assigns(story, assigns) do %>
-        <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+        <div id={anchor_id(story)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Story description -->
-          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group">
+          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(story)}", class: "lsb entry-anchor-link" do %>
               <i class="lsb fal fa-link lsb-hidden group-hover:lg:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
               <%= if description do %>
@@ -201,6 +209,12 @@ defmodule PhxLiveStorybook.EntryLive do
               <% else %>
                 <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
+            <% end %>
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden group-hover:lsb-inline-block", "phx-click": "open-in-playground" do %>
+              <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
+                Open in playground
+                <i class="far fa-arrow-right"></i>
+              </span>
             <% end %>
           </div>
 
@@ -248,7 +262,7 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <.live_component module={Playground} id="playground"
       entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
-      story={default_story(@entry)}
+      story={@story}
       playground_error={@playground_error}
       theme={@theme}
     />
@@ -278,9 +292,6 @@ defmodule PhxLiveStorybook.EntryLive do
     end
     |> Map.put(:theme, assigns.theme)
   end
-
-  defp default_story(%ComponentEntry{stories: [story | _]}), do: story
-  defp default_story(_), do: nil
 
   defp iframe_id(entry, story) do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
@@ -355,9 +366,15 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def handle_info(_, socket), do: {:noreply, socket}
 
-  defp patch_to(socket = %{assigns: assigns}, entry, params \\ %{}) do
+  defp patch_to(socket, entry, params \\ %{}) do
+    path = path_to(socket, entry, params)
+    push_patch(socket, to: path)
+  end
+
+  defp path_to(socket = %{assigns: assigns}, entry, params) do
     query =
-      %{theme: assigns[:theme], tab: assigns[:tab]}
+      assigns
+      |> Map.take([:theme, :tab])
       |> Map.merge(params)
       |> Enum.reject(fn {_key, value} -> is_nil(value) end)
 
@@ -368,14 +385,11 @@ defmodule PhxLiveStorybook.EntryLive do
         String.split(entry.storybook_path, "/", trim: true)
       )
 
-    path =
-      if Enum.any?(query) do
-        entry_path <> "?" <> URI.encode_query(query)
-      else
-        entry_path
-      end
-
-    push_patch(socket, to: path)
+    if Enum.any?(query) do
+      entry_path <> "?" <> URI.encode_query(query)
+    else
+      entry_path
+    end
   end
 end
 
