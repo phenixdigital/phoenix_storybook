@@ -172,6 +172,8 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
+  def handle_event(_, _, socket), do: {:noreply, socket}
+
   defp send_stories_attributes(topic, stories) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
