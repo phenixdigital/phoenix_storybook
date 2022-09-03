@@ -212,8 +212,8 @@ defmodule PhxLiveStorybook.EntryLive do
                 <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
-              <span class="lsb lsb-text-base lsb-font-light lsb-text-right lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden group-hover:lsb-inline-block" do %>
+              <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
               </span>
