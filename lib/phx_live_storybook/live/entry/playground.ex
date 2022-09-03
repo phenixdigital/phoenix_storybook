@@ -279,8 +279,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
       assigns
       |> Map.get(:playground_slots, [])
       |> Enum.filter(&String.match?(&1, ~r/^<:#{slot_id}[>\s]/))
+      |> Enum.map_join("\n", &String.trim/1)
+      |> String.trim()
 
-    if Enum.any?(slots), do: slots, else: nil
+    if slots != "", do: slots, else: nil
   end
 
   defp form_id(entry) do
