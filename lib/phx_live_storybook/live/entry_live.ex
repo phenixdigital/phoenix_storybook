@@ -361,13 +361,7 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_preview_pid, pid)}
   end
 
-  def handle_info(event_log = %EventLog{type: :component, parent_pid: pid}, socket)
-      when socket.assigns.playground_preview_pid == pid do
-    send_update(Playground, id: "playground", new_event: "#{inspect(event_log)}")
-    {:noreply, socket}
-  end
-
-  def handle_info(event_log = %EventLog{type: :live_view, view: PlaygroundPreviewLive}, socket) do
+  def handle_info(event_log = %EventLog{view: PlaygroundPreviewLive}, socket) do
     send_update(Playground, id: "playground", new_event: "#{inspect(event_log)}")
     {:noreply, socket}
   end
