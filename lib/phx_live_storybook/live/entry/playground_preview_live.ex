@@ -4,15 +4,24 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   alias Phoenix.PubSub
   alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.ExtraAssignsHelpers
+  alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
+
+  @component_id "playground-preview"
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
 
-    if connected?(socket) do
-      PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
-      PubSub.broadcast!(PhxLiveStorybook.PubSub, "playground", {:playground_preview_pid, self()})
+    if connected?(socket) && session["topic"] do
+      PubSub.subscribe(PhxLiveStorybook.PubSub, session["topic"])
+
+      PubSub.broadcast!(
+        PhxLiveStorybook.PubSub,
+        session["topic"],
+        {:playground_preview_pid, self()}
+      )
     end
 
     story = find_story(entry.stories, session["story_id"])
@@ -23,8 +32,8 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
        attrs: story.attributes,
        block: story.block,
        slots: story.slots,
-       parent_pid: session["parent_pid"],
-       sequence: 0
+       topic: session["topic"],
+       theme: session["theme"]
      ), layout: false}
   end
 
@@ -51,10 +60,24 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   end
 
   def render(assigns) do
+    assigns =
+      assign(
+        assigns,
+        id: @component_id,
+        component_assigns: Map.merge(%{id: @component_id, theme: assigns.theme}, assigns.attrs)
+      )
+
     ~H"""
-    <div id={"playground-preview-live-#{@sequence}"} style="height: 100%;">
-      <div class="lsb lsb-sandbox" style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
-        <%= ComponentRenderer.render_component("playground-preview", fun_or_component(@entry), @attrs, @block, @slots) %>
+    <div id="playground-preview-live" style="height: 100%;">
+      <div class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
+        <%= if @entry.template do %>
+          <%= ComponentRenderer.render_component_within_template(@entry.template, @id,
+              fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports,
+               aliases: @entry.aliases]) %>
+        <% else %>
+          <%= ComponentRenderer.render_component(fun_or_component(@entry), @component_assigns,
+              @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
+        <% end %>
       </div>
     </div>
     """
@@ -71,11 +94,49 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   defp fun_or_component(%ComponentEntry{type: :component, function: function}),
     do: function
 
-  def handle_info({:new_attributes, pid, attrs}, socket = %{assigns: assigns})
-      when pid == assigns.parent_pid do
-    {:noreply, assign(socket, attrs: attrs, sequence: socket.assigns.sequence + 1)}
+  def handle_info({:new_attributes, attrs, block, slots}, socket) do
+    {:noreply, assign(socket, attrs: attrs, block: block, slots: slots)}
+  end
+
+  def handle_info({:new_theme, theme}, socket) do
+    {:noreply, assign(socket, theme: theme)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
+
+  def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+    {_story_id, attrs} =
+      ExtraAssignsHelpers.handle_set_story_assign(
+        assign_params,
+        assigns.attrs,
+        assigns.entry,
+        :flat
+      )
+
+    send_attributes(assigns.topic, attrs)
+    {:noreply, assign(socket, attrs: attrs)}
+  end
+
+  def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+    {_story_id, attrs} =
+      ExtraAssignsHelpers.handle_toggle_story_assign(
+        assign_params,
+        assigns.attrs,
+        assigns.entry,
+        :flat
+      )
+
+    send_attributes(assigns.topic, attrs)
+    {:noreply, assign(socket, attrs: attrs)}
+  end
+
   def handle_event(_, _, socket), do: {:noreply, socket}
+
+  defp send_attributes(topic, attributes) do
+    PubSub.broadcast!(
+      PhxLiveStorybook.PubSub,
+      topic,
+      {:new_attributes, attributes}
+    )
+  end
 end

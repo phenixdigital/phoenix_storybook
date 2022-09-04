@@ -80,35 +80,45 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp pre_class,
     do:
-      "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+      "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
   defp component_code_heex(function, attributes, block, slots) when is_function(function) do
     fun = function_name(function)
     self_closed? = is_nil(block) and Enum.empty?(slots)
 
-    """
+    trim_empty_lines("""
     #{"<.#{fun}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if block, do: indent_block([block])}#{if slots, do: indent_block(slots)}
-    #{unless self_closed?, do: "<./#{fun}>"}
-    """
+    #{if block, do: indent_slot(block)}
+    #{if slots, do: indent_slots(slots)}
+    #{unless self_closed?, do: "</.#{fun}>"}
+    """)
   end
 
   defp component_code_heex(module, attributes, block, slots) when is_atom(module) do
     mod = module_name(module)
     self_closed? = is_nil(block) and Enum.empty?(slots)
 
-    """
+    trim_empty_lines("""
     #{"<.live_component module={#{mod}}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
-    #{if block, do: indent_block([block])}#{if slots, do: indent_block(slots)}
-    #{unless self_closed?, do: "<./live_component>"}
-    """
+    #{if block, do: indent_slot(block)}
+    #{if slots, do: indent_slots(slots)}
+    #{unless self_closed?, do: "</.live_component>"}
+    """)
   end
 
-  defp indent_block(block) do
-    block
-    |> Enum.map(&String.trim/1)
+  defp indent_slots(slots) do
+    Enum.map_join(slots, "\n", &indent_slot/1)
+  end
+
+  defp indent_slot(slot) do
+    slot
+    |> String.split("\n")
     |> Enum.reject(&(&1 == ""))
     |> Enum.map_join("\n", &"  #{&1}")
+  end
+
+  defp trim_empty_lines(code) do
+    code |> String.split("\n") |> Enum.reject(&(&1 == "")) |> Enum.join("\n")
   end
 
   defp format_heex(code) do

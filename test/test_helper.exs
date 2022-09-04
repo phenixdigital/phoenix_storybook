@@ -1,12 +1,24 @@
 ExUnit.start()
 
-defmodule PhxLiveStorybook.TestStorybook do
-  use PhxLiveStorybook, otp_app: :phx_live_storybook
+for module <- [
+      PhxLiveStorybook.EmptyFilesStorybook,
+      PhxLiveStorybook.EmptyFoldersStorybook,
+      PhxLiveStorybook.FlatListStorybook,
+      PhxLiveStorybook.NoContentStorybook,
+      PhxLiveStorybook.TestStorybook,
+      PhxLiveStorybook.TreeStorybook,
+      PhxLiveStorybook.TreeBStorybook
+    ] do
+  defmodule module do
+    use PhxLiveStorybook, otp_app: :phx_live_storybook
+  end
 end
 
 defmodule PhxLiveStorybook.TestRouter do
   use Phoenix.Router
   import PhxLiveStorybook.Router
+
+  storybook_assets()
 
   live_storybook("/storybook",
     otp_app: :phx_live_storybook,

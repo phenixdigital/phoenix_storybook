@@ -4,9 +4,7 @@ defmodule PhxLiveStorybook.SidebarTest do
   import Floki, only: [find: 2]
 
   alias PhxLiveStorybook.Sidebar
-
-  defmodule FlatListStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-  defmodule TreeStorybook, do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+  alias PhxLiveStorybook.{FlatListStorybook, TreeStorybook}
 
   describe "storybook with flat list of entries" do
     test "sidebar contains those 2 entries" do
@@ -28,8 +26,8 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 6 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 6
+      # test sidebar has 7 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 7
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -38,7 +36,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 0
 
       # sixth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
     end
 
     test "sidebar with a path contains all entries, with 2 open folders" do
@@ -46,8 +44,8 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 5 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 6
+      # test sidebar has 7 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 7
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -56,11 +54,11 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 2
 
       # sixth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 2
+      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
     end
 
     test "sidebar with a path has active entry marked as active" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test 1th entry in 1st folder is active (font-bold class)
       [{"div", [{"class", link_class} | _], _}] =
@@ -70,7 +68,7 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar with an icon folder is well displayed" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test 1st folder has 2 icons
       [
@@ -83,7 +81,7 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar folder names are well displayed" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test default folder name (properly humanized)
       [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")

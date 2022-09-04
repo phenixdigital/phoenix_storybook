@@ -11,7 +11,10 @@ defmodule PhxLiveStorybook.ComponentEntry do
     :description,
     :function,
     :component,
+    :imports,
+    :aliases,
     :container,
+    :template,
     attributes: [],
     stories: []
   ]
@@ -124,9 +127,12 @@ defmodule PhxLiveStorybook.Entries do
       icon: module.icon(),
       component: call_if_exported(module, :component),
       function: call_if_exported(module, :function),
+      imports: module.imports(),
+      aliases: module.aliases(),
       container: module.container(),
       attributes: module.attributes(),
-      stories: module.stories()
+      stories: module.stories(),
+      template: module.template()
     }
     |> EntriesValidator.validate!()
   end

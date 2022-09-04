@@ -9,6 +9,19 @@ defmodule PhxLiveStorybook.LayoutView do
 
   @env Application.compile_env(:phx_live_storybook, :env)
 
+  def render_breadcrumb(socket, entry, opts \\ []) do
+    breadcrumb(socket, entry)
+    |> Enum.intersperse(:separator)
+    |> Enum.map_join("", fn
+      :separator ->
+        ~s|<i class="lsb fat fa-angle-right lsb-px-2 lsb-text-slate-500"></i>|
+
+      entry_name ->
+        ~s|<span class="lsb #{opts[:span_class]} [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap">#{entry_name}</span>|
+    end)
+    |> raw()
+  end
+
   defp makeup_stylesheet(conn) do
     style = storybook_setting(conn, :makeup_style, :monokai_style)
     apply(StyleMap, style, []) |> Makeup.stylesheet()
@@ -22,7 +35,7 @@ defmodule PhxLiveStorybook.LayoutView do
   defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
   defp title(socket) do
-    storybook_setting(socket, :storybook_title, "Live Storybook")
+    storybook_setting(socket, :title, "Live Storybook")
   end
 
   defp storybook_setting(conn_or_socket, key, default \\ nil)
@@ -33,31 +46,22 @@ defmodule PhxLiveStorybook.LayoutView do
     Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
   end
 
-  defp render_breadcrumb(socket, entry) do
-    breadcrumb(socket, entry)
-    |> Enum.intersperse(:separator)
-    |> Enum.map_join("", fn
-      :separator ->
-        ~s|<i class="fat fa-angle-right lsb-px-2 lsb-text-slate-500"></i>|
-
-      entry_name ->
-        ~s|<span class="[&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap">#{entry_name}</span>|
-    end)
-    |> raw()
-  end
-
   defp otp_app(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.otp_app
   defp otp_app(conn = %Plug.Conn{}), do: conn.private.otp_app
 
   defp backend_module(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.backend_module
   defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module
 
+  defp assets_path(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.assets_path
+  defp assets_path(conn = %Plug.Conn{}), do: conn.private.assets_path
+
   defp application_static_path(conn, path) do
     routes(conn).static_path(conn, path)
   end
 
   defp asset_path(conn_or_socket, path) do
-    live_storybook_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
+    assets_path = assets_path(conn_or_socket)
+    Path.join(assets_path, asset_file_name(path, @env))
   end
 
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phx_live_storybook))
@@ -90,4 +94,32 @@ defmodule PhxLiveStorybook.LayoutView do
 
     Enum.reverse(breadcrumb)
   end
+
+  defp themes(socket) do
+    backend_module = backend_module(socket)
+    backend_module.config(:themes, nil)
+  end
+
+  defp current_theme_dropdown_class(socket, assigns) do
+    themes = themes(socket)
+    current_theme = Map.get(assigns, :theme)
+
+    case Enum.find(themes, fn {theme, _} -> theme == current_theme end) do
+      nil -> ""
+      {_, opts} -> Keyword.get(opts, :dropdown_class)
+    end
+  end
+
+  defp show_dropdown_transition do
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-0 lsb-scale-95",
+     "lsb-opacity-100 lsb-scale-100"}
+  end
+
+  defp hide_dropdown_transition do
+    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
+     "lsb-opacity-0 lsb-scale-95"}
+  end
+
+  def sandbox_class(%{theme: nil}), do: "lsb-sandbox"
+  def sandbox_class(%{theme: theme}), do: "lsb-sandbox theme-#{theme}"
 end

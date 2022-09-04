@@ -1,7 +1,6 @@
 import Config
 
-for test_module <- [PhxLiveStorybookTest, PhxLiveStorybook.SidebarTest],
-    {storybook_module, content_path, folders} <- [
+for {storybook_module, content_path, folders} <- [
       {"FlatListStorybook", "flat_list", []},
       {"EmptyFilesStorybook", "empty_files", []},
       {"EmptyFoldersStorybook", "empty_folders", []},
@@ -16,9 +15,13 @@ for test_module <- [PhxLiveStorybookTest, PhxLiveStorybook.SidebarTest],
   ]
 
   opts = if Enum.any?(folders), do: Keyword.put(opts, :folders, folders), else: opts
-  config :phx_live_storybook, :"#{test_module}.#{storybook_module}", opts
+  config :phx_live_storybook, :"#{PhxLiveStorybook}.#{storybook_module}", opts
 end
 
 config :phx_live_storybook, PhxLiveStorybook.TestStorybook,
   content_path: Path.expand("../test/fixtures/storybook_content/tree", __DIR__),
-  folders: [a_folder: [open: true]]
+  folders: [a_folder: [open: true]],
+  themes: [
+    default: [name: "Default"],
+    colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+  ]

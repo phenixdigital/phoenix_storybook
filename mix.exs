@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.MixProject do
   use Mix.Project
 
-  @version "0.3.0"
+  @version "0.4.0"
 
   def project do
     [
@@ -64,14 +64,16 @@ defmodule PhxLiveStorybook.MixProject do
 
   defp extras do
     [
-      "guides/sandboxing.md"
+      "guides/components.md",
+      "guides/sandboxing.md",
+      "guides/theming.md"
     ]
   end
 
   defp package do
     [
       maintainers: ["Christian Blavier"],
-      files: ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md),
+      files: ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md CONTRIBUTING.md),
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phenixdigital/phx_live_storybook"}
     ]
@@ -79,13 +81,17 @@ defmodule PhxLiveStorybook.MixProject do
 
   defp aliases do
     [
+      coverage: "coveralls.lcov",
       "assets.watch": "cmd npm run watch --prefix assets",
       "assets.build": [
         "cmd npm run build --prefix assets",
         "phx.digest",
         "phx.digest.clean"
       ],
-      coverage: "coveralls.lcov"
+      publish: [
+        "assets.build",
+        "hex.publish"
+      ]
     ]
   end
 end

@@ -4,11 +4,14 @@
 [![codecov](https://codecov.io/gh/phenixdigital/phx_live_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phx_live_storybook)
 [![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phx_live_storybook.svg)](https://github.com/phenixdigital/phx_live_storybook/releases/)
 
-📚 [Documentation](https://hexdocs.pm/phx_live_storybook) &nbsp; - &nbsp; 🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
+📚 [Documentation](https://hexdocs.pm/phx_live_storybook)
+&nbsp; - &nbsp;
+🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
 
 <!-- MDOC !-->
 
-PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your Phoenix LiveView components.
+PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your
+Phoenix LiveView components.
 
 - Explore all your components, and showcase them with different stories.
 - Browse your component's documentation, with their supported attributes.
@@ -19,9 +22,12 @@ PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI inte
 
 ## How does it work?
 
-PhxLiveStorybook is mounted in your application router and serves its UI at the mounting point of your choice.
+PhxLiveStorybook is mounted in your application router and serves its UI at the mounting point of
+your choice.
 
-It performs automatic discovery of your storybook content under a specified folder (`:content_path`) and then automatically generates a storybook navigation sidebar. Every module detected in your content folder will be loaded and identified as a storybook entry.
+It performs automatic discovery of your storybook content under a specified folder (`:content_path`)
+and then automatically generates a storybook navigation sidebar. Every module detected in your
+content folder will be loaded and identified as a storybook entry.
 
 Three kinds of entries are supported:
 
@@ -65,28 +71,37 @@ defmodule MyAppWeb.Storybook do
 end
 ```
 
-This backend module ensures the storybook gets recompiled as soon as you update your storybook content (see section 5.)
+This backend module ensures the storybook gets recompiled as soon as you update your storybook
+content (see section 5.)
 
 ### 3. Add storybook access to your router
 
-Once installed, update your router's configuration to forward requests to a `PhxLiveStorybook` with a unique name of your choice:
+Once installed, update your router's configuration to forward requests to a `PhxLiveStorybook`
+with a unique name of your choice:
 
 ```elixir
 # lib/my_app_web/router.ex
 use MyAppWeb, :router
 import PhxLiveStorybook.Router
-
 ...
+scope "/" do
+  storybook_assets()
+end
 
-# outside of your main scope & of your :browser pipeline
-live_storybook "/storybook",
-  otp_app: :my_app,
-  backend_module: MyAppWeb.Storybook
+scope "/", PhxLiveStorybookSampleWeb do
+  pipe_through(:browser)
+  ...
+  live_storybook("/storybook",
+    otp_app: :my_app,
+    backend_module: MyAppWeb.Storybook
+  )
+end
 ```
 
 ### 4. Make your components assets available
 
-Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your app and the storybook.
+Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your
+app and the storybook.
 
 In this README, we use `assets/css/my_components.css` as an example.
 
@@ -120,7 +135,8 @@ config :my_app, MyAppWeb.Storybook,
 
 ### 6. Create some content
 
-Then you can start creating some content for your storybook. Storybook can contain different kinds of _entries_:
+Then you can start creating some content for your storybook. Storybook can contain different kinds
+of _entries_:
 
 - **component entries**: to document and showcase your components across different stories (ie. _variants_)
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
@@ -128,7 +144,9 @@ Then you can start creating some content for your storybook. Storybook can conta
 
 _As of `0.3.0`, only component and page entries are available._
 
-Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder. Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook sidebar.
+Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
+Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
+sidebar.
 
 Here is an example of a stateless (function) component entry:
 
@@ -162,6 +180,8 @@ defmodule MyAppWeb.Storybook.Components.Button do
 end
 ```
 
+ℹ️ Learn more on components in the [components guide](guides/components.md).
+
 ### Configuration
 
 Of all config settings, only the `:content_path` key is mandatory.
@@ -194,7 +214,27 @@ config :my_app, MyAppWeb.Storybook,
     "/components": [icon: "far fa-toolbox", open: true],
     "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
   ]
+
+  # Theme settings.
+  # Each theme must have a name, and an optional dropdown_class.
+  # When set, a dropdown is displayed in storybook header to let the user pick a theme.
+  # The dropdown_class is used to render the theme in the dropdown and identify which current
+  # theme is active.
+  #
+  # The chosen theme key will be passed as an assign to all components.
+  # ex: <.component theme={:colorful}/>
+  #
+  # The chosen theme class will also be added to the `.lsb-sandbox` container.
+  # ex: <div class="lsb-sandbox theme-colorful">...</div>
+  #
+  # If no theme has been selected or if no theme is present in the URL the first one is enabled.
+  themes: [
+    default: [name: "Default"],
+    colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+  ]
 ```
+
+ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
 
 <!-- MDOC !-->
 
