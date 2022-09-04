@@ -10,8 +10,6 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   import PhxLiveStorybook.NavigationHelpers
 
-  @topic "playground"
-
   def update(assigns, socket) do
     {:ok,
      socket
@@ -123,7 +121,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
             id={playground_preview_id(@entry)}
             src={live_storybook_path(@socket, :entry_iframe, @entry_path,
                 story_id: inspect(@story_id), theme: @theme, playground: true,
-                parent_pid: inspect(self()))}
+                topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
@@ -136,7 +134,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           "story_id" => @story_id,
           "theme" => @theme,
           "backend_module" => to_string(@backend_module),
-          "parent_pid" => self()
+          "topic" => "playground-#{inspect(self())}"
         }
       %>
         <% end %>
@@ -455,7 +453,12 @@ defmodule PhxLiveStorybook.Entry.Playground do
           end
       end
 
-    send_attributes(playground_attrs, assigns.playground_block, assigns.playground_slots)
+    send_attributes(
+      assigns.topic,
+      playground_attrs,
+      assigns.playground_block,
+      assigns.playground_slots
+    )
 
     {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
@@ -466,31 +469,37 @@ defmodule PhxLiveStorybook.Entry.Playground do
         socket = %{assigns: assigns}
       ) do
     playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
-    send_attributes(playground_attrs, assigns.playground_block, assigns.playground_slots)
+
+    send_attributes(
+      assigns.topic,
+      playground_attrs,
+      assigns.playground_block,
+      assigns.playground_slots
+    )
 
     {:noreply, assign(socket, playground_attrs: playground_attrs)}
   end
 
-  def handle_event("set-story", %{"story" => %{"story_id" => story_id}}, socket) do
-    case Enum.find(socket.assigns.entry.stories, &(to_string(&1.id) == story_id)) do
+  def handle_event("set-story", %{"story" => %{"story_id" => story_id}}, s = %{assigns: assigns}) do
+    case Enum.find(assigns.entry.stories, &(to_string(&1.id) == story_id)) do
       story = %Story{} ->
-        send_attributes(story.attributes, story.block, story.slots)
+        send_attributes(assigns.topic, story.attributes, story.block, story.slots)
 
       %StoryGroup{stories: [story | _]} ->
-        send_attributes(story.attributes, story.block, story.slots)
+        send_attributes(assigns.topic, story.attributes, story.block, story.slots)
 
       _ ->
         nil
     end
 
-    {:noreply, patch_to(socket, socket.assigns.entry, %{tab: :playground, story_id: story_id})}
+    {:noreply, patch_to(s, assigns.entry, %{tab: :playground, story_id: story_id})}
   end
 
-  defp send_attributes(attributes, block, slots) do
+  defp send_attributes(topic, attributes, block, slots) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
-      @topic,
-      {:new_attributes, self(), attributes, block, slots}
+      topic,
+      {:new_attributes, attributes, block, slots}
     )
   end
 

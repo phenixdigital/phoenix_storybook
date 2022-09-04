@@ -90,7 +90,6 @@ defmodule PhxLiveStorybook.EntryLiveTest do
 
     test "renders component, change theme and navigate", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
-      pid = view.pid
 
       view |> element("a.lsb-theme", "Colorful") |> render_click()
       assert_patched(view, "/storybook/component?tab=stories&theme=colorful")
@@ -102,9 +101,9 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert_patched(view, "/storybook/component?tab=playground&theme=colorful")
       assert html =~ "component: hello colorful"
 
-      Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground")
+      Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground-#{inspect(view.pid)}")
       view |> element("a.lsb-theme", "Default") |> render_click()
-      assert_receive {:new_theme, ^pid, :default}
+      assert_receive {:new_theme, :default}
       assert render(view) =~ "component: hello default"
     end
 

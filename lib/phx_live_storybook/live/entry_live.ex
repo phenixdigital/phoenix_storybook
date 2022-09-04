@@ -11,11 +11,11 @@ defmodule PhxLiveStorybook.EntryLive do
 
   import PhxLiveStorybook.NavigationHelpers
 
-  @topic "playground"
-
   def mount(_params, session, socket) do
+    playground_topic = "playground-#{inspect(self())}"
+
     if connected?(socket) do
-      PubSub.subscribe(PhxLiveStorybook.PubSub, @topic)
+      PubSub.subscribe(PhxLiveStorybook.PubSub, playground_topic)
     end
 
     {:ok,
@@ -24,7 +24,8 @@ defmodule PhxLiveStorybook.EntryLive do
        backend_module: session["backend_module"],
        assets_path: session["assets_path"],
        playground_error: nil,
-       playground_preview_pid: nil
+       playground_preview_pid: nil,
+       playground_topic: playground_topic
      )}
   end
 
@@ -267,6 +268,7 @@ defmodule PhxLiveStorybook.EntryLive do
       story={@story}
       playground_error={@playground_error}
       theme={@theme}
+      topic={@playground_topic}
     />
     """
   end
@@ -307,8 +309,8 @@ defmodule PhxLiveStorybook.EntryLive do
   def handle_event("set-theme", %{"theme" => theme}, socket) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
-      @topic,
-      {:new_theme, self(), String.to_atom(theme)}
+      socket.assigns.playground_topic,
+      {:new_theme, String.to_atom(theme)}
     )
 
     {:noreply, patch_to(socket, socket.assigns.entry, %{theme: theme})}
@@ -364,8 +366,7 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, reason)}
   end
 
-  def handle_info({:new_attributes, pid, attrs}, socket = %{assigns: assigns})
-      when pid == assigns.playground_preview_pid do
+  def handle_info({:new_attributes, attrs}, socket) do
     send_update(Playground, id: "playground", new_attributes: attrs)
     {:noreply, socket}
   end

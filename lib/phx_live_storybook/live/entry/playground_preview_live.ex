@@ -9,15 +9,19 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
 
-  @topic "playground"
   @component_id "playground-preview"
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
 
-    if connected?(socket) do
-      PubSub.subscribe(PhxLiveStorybook.PubSub, @topic)
-      PubSub.broadcast!(PhxLiveStorybook.PubSub, @topic, {:playground_preview_pid, self()})
+    if connected?(socket) && session["topic"] do
+      PubSub.subscribe(PhxLiveStorybook.PubSub, session["topic"])
+
+      PubSub.broadcast!(
+        PhxLiveStorybook.PubSub,
+        session["topic"],
+        {:playground_preview_pid, self()}
+      )
     end
 
     story = find_story(entry.stories, session["story_id"])
@@ -28,7 +32,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
        attrs: story.attributes,
        block: story.block,
        slots: story.slots,
-       parent_pid: session["parent_pid"],
+       topic: session["topic"],
        theme: session["theme"]
      ), layout: false}
   end
@@ -90,13 +94,11 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   defp fun_or_component(%ComponentEntry{type: :component, function: function}),
     do: function
 
-  def handle_info({:new_attributes, pid, attrs, block, slots}, socket = %{assigns: assigns})
-      when pid == assigns.parent_pid do
+  def handle_info({:new_attributes, attrs, block, slots}, socket) do
     {:noreply, assign(socket, attrs: attrs, block: block, slots: slots)}
   end
 
-  def handle_info({:new_theme, pid, theme}, socket = %{assigns: assigns})
-      when pid == assigns.parent_pid do
+  def handle_info({:new_theme, theme}, socket) do
     {:noreply, assign(socket, theme: theme)}
   end
 
@@ -111,7 +113,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
         :flat
       )
 
-    send_attributes(attrs)
+    send_attributes(assigns.topic, attrs)
     {:noreply, assign(socket, attrs: attrs)}
   end
 
@@ -124,15 +126,15 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
         :flat
       )
 
-    send_attributes(attrs)
+    send_attributes(assigns.topic, attrs)
     {:noreply, assign(socket, attrs: attrs)}
   end
 
-  defp send_attributes(attributes) do
+  defp send_attributes(topic, attributes) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
-      "playground",
-      {:new_attributes, self(), attributes}
+      topic,
+      {:new_attributes, attributes}
     )
   end
 end

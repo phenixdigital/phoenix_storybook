@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            entry_path: entry_path,
            entry: entry,
            story_id: parse_story_id(params["story_id"]),
-           parent_pid: parse_pid(params["parent_pid"]),
+           topic: params["topic"],
            theme: parse_theme(params["theme"]),
            extra_assigns: %{}
          )}
@@ -55,13 +55,6 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     end
   end
 
-  defp parse_pid(nil), do: nil
-
-  defp parse_pid(pid) do
-    [_, a, b, c, _] = String.split(pid, ["<", ".", ">"])
-    :c.pid(String.to_integer(a), String.to_integer(b), String.to_integer(c))
-  end
-
   defp parse_theme(nil), do: nil
   defp parse_theme(""), do: nil
   defp parse_theme(theme), do: String.to_atom(theme)
@@ -77,7 +70,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
           id: playground_preview_id(@entry),
           session: %{"entry_path" => @entry_path, "story_id" => @story_id,
           "backend_module" => to_string(@backend_module), "theme" => @theme,
-          "parent_pid" => @parent_pid},
+          "topic" => @topic},
           container: {:div, style: "height: 100vh;"}
         %>
       <% else %>
