@@ -66,7 +66,7 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp load_entry(socket, entry_param) do
-    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
+    entry_storybook_path = Path.join(["/" | entry_param])
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 

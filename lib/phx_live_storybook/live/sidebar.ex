@@ -10,8 +10,8 @@ defmodule PhxLiveStorybook.Sidebar do
   end
 
   def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
-    root_path = live_storybook_path(socket, :root)
-    current_path = if current_path, do: [root_path | current_path], else: [root_path]
+    root_path = Path.join("/", live_storybook_path(socket, :root))
+    current_path = if current_path, do: Path.join([root_path | current_path]), else: root_path
 
     {:ok,
      socket
@@ -21,8 +21,7 @@ defmodule PhxLiveStorybook.Sidebar do
        root_entries: [root_entry(backend_module)],
        current_path: current_path
      )
-     |> assign_opened_folders(root_path)
-     |> assign(current_path: Enum.join(current_path, "/"))}
+     |> assign_opened_folders(root_path)}
   end
 
   defp root_entry(backend_module) do
@@ -44,7 +43,7 @@ defmodule PhxLiveStorybook.Sidebar do
             folder_opts[:open],
             reduce: assigns.opened_folders do
           opened_folders ->
-            MapSet.put(opened_folders, "#{root_path}#{folder_path}")
+            MapSet.put(opened_folders, Path.join(root_path, folder_path))
         end
       else
         assigns.opened_folders
@@ -52,10 +51,14 @@ defmodule PhxLiveStorybook.Sidebar do
 
     # then opening folders based on current request path
     {opened_folders, _} =
-      for path_item <- Enum.slice(assigns.current_path, 0..2),
-          reduce: {opened_folders, nil} do
+      for path_item <-
+            assigns.current_path
+            |> String.split("/")
+            |> Enum.reject(&(&1 == ""))
+            |> Enum.slice(0..-2),
+          reduce: {opened_folders, "/"} do
         {opened_folders, path_acc} ->
-          path = if path_acc, do: "#{path_acc}/#{path_item}", else: path_item
+          path = Path.join(path_acc, path_item)
           {MapSet.put(opened_folders, path), path}
       end
 
@@ -83,7 +86,7 @@ defmodule PhxLiveStorybook.Sidebar do
       </div>
 
       <nav class="lsb lsb-flex-1 xl:lsb-sticky">
-        <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
+        <%= render_entries(assign(assigns, entries: @root_entries, folder_path: @root_path, root: true)) %>
       </nav>
 
       <div class="lsb lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
@@ -104,7 +107,7 @@ defmodule PhxLiveStorybook.Sidebar do
         <li class="lsb">
           <%= case entry do %>
             <% %FolderEntry{nice_name: nice_name, storybook_path: storybook_path, sub_entries: sub_entries, icon: folder_icon} -> %>
-              <% folder_path = @root_path <> storybook_path %>
+              <% folder_path = Path.join(@root_path, storybook_path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div class="lsb lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer lsb-group hover:lsb-text-indigo-600"
                 phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={folder_path}
@@ -127,11 +130,11 @@ defmodule PhxLiveStorybook.Sidebar do
               </div>
 
               <%= if open_folder? or @root do %>
-                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [storybook_path], root: false)) %>
+                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: Path.join(@folder_path, storybook_path), root: false)) %>
               <% end %>
 
             <% %ComponentEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
-              <% entry_path =  @root_path <> storybook_path %>
+              <% entry_path = Path.join(@root_path, storybook_path) %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
@@ -140,7 +143,7 @@ defmodule PhxLiveStorybook.Sidebar do
               </div>
 
             <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
-              <% entry_path =  @root_path <> storybook_path %>
+              <% entry_path = Path.join(@root_path, storybook_path) %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
                   <i class={"lsb #{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>

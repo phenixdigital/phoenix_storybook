@@ -40,7 +40,7 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar with a path contains all entries, with 2 open folders" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "/a_folder/aa_component")
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
