@@ -32,11 +32,11 @@ defmodule PhxLiveStorybook.Entry.Playground do
   end
 
   defp assign_stories(socket, id, stories) do
-    assign(
-      socket,
-      story_id: id,
-      stories: for(s <- stories, do: Map.take(s, [:id, :attributes, :block, :slots]))
-    )
+    socket
+    |> assign(story_id: id)
+    |> assign_new(:stories, fn ->
+      for(s <- stories, do: Map.take(s, [:id, :attributes, :block, :slots]))
+    end)
   end
 
   defp assign_playground_fields(socket = %{assigns: %{entry: entry, stories: stories}}) do
@@ -440,8 +440,11 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp maybe_locked_attr_input(assigns) do
     case Map.get(assigns.fields, assigns.attr_id) do
-      :locked -> ~H|<span class="lsb lsb-text-gray-300 lsb-text-sm">[Multiple values]</span>|
-      value -> assigns |> assign(:value, value) |> attr_input()
+      :locked ->
+        ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+
+      value ->
+        assigns |> assign(:value, value) |> attr_input()
     end
   end
 
