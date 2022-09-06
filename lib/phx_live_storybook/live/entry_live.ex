@@ -279,7 +279,7 @@ defmodule PhxLiveStorybook.EntryLive do
   defp render_content(%PageEntry{}, assigns) do
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(assigns)}"}>
-      <%= raw(@backend_module.render_page(@entry.module, @tab)) %>
+      <%= raw(@backend_module.render_page(@entry.module, %{tab: @tab, theme: @theme})) %>
     </div>
     """
   end
