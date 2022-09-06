@@ -84,7 +84,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html = view |> element("a", "Source") |> render_click()
-      assert_patched(view, "/storybook/component?tab=source&theme=default")
+      assert_patched(view, "/storybook/component?story_id=hello&tab=source&theme=default")
       assert html =~ "defmodule"
     end
 
@@ -92,18 +92,18 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       view |> element("a.lsb-theme", "Colorful") |> render_click()
-      assert_patched(view, "/storybook/component?tab=stories&theme=colorful")
+      assert_patched(view, "/storybook/component?story_id=hello&tab=stories&theme=colorful")
 
       view |> element("a", "Source") |> render_click()
-      assert_patched(view, "/storybook/component?tab=source&theme=colorful")
+      assert_patched(view, "/storybook/component?story_id=hello&tab=source&theme=colorful")
 
       html = view |> element("a", "Playground") |> render_click()
-      assert_patched(view, "/storybook/component?tab=playground&theme=colorful")
+      assert_patched(view, "/storybook/component?story_id=hello&tab=playground&theme=colorful")
       assert html =~ "component: hello colorful"
 
       Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground-#{inspect(view.pid)}")
       view |> element("a.lsb-theme", "Default") |> render_click()
-      assert_receive {:new_theme, :default}
+      assert_receive {:set_theme, :default}
       assert render(view) =~ "component: hello default"
     end
 
@@ -115,7 +115,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
         |> element(".entry-nav-form select")
         |> render_change(%{navigation: %{tab: "source"}})
 
-      assert_patched(view, "/storybook/component?tab=source&theme=default")
+      assert_patched(view, "/storybook/component?story_id=hello&tab=source&theme=default")
       assert html =~ "defmodule"
     end
 
@@ -195,13 +195,13 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       element(view, "#hello a", "Open in playground") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=hello&tab=playground")
+      assert_patched(view, "/storybook/component?story_id=hello&tab=playground&theme=default")
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
 
       view |> element("a", "Stories") |> render_click()
 
       element(view, "#world a", "Open in playground") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=world&tab=playground")
+      assert_patched(view, "/storybook/component?story_id=world&tab=playground&theme=default")
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
   end

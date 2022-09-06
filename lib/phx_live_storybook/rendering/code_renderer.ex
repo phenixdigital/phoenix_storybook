@@ -42,12 +42,16 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   end
 
   @doc """
-  Renders a component code snippet, wrapped in a `<pre>` tag.
+  Renders a component code snippet.
   """
   def render_component_code(fun_or_mod, attributes, block, slots, assigns \\ %{}) do
+    ~H"<%= component_code_heex(fun_or_mod, attributes, block, slots) |> format_heex() %>"
+  end
+
+  def render_pre_tag(fun, assigns \\ %{}) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_heex(fun_or_mod, attributes, block, slots) |> format_heex() %>
+    <%= fun.() %>
     </pre>
     """
   end
@@ -78,7 +82,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     end
   end
 
-  defp pre_class,
+  def pre_class,
     do:
       "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
