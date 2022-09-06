@@ -62,7 +62,7 @@ defmodule PhxLiveStorybook.Entries do
       acc ->
         cond do
           File.dir?(file_path) ->
-            storybook_path = "#{storybook_path}/#{file_name}"
+            storybook_path = Path.join(["/", storybook_path, file_name])
             folder_config = Keyword.get(folders_config, String.to_atom(storybook_path), [])
 
             [
@@ -120,7 +120,7 @@ defmodule PhxLiveStorybook.Entries do
       module: module,
       type: module.storybook_type(),
       path: path,
-      storybook_path: "#{storybook_path}/#{Macro.underscore(module_name)}",
+      storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
       name: module.name(),
       module_name: module_name,
       description: module.description(),
@@ -143,7 +143,7 @@ defmodule PhxLiveStorybook.Entries do
     %PageEntry{
       module: module,
       path: path,
-      storybook_path: "#{storybook_path}/#{Macro.underscore(module_name)}",
+      storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
       module_name: module_name,
       name: module.name(),
       description: module.description(),
