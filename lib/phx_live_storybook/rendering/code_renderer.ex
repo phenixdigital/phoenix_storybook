@@ -48,14 +48,6 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     ~H"<%= component_code_heex(fun_or_mod, attributes, block, slots) |> format_heex() %>"
   end
 
-  def render_pre_tag(fun, assigns \\ %{}) do
-    ~H"""
-    <pre class={pre_class()}>
-    <%= fun.() %>
-    </pre>
-    """
-  end
-
   @doc """
   Renders a component's (live or not) source code, wrapped in a `<pre>` tag.
   """

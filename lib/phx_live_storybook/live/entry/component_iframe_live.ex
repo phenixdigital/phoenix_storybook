@@ -40,7 +40,6 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
   end
 
   defp parse_atom(nil), do: nil
-  defp parse_atom(""), do: nil
   defp parse_atom(atom_s), do: String.to_atom(atom_s)
 
   def render(assigns) do
