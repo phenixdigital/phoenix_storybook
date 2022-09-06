@@ -6,18 +6,19 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
 
   @doc false
   # Precompiling component preview & code snippet for every component / story couple.
-  def page_quotes(leave_entries, caller_file) do
+  def page_quotes(leave_entries, themes, caller_file) do
     page_quotes =
       for %PageEntry{module: module, navigation: navigation} <- leave_entries,
           navigation = Enum.map(navigation, &elem(&1, 0)),
           navigation = if(navigation == [], do: [nil], else: navigation),
-          tab <- navigation do
+          tab <- navigation,
+          {theme, _label} <- themes do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
-          def render_page(unquote(module), unquote(tab)) do
+          def render_page(unquote(module), %{tab: unquote(tab), theme: unquote(theme)}) do
             unquote(
               try do
-                module.render(%{tab: tab}) |> to_raw_html()
+                module.render(%{tab: tab, theme: theme}) |> to_raw_html()
               rescue
                 _exception ->
                   reraise CompileError,
@@ -33,15 +34,18 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
         end
       end
 
-    default_quote =
-      quote do
-        @impl PhxLiveStorybook.BackendBehaviour
-        def render_page(module, tab) do
-          raise "unknown tab #{inspect(tab)} for module #{inspect(module)}"
+    if Enum.any?(page_quotes) do
+      page_quotes
+    else
+      [
+        quote do
+          @impl PhxLiveStorybook.BackendBehaviour
+          def render_page(module, assigns) do
+            raise "no page has been defined yet in this storybook"
+          end
         end
-      end
-
-    page_quotes ++ [default_quote]
+      ]
+    end
   end
 
   defp to_raw_html(heex) do

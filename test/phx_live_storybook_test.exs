@@ -252,7 +252,7 @@ defmodule PhxLiveStorybookTest do
     alias Elixir.TreeStorybook.APage
 
     test "it should return HEEX for the page" do
-      assert TreeStorybook.render_page(APage, nil) |> rendered_to_string() =~
+      assert TreeStorybook.render_page(APage, %{tab: nil, theme: nil}) |> rendered_to_string() =~
                "<span>A Page</span>"
     end
 

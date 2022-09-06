@@ -96,7 +96,7 @@ defmodule PhxLiveStorybook do
       ComponentQuotes.render_component_quotes(leave_entries, themes, __CALLER__.file),
       ComponentQuotes.render_code_quotes(leave_entries),
       SourceQuotes.source_quotes(leave_entries),
-      PageQuotes.page_quotes(leave_entries, __CALLER__.file)
+      PageQuotes.page_quotes(leave_entries, themes, __CALLER__.file)
     ]
   end
 
