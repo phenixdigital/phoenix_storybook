@@ -200,7 +200,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: false"
     end
 
-    test "playground form is in sync with component assigns", %{conn: conn} do
+    test "playground form is in sync with stories assigns", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
       assert [playground_preview_view] = live_children(view)
       playground_element = element(playground_preview_view, "#playground-preview-live")
@@ -224,6 +224,43 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_toggle_selector, "value") == "true"
       view |> form(form_selector, %{playground: %{status: true}}) |> render_change()
       assert render(playground_element) =~ "template_component: bar / status: true"
+    end
+
+    test "playground form is in sync with a group of stories", %{conn: conn} do
+      {:ok, view, _html} =
+        live(conn, "/storybook/templates/template_component?tab=playground&story_id=group")
+
+      assert [playground_preview_view] = live_children(view)
+      playground_element = element(playground_preview_view, "#playground-preview-live")
+
+      assert render(playground_element) =~ "template_component: one"
+      assert render(playground_element) =~ "template_component: two"
+      playground_preview_view |> element("#one #set-foo") |> render_click()
+      assert render(playground_element) =~ "template_component: foo / status: false"
+      assert render(playground_element) =~ "template_component: two / status: false"
+
+      form_selector = "#tree_storybook_template_component-playground-form"
+      form_label_selector = "#tree_storybook_template_component-playground-form_label"
+      form_toggle_selector = "#tree_storybook_template_component-playground-form_status"
+
+      assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
+
+      playground_preview_view |> element("#two #set-foo") |> render_click()
+      assert render(playground_element) =~ "template_component: foo / status: false"
+      refute render(playground_element) =~ "template_component: bar / status: false"
+
+      view |> form(form_selector, %{playground: %{label: "bar"}}) |> render_change()
+      assert render(playground_element) =~ "template_component: bar / status: false"
+
+      playground_preview_view |> element("#one #toggle-status") |> render_click()
+      assert render(playground_element) =~ "template_component: bar / status: true"
+      assert render(playground_element) =~ "template_component: bar / status: false"
+
+      assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
+      playground_preview_view |> element("#two #toggle-status") |> render_click()
+      view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
+      assert render(playground_element) =~ "template_component: bar / status: true"
+      refute render(playground_element) =~ "template_component: bar / status: false"
     end
   end
 

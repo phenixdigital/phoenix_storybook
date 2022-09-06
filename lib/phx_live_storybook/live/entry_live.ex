@@ -42,11 +42,14 @@ defmodule PhxLiveStorybook.EntryLive do
         raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
 
       entry ->
+        story = current_story(entry, params)
+
         {:noreply,
          assign(socket,
            entry: entry,
            entry_path: entry_path,
-           story: current_story(entry, params),
+           story: story,
+           story_id: if(story, do: story.id, else: nil),
            page_title: entry.name,
            tab: current_tab(params, entry),
            theme: current_theme(params, socket),
@@ -213,7 +216,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
@@ -310,10 +313,10 @@ defmodule PhxLiveStorybook.EntryLive do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       socket.assigns.playground_topic,
-      {:new_theme, String.to_atom(theme)}
+      {:set_theme, String.to_atom(theme)}
     )
 
-    {:noreply, patch_to(socket, socket.assigns.entry, %{theme: theme})}
+    {:noreply, socket |> assign(:theme, theme) |> patch_to(socket.assigns.entry, %{theme: theme})}
   end
 
   def handle_event("set-tab", %{"tab" => tab}, socket) do
@@ -366,8 +369,8 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, reason)}
   end
 
-  def handle_info({:new_attributes, attrs}, socket) do
-    send_update(Playground, id: "playground", new_attributes: attrs)
+  def handle_info({:new_story_attributes, story_id, attrs}, socket) do
+    send_update(Playground, id: "playground", story_id: story_id, new_attributes: attrs)
     {:noreply, socket}
   end
 

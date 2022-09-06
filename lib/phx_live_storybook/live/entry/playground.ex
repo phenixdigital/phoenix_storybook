@@ -3,6 +3,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   use PhxLiveStorybook.Web, :live_component
 
   alias Phoenix.{LiveView.JS, PubSub}
+  alias PhxLiveStorybook.Attr
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.Rendering.CodeRenderer
@@ -14,49 +15,100 @@ defmodule PhxLiveStorybook.Entry.Playground do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_story_attributes()
+     |> assign_stories()
      |> assign_new_attributes(assigns)
+     |> assign_playground_fields()
+     |> assign_playground_block()
+     |> assign_playground_slots()
      |> assign(upper_tab: :preview, lower_tab: :attributes)}
   end
 
-  defp assign_story_attributes(socket = %{assigns: assigns}) do
+  defp assign_stories(socket = %{assigns: assigns}) do
     case assigns.story do
-      story = %Story{} ->
-        assign_story_attributes(socket, story, story.id)
-
-      %StoryGroup{id: group_id, stories: [story | _]} ->
-        assign_story_attributes(socket, story, [group_id, story.id])
-
-      _ ->
-        assign_story_attributes(socket, nil, nil)
+      story = %Story{} -> assign_stories(socket, story.id, [story])
+      %StoryGroup{id: group_id, stories: stories} -> assign_stories(socket, group_id, stories)
+      _ -> assign_stories(socket, nil, [])
     end
   end
 
-  defp assign_story_attributes(socket, nil, nil) do
-    assign(socket,
-      story_id: nil,
-      story: nil,
-      playground_attrs: %{},
-      playground_block: nil,
-      playground_slots: []
-    )
+  defp assign_stories(socket, id, stories) do
+    socket
+    |> assign(story_id: id)
+    |> assign_new(:stories, fn ->
+      for(s <- stories, do: Map.take(s, [:id, :attributes, :block, :slots]))
+    end)
   end
 
-  defp assign_story_attributes(socket, story, story_id) do
-    assign(socket,
-      story: story,
-      story_id: story_id,
-      playground_attrs: story.attributes,
-      playground_block: story.block,
-      playground_slots: story.slots
-    )
+  defp assign_playground_fields(socket = %{assigns: %{entry: entry, stories: stories}}) do
+    fields =
+      for attr = %Attr{type: t} <- entry.attributes, t not in ~w(block slot)a, reduce: %{} do
+        acc ->
+          attr_values = for story <- stories, do: Map.get(story.attributes, attr.id)
+
+          field =
+            if attr_values |> Enum.uniq() |> length() == 1 do
+              hd(attr_values)
+            else
+              :locked
+            end
+
+          Map.put(acc, attr.id, field)
+      end
+
+    assign(socket, :fields, fields)
+  end
+
+  defp assign_playground_block(socket = %{assigns: %{stories: stories}}) do
+    blocks = for story <- stories, do: story.block
+
+    block =
+      if blocks |> Enum.uniq() |> length() == 1 do
+        hd(blocks)
+      else
+        :locked
+      end
+
+    assign(socket, :block, block)
+  end
+
+  defp assign_playground_slots(socket = %{assigns: %{entry: entry, stories: stories}}) do
+    slots =
+      for %Attr{type: :slot, id: attr_id} <- entry.attributes, reduce: %{} do
+        acc ->
+          slots =
+            for story <- stories do
+              for(slot <- story.slots, String.match?(slot, ~r/^<:#{attr_id}[>\s]/), do: slot)
+              |> Enum.map_join("\n", &String.trim/1)
+              |> String.trim()
+            end
+
+          slot =
+            if slots |> Enum.uniq() |> length() == 1 do
+              hd(slots)
+            else
+              :locked
+            end
+
+          Map.put(acc, attr_id, slot)
+      end
+
+    assign(socket, :slots, slots)
   end
 
   # new_attributes may be passed by parent (LiveView) send_update.
   # It happens whenever parent is notified some component assign has been
   # updated by the component itself.
-  defp assign_new_attributes(socket, _assigns = %{new_attributes: attrs}) do
-    assign(socket, playground_attrs: Map.merge(socket.assigns.playground_attrs, attrs))
+  defp assign_new_attributes(socket, _assigns = %{story_id: story_id, new_attributes: attrs}) do
+    stories =
+      for story <- socket.assigns.stories do
+        if story.id == story_id do
+          update_story_attributes(story, attrs)
+        else
+          story
+        end
+      end
+
+    assign(socket, stories: stories)
   end
 
   defp assign_new_attributes(socket, _assigns), do: socket
@@ -127,16 +179,16 @@ defmodule PhxLiveStorybook.Entry.Playground do
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
           />
         <% else %>
-        <%= live_render @socket, PlaygroundPreviewLive,
-        id: playground_preview_id(@entry),
-        session: %{
-          "entry_path" => @entry_path,
-          "story_id" => @story_id,
-          "theme" => @theme,
-          "backend_module" => to_string(@backend_module),
-          "topic" => "playground-#{inspect(self())}"
-        }
-      %>
+          <%= live_render @socket, PlaygroundPreviewLive,
+                id: playground_preview_id(@entry),
+                session: %{
+                  "entry_path" => @entry_path,
+                  "story_id" => @story_id,
+                  "theme" => @theme,
+                  "backend_module" => to_string(@backend_module),
+                  "topic" => "playground-#{inspect(self())}"
+                }
+          %>
         <% end %>
       </div>
       <%= if @upper_tab == :code do %>
@@ -144,9 +196,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
             <i class="lsb fa fa-copy lsb-text-inherit"></i>
           </div>
-          <%= CodeRenderer.render_component_code(
-              fun_or_component(@entry), @playground_attrs, @playground_block, @playground_slots
-            ) %>
+          <.playground_code entry={@entry} stories={@stories}/>
         </div>
       <% end %>
       <%= if @playground_error do %>
@@ -160,6 +210,15 @@ defmodule PhxLiveStorybook.Entry.Playground do
         </div>
       <% end %>
     </div>
+    """
+  end
+
+  defp playground_code(assigns) do
+    ~H"""
+    <pre class={CodeRenderer.pre_class()}>
+    <%= for story <- @stories do %>
+    <%= CodeRenderer.render_component_code(fun_or_component(@entry), story.attributes, story.block, story.slots) %><% end %>
+    </pre>
     """
   end
 
@@ -208,7 +267,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                           <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
-                          <.attr_input form={f} attr_id={attr.id} type={attr.type} playground_attrs={@playground_attrs} options={attr.options} myself={@myself}/>
+                          <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type} fields={@fields} options={attr.options} myself={@myself}/>
                         </td>
                       </tr>
                     <% end %>
@@ -228,7 +287,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                         </td>
                         <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                       </tr>
-                      <%= if block_or_slot(assigns, attr) do %>
+                      <%= if block_or_slot?(assigns, attr) do %>
                         <tr class="lsb !lsb-border-t-0">
                           <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
                             <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
@@ -268,19 +327,34 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
+  def block_or_slot?(assigns, _attr = %{type: :block}) do
+    case assigns.block do
+      nil -> false
+      "" -> false
+      _ -> true
+    end
+  end
+
+  def block_or_slot?(assigns, _attr = %{type: :slot, id: slot_id}) do
+    case Map.get(assigns.slots, slot_id) do
+      nil -> false
+      "" -> false
+      _ -> true
+    end
+  end
+
   def block_or_slot(assigns, _attr = %{type: :block}) do
-    assigns[:playground_block]
+    case assigns.block do
+      :locked -> "[Multiple values]"
+      block -> block
+    end
   end
 
   def block_or_slot(assigns, _attr = %{type: :slot, id: slot_id}) do
-    slots =
-      assigns
-      |> Map.get(:playground_slots, [])
-      |> Enum.filter(&String.match?(&1, ~r/^<:#{slot_id}[>\s]/))
-      |> Enum.map_join("\n", &String.trim/1)
-      |> String.trim()
-
-    if slots != "", do: slots, else: nil
+    case Map.get(assigns.slots, slot_id) do
+      :locked -> "[Multiple values]"
+      slot -> slot
+    end
   end
 
   defp form_id(entry) do
@@ -364,12 +438,19 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp type_label(type), do: Macro.to_string(type)
 
-  defp attr_input(assigns = %{type: :boolean}) do
-    value = Map.get(assigns.playground_attrs, assigns.attr_id, false)
+  defp maybe_locked_attr_input(assigns) do
+    case Map.get(assigns.fields, assigns.attr_id) do
+      :locked ->
+        ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
 
+      value ->
+        assigns |> assign(:value, value) |> attr_input()
+    end
+  end
+
+  defp attr_input(assigns = %{type: :boolean, value: value}) do
     assigns =
       assign(assigns,
-        value: value,
         bg_class: if(value, do: "lsb-bg-indigo-600", else: "lsb-bg-gray-200"),
         translate_class: if(value, do: "lsb-translate-x-5", else: "lsb-translate-x-0")
       )
@@ -386,24 +467,23 @@ defmodule PhxLiveStorybook.Entry.Playground do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
-    <%= number_input(@form, @attr_id, value: Map.get(@playground_attrs, @attr_id), step: @step, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id, value: @value, step: @step, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
   defp attr_input(assigns = %{type: :integer, options: min..max}) do
     ~H"""
-    <%= number_input(@form, @attr_id, value: Map.get(@playground_attrs, @attr_id), min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id, value: @value, min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
   defp attr_input(assigns = %{type: :string, options: nil}) do
     ~H"""
-    <%= text_input(@form, @attr_id, value: Map.get(@playground_attrs, @attr_id), class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(@form, @attr_id, value: @value, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: _type, options: nil}) do
-    value = Map.get(assigns.playground_attrs, assigns.attr_id)
+  defp attr_input(assigns = %{type: _type, options: nil, value: value}) do
     assigns = assign(assigns, value: if(is_nil(value), do: "", else: inspect(value)))
 
     ~H"""
@@ -415,7 +495,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     assigns = assign(assigns, options: [nil | Enum.map(assigns.options, &to_string/1)])
 
     ~H"""
-    <%= select(@form, @attr_id, @options, value: Map.get(@playground_attrs, @attr_id),
+    <%= select(@form, @attr_id, @options, value: @value,
       class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
     """
   end
@@ -441,26 +521,22 @@ defmodule PhxLiveStorybook.Entry.Playground do
   def handle_event("playground-change", %{"playground" => params}, socket = %{assigns: assigns}) do
     entry = assigns.entry
 
-    playground_attrs =
-      for {key, value} <- params, key = String.to_atom(key), reduce: assigns.playground_attrs do
+    fields =
+      for {key, value} <- params, key = String.to_atom(key), reduce: assigns.fields do
         acc ->
           attr_definition = Enum.find(entry.attributes, &(&1.id == key))
 
           if (is_nil(value) || value == "") and !attr_definition.required do
-            Map.delete(acc, key)
+            Map.put(acc, key, nil)
           else
             Map.put(acc, key, cast_value(entry, key, value))
           end
       end
 
-    send_attributes(
-      assigns.topic,
-      playground_attrs,
-      assigns.playground_block,
-      assigns.playground_slots
-    )
+    stories = update_stories_attributes(assigns.stories, fields)
+    send_attributes(assigns.topic, fields)
 
-    {:noreply, assign(socket, playground_attrs: playground_attrs)}
+    {:noreply, assign(socket, stories: stories, fields: fields)}
   end
 
   def handle_event(
@@ -468,39 +544,43 @@ defmodule PhxLiveStorybook.Entry.Playground do
         %{"toggled" => [key, value]},
         socket = %{assigns: assigns}
       ) do
-    playground_attrs = Map.put(assigns.playground_attrs, String.to_atom(key), value)
-
-    send_attributes(
-      assigns.topic,
-      playground_attrs,
-      assigns.playground_block,
-      assigns.playground_slots
-    )
-
-    {:noreply, assign(socket, playground_attrs: playground_attrs)}
+    fields = Map.put(assigns.fields, String.to_atom(key), value)
+    stories = update_stories_attributes(assigns.stories, fields)
+    send_attributes(assigns.topic, fields)
+    {:noreply, assign(socket, stories: stories, fields: fields)}
   end
 
   def handle_event("set-story", %{"story" => %{"story_id" => story_id}}, s = %{assigns: assigns}) do
     case Enum.find(assigns.entry.stories, &(to_string(&1.id) == story_id)) do
-      story = %Story{} ->
-        send_attributes(assigns.topic, story.attributes, story.block, story.slots)
-
-      %StoryGroup{stories: [story | _]} ->
-        send_attributes(assigns.topic, story.attributes, story.block, story.slots)
-
-      _ ->
-        nil
+      nil -> nil
+      story -> send_new_story(assigns.topic, story)
     end
 
     {:noreply, patch_to(s, assigns.entry, %{tab: :playground, story_id: story_id})}
   end
 
-  defp send_attributes(topic, attributes, block, slots) do
+  defp update_stories_attributes(stories, new_attrs) do
+    Enum.map(stories, &update_story_attributes(&1, new_attrs))
+  end
+
+  defp update_story_attributes(story, new_attrs) do
+    attrs = story.attributes |> Map.merge(new_attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
+    %{story | attributes: attrs}
+  end
+
+  defp send_attributes(topic, attributes) do
+    attributes =
+      Enum.reject(attributes, fn {_attr_id, value} -> value == :locked end) |> Map.new()
+
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       topic,
-      {:new_attributes, attributes, block, slots}
+      {:new_attributes_input, attributes}
     )
+  end
+
+  defp send_new_story(topic, story) do
+    PubSub.broadcast!(PhxLiveStorybook.PubSub, topic, {:set_story, story})
   end
 
   defp cast_value(%ComponentEntry{attributes: attributes}, attr_id, value) do

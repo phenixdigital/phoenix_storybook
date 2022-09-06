@@ -26,9 +26,9 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            playground: params["playground"],
            entry_path: entry_path,
            entry: entry,
-           story_id: parse_story_id(params["story_id"]),
+           story_id: parse_atom(params["story_id"]),
            topic: params["topic"],
-           theme: parse_theme(params["theme"]),
+           theme: parse_atom(params["theme"]),
            extra_assigns: %{}
          )}
     end
@@ -39,25 +39,8 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
-  defp parse_story_id(nil), do: nil
-
-  defp parse_story_id(story_id) do
-    ids =
-      story_id
-      |> String.split(~w([ , : ]))
-      |> Enum.map(&String.trim/1)
-      |> Enum.reject(&(&1 == ""))
-      |> Enum.map(&String.to_atom/1)
-
-    case ids do
-      [story_id] -> story_id
-      [_group_id, _story_id] -> ids
-    end
-  end
-
-  defp parse_theme(nil), do: nil
-  defp parse_theme(""), do: nil
-  defp parse_theme(theme), do: String.to_atom(theme)
+  defp parse_atom(nil), do: nil
+  defp parse_atom(atom_s), do: String.to_atom(atom_s)
 
   def render(assigns) do
     assigns =

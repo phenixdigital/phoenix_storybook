@@ -81,10 +81,11 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
         live_with_params(
           conn,
           "/storybook/iframe/a_folder/component",
-          %{"story_id" => "[group, hello]", "playground" => true}
+          %{"story_id" => "group", "playground" => true}
         )
 
       assert html =~ "component: hello"
+      assert html =~ "component: world"
     end
   end
 
