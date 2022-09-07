@@ -32,6 +32,8 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_story_in_group_ids!(path, stories)
     validate_story_description!(path, stories)
     validate_story_in_group_description!(path, stories)
+    validate_story_let!(path, stories)
+    validate_story_in_group_let!(path, stories)
     validate_story_attributes_map_type!(path, stories)
     validate_story_in_group_attributes_map_type!(path, stories)
     validate_story_attribute_types!(path, attributes, stories)
@@ -278,6 +280,22 @@ defmodule PhxLiveStorybook.EntriesValidator do
         "description in story #{inspect(story_id)}, group #{inspect(group_id)} must be a binary"
 
       validate_type!(file_path, description, :string, msg)
+    end
+  end
+
+  defp validate_story_let!(file_path, stories) do
+    for %Story{id: story_id, let: let} <- stories do
+      msg = "let in story #{inspect(story_id)} must be an atom"
+      validate_type!(file_path, let, :atom, msg)
+    end
+  end
+
+  defp validate_story_in_group_let!(file_path, stories) do
+    for %StoryGroup{id: group_id, stories: stories} <- stories,
+        %Story{id: story_id, let: let} <- stories do
+      msg = "let in story #{inspect(story_id)}, group #{inspect(group_id)} must be an atom"
+
+      validate_type!(file_path, let, :atom, msg)
     end
   end
 

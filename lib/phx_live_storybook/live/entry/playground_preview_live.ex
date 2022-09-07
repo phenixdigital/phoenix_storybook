@@ -48,6 +48,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
         for story <- stories do
           %{
             id: story.id,
+            let: story.let,
             block: story.block,
             slots: story.slots,
             attributes:
@@ -67,11 +68,11 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
         <%= for story <- @stories do %>
           <%= if @entry.template do %>
             <%= ComponentRenderer.render_component_within_template(@entry.template, story.id,
-                fun_or_component(@entry), story.attributes, story.block, story.slots,
+                fun_or_component(@entry), story.attributes, story.let, story.block, story.slots,
                 [imports: @entry.imports, aliases: @entry.aliases]) %>
           <% else %>
             <%= ComponentRenderer.render_component(fun_or_component(@entry), story.attributes,
-                story.block, story.slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
+                story.let, story.block, story.slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
           <% end %>
         <% end %>
       </div>

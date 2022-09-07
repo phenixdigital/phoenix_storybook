@@ -475,6 +475,30 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
+  describe "story let is an atom" do
+    test "with an atom let it wont raise" do
+      entry = entry_with_story(id: :story_id, let: :valid)
+      assert validate(entry)
+    end
+
+    test "with an atom let in a story group, it wont raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, let: :valid)
+      assert validate(entry)
+    end
+
+    test "with invalid type it will raise" do
+      entry = entry_with_story(id: :story_id, let: "not_valid")
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "let in story :story_id must be an atom"
+    end
+
+    test "with invalid type in a story group it will raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, let: "not_valid")
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "let in story :story_id, group :group_id must be an atom"
+    end
+  end
+
   describe "story list is a list of %Story{} or %StoryGroup{}" do
     test "with a mix of story and story_group it won't raise" do
       entry = %ComponentEntry{
@@ -760,6 +784,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       stories: [
         %Story{
           id: opts[:id],
+          let: opts[:let],
           description: opts[:description],
           attributes: opts[:attributes] || %{}
         }
@@ -775,6 +800,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
           stories: [
             %Story{
               id: opts[:id],
+              let: opts[:let],
               description: opts[:description],
               attributes: opts[:attributes] || %{}
             }
