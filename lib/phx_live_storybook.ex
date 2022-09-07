@@ -28,6 +28,11 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @callback all_leaves() :: [%ComponentEntry{} | %PageEntry{}]
 
   @doc """
+  Returns all the notes of the storybook content tree as a flat list.
+  """
+  @callback flat_list() :: [%ComponentEntry{} | %PageEntry{}]
+
+  @doc """
   Returns an entry from its absolute path.
   """
   @callback find_entry_by_path(String.t()) :: %ComponentEntry{} | %PageEntry{}

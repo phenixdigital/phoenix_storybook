@@ -19,6 +19,7 @@ defmodule PhxLiveStorybook.Sidebar do
      |> assign(
        root_path: root_path,
        root_entries: [root_entry(backend_module)],
+       entries_flat_list: backend_module.flat_list(),
        current_path: current_path
      )
      |> assign_opened_folders(root_path)}
@@ -96,6 +97,7 @@ defmodule PhxLiveStorybook.Sidebar do
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
       </div>
+      <.hidden_icons entries_flat_list={@entries_flat_list}/>
     </section>
     """
   end
@@ -183,6 +185,17 @@ defmodule PhxLiveStorybook.Sidebar do
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
     MapSet.member?(opened_folders, path)
+  end
+
+  # force caching of all sidebar icons, thus preventing flickering as folders are opened
+  defp hidden_icons(assigns) do
+    ~H"""
+    <div class="lsb lsb-hidden">
+      <%= for %{icon: icon} <- @entries_flat_list do %>
+        <i class={icon}></i>
+      <% end %>
+    </div>
+    """
   end
 
   def handle_event("open-folder", %{"path" => path}, socket) do
