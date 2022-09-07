@@ -34,9 +34,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp assign_stories(socket, id, stories) do
     socket
     |> assign(story_id: id)
-    |> assign_new(:stories, fn ->
+    |> assign(
+      :stories,
       for(s <- stories, do: Map.take(s, [:id, :attributes, :block, :slots]))
-    end)
+    )
   end
 
   defp assign_playground_fields(socket = %{assigns: %{entry: entry, stories: stories}}) do
@@ -99,6 +100,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
   # It happens whenever parent is notified some component assign has been
   # updated by the component itself.
   defp assign_new_attributes(socket, _assigns = %{story_id: story_id, new_attributes: attrs}) do
+    IO.inspect({story_id, attrs}, label: "assign_new_attributes")
+
     stories =
       for story <- socket.assigns.stories do
         if story.id == story_id do
