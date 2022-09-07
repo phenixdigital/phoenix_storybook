@@ -16,6 +16,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
       component_heex(
         fun_or_mod,
         Map.merge(story.attributes, extra_assigns),
+        story.let,
         story.block,
         story.slots
       )
@@ -31,6 +32,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         component_heex(
           fun_or_mod,
           Map.merge(story.attributes, extra_assigns),
+          story.let,
           story.block,
           story.slots
         )
@@ -46,6 +48,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         story.id,
         fun_or_mod,
         Map.merge(story.attributes, extra_assigns),
+        story.let,
         story.block,
         story.slots
       )
@@ -69,6 +72,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
           "#{group_id}:#{story_id}",
           fun_or_mod,
           Map.merge(story.attributes, extra_assigns),
+          story.let,
           story.block,
           story.slots
         )
@@ -80,21 +84,22 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a component.
   """
-  def render_component(fun_or_mod, assigns, block, slots, opts) do
-    heex = component_heex(fun_or_mod, assigns, block, slots)
+  def render_component(fun_or_mod, assigns, let, block, slots, opts) do
+    heex = component_heex(fun_or_mod, assigns, let, block, slots)
     render_component_heex(fun_or_mod, heex, opts)
   end
 
   @doc """
   Renders a component.
   """
-  def render_component_within_template(template, id, fun_or_mod, assigns, block, slots, opts) do
+  def render_component_within_template(template, id, fun_or_mod, assigns, let, block, slots, opts) do
     heex =
       template_heex(
         template,
         id,
         fun_or_mod,
         assigns,
+        let,
         block,
         slots
       )
@@ -102,44 +107,47 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex, opts)
   end
 
-  defp component_heex(fun, assigns, nil, []) when is_function(fun) do
+  defp component_heex(fun, assigns, _let, nil, []) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(assigns)}/>
     """
   end
 
-  defp component_heex(fun, assigns, block, slots) when is_function(fun) do
+  defp component_heex(fun, assigns, let, block, slots) when is_function(fun) do
     """
-    <.#{function_name(fun)} #{attributes_markup(assigns)}>
+    <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup(assigns)}>
       #{block}
       #{slots}
     </.#{function_name(fun)}>
     """
   end
 
-  defp component_heex(module, assigns, nil, []) when is_atom(module) do
+  defp component_heex(module, assigns, _let, nil, []) when is_atom(module) do
     """
     <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)}/>
     """
   end
 
-  defp component_heex(module, assigns, block, slots) when is_atom(module) do
+  defp component_heex(module, assigns, let, block, slots) when is_atom(module) do
     """
-    <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)}>
+    <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup(assigns)}>
       #{block}
       #{slots}
     </.live_component>
     """
   end
 
-  defp template_heex(template, story_id, fun_or_mod, assigns, block, slots) do
+  defp template_heex(template, story_id, fun_or_mod, assigns, let, block, slots) do
     template
     |> String.replace(":story_id", to_string(story_id))
     |> String.replace(
       ~r|<\.story[^\/]*\/>|,
-      component_heex(fun_or_mod, assigns, block, slots)
+      component_heex(fun_or_mod, assigns, let, block, slots)
     )
   end
+
+  defp let_markup(nil), do: ""
+  defp let_markup(let), do: "let={#{to_string(let)}}"
 
   defp attributes_markup(attributes) do
     Enum.map_join(attributes, " ", fn

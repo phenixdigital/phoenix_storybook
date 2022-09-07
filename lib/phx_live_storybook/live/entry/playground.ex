@@ -36,7 +36,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     |> assign(story_id: id)
     |> assign(
       :stories,
-      for(s <- stories, do: Map.take(s, [:id, :attributes, :block, :slots]))
+      for(s <- stories, do: Map.take(s, [:id, :attributes, :let, :block, :slots]))
     )
   end
 
@@ -224,7 +224,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     ~H"""
     <pre class={CodeRenderer.pre_class()}>
     <%= for story <- @stories do %>
-    <%= CodeRenderer.render_component_code(fun_or_component(@entry), story.attributes, story.block, story.slots) %><% end %>
+    <%= CodeRenderer.render_component_code(fun_or_component(@entry), story.attributes, story.let, story.block, story.slots) %><% end %>
     </pre>
     """
   end

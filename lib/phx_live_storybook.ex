@@ -119,9 +119,12 @@ defmodule PhxLiveStorybook do
           into: modules,
           do: Function.info(fun)[:module]
 
+    modules_with_paths = for mod <- modules, do: {mod, to_string(mod.__info__(:compile)[:source])}
+
     component_quotes =
-      for module <- modules do
+      for {module, path} <- modules_with_paths do
         quote do
+          @external_resource unquote(path)
           require unquote(module)
         end
       end
@@ -135,8 +138,6 @@ defmodule PhxLiveStorybook do
         for path <- @paths do
           @external_resource path
         end
-
-        def paths, do: @paths
 
         # this file should be recompiled whenever any file under content_path has been created or
         # deleted

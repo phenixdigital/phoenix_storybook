@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 7 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 7
+      assert find(document, "nav>ul>li>ul>li") |> length() == 8
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -45,7 +45,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 7 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 7
+      assert find(document, "nav>ul>li>ul>li") |> length() == 8
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4

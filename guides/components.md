@@ -140,3 +140,68 @@ defmodule Storybook.Components.Slideover do
   end
 end
 ```
+
+## Block, slots & let
+
+Liveview let you define inner blocks in your components, which are either named `slots` or the
+default `inner block`.
+
+They can be passed in your stories with the `:block` and `:slots` keys :
+
+```elixir
+%Story{
+  id: :modal,
+  block: "<p>My modal body</p>",
+  slots: [
+    """
+    <:button>
+      <button type="button">Cancel</button>
+    </:button>
+    """,
+    """
+    <:button>
+      <button type="button">OK</button>
+    </:button>
+    """
+  ]
+}
+```
+
+You can also use [LiveView let mechanism](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#module-default-slots)
+to pass data to your default block. You just need to **declare the let attribute** you are using in
+your story.
+
+```elixir
+%Story{
+  id: :list,
+  attributes: %{entries: ~w(apple banana cherry)},
+  let: :entry,
+  block: "I like <%= entry %>"
+}
+```
+
+`let` syntax can also be used with named slots, but requires no specific livebook setup.
+
+```elixir
+%Story{
+  id: :table,
+  attributes: %{
+    rows: [
+      %{first_name: "Jean", last_name: "Dupont"},
+      %{first_name: "Sam", last_name: "Smith"}
+    ]
+  },
+  slots: [
+    """
+    <:col let={user} label="First name">
+      <%= user.first_name %>
+    </:col>
+    """,
+    """
+    <:col let={user} label="Last name">
+      <%= user.last_name %>
+    </:col>
+    """
+  ]
+}
+```

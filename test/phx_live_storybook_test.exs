@@ -53,7 +53,7 @@ defmodule PhxLiveStorybookTest do
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
       entries = TreeStorybook.entries()
-      assert Enum.count(entries) == 7
+      assert Enum.count(entries) == 8
 
       assert %PhxLiveStorybook.PageEntry{
                module_name: "APage",
@@ -201,7 +201,10 @@ defmodule PhxLiveStorybookTest do
     test "it also works for a story group" do
       assert TreeStorybook.render_story(Elixir.TreeStorybook.AFolder.Component, :group)
              |> rendered_to_string() ==
-               "<span data-index=\"42\">component: hello</span>\n<span data-index=\"37\">component: world</span>"
+               String.trim("""
+               <span data-index=\"42\">component: hello</span>
+               <span data-index=\"37\">component: world</span>
+               """)
 
       # I did not manage to assert against the HTML
       assert [
@@ -209,6 +212,29 @@ defmodule PhxLiveStorybookTest do
                %Phoenix.LiveView.Component{id: "live_component-group-world"}
              ] =
                TreeStorybook.render_story(Elixir.TreeStorybook.AFolder.LiveComponent, :group).dynamic.(
+                 []
+               )
+    end
+
+    test "it is working with a story without any attributes" do
+      assert TreeStorybook.render_story(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
+             |> rendered_to_string() ==
+               "<span data-index=\"42\">component: </span>"
+    end
+
+    test "it is working with an inner_block requiring a let attribute" do
+      html =
+        TreeStorybook.render_story(Elixir.TreeStorybook.Let.LetComponent, :default)
+        |> rendered_to_string()
+
+      assert html =~ "**foo**"
+      assert html =~ "**bar**"
+      assert html =~ "**qix**"
+    end
+
+    test "it is working with an inner_block requiring a let attribute, in a live component" do
+      assert [%Phoenix.LiveView.Component{id: "let_live_component-default"}] =
+               TreeStorybook.render_story(Elixir.TreeStorybook.Let.LetLiveComponent, :default).dynamic.(
                  []
                )
     end
@@ -244,6 +270,24 @@ defmodule PhxLiveStorybookTest do
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
 
       code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.LiveComponent, :group)
+      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+
+    test "it is working with a story without any attributes" do
+      assigns = []
+      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
+      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+
+    test "it is working with an inner_block requiring a let attribute" do
+      assigns = []
+      code = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetComponent, :default)
+      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+    end
+
+    test "it is working with an inner_block requiring a let attribute, in a live component" do
+      assigns = []
+      code = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetLiveComponent, :default)
       assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
     end
   end

@@ -18,10 +18,10 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   """
   def render_story_code(fun_or_mod, story_or_group, assigns \\ %{})
 
-  def render_story_code(fun_or_mod, story = %Story{}, assigns) do
+  def render_story_code(fun_or_mod, s = %Story{}, assigns) do
     ~H"""
     <pre class={pre_class()}>
-    <%= component_code_heex(fun_or_mod, story.attributes, story.block, story.slots) |> format_heex() %>
+    <%= component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots) |> format_heex() %>
     </pre>
     """
   end
@@ -30,7 +30,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     heexes =
       for s <- stories do
         fun_or_mod
-        |> component_code_heex(s.attributes, s.block, s.slots)
+        |> component_code_heex(s.attributes, s.let, s.block, s.slots)
         |> String.replace("\n", "")
       end
 
@@ -44,8 +44,8 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   @doc """
   Renders a component code snippet.
   """
-  def render_component_code(fun_or_mod, attributes, block, slots, assigns \\ %{}) do
-    ~H"<%= component_code_heex(fun_or_mod, attributes, block, slots) |> format_heex() %>"
+  def render_component_code(fun_or_mod, attributes, let, block, slots, assigns \\ %{}) do
+    ~H"<%= component_code_heex(fun_or_mod, attributes, let, block, slots) |> format_heex() %>"
   end
 
   @doc """
@@ -78,28 +78,41 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     do:
       "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
-  defp component_code_heex(function, attributes, block, slots) when is_function(function) do
+  defp component_code_heex(function, attributes, let, block, slots) when is_function(function) do
     fun = function_name(function)
     self_closed? = is_nil(block) and Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.#{fun}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.#{fun}"}#{let_markup(let)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
     #{if block, do: indent_slot(block)}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.#{fun}>"}
     """)
   end
 
-  defp component_code_heex(module, attributes, block, slots) when is_atom(module) do
+  defp component_code_heex(module, attributes, let, block, slots) when is_atom(module) do
     mod = module_name(module)
     self_closed? = is_nil(block) and Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.live_component module={#{mod}}"}#{for {k, val} <- attributes, do: " #{k}=#{format_val(val)}"}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.live_component module={#{mod}}"}#{let_markup(let)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
     #{if block, do: indent_slot(block)}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.live_component>"}
     """)
+  end
+
+  defp let_markup(nil), do: ""
+  defp let_markup(let), do: " let={#{to_string(let)}}"
+
+  defp attributes_markup(attributes) when map_size(attributes) == 0, do: ""
+
+  defp attributes_markup(attributes) do
+    " " <>
+      Enum.map_join(attributes, " ", fn
+        {name, val} when is_binary(val) -> ~s|#{name}="#{val}"|
+        {name, val} -> ~s|#{name}={#{inspect(val, structs: false)}}|
+      end)
   end
 
   defp indent_slots(slots) do
@@ -135,7 +148,4 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp function_name(fun), do: Function.info(fun)[:name]
   defp module_name(mod), do: mod |> to_string() |> String.split(".") |> Enum.at(-1)
-
-  defp format_val(val) when is_binary(val), do: inspect(val)
-  defp format_val(val), do: "{#{inspect(val)}}"
 end
