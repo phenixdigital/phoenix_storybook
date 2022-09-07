@@ -16,7 +16,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
      socket
      |> assign(assigns)
      |> assign_stories()
-     |> assign_new_attributes(assigns)
+     |> assign_new_stories_attributes(assigns)
      |> assign_playground_fields()
      |> assign_playground_block()
      |> assign_playground_slots()
@@ -99,22 +99,26 @@ defmodule PhxLiveStorybook.Entry.Playground do
   # new_attributes may be passed by parent (LiveView) send_update.
   # It happens whenever parent is notified some component assign has been
   # updated by the component itself.
-  defp assign_new_attributes(socket, _assigns = %{story_id: story_id, new_attributes: attrs}) do
-    IO.inspect({story_id, attrs}, label: "assign_new_attributes")
-
+  defp assign_new_stories_attributes(
+         socket,
+         _assigns = %{new_stories_attributes: new_stories_attributes}
+       ) do
     stories =
-      for story <- socket.assigns.stories do
-        if story.id == story_id do
-          update_story_attributes(story, attrs)
-        else
-          story
-        end
+      for story <- socket.assigns.stories,
+          %{id: new_story_id, attributes: new_attrs} <- new_stories_attributes,
+          reduce: [] do
+        acc ->
+          if story.id == new_story_id do
+            [update_story_attributes(story, new_attrs) | acc]
+          else
+            acc
+          end
       end
 
     assign(socket, stories: stories)
   end
 
-  defp assign_new_attributes(socket, _assigns), do: socket
+  defp assign_new_stories_attributes(socket, _assigns), do: socket
 
   def render(assigns) do
     ~H"""

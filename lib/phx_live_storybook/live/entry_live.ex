@@ -369,8 +369,8 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, reason)}
   end
 
-  def handle_info({:new_story_attributes, story_id, attrs}, socket) do
-    send_update(Playground, id: "playground", story_id: story_id, new_attributes: attrs)
+  def handle_info({:new_stories_attributes, stories_attributes}, socket) do
+    send_update(Playground, id: "playground", new_stories_attributes: stories_attributes)
     {:noreply, socket}
   end
 

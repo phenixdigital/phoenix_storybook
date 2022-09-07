@@ -125,13 +125,13 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
           )
 
         if story.id == story_id do
-          send_attributes(assigns.topic, story_id, attrs)
           %{story | attributes: attrs}
         else
           story
         end
       end
 
+    send_stories_attributes(assigns.topic, stories)
     {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
@@ -147,21 +147,21 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
           )
 
         if story.id == story_id do
-          send_attributes(assigns.topic, story_id, attrs)
           %{story | attributes: attrs}
         else
           story
         end
       end
 
+    send_stories_attributes(assigns.topic, stories)
     {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
-  defp send_attributes(topic, story_id, attributes) do
+  defp send_stories_attributes(topic, stories) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       topic,
-      {:new_story_attributes, story_id, attributes}
+      {:new_stories_attributes, Enum.map(stories, &Map.take(&1, [:id, :attributes]))}
     )
   end
 
