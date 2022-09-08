@@ -606,5 +606,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
       :float -> String.to_float(value)
       _ -> value
     end
+  rescue
+    _ -> value
   end
 end
