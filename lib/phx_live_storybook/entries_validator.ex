@@ -121,7 +121,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end)
   end
 
-  @builtin_types [:string, :atom, :boolean, :integer, :float, :list, :block, :slot]
+  @builtin_types [:string, :atom, :boolean, :integer, :float, :list, :map, :block, :slot]
   defp validate_attribute_types!(file_path, attributes) do
     for %Attr{id: attr_id, type: type} <- attributes do
       cond do
