@@ -415,6 +415,12 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
+  defp type_badge(assigns = %{type: :map}) do
+    ~H"""
+    <span class={"lsb-bg-fuchsia-100 lsb-text-fuchsia-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    """
+  end
+
   defp type_badge(assigns = %{type: :list}) do
     ~H"""
     <span class={"lsb-bg-purple-100 lsb-text-purple-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
