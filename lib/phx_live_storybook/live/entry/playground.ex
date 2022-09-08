@@ -602,6 +602,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     case attr.type do
       :atom -> String.to_atom(value)
       :boolean -> String.to_atom(value)
+      :integer -> String.to_integer(value)
+      :float -> String.to_float(value)
       _ -> value
     end
   end
