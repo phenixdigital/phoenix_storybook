@@ -54,18 +54,65 @@ defmodule NestedComponent do
 end
 ```
 
-## Outer templates
+## Templates
+
+You may want to render your components within some wrapping markup. For instance, when your
+component can only be used as a block or slot of another wrapping component.
 
 Some components, such as _modals_, _slideovers_, and _notifications_, are not visible from the
-start: they first need user interaction.
+start: they first need user interaction. Such components can be accompanied by an outer template,
+that will for instance render a button next to the component, to toggle its visibility state.
 
-Such components can be accompanied by an outer template, that will for instance render a button next
-to the component, to toggle its visibility state.
+### Story templates
+
+You can define a template in your component entry by defining a `template/0` function.
+Every story will be rendered within the defined template, the story itself is injected in place of
+`<.story/>`.
+
+```elixir
+def template do
+  """
+  <div class="my-custom-wrapper">
+    <.story/>
+  </div>
+  """
+end
+```
+
+You can also override the template, per story or story_group by setting the `:template` key to your
+story. Setting it to a falsy value will disable templating for this story.
+
+### Story group templates
+
+Story groups can also leverage on templating:
+
+- either by wrapping every story in their own template.
+
+```elixir
+"""
+<div class="one-wrapper-for-each-story">
+  <.story/>
+</div>
+"""
+```
+
+- or by wrapping all stories as a whole, in a single template.
+
+```elixir
+"""
+<div class="a-single-wrapper-for-all">
+  <.story-group/>
+</div>
+"""
+```
+
+If you want to get unique id, you can use `:story_id` that will be replaced, at rendering time by
+the current story (or story group) id.
 
 ### JS-controlled visibility
 
-The simplest case is when component visibility is controlled client-side, by toggling CSS
-classes/attributes through [JS commands](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html).
+Here is an example of templated component managing its visibility client-side, by toggling CSS
+classes through [JS commands](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html).
 
 ```elixir
 defmodule Storybook.Components.Modal do
@@ -93,23 +140,18 @@ defmodule Storybook.Components.Modal do
 end
 ```
 
-Every story will be rendered within the defined template, the story itself is injected in place of
-`<.story/>`.
-
 ### Elixir-controlled visibility
 
 Some components don't rely on JS commands but need external assigns, like a modal that takes a
 `show={true}` or `show={false}` assign to manage its visibility state.
 
 `PhxLiveStorybook` handles special `set-story-assign/*` and `toggle-story-assign/*` events that you
-can leverage to update properties that will be passed to your components as _extra assigns_.
+can leverage on to update some properties that will be passed to your components as _extra assigns_.
 
 Syntax is:
 
 - **set value**: `set-story-assign/:story_id/:assign_id/:assign_value`.
 - **toggle value**: `toggle-story-assign/:story_id/:assign_id`.
-
-When used from the template, the `:story_id` will be dynamically replaced at render time.
 
 ```elixir
 defmodule Storybook.Components.Slideover do
@@ -139,6 +181,21 @@ defmodule Storybook.Components.Slideover do
     ]
   end
 end
+```
+
+### Template code preview
+
+By default, the code preview will render the story and its template markup as well.
+You can choose to render only the story markup, without its surrounding template by using the
+`lsb-code-hidden` HTML attribute.
+
+```elixir
+"""
+<div lsb-code-hidden>
+  <button phx-click={Modal.show_modal()}>Open modal</button>
+  <.story/>
+</div>
+"""
 ```
 
 ## Block, slots & let

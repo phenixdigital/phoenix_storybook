@@ -7,6 +7,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
   alias PhxLiveStorybook.{Story, StoryGroup}
+  alias PhxLiveStorybook.TemplateHelpers
 
   @doc """
   Renders a story or a group of story for a component.
@@ -42,6 +43,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   def render_story_within_template(template, fun_or_mod, story = %Story{}, extra_assigns, opts) do
+    if TemplateHelpers.story_group_template?(template) do
+      raise "Cannot use <.story-group/> placeholder in a story template."
+    end
+
     heex =
       template_heex(
         template,
@@ -64,18 +69,42 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         opts
       ) do
     heex =
-      for story = %Story{id: story_id} <- stories, into: "" do
-        extra_assigns = Map.get(group_extra_assigns, story_id, %{})
+      cond do
+        TemplateHelpers.story_template?(template) ->
+          for story = %Story{id: story_id} <- stories, into: "" do
+            extra_assigns = Map.get(group_extra_assigns, story_id, %{})
 
-        template_heex(
-          template,
-          "#{group_id}:#{story_id}",
-          fun_or_mod,
-          Map.merge(story.attributes, extra_assigns),
-          story.let,
-          story.block,
-          story.slots
-        )
+            template_heex(
+              template,
+              "#{group_id}:#{story_id}",
+              fun_or_mod,
+              Map.merge(story.attributes, extra_assigns),
+              story.let,
+              story.block,
+              story.slots
+            )
+          end
+
+        TemplateHelpers.story_group_template?(template) ->
+          heex =
+            for story = %Story{id: story_id} <- stories, into: "" do
+              extra_assigns = %{group_extra_assigns | id: "#{group_extra_assigns.id}-#{story_id}"}
+
+              component_heex(
+                fun_or_mod,
+                Map.merge(story.attributes, extra_assigns),
+                story.let,
+                story.block,
+                story.slots
+              )
+            end
+
+          template
+          |> TemplateHelpers.set_template_id(group_id)
+          |> TemplateHelpers.replace_template_story_group(heex)
+
+        true ->
+          raise "Invalid template: #{inspect(template)}"
       end
 
     render_component_heex(fun_or_mod, heex, opts)
@@ -139,9 +168,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   defp template_heex(template, story_id, fun_or_mod, assigns, let, block, slots) do
     template
-    |> String.replace(":story_id", to_string(story_id))
-    |> String.replace(
-      ~r|<\.story[^\/]*\/>|,
+    |> TemplateHelpers.set_template_id(story_id)
+    |> TemplateHelpers.replace_template_story(
       component_heex(fun_or_mod, assigns, let, block, slots)
     )
   end

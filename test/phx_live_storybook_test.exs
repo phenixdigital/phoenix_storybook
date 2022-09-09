@@ -272,6 +272,7 @@ defmodule PhxLiveStorybookTest do
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
+      assert html |> Floki.attribute("id") |> length() == 2
       assert html |> Floki.attribute("id") |> Enum.at(0) == "group:one"
       assert html |> Floki.attribute("id") |> Enum.at(1) == "group:two"
       assert html |> Floki.find("span") |> length() == 2
@@ -283,8 +284,20 @@ defmodule PhxLiveStorybookTest do
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
+      assert html |> Floki.attribute("class") |> length() == 2
       assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
       assert html |> Floki.attribute("class") |> Enum.at(1) == "group-template"
+      assert html |> Floki.find("span") |> length() == 2
+    end
+
+    test "renders a story group with a <.story-group/> placeholder template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :group_template_single)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("class") |> length() == 1
+      assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
       assert html |> Floki.find("span") |> length() == 2
     end
   end

@@ -75,6 +75,20 @@ defmodule TreeStorybook.TemplateComponent do
             attributes: %{label: "two"}
           }
         ]
+      },
+      %StoryGroup{
+        id: :group_template_single,
+        template: ~s|<div class="group-template"><.story-group/></div>|,
+        stories: [
+          %Story{
+            id: :one,
+            attributes: %{label: "one"}
+          },
+          %Story{
+            id: :two,
+            attributes: %{label: "two"}
+          }
+        ]
       }
     ]
   end
