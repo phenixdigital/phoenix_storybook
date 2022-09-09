@@ -28,7 +28,7 @@ defmodule PhxLiveStorybook.Story do
   """
 
   @enforce_keys [:id]
-  defstruct [:id, :description, :let, :block, slots: [], attributes: %{}]
+  defstruct [:id, :description, :let, :block, slots: [], attributes: %{}, template: :unset]
 end
 
 defmodule PhxLiveStorybook.StoryGroup do
@@ -64,5 +64,5 @@ defmodule PhxLiveStorybook.StoryGroup do
   """
 
   @enforce_keys [:id, :stories]
-  defstruct [:id, :description, :stories]
+  defstruct [:id, :description, :stories, template: :unset]
 end

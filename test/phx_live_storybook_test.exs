@@ -181,7 +181,7 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_story/2" do
-    alias Elixir.TreeStorybook.{Component, LiveComponent}
+    alias Elixir.TreeStorybook.{Component, LiveComponent, TemplateComponent}
 
     test "it should return HEEX for each component/story couple" do
       assert TreeStorybook.render_story(Component, :hello) |> rendered_to_string() ==
@@ -244,6 +244,48 @@ defmodule PhxLiveStorybookTest do
         defmodule Elixir.PhxLiveStorybook.RenderComponentCrashStorybook,
           do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
       end
+    end
+
+    test "renders a story with entry template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :hello)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("id") |> hd() == "hello"
+      assert html |> Floki.find("span") |> length() == 1
+    end
+
+    test "renders a story with its own template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :story_template)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("class") |> hd() == "story-template"
+      assert html |> Floki.find("span") |> length() == 1
+    end
+
+    test "renders a story group with entry template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :group)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("id") |> Enum.at(0) == "group:one"
+      assert html |> Floki.attribute("id") |> Enum.at(1) == "group:two"
+      assert html |> Floki.find("span") |> length() == 2
+    end
+
+    test "renders a story group with its own template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :group_template)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
+      assert html |> Floki.attribute("class") |> Enum.at(1) == "group-template"
+      assert html |> Floki.find("span") |> length() == 2
     end
   end
 

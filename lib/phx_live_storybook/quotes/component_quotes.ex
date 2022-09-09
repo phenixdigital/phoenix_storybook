@@ -26,6 +26,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           } <- leave_entries,
           story <- stories,
           {theme, _label} <- themes do
+        template = get_template(template, story)
         unique_story_id = Macro.underscore("#{module_name}-#{story.id}")
 
         case type do
@@ -137,6 +138,11 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
     [header_quote | component_quotes]
   end
+
+  defp get_template(template, _story_or_group = %{template: :unset}), do: template
+  defp get_template(_template, _story_or_group = %{template: nil}), do: nil
+  defp get_template(_template, _story_or_group = %{template: false}), do: nil
+  defp get_template(_template, _story_or_group = %{template: template}), do: template
 
   # Precompiling component code snippet for every component / story.
   def render_code_quotes(leave_entries) do

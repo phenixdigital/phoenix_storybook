@@ -65,7 +65,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
       ) do
     heex =
       for story = %Story{id: story_id} <- stories, into: "" do
-        extra_assigns = Map.get(group_extra_assigns, story_id)
+        extra_assigns = Map.get(group_extra_assigns, story_id, %{})
 
         template_heex(
           template,
