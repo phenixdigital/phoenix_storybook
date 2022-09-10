@@ -201,7 +201,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp render_content(entry = %ComponentEntry{}, assigns = %{tab: :stories}) do
     ~H"""
-    <div class="lsb lsb-space-y-12 lsb-pb-12">
+    <div class="lsb lsb-space-y-12 lsb-pb-12" id={"entry-stories-#{entry_id(entry)}"}>
       <%= for story = %{id: story_id, description: description} <- @entry.stories(),
               story_extra_assigns = story_extra_assigns(story, assigns) do %>
         <div id={anchor_id(story)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
@@ -301,8 +301,11 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp iframe_id(entry, story) do
-    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
-    "iframe-#{module}-story-#{story.id}"
+    "iframe-#{entry_id(entry)}-story-#{story.id}"
+  end
+
+  defp entry_id(entry) do
+    entry.module |> Macro.underscore() |> String.replace("/", "_")
   end
 
   defp anchor_id(%{id: id}) do
