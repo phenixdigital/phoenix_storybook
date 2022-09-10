@@ -117,6 +117,45 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert view |> element("#playground-preview-live") |> render() =~ "toggle: true"
     end
 
+    test "component can be updated with a new integer value", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "index_i: 42"
+
+      view
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
+        playground: %{index_i: "37"}
+      })
+      |> render_change()
+
+      assert view |> element("#playground-preview-live") |> render() =~ "index_i: 37"
+    end
+
+    test "component can be updated with a new float value", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "index_f: 37.2"
+
+      view
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
+        playground: %{index_f: "42.1"}
+      })
+      |> render_change()
+
+      assert view |> element("#playground-preview-live") |> render() =~ "index_f: 42.1"
+    end
+
+    test "component can be updated with a invalid value", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
+      assert view |> element("#playground-preview-live") |> render() =~ "index_i: 42"
+
+      view
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
+        playground: %{index_i: "wrong"}
+      })
+      |> render_change()
+
+      assert view |> element("#playground-preview-live") |> render() =~ "index_i: wrong"
+    end
+
     test "component can be updated by selecting an option", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
 
