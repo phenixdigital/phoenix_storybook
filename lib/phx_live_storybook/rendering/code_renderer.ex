@@ -185,9 +185,17 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     " " <>
       Enum.map_join(attributes, " ", fn
         {name, val} when is_binary(val) -> ~s|#{name}="#{val}"|
-        {name, val} -> ~s|#{name}={#{inspect(val, structs: false)}}|
+        {name, val} -> ~s|#{name}={#{inspect_val(val)}}|
       end)
   end
+
+  defp inspect_val(struct = %{__struct__: struct_name}) when is_struct(struct) do
+    full_name = struct_name |> to_string() |> String.replace_leading("Elixir.", "")
+    aliased_name = full_name |> String.split(".") |> Enum.at(-1)
+    struct |> inspect() |> String.replace(full_name, aliased_name)
+  end
+
+  defp inspect_val(val), do: inspect(val, structs: false)
 
   defp indent_slots(slots) do
     Enum.map_join(slots, "\n", &indent_slot/1)

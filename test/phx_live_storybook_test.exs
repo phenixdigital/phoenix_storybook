@@ -382,6 +382,14 @@ defmodule PhxLiveStorybookTest do
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.TemplateComponent, :hello)
       assert Regex.match?(~r/<pre.*template-div.*\/pre>/s, code)
     end
+
+    test "it prints aliases struct names" do
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.BFolder.AllTypesComponent, :with_struct)
+
+      assert Regex.match?(~r/<pre.*Struct.*\/pre>/s, code)
+      refute Regex.match?(~r/<pre.*AllTypesComponent.*\/pre>/s, code)
+    end
   end
 
   describe "render_page/1" do
