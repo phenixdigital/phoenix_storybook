@@ -16,6 +16,10 @@ defmodule PhxLiveStorybook.TemplateHelpers do
     Regex.match?(@story_group_regex, template)
   end
 
+  def code_hidden?(template) do
+    String.contains?(template, "lsb-code-hidden")
+  end
+
   def replace_template_story(template, story_markup, indent? \\ false) do
     replace_in_template(template, @story_regex, story_markup, indent?)
   end

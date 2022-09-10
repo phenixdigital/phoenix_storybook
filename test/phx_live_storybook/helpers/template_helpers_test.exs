@@ -119,4 +119,9 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
            </div>
            """
   end
+
+  test "code_hidden?/1" do
+    assert code_hidden?("<div lsb-code-hidden><.story/></div>")
+    refute code_hidden?("<div><.story/></div>")
+  end
 end

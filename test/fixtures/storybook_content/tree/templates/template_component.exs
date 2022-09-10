@@ -4,7 +4,7 @@ defmodule TreeStorybook.TemplateComponent do
 
   def template do
     """
-    <div id=":story_id">
+    <div id=":story_id" class="template-div">
       <button id="set-foo" phx-click="set-story-assign/:story_id/label/foo">Set label to foo</button>
       <button id="set-bar" phx-click="set-story-assign/:story_id/label/bar">Set label to bar</button>
       <button id="toggle-status" phx-click="toggle-story-assign/:story_id/status">Toggle status</button>

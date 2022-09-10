@@ -28,14 +28,18 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   end
 
   def render_story_code(fun_or_mod, s = %Story{}, template, assigns) do
-    heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
-    heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
+    if TemplateHelpers.code_hidden?(template) do
+      render_story_code(fun_or_mod, s, nil, assigns)
+    else
+      heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+      heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
 
-    ~H"""
-    <pre class={pre_class()}>
-    <%= format_heex(heex) %>
-    </pre>
-    """
+      ~H"""
+      <pre class={pre_class()}>
+      <%= format_heex(heex) %>
+      </pre>
+      """
+    end
   end
 
   def render_story_code(fun_or_mod, %StoryGroup{stories: stories}, _template = nil, assigns) do
@@ -51,32 +55,36 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
   end
 
-  def render_story_code(fun_or_mod, %StoryGroup{stories: stories}, template, assigns) do
-    heex =
-      cond do
-        TemplateHelpers.story_template?(template) ->
-          Enum.map_join(stories, "\n", fn s ->
-            heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
-            TemplateHelpers.replace_template_story(template, heex, _indent = true)
-          end)
-
-        TemplateHelpers.story_group_template?(template) ->
-          heex =
+  def render_story_code(fun_or_mod, group = %StoryGroup{stories: stories}, template, assigns) do
+    if TemplateHelpers.code_hidden?(template) do
+      render_story_code(fun_or_mod, group, nil, assigns)
+    else
+      heex =
+        cond do
+          TemplateHelpers.story_template?(template) ->
             Enum.map_join(stories, "\n", fn s ->
-              component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              TemplateHelpers.replace_template_story(template, heex, _indent = true)
             end)
 
-          TemplateHelpers.replace_template_story(template, heex, _indent = true)
+          TemplateHelpers.story_group_template?(template) ->
+            heex =
+              Enum.map_join(stories, "\n", fn s ->
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              end)
 
-        true ->
-          template
-      end
+            TemplateHelpers.replace_template_story(template, heex, _indent = true)
 
-    ~H"""
-    <pre class={pre_class()}>
-    <%= format_heex(heex) %>
-    </pre>
-    """
+          true ->
+            template
+        end
+
+      ~H"""
+      <pre class={pre_class()}>
+      <%= format_heex(heex) %>
+      </pre>
+      """
+    end
   end
 
   @doc """
@@ -105,9 +113,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         template,
         assigns
       ) do
-    heex = component_code_heex(fun_or_mod, attributes, let, block, slots)
-    heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
-    ~H"<%= format_heex(heex) %>"
+    if TemplateHelpers.code_hidden?(template) do
+      render_component_code(fun_or_mod, attributes, let, block, slots, nil, assigns)
+    else
+      heex = component_code_heex(fun_or_mod, attributes, let, block, slots)
+      heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
+      ~H"<%= format_heex(heex) %>"
+    end
   end
 
   @doc """

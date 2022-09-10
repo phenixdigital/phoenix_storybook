@@ -1,7 +1,6 @@
 defmodule PhxLiveStorybookTest do
   use ExUnit.Case, async: true
 
-  import Phoenix.LiveView.Helpers
   import Phoenix.LiveViewTest
 
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
@@ -337,46 +336,51 @@ defmodule PhxLiveStorybookTest do
 
   describe "render_code/2" do
     test "it should return HEEX for each component/story couple" do
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.Component, :hello)
-             |> rendered_to_string() =~ ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Component, :hello)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.Component, :world)
-             |> rendered_to_string() =~ ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Component, :world)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :hello)
-             |> rendered_to_string() =~
-               ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :hello)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :world)
-             |> rendered_to_string() =~
-               ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :world)
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it also works for a story group" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :group)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :group)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.LiveComponent, :group)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.LiveComponent, :group)
+
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with a story without any attributes" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
+
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with an inner_block requiring a let attribute" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetComponent, :default)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetComponent, :default)
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetLiveComponent, :default)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetLiveComponent, :default)
+
+      assert code =~ ~r|<pre.*</pre>|s
+    end
+
+    test "it is working with a template component" do
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.TemplateComponent, :hello)
+      assert Regex.match?(~r/<pre.*template-div.*\/pre>/s, code)
     end
   end
 
