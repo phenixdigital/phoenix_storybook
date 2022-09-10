@@ -14,6 +14,7 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
       %Attr{id: :toggle, type: :boolean, default: false},
       %Attr{id: :things, type: :list},
       %Attr{id: :struct, type: CComponent.Struct},
+      %Attr{id: :map, type: :map},
       %Attr{id: :block, type: :block, doc: "Your inner block", required: true},
       %Attr{id: :slot_thing, type: :slot, doc: "Some slots"}
     ]

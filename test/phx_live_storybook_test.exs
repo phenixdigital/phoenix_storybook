@@ -1,7 +1,6 @@
 defmodule PhxLiveStorybookTest do
   use ExUnit.Case, async: true
 
-  import Phoenix.LiveView.Helpers
   import Phoenix.LiveViewTest
 
   alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
@@ -181,7 +180,12 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_story/2" do
-    alias Elixir.TreeStorybook.{Component, LiveComponent}
+    alias Elixir.TreeStorybook.{
+      Component,
+      LiveComponent,
+      InvalidTemplateComponent,
+      TemplateComponent
+    }
 
     test "it should return HEEX for each component/story couple" do
       assert TreeStorybook.render_story(Component, :hello) |> rendered_to_string() ==
@@ -245,50 +249,138 @@ defmodule PhxLiveStorybookTest do
           do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
       end
     end
+
+    test "renders a story with entry template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :hello)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("id") |> hd() == "hello"
+      assert html |> Floki.find("span") |> length() == 1
+    end
+
+    test "renders a story with its own template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :story_template)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("class") |> hd() == "story-template"
+      assert html |> Floki.find("span") |> length() == 1
+    end
+
+    test "renders a story with which disables entry's template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :no_template)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("id") == []
+      assert html |> Floki.find("span") |> length() == 1
+    end
+
+    test "renders a story group with entry template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :group)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("id") |> length() == 2
+      assert html |> Floki.attribute("id") |> Enum.at(0) == "group:one"
+      assert html |> Floki.attribute("id") |> Enum.at(1) == "group:two"
+      assert html |> Floki.find("span") |> length() == 2
+    end
+
+    test "renders a story group with its own template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :group_template)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("class") |> length() == 2
+      assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
+      assert html |> Floki.attribute("class") |> Enum.at(1) == "group-template"
+      assert html |> Floki.find("span") |> length() == 2
+    end
+
+    test "renders a story group with a <.story-group/> placeholder template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :group_template_single)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("class") |> length() == 1
+      assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
+      assert html |> Floki.find("span") |> length() == 2
+    end
+
+    test "renders a story with a template, but no placeholder" do
+      assert TreeStorybook.render_story(TemplateComponent, :no_placeholder)
+             |> rendered_to_string() == "<div></div>"
+    end
+
+    test "renders a story group with a template, but no placeholder" do
+      assert TreeStorybook.render_story(TemplateComponent, :no_placeholder_group)
+             |> rendered_to_string() == "<div></div>"
+    end
+
+    test "renders a story with an invalid template placeholder will raise" do
+      msg = "Cannot use <.story-group/> placeholder in a story template."
+
+      assert_raise RuntimeError, msg, fn ->
+        TreeStorybook.render_story(InvalidTemplateComponent, :invalid_template_placeholder)
+      end
+    end
   end
 
   describe "render_code/2" do
     test "it should return HEEX for each component/story couple" do
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.Component, :hello)
-             |> rendered_to_string() =~ ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Component, :hello)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.Component, :world)
-             |> rendered_to_string() =~ ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Component, :world)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :hello)
-             |> rendered_to_string() =~
-               ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :hello)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      assert TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :world)
-             |> rendered_to_string() =~
-               ~r|<pre.*</pre>|s
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :world)
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it also works for a story group" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :group)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :group)
+      assert code =~ ~r|<pre.*</pre>|s
 
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.LiveComponent, :group)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.LiveComponent, :group)
+
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with a story without any attributes" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
+
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with an inner_block requiring a let attribute" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetComponent, :default)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetComponent, :default)
+      assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
-      assigns = []
-      code = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetLiveComponent, :default)
-      assert rendered_to_string(~H"<div><%= code %></div>") =~ ~r/<pre.*pre/
+      {:safe, code} =
+        TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetLiveComponent, :default)
+
+      assert code =~ ~r|<pre.*</pre>|s
+    end
+
+    test "it is working with a template component" do
+      {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.TemplateComponent, :hello)
+      assert Regex.match?(~r/<pre.*template-div.*\/pre>/s, code)
     end
   end
 

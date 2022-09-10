@@ -109,7 +109,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
-  describe "entry's template is a string" do
+  describe "entry template" do
     test "with proper type it wont raise" do
       entry = %ComponentEntry{template: nil}
       assert validate(entry)
@@ -122,6 +122,67 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = %ComponentEntry{template: :invalid}
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "entry template must be a binary"
+    end
+  end
+
+  describe "story template" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: nil}]}
+      assert validate(entry)
+
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: false}]}
+      assert validate(entry)
+
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: "<div><.story/></div>"}]}
+      assert validate(entry)
+    end
+
+    test "with invalid value it will raise" do
+      entry = %ComponentEntry{
+        stories: [%Story{id: :foo, template: :invalid}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "template in story :foo must be a binary"
+    end
+  end
+
+  describe "story_group template is a string" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{
+        stories: [%StoryGroup{id: :foo, stories: [], template: nil}]
+      }
+
+      assert validate(entry)
+
+      entry = %ComponentEntry{
+        stories: [%StoryGroup{id: :foo, stories: [], template: "<div><.story/></div>"}]
+      }
+
+      assert validate(entry)
+    end
+
+    test "with invalid value it will raise" do
+      entry = %ComponentEntry{
+        stories: [%StoryGroup{id: :foo, stories: [], template: :invalid}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "template in story_group :foo must be a binary"
+    end
+
+    test "cannot set template on a story in a group" do
+      entry = %ComponentEntry{
+        stories: [
+          %StoryGroup{
+            id: :group,
+            stories: [%Story{id: :foo, template: "<div><.story/></div>"}]
+          }
+        ]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "template in a group story cannot be set (story :foo, group :group)"
     end
   end
 

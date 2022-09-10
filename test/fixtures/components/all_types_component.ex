@@ -16,6 +16,7 @@ defmodule AllTypesComponent do
       |> assign_new(:toggle, fn -> false end)
       |> assign_new(:things, fn -> [] end)
       |> assign_new(:slot_thing, fn -> [] end)
+      |> assign_new(:map, fn -> %{} end)
 
     if assigns[:label] == "raise" do
       raise "booooom!"
@@ -30,6 +31,7 @@ defmodule AllTypesComponent do
       <p>index_f: <%= @index_f %></p>
       <p>toggle: <%= @toggle %></p>
       <p>things: <%= inspect(@things) %></p>
+      <p>map: <%= inspect(@map) %></p>
       <%= render_block(@inner_block) %>
       <ul>
       <%= for thing <- @slot_thing do %>

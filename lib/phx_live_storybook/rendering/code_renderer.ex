@@ -12,13 +12,14 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
   alias PhxLiveStorybook.{Story, StoryGroup}
+  alias PhxLiveStorybook.TemplateHelpers
 
   @doc """
   Renders a `Story` (or `StoryGroup`) code snippet, wrapped in a `<pre>` tag.
   """
-  def render_story_code(fun_or_mod, story_or_group, assigns \\ %{})
+  def render_story_code(fun_or_mod, story_or_group, template \\ nil, assigns \\ %{})
 
-  def render_story_code(fun_or_mod, s = %Story{}, assigns) do
+  def render_story_code(fun_or_mod, s = %Story{}, _template = nil, assigns) do
     ~H"""
     <pre class={pre_class()}>
     <%= component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots) |> format_heex() %>
@@ -26,26 +27,99 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     """
   end
 
-  def render_story_code(fun_or_mod, %StoryGroup{stories: stories}, assigns) do
-    heexes =
-      for s <- stories do
-        fun_or_mod
-        |> component_code_heex(s.attributes, s.let, s.block, s.slots)
-        |> String.replace("\n", "")
-      end
+  def render_story_code(fun_or_mod, s = %Story{}, template, assigns) do
+    if TemplateHelpers.code_hidden?(template) do
+      render_story_code(fun_or_mod, s, nil, assigns)
+    else
+      heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+      heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
+
+      ~H"""
+      <pre class={pre_class()}>
+      <%= format_heex(heex) %>
+      </pre>
+      """
+    end
+  end
+
+  def render_story_code(fun_or_mod, %StoryGroup{stories: stories}, _template = nil, assigns) do
+    heex =
+      Enum.map_join(stories, "\n", fn s ->
+        component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+      end)
 
     ~H"""
     <pre class={pre_class()}>
-    <%= heexes |> Enum.join("\n") |> format_heex() %>
+    <%= format_heex(heex) %>
     </pre>
     """
+  end
+
+  def render_story_code(fun_or_mod, group = %StoryGroup{stories: stories}, template, assigns) do
+    if TemplateHelpers.code_hidden?(template) do
+      render_story_code(fun_or_mod, group, nil, assigns)
+    else
+      heex =
+        cond do
+          TemplateHelpers.story_template?(template) ->
+            Enum.map_join(stories, "\n", fn s ->
+              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              TemplateHelpers.replace_template_story(template, heex, _indent = true)
+            end)
+
+          TemplateHelpers.story_group_template?(template) ->
+            heex =
+              Enum.map_join(stories, "\n", fn s ->
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              end)
+
+            TemplateHelpers.replace_template_story(template, heex, _indent = true)
+
+          true ->
+            template
+        end
+
+      ~H"""
+      <pre class={pre_class()}>
+      <%= format_heex(heex) %>
+      </pre>
+      """
+    end
   end
 
   @doc """
   Renders a component code snippet.
   """
-  def render_component_code(fun_or_mod, attributes, let, block, slots, assigns \\ %{}) do
+  def render_component_code(fun_or_mod, attributes, let, block, slots, _template, assigns \\ %{})
+
+  def render_component_code(
+        fun_or_mod,
+        attributes,
+        let,
+        block,
+        slots,
+        _template = nil,
+        assigns
+      ) do
     ~H"<%= component_code_heex(fun_or_mod, attributes, let, block, slots) |> format_heex() %>"
+  end
+
+  def render_component_code(
+        fun_or_mod,
+        attributes,
+        let,
+        block,
+        slots,
+        template,
+        assigns
+      ) do
+    if TemplateHelpers.code_hidden?(template) do
+      render_component_code(fun_or_mod, attributes, let, block, slots, nil, assigns)
+    else
+      heex = component_code_heex(fun_or_mod, attributes, let, block, slots)
+      heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
+      ~H"<%= format_heex(heex) %>"
+    end
   end
 
   @doc """
@@ -119,11 +193,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     Enum.map_join(slots, "\n", &indent_slot/1)
   end
 
-  defp indent_slot(slot) do
+  defp indent_slot(slot, indent_size \\ 2) do
+    indent = Enum.map_join(1..indent_size, fn _ -> " " end)
+
     slot
     |> String.split("\n")
     |> Enum.reject(&(&1 == ""))
-    |> Enum.map_join("\n", &"  #{&1}")
+    |> Enum.map_join("\n", &(indent <> &1))
   end
 
   defp trim_empty_lines(code) do

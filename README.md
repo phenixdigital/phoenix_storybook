@@ -7,6 +7,8 @@
 📚 [Documentation](https://hexdocs.pm/phx_live_storybook)
 &nbsp; - &nbsp;
 🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
+&nbsp; - &nbsp;
+🎓 [Sample repository](https://github.com/phenixdigital/phx_live_storybook_sample)
 
 <!-- MDOC !-->
 
@@ -72,7 +74,7 @@ end
 ```
 
 This backend module ensures the storybook gets recompiled as soon as you update your storybook
-content (see section 5.)
+content (see section 6.)
 
 ### 3. Add storybook access to your router
 
@@ -142,7 +144,7 @@ of _entries_:
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **examples**: to show how your components can be used and mixed in real UI pages.
 
-_As of `0.3.0`, only component and page entries are available._
+_As of `0.4.0`, only component and page entries are available._
 
 Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
 Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
