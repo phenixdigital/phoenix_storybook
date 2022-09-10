@@ -262,6 +262,35 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: true"
       refute render(playground_element) =~ "template_component: bar / status: false"
     end
+
+    test "component code is visible", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
+
+      view |> element("a", "Code") |> render_click()
+      assert view |> element("pre") |> render() =~ "hello"
+    end
+
+    test "component code is visible for a story_group with a template", %{conn: conn} do
+      {:ok, view, _html} =
+        live(
+          conn,
+          "/storybook/templates/template_component?tab=playground&story_id=group_template"
+        )
+
+      view |> element("a", "Code") |> render_click()
+      assert view |> element("pre") |> render() =~ "one"
+    end
+
+    test "component code is visible for a story_group with a single template", %{conn: conn} do
+      {:ok, view, _html} =
+        live(
+          conn,
+          "/storybook/templates/template_component?tab=playground&story_id=group_template_single"
+        )
+
+      view |> element("a", "Code") |> render_click()
+      assert view |> element("pre") |> render() =~ "one"
+    end
   end
 
   defp get_element_attribute(view, selector, attribute) do

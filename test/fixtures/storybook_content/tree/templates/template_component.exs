@@ -62,6 +62,16 @@ defmodule TreeStorybook.TemplateComponent do
         template: ~s|<div class="story-template"><.story/></div>|,
         attributes: %{label: "story template"}
       },
+      %Story{
+        id: :no_template,
+        template: false,
+        attributes: %{label: "story without template"}
+      },
+      %Story{
+        id: :no_placeholder,
+        template: "<div></div>",
+        attributes: %{label: ""}
+      },
       %StoryGroup{
         id: :group_template,
         template: ~s|<div class="group-template"><.story/></div>|,
@@ -79,6 +89,20 @@ defmodule TreeStorybook.TemplateComponent do
       %StoryGroup{
         id: :group_template_single,
         template: ~s|<div class="group-template"><.story-group/></div>|,
+        stories: [
+          %Story{
+            id: :one,
+            attributes: %{label: "one"}
+          },
+          %Story{
+            id: :two,
+            attributes: %{label: "two"}
+          }
+        ]
+      },
+      %StoryGroup{
+        id: :no_placeholder_group,
+        template: "<div></div>",
         stories: [
           %Story{
             id: :one,

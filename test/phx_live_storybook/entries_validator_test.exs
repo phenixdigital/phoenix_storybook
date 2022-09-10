@@ -127,16 +127,13 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
   describe "story template" do
     test "with proper type it wont raise" do
-      entry = %ComponentEntry{
-        stories: [%Story{id: :foo, template: nil}]
-      }
-
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: nil}]}
       assert validate(entry)
 
-      entry = %ComponentEntry{
-        stories: [%Story{id: :foo, template: "<div><.story/></div>"}]
-      }
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: false}]}
+      assert validate(entry)
 
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: "<div><.story/></div>"}]}
       assert validate(entry)
     end
 

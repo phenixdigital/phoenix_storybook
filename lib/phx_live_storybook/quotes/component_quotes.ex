@@ -6,6 +6,11 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
 
   # Precompiling component preview for every component / story / theme.
+  # 4 possible cases:
+  #   - component / template
+  #   - component / no template
+  #   - live_component / template
+  #   - live_component / no template
   def render_component_quotes(leave_entries, themes, caller_file) do
     header_quote =
       quote do
@@ -139,11 +144,6 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
     [header_quote | component_quotes]
   end
 
-  defp get_template(template, _story_or_group = %{template: :unset}), do: template
-  defp get_template(_template, _story_or_group = %{template: nil}), do: nil
-  defp get_template(_template, _story_or_group = %{template: false}), do: nil
-  defp get_template(_template, _story_or_group = %{template: template}), do: template
-
   # Precompiling component code snippet for every component / story.
   def render_code_quotes(leave_entries) do
     header_quote =
@@ -155,16 +155,19 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
       for %ComponentEntry{
             type: type,
             module: module,
-            stories: stories
+            stories: stories,
+            template: template
           } <- leave_entries,
           story <- stories do
+        template = get_template(template, story)
+
         case type do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_story_code(module.function(), story)
+                  CodeRenderer.render_story_code(module.function(), story, template)
                   |> to_raw_html()
                 )
               end
@@ -175,7 +178,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
               @impl PhxLiveStorybook.BackendBehaviour
               def render_code(unquote(module), unquote(story.id)) do
                 unquote(
-                  CodeRenderer.render_story_code(module.component(), story)
+                  CodeRenderer.render_story_code(module.component(), story, template)
                   |> to_raw_html()
                 )
               end
@@ -206,4 +209,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
     |> IO.iodata_to_binary()
     |> Phoenix.HTML.raw()
   end
+
+  defp get_template(template, _story_or_group = %{template: :unset}), do: template
+  defp get_template(_template, _story_or_group = %{template: t}) when t in [nil, false], do: nil
+  defp get_template(_template, _story_or_group = %{template: template}), do: template
 end

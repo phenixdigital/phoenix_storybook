@@ -69,6 +69,39 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
            """
   end
 
+  test "replace_template_story/2 with indentation" do
+    heex =
+      replace_template_story(
+        """
+        <div>
+          <div>
+            <.story/>
+          </div>
+        </div>
+        """,
+        """
+        <span>
+          <span>
+            hello
+          </span>
+        </span>
+        """,
+        _indent = true
+      )
+
+    assert heex == """
+           <div>
+             <div>
+               <span>
+                 <span>
+                   hello
+                 </span>
+               </span>
+             </div>
+           </div>
+           """
+  end
+
   test "replace_template_story_group/2" do
     heex =
       replace_template_story_group(

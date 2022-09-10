@@ -478,12 +478,13 @@ defmodule PhxLiveStorybook.EntriesValidator do
   end
 
   defp validate_story_template!(file_path, stories) do
-    for %Story{id: story_id, template: template} when template != :unset <- stories do
+    for %Story{id: story_id, template: template} when template not in [:unset, nil, false] <-
+          stories do
       validate_type!(
         file_path,
         template,
         :string,
-        "template in story #{inspect(story_id)} must be a binary"
+        "template in story #{inspect(story_id)} must be a binary or a falsy value"
       )
     end
   end

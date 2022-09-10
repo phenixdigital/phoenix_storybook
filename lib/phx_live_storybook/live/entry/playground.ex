@@ -36,7 +36,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     |> assign(story_id: id)
     |> assign(
       :stories,
-      for(s <- stories, do: Map.take(s, [:id, :attributes, :let, :block, :slots]))
+      for(s <- stories, do: Map.take(s, [:id, :attributes, :let, :block, :slots, :template]))
     )
   end
 
@@ -224,10 +224,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
     ~H"""
     <pre class={CodeRenderer.pre_class()}>
     <%= for story <- @stories do %>
-    <%= CodeRenderer.render_component_code(fun_or_component(@entry), story.attributes, story.let, story.block, story.slots) %><% end %>
+    <%= CodeRenderer.render_component_code(fun_or_component(@entry), story.attributes, story.let, story.block, story.slots, get_template(@entry.template, story)) %><% end %>
     </pre>
     """
   end
+
+  defp get_template(template, _story = %{template: :unset}), do: template
+  defp get_template(_template, _story = %{template: t}) when t in [nil, false], do: nil
+  defp get_template(_template, _story = %{template: template}), do: template
 
   defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do
     ~H"""

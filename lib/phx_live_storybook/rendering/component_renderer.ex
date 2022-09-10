@@ -104,7 +104,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
           |> TemplateHelpers.replace_template_story_group(heex)
 
         true ->
-          raise "Invalid template: #{inspect(template)}"
+          TemplateHelpers.set_template_id(template, group_id)
       end
 
     render_component_heex(fun_or_mod, heex, opts)

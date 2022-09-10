@@ -181,7 +181,12 @@ defmodule PhxLiveStorybookTest do
   end
 
   describe "render_story/2" do
-    alias Elixir.TreeStorybook.{Component, LiveComponent, TemplateComponent}
+    alias Elixir.TreeStorybook.{
+      Component,
+      LiveComponent,
+      InvalidTemplateComponent,
+      TemplateComponent
+    }
 
     test "it should return HEEX for each component/story couple" do
       assert TreeStorybook.render_story(Component, :hello) |> rendered_to_string() ==
@@ -266,6 +271,16 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 1
     end
 
+    test "renders a story with which disables entry's template" do
+      html =
+        TreeStorybook.render_story(TemplateComponent, :no_template)
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      assert html |> Floki.attribute("id") == []
+      assert html |> Floki.find("span") |> length() == 1
+    end
+
     test "renders a story group with entry template" do
       html =
         TreeStorybook.render_story(TemplateComponent, :group)
@@ -299,6 +314,24 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.attribute("class") |> length() == 1
       assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
       assert html |> Floki.find("span") |> length() == 2
+    end
+
+    test "renders a story with a template, but no placeholder" do
+      assert TreeStorybook.render_story(TemplateComponent, :no_placeholder)
+             |> rendered_to_string() == "<div></div>"
+    end
+
+    test "renders a story group with a template, but no placeholder" do
+      assert TreeStorybook.render_story(TemplateComponent, :no_placeholder_group)
+             |> rendered_to_string() == "<div></div>"
+    end
+
+    test "renders a story with an invalid template placeholder will raise" do
+      msg = "Cannot use <.story-group/> placeholder in a story template."
+
+      assert_raise RuntimeError, msg, fn ->
+        TreeStorybook.render_story(InvalidTemplateComponent, :invalid_template_placeholder)
+      end
     end
   end
 
