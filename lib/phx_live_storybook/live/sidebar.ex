@@ -77,7 +77,7 @@ defmodule PhxLiveStorybook.Sidebar do
       <div class="lsb lsb-bg-white lsb-relative lsb-pointer-events-auto lsb-mb-4">
         <button
           id="search-button"
-          phx-click={JS.show(to: "#search-container") |> JS.dispatch("lsb:focus-input", to: "#search-input") |> JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600", to: "#entry-0")}
+          phx-click={JS.dispatch("lsb:open-search")}
           class="lsb lsb-hidden lsb-w-full lg:lsb-flex lsb-items-center lsb-text-sm lsb-leading-6 lsb-text-slate-400 lsb-rounded-md lsb-border lsb-border-1 lsb-border-slate-100 hover:lsb-border-slate-200 lsb-py-1.5 lsb-pl-2 lsb-pr-3">
 
           <i class="lsb fal fa-magnifying-glass fa-lg lsb lsb-mr-3 lsb-flex-none lsb-text-slate-400"></i>
