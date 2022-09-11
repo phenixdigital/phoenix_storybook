@@ -57,11 +57,14 @@ defmodule PhxLiveStorybook.TemplateHelpers do
   end
 
   defp indent(markup, indent_size) do
-    indent = Enum.map_join(1..indent_size, fn _ -> " " end)
+    indent = indent(indent_size)
 
     markup
     |> String.split("\n")
     |> Enum.reject(&(&1 == ""))
     |> Enum.map_join("\n", &(indent <> &1))
   end
+
+  defp indent(0), do: ""
+  defp indent(size), do: Enum.map_join(1..size, fn _ -> " " end)
 end
