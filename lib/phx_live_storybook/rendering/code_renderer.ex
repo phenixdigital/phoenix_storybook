@@ -20,7 +20,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   def render_story_code(
         fun_or_mod,
         story_or_group,
-        template \\ TemplateHelpers.default_template(),
+        template,
         assigns \\ %{}
       )
 
@@ -80,7 +80,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         let,
         block,
         slots,
-        template \\ TemplateHelpers.default_template(),
+        template,
         assigns \\ %{}
       )
 
