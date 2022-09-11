@@ -41,7 +41,8 @@ defmodule PhxLiveStorybook.Instrumenter do
       view: metadata.socket.view,
       event: metadata.event,
       params: metadata.params,
-      assigns: metadata.socket.assigns
+      assigns: metadata.socket.assigns,
+      time: Time.utc_now()
     }
   end
 end
