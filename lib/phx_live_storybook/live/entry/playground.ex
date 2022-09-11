@@ -8,6 +8,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
+  alias PhxLiveStorybook.TemplateHelpers
 
   import PhxLiveStorybook.NavigationHelpers
 
@@ -230,7 +231,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
   end
 
   defp get_template(template, _story = %{template: :unset}), do: template
-  defp get_template(_template, _story = %{template: t}) when t in [nil, false], do: nil
+
+  defp get_template(_template, _story = %{template: t}) when t in [nil, false],
+    do: TemplateHelpers.default_template()
+
   defp get_template(_template, _story = %{template: template}), do: template
 
   defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do

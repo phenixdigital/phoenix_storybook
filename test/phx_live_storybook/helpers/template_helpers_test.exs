@@ -8,7 +8,7 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
       set_template_id(
         """
         <div id=":story_id">
-          <.story/>
+          <.lsb-story/>
         </div>
         """,
         :hello_world
@@ -16,39 +16,39 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
 
     assert template == """
            <div id="hello_world">
-             <.story/>
+             <.lsb-story/>
            </div>
            """
   end
 
   test "story_template?/1" do
-    assert story_template?("<div><.story/></div>")
-    assert story_template?("<div><.story  /></div>")
-    assert story_template?("<div><.story whatever /></div>")
+    assert story_template?("<div><.lsb-story/></div>")
+    assert story_template?("<div><.lsb-story  /></div>")
+    assert story_template?("<div><.lsb-story whatever /></div>")
 
     assert story_template?("""
            <div>
-             <.story/>
+             <.lsb-story/>
            </div>
            """)
 
     refute story_template?("<div><story/></div>")
-    refute story_template?("<div><.story-group/></div>")
+    refute story_template?("<div><.lsb-story-group/></div>")
   end
 
   test "story_group_template?/1" do
-    assert story_group_template?("<div><.story-group/></div>")
-    assert story_group_template?("<div><.story-group  /></div>")
-    assert story_group_template?("<div><.story-group whatever /></div>")
+    assert story_group_template?("<div><.lsb-story-group/></div>")
+    assert story_group_template?("<div><.lsb-story-group  /></div>")
+    assert story_group_template?("<div><.lsb-story-group whatever /></div>")
 
     assert story_group_template?("""
            <div>
-             <.story-group/>
+             <.lsb-story-group/>
            </div>
            """)
 
     refute story_group_template?("<div><story-group/></div>")
-    refute story_group_template?("<div><.story/></div>")
+    refute story_group_template?("<div><.lsb-story/></div>")
   end
 
   test "replace_template_story/2" do
@@ -56,7 +56,7 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
       replace_template_story(
         """
         <div>
-          <.story/>
+          <.lsb-story/>
         </div>
         """,
         "<span/>"
@@ -75,7 +75,7 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
         """
         <div>
           <div>
-            <.story/>
+            <.lsb-story/>
           </div>
         </div>
         """,
@@ -107,7 +107,7 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
       replace_template_story_group(
         """
         <div>
-          <.story-group/>
+          <.lsb-story-group/>
         </div>
         """,
         "<span/>"
@@ -121,7 +121,7 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
   end
 
   test "code_hidden?/1" do
-    assert code_hidden?("<div lsb-code-hidden><.story/></div>")
-    refute code_hidden?("<div><.story/></div>")
+    assert code_hidden?("<div lsb-code-hidden><.lsb-story/></div>")
+    refute code_hidden?("<div><.lsb-story/></div>")
   end
 end

@@ -98,7 +98,7 @@ defmodule PhxLiveStorybook do
       recompilation_quotes(backend_module, otp_app, leave_entries),
       ConfigQuotes.config_quotes(backend_module, otp_app),
       EntriesQuotes.entries_quotes(entries),
-      ComponentQuotes.render_component_quotes(leave_entries, themes, __CALLER__.file),
+      ComponentQuotes.render_component_quotes(leave_entries, themes),
       ComponentQuotes.render_code_quotes(leave_entries),
       SourceQuotes.source_quotes(leave_entries),
       PageQuotes.page_quotes(leave_entries, themes, __CALLER__.file)

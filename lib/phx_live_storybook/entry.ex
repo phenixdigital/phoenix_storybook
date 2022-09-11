@@ -173,7 +173,7 @@ defmodule PhxLiveStorybook.Entry do
       def stories, do: []
 
       @impl unquote(component_behaviour(live?))
-      def template, do: nil
+      def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
 
       defoverridable name: 0,
                      description: 0,

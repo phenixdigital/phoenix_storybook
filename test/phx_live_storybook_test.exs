@@ -32,7 +32,8 @@ defmodule PhxLiveStorybookTest do
                  storybook_path: "/a_component",
                  container: :div,
                  attributes: [],
-                 stories: []
+                 stories: [],
+                 template: "<.lsb-story/>"
                },
                %ComponentEntry{
                  module: Elixir.FlatListStorybook.BComponent,
@@ -45,7 +46,8 @@ defmodule PhxLiveStorybookTest do
                  storybook_path: "/b_component",
                  container: :div,
                  attributes: [],
-                 stories: []
+                 stories: [],
+                 template: "<.lsb-story/>"
                }
              ]
     end
@@ -243,13 +245,6 @@ defmodule PhxLiveStorybookTest do
                )
     end
 
-    test "it raises a compile error if component rendering raises" do
-      assert_raise CompileError, ~r/an error occured while rendering story story/, fn ->
-        defmodule Elixir.PhxLiveStorybook.RenderComponentCrashStorybook,
-          do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
-      end
-    end
-
     test "renders a story with entry template" do
       html =
         TreeStorybook.render_story(TemplateComponent, :hello)
@@ -304,7 +299,7 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a story group with a <.story-group/> placeholder template" do
+    test "renders a story group with a <.lsb-story-group/> placeholder template" do
       html =
         TreeStorybook.render_story(TemplateComponent, :group_template_single)
         |> rendered_to_string()
@@ -326,7 +321,7 @@ defmodule PhxLiveStorybookTest do
     end
 
     test "renders a story with an invalid template placeholder will raise" do
-      msg = "Cannot use <.story-group/> placeholder in a story template."
+      msg = "Cannot use <.lsb-story-group/> placeholder in a story template."
 
       assert_raise RuntimeError, msg, fn ->
         TreeStorybook.render_story(InvalidTemplateComponent, :invalid_template_placeholder)
@@ -434,7 +429,8 @@ defmodule PhxLiveStorybookTest do
                  path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
                  container: :div,
                  attributes: [],
-                 stories: []
+                 stories: [],
+                 template: "<.lsb-story/>"
                },
                %ComponentEntry{
                  storybook_path: "/b_folder/bb_folder/bbb_component",
@@ -447,7 +443,8 @@ defmodule PhxLiveStorybookTest do
                  path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
                  container: :div,
                  attributes: [],
-                 stories: []
+                 stories: [],
+                 template: "<.lsb-story/>"
                }
              ]
     end

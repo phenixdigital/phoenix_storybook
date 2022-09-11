@@ -10,7 +10,7 @@ defmodule TreeStorybook.TemplateLiveComponent do
       <button id="toggle-status" phx-click="toggle-story-assign/:story_id/status">Toggle status</button>
       <button id="set-status-true" phx-click="set-story-assign/:story_id/status/true">Set status to true</button>
       <button id="set-status-false" phx-click="set-story-assign/:story_id/status/false">Set status to false</button>
-      <.story/>
+      <.lsb-story/>
     </div>
     """
   end

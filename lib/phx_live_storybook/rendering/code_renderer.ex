@@ -17,19 +17,16 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   @doc """
   Renders a `Story` (or `StoryGroup`) code snippet, wrapped in a `<pre>` tag.
   """
-  def render_story_code(fun_or_mod, story_or_group, template \\ nil, assigns \\ %{})
-
-  def render_story_code(fun_or_mod, s = %Story{}, _template = nil, assigns) do
-    ~H"""
-    <pre class={pre_class()}>
-    <%= component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots) |> format_heex() %>
-    </pre>
-    """
-  end
+  def render_story_code(
+        fun_or_mod,
+        story_or_group,
+        template \\ TemplateHelpers.default_template(),
+        assigns \\ %{}
+      )
 
   def render_story_code(fun_or_mod, s = %Story{}, template, assigns) do
     if TemplateHelpers.code_hidden?(template) do
-      render_story_code(fun_or_mod, s, nil, assigns)
+      render_story_code(fun_or_mod, s, TemplateHelpers.default_template(), assigns)
     else
       heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
       heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
@@ -42,22 +39,9 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     end
   end
 
-  def render_story_code(fun_or_mod, %StoryGroup{stories: stories}, _template = nil, assigns) do
-    heex =
-      Enum.map_join(stories, "\n", fn s ->
-        component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
-      end)
-
-    ~H"""
-    <pre class={pre_class()}>
-    <%= format_heex(heex) %>
-    </pre>
-    """
-  end
-
   def render_story_code(fun_or_mod, group = %StoryGroup{stories: stories}, template, assigns) do
     if TemplateHelpers.code_hidden?(template) do
-      render_story_code(fun_or_mod, group, nil, assigns)
+      render_story_code(fun_or_mod, group, TemplateHelpers.default_template(), assigns)
     else
       heex =
         cond do
@@ -90,19 +74,15 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   @doc """
   Renders a component code snippet.
   """
-  def render_component_code(fun_or_mod, attributes, let, block, slots, _template, assigns \\ %{})
-
   def render_component_code(
         fun_or_mod,
         attributes,
         let,
         block,
         slots,
-        _template = nil,
-        assigns
-      ) do
-    ~H"<%= component_code_heex(fun_or_mod, attributes, let, block, slots) |> format_heex() %>"
-  end
+        template \\ TemplateHelpers.default_template(),
+        assigns \\ %{}
+      )
 
   def render_component_code(
         fun_or_mod,
@@ -114,7 +94,15 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         assigns
       ) do
     if TemplateHelpers.code_hidden?(template) do
-      render_component_code(fun_or_mod, attributes, let, block, slots, nil, assigns)
+      render_component_code(
+        fun_or_mod,
+        attributes,
+        let,
+        block,
+        slots,
+        TemplateHelpers.default_template(),
+        assigns
+      )
     else
       heex = component_code_heex(fun_or_mod, attributes, let, block, slots)
       heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)

@@ -67,13 +67,13 @@ that will for instance render a button next to the component, to toggle its visi
 
 You can define a template in your component entry by defining a `template/0` function.
 Every story will be rendered within the defined template, the story itself is injected in place of
-`<.story/>`.
+`<.lsb-story/>`.
 
 ```elixir
 def template do
   """
   <div class="my-custom-wrapper">
-    <.story/>
+    <.lsb-story/>
   </div>
   """
 end
@@ -91,7 +91,7 @@ Story groups can also leverage on templating:
 ```elixir
 """
 <div class="one-wrapper-for-each-story">
-  <.story/>
+  <.lsb-story/>
 </div>
 """
 ```
@@ -101,7 +101,7 @@ Story groups can also leverage on templating:
 ```elixir
 """
 <div class="a-single-wrapper-for-all">
-  <.story-group/>
+  <.lsb-story-group/>
 </div>
 """
 ```
@@ -124,7 +124,7 @@ defmodule Storybook.Components.Modal do
     """
     <div>
       <button phx-click={Modal.show_modal()}>Open modal</button>
-      <.story/>
+      <.lsb-story/>
     </div>
     """
   end
@@ -164,7 +164,7 @@ defmodule Storybook.Components.Slideover do
       <button phx-click="set-story-assign/:story_id/show/true">
         Open slideover
       </button>
-      <.story/>
+      <.lsb-story/>
     </div>
     """
   end
@@ -193,7 +193,7 @@ You can choose to render only the story markup, without its surrounding template
 """
 <div lsb-code-hidden>
   <button phx-click={Modal.show_modal()}>Open modal</button>
-  <.story/>
+  <.lsb-story/>
 </div>
 """
 ```

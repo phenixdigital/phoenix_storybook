@@ -1,8 +1,10 @@
 defmodule PhxLiveStorybook.TemplateHelpers do
   @moduledoc false
 
-  @story_regex ~r|<\.story([\s]*[\w]*)*\/>|
-  @story_group_regex ~r|<\.story-group([\s]*[\w]*)*\/>|
+  @story_regex ~r|<\.lsb-story([\s]*[\w]*)*\/>|
+  @story_group_regex ~r|<\.lsb-story-group([\s]*[\w]*)*\/>|
+
+  def default_template, do: "<.lsb-story/>"
 
   def set_template_id(template, story_id) do
     String.replace(template, ":story_id", to_string(story_id))

@@ -12,39 +12,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a story or a group of story for a component.
   """
-  def render_story(fun_or_mod, story = %Story{}, extra_assigns, opts) do
-    heex =
-      component_heex(
-        fun_or_mod,
-        Map.merge(story.attributes, extra_assigns),
-        story.let,
-        story.block,
-        story.slots
-      )
-
-    render_component_heex(fun_or_mod, heex, opts)
-  end
-
-  def render_story(fun_or_mod, %StoryGroup{stories: stories}, extra_assigns, opts) do
-    heex =
-      for story = %Story{id: story_id} <- stories, into: "" do
-        extra_assigns = %{extra_assigns | id: "#{extra_assigns.id}-#{story_id}"}
-
-        component_heex(
-          fun_or_mod,
-          Map.merge(story.attributes, extra_assigns),
-          story.let,
-          story.block,
-          story.slots
-        )
-      end
-
-    render_component_heex(fun_or_mod, heex, opts)
-  end
-
-  def render_story_within_template(template, fun_or_mod, story = %Story{}, extra_assigns, opts) do
+  def render_story(fun_or_mod, story = %Story{}, template, extra_assigns, opts) do
     if TemplateHelpers.story_group_template?(template) do
-      raise "Cannot use <.story-group/> placeholder in a story template."
+      raise "Cannot use <.lsb-story-group/> placeholder in a story template."
     end
 
     heex =
@@ -61,10 +31,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex, opts)
   end
 
-  def render_story_within_template(
-        template,
+  def render_story(
         fun_or_mod,
         %StoryGroup{id: group_id, stories: stories},
+        template,
         group_extra_assigns,
         opts
       ) do
@@ -73,6 +43,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         TemplateHelpers.story_template?(template) ->
           for story = %Story{id: story_id} <- stories, into: "" do
             extra_assigns = Map.get(group_extra_assigns, story_id, %{})
+            extra_assigns = Map.put(extra_assigns, :id, "#{group_extra_assigns.id}-#{story_id}")
 
             template_heex(
               template,
@@ -113,15 +84,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @doc """
   Renders a component.
   """
-  def render_component(fun_or_mod, assigns, let, block, slots, opts) do
-    heex = component_heex(fun_or_mod, assigns, let, block, slots)
-    render_component_heex(fun_or_mod, heex, opts)
-  end
-
-  @doc """
-  Renders a component.
-  """
-  def render_component_within_template(template, id, fun_or_mod, assigns, let, block, slots, opts) do
+  def render_component(fun_or_mod, assigns, let, block, slots, id, template, opts) do
     heex =
       template_heex(
         template,
