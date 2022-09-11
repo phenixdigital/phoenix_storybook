@@ -5,7 +5,7 @@ defmodule TreeStorybook.InvalidTemplateComponent do
   def template do
     """
     <div id=":story_id">
-      <.story/>
+      <.lsb-story/>
     </div>
     """
   end
@@ -25,7 +25,7 @@ defmodule TreeStorybook.InvalidTemplateComponent do
     [
       %Story{
         id: :invalid_template_placeholder,
-        template: ~s|<div class="story-template"><.story-group/></div>|,
+        template: ~s|<div class="story-template"><.lsb-story-group/></div>|,
         attributes: %{label: "invalid template"}
       }
     ]

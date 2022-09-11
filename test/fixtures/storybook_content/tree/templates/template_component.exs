@@ -10,7 +10,7 @@ defmodule TreeStorybook.TemplateComponent do
       <button id="toggle-status" phx-click="toggle-story-assign/:story_id/status">Toggle status</button>
       <button id="set-status-true" phx-click="set-story-assign/:story_id/status/true">Set status to true</button>
       <button id="set-status-false" phx-click="set-story-assign/:story_id/status/false">Set status to false</button>
-      <.story/>
+      <.lsb-story/>
     </div>
     """
   end
@@ -59,7 +59,7 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %Story{
         id: :story_template,
-        template: ~s|<div class="story-template"><.story/></div>|,
+        template: ~s|<div class="story-template"><.lsb-story/></div>|,
         attributes: %{label: "story template"}
       },
       %Story{
@@ -74,7 +74,7 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %StoryGroup{
         id: :group_template,
-        template: ~s|<div class="group-template"><.story/></div>|,
+        template: ~s|<div class="group-template"><.lsb-story/></div>|,
         stories: [
           %Story{
             id: :one,
@@ -88,7 +88,7 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %StoryGroup{
         id: :group_template_single,
-        template: ~s|<div class="group-template"><.story-group/></div>|,
+        template: ~s|<div class="group-template"><.lsb-story-group/></div>|,
         stories: [
           %Story{
             id: :one,

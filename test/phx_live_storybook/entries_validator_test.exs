@@ -114,7 +114,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = %ComponentEntry{template: nil}
       assert validate(entry)
 
-      entry = %ComponentEntry{template: "<div><.story/></div>"}
+      entry = %ComponentEntry{template: "<div><.lsb-story/></div>"}
       assert validate(entry)
     end
 
@@ -133,7 +133,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = %ComponentEntry{stories: [%Story{id: :foo, template: false}]}
       assert validate(entry)
 
-      entry = %ComponentEntry{stories: [%Story{id: :foo, template: "<div><.story/></div>"}]}
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: "<div><.lsb-story/></div>"}]}
       assert validate(entry)
     end
 
@@ -156,7 +156,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       assert validate(entry)
 
       entry = %ComponentEntry{
-        stories: [%StoryGroup{id: :foo, stories: [], template: "<div><.story/></div>"}]
+        stories: [%StoryGroup{id: :foo, stories: [], template: "<div><.lsb-story/></div>"}]
       }
 
       assert validate(entry)
@@ -176,7 +176,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
         stories: [
           %StoryGroup{
             id: :group,
-            stories: [%Story{id: :foo, template: "<div><.story/></div>"}]
+            stories: [%Story{id: :foo, template: "<div><.lsb-story/></div>"}]
           }
         ]
       }

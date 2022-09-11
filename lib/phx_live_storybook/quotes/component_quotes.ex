@@ -4,14 +4,10 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   alias Phoenix.HTML.Safe
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
+  alias PhxLiveStorybook.TemplateHelpers
 
   # Precompiling component preview for every component / story / theme.
-  # 4 possible cases:
-  #   - component / template
-  #   - component / no template
-  #   - live_component / template
-  #   - live_component / no template
-  def render_component_quotes(leave_entries, themes, caller_file) do
+  def render_component_quotes(leave_entries, themes) do
     header_quote =
       quote do
         def render_story(module, story_id, extra_assigns \\ %{theme: nil})
@@ -36,92 +32,40 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
 
         case type do
           :component ->
-            if template do
-              quote do
-                @impl PhxLiveStorybook.BackendBehaviour
-                def render_story(
-                      unquote(module),
-                      unquote(story.id),
-                      extra_assigns = %{theme: unquote(theme)}
-                    ) do
-                  ComponentRenderer.render_story_within_template(
-                    unquote(template),
-                    unquote(function),
-                    unquote(Macro.escape(story)),
-                    Map.put(extra_assigns, :id, unquote(unique_story_id)),
-                    imports: unquote(imports),
-                    aliases: unquote(aliases)
-                  )
-                end
-              end
-            else
-              quote do
-                @impl PhxLiveStorybook.BackendBehaviour
-                def render_story(
-                      unquote(module),
-                      unquote(story.id),
-                      %{theme: unquote(theme)}
-                    ) do
-                  unquote(
-                    try do
-                      ComponentRenderer.render_story(
-                        module.function(),
-                        story,
-                        %{theme: theme, id: unique_story_id},
-                        imports: imports,
-                        aliases: aliases
-                      )
-                      |> to_raw_html()
-                    rescue
-                      _exception ->
-                        reraise CompileError,
-                                [
-                                  description:
-                                    "an error occured while rendering story #{story.id}",
-                                  file: caller_file
-                                ],
-                                __STACKTRACE__
-                    end
-                  )
-                end
+            quote do
+              @impl PhxLiveStorybook.BackendBehaviour
+              def render_story(
+                    unquote(module),
+                    unquote(story.id),
+                    extra_assigns = %{theme: unquote(theme)}
+                  ) do
+                ComponentRenderer.render_story(
+                  unquote(function),
+                  unquote(Macro.escape(story)),
+                  unquote(template),
+                  Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                  imports: unquote(imports),
+                  aliases: unquote(aliases)
+                )
               end
             end
 
           :live_component ->
-            if template do
-              quote do
-                @impl PhxLiveStorybook.BackendBehaviour
-                def render_story(
-                      unquote(module),
-                      unquote(story.id),
-                      extra_assigns = %{theme: unquote(theme)}
-                    ) do
-                  ComponentRenderer.render_story_within_template(
-                    unquote(template),
-                    unquote(component),
-                    unquote(Macro.escape(story)),
-                    Map.put(extra_assigns, :id, unquote(unique_story_id)),
-                    imports: unquote(imports),
-                    aliases: unquote(aliases)
-                  )
-                end
-              end
-            else
-              quote do
-                @impl PhxLiveStorybook.BackendBehaviour
-                def render_story(
-                      unquote(module),
-                      unquote(story.id),
-                      extra_assigns = %{theme: unquote(theme)}
-                    ) do
-                  ComponentRenderer.render_story(
-                    unquote(component),
-                    unquote(Macro.escape(story)),
-                    Map.put(extra_assigns, :id, unquote(unique_story_id)),
-                    imports: unquote(imports),
-                    aliases: unquote(aliases)
-                  )
-                end
+            quote do
+              @impl PhxLiveStorybook.BackendBehaviour
+              def render_story(
+                    unquote(module),
+                    unquote(story.id),
+                    extra_assigns = %{theme: unquote(theme)}
+                  ) do
+                ComponentRenderer.render_story(
+                  unquote(component),
+                  unquote(Macro.escape(story)),
+                  unquote(template),
+                  Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                  imports: unquote(imports),
+                  aliases: unquote(aliases)
+                )
               end
             end
         end
@@ -211,6 +155,9 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   end
 
   defp get_template(template, _story_or_group = %{template: :unset}), do: template
-  defp get_template(_template, _story_or_group = %{template: t}) when t in [nil, false], do: nil
+
+  defp get_template(_template, _story_or_group = %{template: t}) when t in [nil, false],
+    do: TemplateHelpers.default_template()
+
   defp get_template(_template, _story_or_group = %{template: template}), do: template
 end

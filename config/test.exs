@@ -7,7 +7,6 @@ for {storybook_module, content_path, folders} <- [
       {"TreeStorybook", "tree",
        ["/a_folder": [icon: "fa-icon"], "/b_folder": [open: true, name: "Config Name"]]},
       {"TreeBStorybook", "tree_b", []},
-      {"RenderComponentCrashStorybook", "render_component_crash", []},
       {"RenderPageCrashStorybook", "render_page_crash", []}
     ] do
   opts = [

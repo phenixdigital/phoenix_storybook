@@ -1,8 +1,10 @@
 defmodule PhxLiveStorybook.TemplateHelpers do
   @moduledoc false
 
-  @story_regex ~r|<\.story([\s]*[\w]*)*\/>|
-  @story_group_regex ~r|<\.story-group([\s]*[\w]*)*\/>|
+  @story_regex ~r|<\.lsb-story([\s]*[\w]*)*\/>|
+  @story_group_regex ~r|<\.lsb-story-group([\s]*[\w]*)*\/>|
+
+  def default_template, do: "<.lsb-story/>"
 
   def set_template_id(template, story_id) do
     String.replace(template, ":story_id", to_string(story_id))
@@ -55,11 +57,14 @@ defmodule PhxLiveStorybook.TemplateHelpers do
   end
 
   defp indent(markup, indent_size) do
-    indent = Enum.map_join(1..indent_size, fn _ -> " " end)
+    indent = indent(indent_size)
 
     markup
     |> String.split("\n")
     |> Enum.reject(&(&1 == ""))
     |> Enum.map_join("\n", &(indent <> &1))
   end
+
+  defp indent(0), do: ""
+  defp indent(size), do: Enum.map_join(1..size, fn _ -> " " end)
 end
