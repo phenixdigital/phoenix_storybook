@@ -361,7 +361,7 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_info(event_log = %EventLog{view: PlaygroundPreviewLive}, socket) do
-    send_update(Playground, id: "playground", new_event: "#{inspect(event_log)}")
+    send_update(Playground, id: "playground", new_event: event_log)
     {:noreply, socket}
   end
 

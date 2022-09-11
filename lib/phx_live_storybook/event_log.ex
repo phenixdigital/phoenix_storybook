@@ -8,8 +8,9 @@ defmodule PhxLiveStorybook.EventLog do
           view: atom(),
           event: binary(),
           params: map(),
-          assigns: map()
+          assigns: map(),
+          time: Time.t()
         }
 
-  defstruct [:type, :parent_pid, :view, :event, :params, :assigns]
+  defstruct [:type, :parent_pid, :view, :event, :params, :assigns, :time]
 end
