@@ -81,20 +81,42 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex, opts)
   end
 
-  @doc """
-  Renders a component.
-  """
-  def render_component(fun_or_mod, assigns, let, block, slots, id, template, opts) do
+  @doc false
+  def render_multiple_stories(fun_or_mod, story_or_group, stories, template, opts) do
     heex =
-      template_heex(
-        template,
-        id,
-        fun_or_mod,
-        assigns,
-        let,
-        block,
-        slots
-      )
+      cond do
+        TemplateHelpers.story_template?(template) ->
+          for story <- stories, into: "" do
+            template_heex(
+              template,
+              story.id,
+              fun_or_mod,
+              story.attributes,
+              story.let,
+              story.block,
+              story.slots
+            )
+          end
+
+        TemplateHelpers.story_group_template?(template) ->
+          heex =
+            for story <- stories, into: "" do
+              component_heex(
+                fun_or_mod,
+                story.attributes,
+                story.let,
+                story.block,
+                story.slots
+              )
+            end
+
+          template
+          |> TemplateHelpers.set_template_id(story_or_group.id)
+          |> TemplateHelpers.replace_template_story_group(heex)
+
+        true ->
+          TemplateHelpers.set_template_id(template, story_or_group)
+      end
 
     render_component_heex(fun_or_mod, heex, opts)
   end

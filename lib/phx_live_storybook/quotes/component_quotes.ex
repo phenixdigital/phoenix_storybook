@@ -27,7 +27,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           } <- leave_entries,
           story <- stories,
           {theme, _label} <- themes do
-        template = get_template(template, story)
+        template = TemplateHelpers.get_template(template, story)
         unique_story_id = Macro.underscore("#{module_name}-#{story.id}")
 
         case type do
@@ -103,7 +103,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             template: template
           } <- leave_entries,
           story <- stories do
-        template = get_template(template, story)
+        template = TemplateHelpers.get_template(template, story)
 
         case type do
           :component ->
@@ -153,11 +153,4 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
     |> IO.iodata_to_binary()
     |> Phoenix.HTML.raw()
   end
-
-  defp get_template(template, _story_or_group = %{template: :unset}), do: template
-
-  defp get_template(_template, _story_or_group = %{template: t}) when t in [nil, false],
-    do: TemplateHelpers.default_template()
-
-  defp get_template(_template, _story_or_group = %{template: template}), do: template
 end

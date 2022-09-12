@@ -8,6 +8,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
+  alias PhxLiveStorybook.TemplateHelpers
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
@@ -62,13 +63,12 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   end
 
   def render(assigns) do
+    template = TemplateHelpers.get_template(assigns.entry.template, assigns.story)
+
     ~H"""
     <div id="playground-preview-live" style="height: 100%;">
       <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; padding: 10px;">
-        <%= for story <- @stories do %>
-          <%= ComponentRenderer.render_component(fun_or_component(@entry), story.attributes, story.let, story.block, story.slots,
-          story.id, @entry.template, [imports: @entry.imports, aliases: @entry.aliases]) %>
-        <% end %>
+        <%= ComponentRenderer.render_multiple_stories(fun_or_component(@entry), @story, @stories, template, [imports: @entry.imports, aliases: @entry.aliases]) %>
       </div>
     </div>
     """

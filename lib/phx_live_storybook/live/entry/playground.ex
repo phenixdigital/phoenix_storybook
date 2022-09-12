@@ -204,7 +204,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
             <i class="lsb fa fa-copy lsb-text-inherit"></i>
           </div>
-          <.playground_code entry={@entry} stories={@stories}/>
+          <.playground_code entry={@entry} story={@story} stories={@stories}/>
         </div>
       <% end %>
       <%= if @playground_error do %>
@@ -224,18 +224,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp playground_code(assigns) do
     ~H"""
     <pre class={CodeRenderer.pre_class()}>
-    <%= for story <- @stories do %>
-    <%= CodeRenderer.render_component_code(fun_or_component(@entry), story.attributes, story.let, story.block, story.slots, get_template(@entry.template, story)) %><% end %>
+    <%= CodeRenderer.render_multiple_stories_code(fun_or_component(@entry), @stories, TemplateHelpers.get_template(@entry.template, @story)) %>
     </pre>
     """
   end
-
-  defp get_template(template, _story = %{template: :unset}), do: template
-
-  defp get_template(_template, _story = %{template: t}) when t in [nil, false],
-    do: TemplateHelpers.default_template()
-
-  defp get_template(_template, _story = %{template: template}), do: template
 
   defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do
     ~H"""

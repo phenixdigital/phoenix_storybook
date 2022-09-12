@@ -57,7 +57,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
                 component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
               end)
 
-            TemplateHelpers.replace_template_story(template, heex, _indent = true)
+            TemplateHelpers.replace_template_story_group(template, heex, _indent = true)
 
           true ->
             template
@@ -72,40 +72,37 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   end
 
   @doc """
-  Renders a component code snippet.
+  Renders code snippet for a set of stories.
   """
-  def render_component_code(
-        fun_or_mod,
-        attributes,
-        let,
-        block,
-        slots,
-        template,
-        assigns \\ %{}
-      )
-
-  def render_component_code(
-        fun_or_mod,
-        attributes,
-        let,
-        block,
-        slots,
-        template,
-        assigns
-      ) do
+  def render_multiple_stories_code(fun_or_mod, stories, template, assigns \\ %{}) do
     if TemplateHelpers.code_hidden?(template) do
-      render_component_code(
+      render_multiple_stories_code(
         fun_or_mod,
-        attributes,
-        let,
-        block,
-        slots,
+        stories,
         TemplateHelpers.default_template(),
         assigns
       )
     else
-      heex = component_code_heex(fun_or_mod, attributes, let, block, slots)
-      heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
+      heex =
+        cond do
+          TemplateHelpers.story_template?(template) ->
+            Enum.map_join(stories, "\n", fn s ->
+              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              TemplateHelpers.replace_template_story(template, heex, _indent = true)
+            end)
+
+          TemplateHelpers.story_group_template?(template) ->
+            heex =
+              Enum.map_join(stories, "\n", fn s ->
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              end)
+
+            TemplateHelpers.replace_template_story_group(template, heex, _indent = true)
+
+          true ->
+            template
+        end
+
       ~H"<%= format_heex(heex) %>"
     end
   end

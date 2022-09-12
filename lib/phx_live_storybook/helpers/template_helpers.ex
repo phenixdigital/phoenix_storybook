@@ -30,6 +30,11 @@ defmodule PhxLiveStorybook.TemplateHelpers do
     replace_in_template(template, @story_group_regex, story_group_markup, indent?)
   end
 
+  def get_template(template, _story = %{template: :unset}), do: template
+  def get_template(_tpl, _story = %{template: t}) when t in [nil, false], do: default_template()
+  def get_template(template, nil), do: template
+  def get_template(_tpl, _story = %{template: template}), do: template
+
   defp replace_in_template(template, regex, markup, _indent? = true) do
     template
     |> String.split("\n")
