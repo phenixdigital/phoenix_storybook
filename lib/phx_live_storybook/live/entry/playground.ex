@@ -577,6 +577,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   end
 
   defp update_story_attributes(story, new_attrs) do
+    new_attrs = Enum.reject(new_attrs, fn {_attr_id, value} -> value == :locked end) |> Map.new()
     attrs = story.attributes |> Map.merge(new_attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
     %{story | attributes: attrs}
   end
