@@ -22,7 +22,7 @@ defmodule Storybook.MyComponent do
 end
 ```
 
-ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
+ℹ️ Learn more on this topic in the [sandboxing guide](sandboxing.md).
 
 ## Aliases & Imports
 
