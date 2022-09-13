@@ -65,13 +65,33 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   def render(assigns) do
     template = TemplateHelpers.get_template(assigns.entry.template, assigns.story)
 
+    opts = [
+      playground_topic: assigns.topic,
+      imports: [{__MODULE__, lsb_inspect: 4} | assigns.entry.imports],
+      aliases: assigns.entry.aliases
+    ]
+
     ~H"""
-    <div id="playground-preview-live" style="height: 100%;">
-      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; padding: 10px;">
-        <%= ComponentRenderer.render_multiple_stories(fun_or_component(@entry), @story, @stories, template, [imports: @entry.imports, aliases: @entry.aliases]) %>
+    <div id="playground-preview-live" style="width: 100%; height: 100%;">
+      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
+        <%= ComponentRenderer.render_multiple_stories(fun_or_component(@entry), @story, @stories, template, opts) %>
       </div>
     </div>
     """
+  end
+
+  # Attributes passed in templates (as <.lsb-story .../> tag attributes) carry a value only known
+  # at runtime.
+  # Template will call `lsb_inspect/4` for each of these attributes, in order to let the Playground
+  # know their current value.
+  def lsb_inspect(playground_topic, story_id, key, val) do
+    PubSub.broadcast!(
+      PhxLiveStorybook.PubSub,
+      playground_topic,
+      {:new_template_attributes, %{story_id => %{key => val}}}
+    )
+
+    val
   end
 
   defp load_entry(backend_module, entry_param) do
@@ -156,7 +176,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       topic,
-      {:new_stories_attributes, Enum.map(stories, &Map.take(&1, [:id, :attributes]))}
+      {:new_stories_attributes, stories |> Enum.map(&{&1.id, &1.attributes}) |> Map.new()}
     )
   end
 

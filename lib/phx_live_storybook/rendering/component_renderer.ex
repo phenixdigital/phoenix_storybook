@@ -25,7 +25,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         Map.merge(story.attributes, extra_assigns),
         story.let,
         story.block,
-        story.slots
+        story.slots,
+        opts[:playground_topic]
       )
 
     render_component_heex(fun_or_mod, heex, opts)
@@ -52,7 +53,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
               Map.merge(story.attributes, extra_assigns),
               story.let,
               story.block,
-              story.slots
+              story.slots,
+              opts[:playground_topic]
             )
           end
 
@@ -61,12 +63,20 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
             for story = %Story{id: story_id} <- stories, into: "" do
               extra_assigns = %{group_extra_assigns | id: "#{group_extra_assigns.id}-#{story_id}"}
 
+              extra_attributes =
+                extract_placeholder_attributes(
+                  template,
+                  story.id,
+                  opts[:playground_topic]
+                )
+
               component_heex(
                 fun_or_mod,
                 Map.merge(story.attributes, extra_assigns),
                 story.let,
                 story.block,
-                story.slots
+                story.slots,
+                extra_attributes
               )
             end
 
@@ -94,19 +104,28 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
               story.attributes,
               story.let,
               story.block,
-              story.slots
+              story.slots,
+              opts[:playground_topic]
             )
           end
 
         TemplateHelpers.story_group_template?(template) ->
           heex =
             for story <- stories, into: "" do
+              extra_attributes =
+                extract_placeholder_attributes(
+                  template,
+                  story.id,
+                  opts[:playground_topic]
+                )
+
               component_heex(
                 fun_or_mod,
                 story.attributes,
                 story.let,
                 story.block,
-                story.slots
+                story.slots,
+                extra_attributes
               )
             end
 
@@ -115,48 +134,69 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
           |> TemplateHelpers.replace_template_story_group(heex)
 
         true ->
-          TemplateHelpers.set_template_id(template, story_or_group)
+          TemplateHelpers.set_template_id(template, story_or_group.id)
       end
 
     render_component_heex(fun_or_mod, heex, opts)
   end
 
-  defp component_heex(fun, assigns, _let, nil, []) when is_function(fun) do
+  defp component_heex(fun, assigns, _let, nil, [], extra_attrs) when is_function(fun) do
     """
-    <.#{function_name(fun)} #{attributes_markup(assigns)}/>
+    <.#{function_name(fun)} #{attributes_markup(assigns)} #{extra_attrs}/>
     """
   end
 
-  defp component_heex(fun, assigns, let, block, slots) when is_function(fun) do
+  defp component_heex(fun, assigns, let, block, slots, extra_attrs)
+       when is_function(fun) do
     """
-    <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup(assigns)}>
+    <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup(assigns)} #{extra_attrs}>
       #{block}
       #{slots}
     </.#{function_name(fun)}>
     """
   end
 
-  defp component_heex(module, assigns, _let, nil, []) when is_atom(module) do
+  defp component_heex(module, assigns, _let, nil, [], extra_attrs) when is_atom(module) do
     """
-    <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)}/>
+    <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)} #{extra_attrs}/>
     """
   end
 
-  defp component_heex(module, assigns, let, block, slots) when is_atom(module) do
+  defp component_heex(module, assigns, let, block, slots, extra_attrs)
+       when is_atom(module) do
     """
-    <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup(assigns)}>
+    <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup(assigns)} #{extra_attrs}>
       #{block}
       #{slots}
     </.live_component>
     """
   end
 
-  defp template_heex(template, story_id, fun_or_mod, assigns, let, block, slots) do
+  defp template_heex(
+         template,
+         story_id,
+         fun_or_mod,
+         assigns,
+         let,
+         block,
+         slots,
+         playground_topic
+       ) do
+    extra_attributes = extract_placeholder_attributes(template, story_id, playground_topic)
+
     template
     |> TemplateHelpers.set_template_id(story_id)
     |> TemplateHelpers.replace_template_story(
-      component_heex(fun_or_mod, assigns, let, block, slots)
+      component_heex(fun_or_mod, assigns, let, block, slots, extra_attributes)
     )
+  end
+
+  defp extract_placeholder_attributes(template, _story_id, _topic = nil) do
+    TemplateHelpers.extract_placeholder_attributes(template)
+  end
+
+  defp extract_placeholder_attributes(template, story_id, topic) do
+    TemplateHelpers.extract_placeholder_attributes(template, {topic, story_id})
   end
 
   defp let_markup(nil), do: ""

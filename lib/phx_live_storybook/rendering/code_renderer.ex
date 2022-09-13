@@ -28,7 +28,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     if TemplateHelpers.code_hidden?(template) do
       render_story_code(fun_or_mod, s, TemplateHelpers.default_template(), assigns)
     else
-      heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+      heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
       heex = TemplateHelpers.replace_template_story(template, heex, _indent = true)
 
       ~H"""
@@ -47,14 +47,16 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         cond do
           TemplateHelpers.story_template?(template) ->
             Enum.map_join(stories, "\n", fn s ->
-              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              heex =
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
+
               TemplateHelpers.replace_template_story(template, heex, _indent = true)
             end)
 
           TemplateHelpers.story_group_template?(template) ->
             heex =
               Enum.map_join(stories, "\n", fn s ->
-                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
               end)
 
             TemplateHelpers.replace_template_story_group(template, heex, _indent = true)
@@ -87,14 +89,16 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         cond do
           TemplateHelpers.story_template?(template) ->
             Enum.map_join(stories, "\n", fn s ->
-              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+              heex =
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
+
               TemplateHelpers.replace_template_story(template, heex, _indent = true)
             end)
 
           TemplateHelpers.story_group_template?(template) ->
             heex =
               Enum.map_join(stories, "\n", fn s ->
-                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots)
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
               end)
 
             TemplateHelpers.replace_template_story_group(template, heex, _indent = true)
@@ -137,24 +141,26 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     do:
       "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
-  defp component_code_heex(function, attributes, let, block, slots) when is_function(function) do
+  defp component_code_heex(function, attributes, let, block, slots, template)
+       when is_function(function) do
     fun = function_name(function)
     self_closed? = is_nil(block) and Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.#{fun}"}#{let_markup(let)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.#{fun}"}#{let_markup(let)}#{template_attributes_markup(template)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
     #{if block, do: indent_slot(block)}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.#{fun}>"}
     """)
   end
 
-  defp component_code_heex(module, attributes, let, block, slots) when is_atom(module) do
+  defp component_code_heex(module, attributes, let, block, slots, template)
+       when is_atom(module) do
     mod = module_name(module)
     self_closed? = is_nil(block) and Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.live_component module={#{mod}}"}#{let_markup(let)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.live_component module={#{mod}}"}#{let_markup(let)}#{template_attributes_markup(template)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
     #{if block, do: indent_slot(block)}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.live_component>"}
@@ -172,6 +178,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         {name, val} when is_binary(val) -> ~s|#{name}="#{val}"|
         {name, val} -> ~s|#{name}={#{inspect_val(val)}}|
       end)
+  end
+
+  defp template_attributes_markup(template) do
+    case TemplateHelpers.extract_placeholder_attributes(template) do
+      "" -> ""
+      attributes -> " " <> attributes
+    end
   end
 
   defp inspect_val(struct = %{__struct__: struct_name}) when is_struct(struct) do

@@ -236,7 +236,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class={LayoutView.sandbox_class(assigns)}>
+              <div class={LayoutView.sandbox_class(assigns)} style="width: 100%;">
                 <%= @backend_module.render_story(@entry.module(), story_id, story_extra_assigns) %>
               </div>
             <% end %>
@@ -374,6 +374,11 @@ defmodule PhxLiveStorybook.EntryLive do
 
   def handle_info({:new_stories_attributes, stories_attributes}, socket) do
     send_update(Playground, id: "playground", new_stories_attributes: stories_attributes)
+    {:noreply, socket}
+  end
+
+  def handle_info({:new_template_attributes, template_attributes}, socket) do
+    send_update(Playground, id: "playground", new_template_attributes: template_attributes)
     {:noreply, socket}
   end
 

@@ -302,6 +302,41 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       refute render(playground_element) =~ "template_component: bar / status: false"
     end
 
+    test "playground with template values", %{conn: conn} do
+      {:ok, view, _html} =
+        live(
+          conn,
+          "/storybook/templates/template_component?tab=playground&story_id=template_attributes"
+        )
+
+      assert [playground_preview_view] = live_children(view)
+      playground_element = element(playground_preview_view, "#playground-preview-live")
+
+      assert render(playground_element) =~
+               "<span>template_component: from_template / status: true</span>"
+
+      form_label_selector = "#tree_storybook_template_component-playground-form_label"
+      form_toggle_selector = "#tree_storybook_template_component-playground-form_status"
+
+      assert view |> element(form_label_selector) |> render() |> Floki.attribute("disabled") ==
+               ["disabled"]
+
+      assert view |> element(form_toggle_selector) |> render() |> Floki.attribute("disabled") ==
+               ["disabled"]
+    end
+
+    test "playground with a story_group, and an empty template", %{conn: conn} do
+      {:ok, view, _html} =
+        live(
+          conn,
+          "/storybook/templates/template_component?tab=playground&story_id=no_placeholder_group"
+        )
+
+      assert [playground_preview_view] = live_children(view)
+      playground_element = element(playground_preview_view, "#playground-preview-live")
+      assert render(playground_element) =~ "<div></div>"
+    end
+
     test "component code is visible", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
 

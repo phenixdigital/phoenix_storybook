@@ -20,8 +20,7 @@ defmodule TreeStorybook.TemplateComponent do
       %Attr{
         id: :label,
         type: :string,
-        doc: "component label",
-        required: true
+        doc: "component label"
       },
       %Attr{
         id: :status,
@@ -113,6 +112,10 @@ defmodule TreeStorybook.TemplateComponent do
             attributes: %{label: "two"}
           }
         ]
+      },
+      %Story{
+        id: :template_attributes,
+        template: ~s(<.lsb-story label="from_template" status={true}/>)
       }
     ]
   end

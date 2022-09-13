@@ -54,7 +54,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
           session: %{"entry_path" => @entry_path, "story_id" => @story_id,
           "backend_module" => to_string(@backend_module), "theme" => @theme,
           "topic" => @topic},
-          container: {:div, style: "height: 100vh;"}
+          container: {:div, style: "height: 100vh; width: 100wh;"}
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">

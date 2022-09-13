@@ -109,6 +109,18 @@ Story groups can also leverage on templating:
 If you want to get unique id, you can use `:story_id` that will be replaced, at rendering time by
 the current story (or story group) id.
 
+### Placeholder attributes
+
+In template, you can pass some extra attributes to your story. Just add them to the `.lsb-story` or
+`.lsb-story-group` placeholder.
+
+```elixir
+"""
+<.form_for for={:user} let={f}>
+  <.lsb-story form={f}/>
+</.form>
+```
+
 ### JS-controlled visibility
 
 Here is an example of templated component managing its visibility client-side, by toggling CSS

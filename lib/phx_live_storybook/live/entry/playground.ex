@@ -18,10 +18,12 @@ defmodule PhxLiveStorybook.Entry.Playground do
      |> assign(assigns)
      |> assign_stories()
      |> assign_new_stories_attributes(assigns)
+     |> assign_new_template_attributes(assigns)
      |> assign_playground_fields()
      |> assign_playground_block()
      |> assign_playground_slots()
-     |> assign(upper_tab: :preview, lower_tab: :attributes)}
+     |> assign_new(:upper_tab, fn -> :preview end)
+     |> assign_new(:lower_tab, fn -> :attributes end)}
   end
 
   defp assign_stories(socket = %{assigns: assigns}) do
@@ -30,6 +32,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
       %StoryGroup{id: group_id, stories: stories} -> assign_stories(socket, group_id, stories)
       _ -> assign_stories(socket, nil, [])
     end
+  end
+
+  defp assign_stories(socket = %{assigns: %{story_id: id}}, id, _stories) do
+    socket
   end
 
   defp assign_stories(socket, id, stories) do
@@ -41,17 +47,49 @@ defmodule PhxLiveStorybook.Entry.Playground do
     )
   end
 
+  # new_attributes may be passed by parent (LiveView) send_update.
+  # It happens whenever parent is notified some component assign has been
+  # updated by the component itself.
+  defp assign_new_stories_attributes(socket, assigns) do
+    new_attributes = Map.get(assigns, :new_stories_attributes, %{})
+
+    stories =
+      for story <- socket.assigns.stories do
+        case Map.get(new_attributes, story.id) do
+          nil -> story
+          new_attrs -> update_story_attributes(story, new_attrs)
+        end
+      end
+
+    assign(socket, stories: stories)
+  end
+
+  defp assign_new_template_attributes(socket, assigns) do
+    current_attributes = Map.get(socket.assigns, :template_attributes, %{})
+    new_attributes = Map.get(assigns, :new_template_attributes, %{})
+
+    template_attributes =
+      for {story_id, new_story_attrs} <- new_attributes, reduce: current_attributes do
+        acc ->
+          current_attrs = Map.get(acc, story_id, %{})
+          new_story_attrs = Map.merge(current_attrs, new_story_attrs)
+          Map.put(acc, story_id, new_story_attrs)
+      end
+
+    assign(socket, template_attributes: template_attributes)
+  end
+
   defp assign_playground_fields(socket = %{assigns: %{entry: entry, stories: stories}}) do
     fields =
       for attr = %Attr{type: t} <- entry.attributes, t not in ~w(block slot)a, reduce: %{} do
         acc ->
-          attr_values = for story <- stories, do: Map.get(story.attributes, attr.id)
+          attr_values = for %{attributes: attrs} <- stories, do: Map.get(attrs, attr.id)
 
           field =
-            if attr_values |> Enum.uniq() |> length() == 1 do
-              hd(attr_values)
-            else
-              :locked
+            case Enum.uniq(attr_values) do
+              [] -> nil
+              [val] -> val
+              _ -> :locked
             end
 
           Map.put(acc, attr.id, field)
@@ -96,30 +134,6 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
     assign(socket, :slots, slots)
   end
-
-  # new_attributes may be passed by parent (LiveView) send_update.
-  # It happens whenever parent is notified some component assign has been
-  # updated by the component itself.
-  defp assign_new_stories_attributes(
-         socket,
-         _assigns = %{new_stories_attributes: new_stories_attributes}
-       ) do
-    stories =
-      for story <- socket.assigns.stories,
-          %{id: new_story_id, attributes: new_attrs} <- new_stories_attributes,
-          reduce: [] do
-        acc ->
-          if story.id == new_story_id do
-            [update_story_attributes(story, new_attrs) | acc]
-          else
-            acc
-          end
-      end
-
-    assign(socket, stories: stories)
-  end
-
-  defp assign_new_stories_attributes(socket, _assigns), do: socket
 
   def render(assigns) do
     ~H"""
@@ -194,8 +208,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
                   "story_id" => @story_id,
                   "theme" => @theme,
                   "backend_module" => to_string(@backend_module),
-                  "topic" => "playground-#{inspect(self())}"
-                }
+                  "topic" => "playground-#{inspect(self())}",
+                },
+                container: {:div, style: "height: 100%; width: 100%;"}
           %>
         <% end %>
       </div>
@@ -269,12 +284,15 @@ defmodule PhxLiveStorybook.Entry.Playground do
                         <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500">
                           <.type_badge type={attr.type}/>
                         </td>
-                        <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                        <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500 lsb-max-w-[16rem]"><%= if attr.doc, do: String.trim(attr.doc) %></td>
                         <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500 lsb-hidden md:lsb-table-cell">
                           <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
-                          <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type} fields={@fields} options={attr.options} myself={@myself}/>
+                          <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
+                            fields={@fields} options={attr.options} myself={@myself}
+                            template_attributes={Map.get(@template_attributes, @story.id, %{})}
+                          />
                         </td>
                       </tr>
                     <% end %>
@@ -449,15 +467,23 @@ defmodule PhxLiveStorybook.Entry.Playground do
     "lsb lsb-rounded lsb-px-1 md:lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-[0.5em] md:lsb-text-xs"
   end
 
-  defp type_label(type), do: Macro.to_string(type)
+  defp type_label(type) do
+    type |> inspect() |> String.split(".") |> Enum.at(-1)
+  end
 
   defp maybe_locked_attr_input(assigns) do
-    case Map.get(assigns.fields, assigns.attr_id) do
-      :locked ->
-        ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+    case Map.get(assigns.template_attributes, assigns.attr_id) do
+      nil ->
+        case Map.get(assigns.fields, assigns.attr_id) do
+          :locked ->
+            ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+
+          value ->
+            assigns |> assign(:value, value) |> attr_input()
+        end
 
       value ->
-        assigns |> assign(:value, value) |> attr_input()
+        ~H|<%= text_input(@form, @attr_id, value: inspect(value), disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
     end
   end
 
@@ -535,7 +561,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
     entry = assigns.entry
 
     fields =
-      for {key, value} <- params, key = String.to_atom(key), reduce: assigns.fields do
+      for {key, value} <- params,
+          key = String.to_atom(key),
+          reduce: assigns.fields do
         acc ->
           attr_definition = Enum.find(entry.attributes, &(&1.id == key))
 
@@ -558,6 +586,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
         socket = %{assigns: assigns}
       ) do
     fields = Map.put(assigns.fields, String.to_atom(key), value)
+
     stories = update_stories_attributes(assigns.stories, fields)
     send_attributes(assigns.topic, fields)
     {:noreply, assign(socket, stories: stories, fields: fields)}

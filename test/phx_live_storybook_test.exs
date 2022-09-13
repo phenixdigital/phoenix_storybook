@@ -327,6 +327,12 @@ defmodule PhxLiveStorybookTest do
         TreeStorybook.render_story(InvalidTemplateComponent, :invalid_template_placeholder)
       end
     end
+
+    test "renders a story with a template passing extra attributes" do
+      assert TreeStorybook.render_story(TemplateComponent, :template_attributes)
+             |> rendered_to_string() ==
+               "<span>template_component: from_template / status: true</span>"
+    end
   end
 
   describe "render_code/2" do
