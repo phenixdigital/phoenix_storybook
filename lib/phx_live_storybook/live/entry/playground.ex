@@ -180,6 +180,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
+            <%= event_counter(tab, Enum.count(@event_logs)) %>
           </a>
         <% end %>
       </nav>
@@ -192,6 +193,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp active_link(_current_tab, _tab) do
     "lsb lsb-border-transparent lsb-text-gray-500 hover:lsb-text-gray-700 hover:lsb-border-gray-300"
   end
+
+  defp event_counter(:events, count) when count > 0, do: "(#{count})"
+  defp event_counter(_, _), do: nil
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
@@ -364,7 +368,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp event_log(assigns) do
     ~H"""
-    <div id={@id}>
+    <code class="lsb" id={@id}>
       <div class="lsb-flex lsb-items-center">
         <span class="lsb-uncollapse lsb-mr-1" phx-click={show_event_details(@id)}>
           <i class="fad fa-caret-right" />
@@ -389,7 +393,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           </div>
         <% end %>
       </div>
-    </div>
+    </code>
     """
   end
 
