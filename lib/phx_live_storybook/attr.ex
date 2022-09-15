@@ -15,14 +15,19 @@ defmodule PhxLiveStorybook.Attr do
     * `:boolean` - any boolean
     * `:integer` - any integer
     * `:float` - any float
+    * `:map` - any map
     * `:list` - a List of any arbitrary types
     * `:block` - a block (you can only declare one)
     * `:slots` - a list of slots
     * Any struct module
   - `required`: `true` if the attribute is mandatory.
-  - `doc`: a text documentation for this attribute.
   - `default`: attribute default value.
+  - `values` the list or range of values suggested for the attribute
+  - `values!` the list or range of all possible values for the attribute. Unlike values, this option
+  enforces validation of the default value against the given list.
+  - `doc`: a text documentation for this attribute.
+
   """
   @enforce_keys [:id, :type]
-  defstruct [:id, :type, :doc, :default, :options, required: false]
+  defstruct [:id, :type, :doc, :default, :values, :values!, required: false]
 end
