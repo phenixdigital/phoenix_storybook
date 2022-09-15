@@ -22,6 +22,9 @@ defmodule TreeStorybook.AFolder.Component do
             attributes: %{label: "world", index: 37}
           }
         ]
+      },
+      %Story{
+        id: :no_attributes
       }
     ]
   end

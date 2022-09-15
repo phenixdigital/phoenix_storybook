@@ -8,8 +8,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.{Story, StoryGroup}
-
-  @component_id "playground-preview"
+  alias PhxLiveStorybook.TemplateHelpers
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
@@ -24,63 +23,75 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
       )
     end
 
-    story = find_story(entry.stories, session["story_id"])
+    story_or_group = Enum.find(entry.stories, &(&1.id == session["story_id"]))
 
     {:ok,
-     assign(socket,
-       entry: entry,
-       attrs: story.attributes,
-       block: story.block,
-       slots: story.slots,
-       topic: session["topic"],
-       theme: session["theme"]
-     ), layout: false}
+     socket
+     |> assign(entry: entry, topic: session["topic"], theme: session["theme"])
+     |> assign_stories(story_or_group), layout: false}
   end
 
-  defp find_story(stories, [group_id, story_id]) do
-    Enum.find_value(
-      stories,
-      %{attributes: %{}, block: nil, slots: nil},
-      fn
-        %StoryGroup{id: id, stories: stories} when id == group_id -> find_story(stories, story_id)
-        _ -> nil
-      end
-    )
+  defp assign_stories(socket, story_or_group) do
+    case story_or_group do
+      story = %Story{} -> assign_stories(socket, story, [story])
+      group = %StoryGroup{stories: stories} -> assign_stories(socket, group, stories)
+      _ -> assign_stories(socket, nil, [])
+    end
   end
 
-  defp find_story(stories, story_id) do
-    Enum.find_value(
-      stories,
-      %{attributes: %{}, block: nil, slots: nil},
-      fn
-        story = %Story{id: id} when id == story_id -> story
-        _ -> nil
-      end
+  defp assign_stories(socket, story_or_group, stories) do
+    assign(
+      socket,
+      counter: 0,
+      story: story_or_group,
+      story_id: if(story_or_group, do: story_or_group.id, else: nil),
+      stories:
+        for story <- stories do
+          %{
+            id: story.id,
+            let: story.let,
+            block: story.block,
+            slots: story.slots,
+            attributes:
+              Map.merge(
+                %{id: "playground-preview-#{story.id}", theme: socket.assigns.theme},
+                story.attributes
+              )
+          }
+        end
     )
   end
 
   def render(assigns) do
-    assigns =
-      assign(
-        assigns,
-        id: @component_id,
-        component_assigns: Map.merge(%{id: @component_id, theme: assigns.theme}, assigns.attrs)
-      )
+    template = TemplateHelpers.get_template(assigns.entry.template, assigns.story)
+
+    opts = [
+      playground_topic: assigns.topic,
+      imports: [{__MODULE__, lsb_inspect: 4} | assigns.entry.imports],
+      aliases: assigns.entry.aliases
+    ]
 
     ~H"""
-    <div id="playground-preview-live" style="height: 100%;">
-      <div class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%;">
-        <%= if @entry.template do %>
-          <%= ComponentRenderer.render_component_within_template(@entry.template, @id,
-              fun_or_component(@entry), @component_assigns, @block, @slots, [imports: @entry.imports,
-               aliases: @entry.aliases]) %>
-        <% else %>
-          <%= ComponentRenderer.render_component(fun_or_component(@entry), @component_assigns,
-              @block, @slots, [imports: @entry.imports, aliases: @entry.aliases]) %>
-        <% end %>
+    <div id="playground-preview-live" style="width: 100%; height: 100%;">
+      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
+        <%= ComponentRenderer.render_multiple_stories(fun_or_component(@entry), @story, @stories, template, opts) %>
       </div>
     </div>
     """
+  end
+
+  # Attributes passed in templates (as <.lsb-story .../> tag attributes) carry a value only known
+  # at runtime.
+  # Template will call `lsb_inspect/4` for each of these attributes, in order to let the Playground
+  # know their current value.
+  def lsb_inspect(playground_topic, story_id, key, val) do
+    PubSub.broadcast!(
+      PhxLiveStorybook.PubSub,
+      playground_topic,
+      {:new_template_attributes, %{story_id => %{key => val}}}
+    )
+
+    val
   end
 
   defp load_entry(backend_module, entry_param) do
@@ -94,49 +105,86 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   defp fun_or_component(%ComponentEntry{type: :component, function: function}),
     do: function
 
-  def handle_info({:new_attributes, attrs, block, slots}, socket) do
-    {:noreply, assign(socket, attrs: attrs, block: block, slots: slots)}
+  def handle_info({:new_attributes_input, attrs}, socket) do
+    stories =
+      for story <- socket.assigns.stories do
+        new_attrs = story.attributes |> Map.merge(attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
+        %{story | attributes: new_attrs}
+      end
+
+    {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
-  def handle_info({:new_theme, theme}, socket) do
-    {:noreply, assign(socket, theme: theme)}
+  def handle_info({:set_theme, theme}, socket) do
+    {:noreply,
+     socket
+     |> assign(:theme, theme)
+     |> assign_stories(socket.assigns.story)}
+  end
+
+  def handle_info({:set_story, story}, socket) do
+    {:noreply, assign_stories(socket, story)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
 
   def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {_story_id, attrs} =
-      ExtraAssignsHelpers.handle_set_story_assign(
-        assign_params,
-        assigns.attrs,
-        assigns.entry,
-        :flat
-      )
+    stories =
+      for story <- assigns.stories do
+        {story_id, attrs} =
+          ExtraAssignsHelpers.handle_set_story_assign(
+            assign_params,
+            story.attributes,
+            assigns.entry,
+            :flat
+          )
 
-    send_attributes(assigns.topic, attrs)
-    {:noreply, assign(socket, attrs: attrs)}
+        if story.id == story_id do
+          %{story | attributes: attrs}
+        else
+          story
+        end
+      end
+
+    send_stories_attributes(assigns.topic, stories)
+    {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
   def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {_story_id, attrs} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(
-        assign_params,
-        assigns.attrs,
-        assigns.entry,
-        :flat
-      )
+    stories =
+      for story <- assigns.stories do
+        {story_id, attrs} =
+          ExtraAssignsHelpers.handle_toggle_story_assign(
+            assign_params,
+            story.attributes,
+            assigns.entry,
+            :flat
+          )
 
-    send_attributes(assigns.topic, attrs)
-    {:noreply, assign(socket, attrs: attrs)}
+        if story.id == story_id do
+          %{story | attributes: attrs}
+        else
+          story
+        end
+      end
+
+    send_stories_attributes(assigns.topic, stories)
+    {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}
 
-  defp send_attributes(topic, attributes) do
+  defp send_stories_attributes(topic, stories) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       topic,
-      {:new_attributes, attributes}
+      {:new_stories_attributes, stories |> Enum.map(&{&1.id, &1.attributes}) |> Map.new()}
     )
+  end
+
+  # Some components outside of the liveview world needs an ID update to re-render.
+  # It's the case for FontAwesome JS.
+  defp inc_counter(socket) do
+    assign(socket, :counter, socket.assigns.counter + 1)
   end
 end

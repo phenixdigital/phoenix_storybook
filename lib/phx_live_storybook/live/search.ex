@@ -41,16 +41,19 @@ defmodule PhxLiveStorybook.Search do
     <div
       id="search-container"
       phx-hook="SearchHook"
-      phx-show={JS.show(transition: show_transition_classes())}
-      phx-hide={JS.hide(transition: hide_transition_classes())}
-      class="lsb lsb-hidden lsb-relative lsb-z-10 lsb-duration-300">
+      phx-show={show_container()}
+      phx-hide={hide_container()}
+      class="lsb lsb-hidden lsb-opacity-0 lsb-relative lsb-z-10 lsb-transition-all">
 
-      <div class="lsb lsb-fixed lsb-inset-0 lsb-backdrop-blur lsb-bg-gray-500 lsb-bg-opacity-25 lsb-transition-opacity"></div>
+      <div class="lsb lsb-fixed lsb-inset-0 lsb-backdrop-blur lsb-bg-gray-500 lsb-bg-opacity-25"></div>
 
       <div class="lsb lsb-fixed lsb-inset-0 lsb-z-10 lsb-overflow-y-auto lsb-p-4 lsb-sm:p-6 lsb-md:p-20">
         <div
-          phx-click-away={JS.hide(to: "#search-container", transition: hide_transition_classes())}
-          class="lsb lsb-mx-auto lsb-max-w-xl lsb-mt-16 lsb-transform lsb-divide-y lsb-divide-gray-100 lsb-overflow-hidden lsb-rounded-xl lsb-bg-white lsb-shadow-2xl lsb-transition-all">
+          id="search-modal"
+          phx-show={show_modal()}
+          phx-hide={hide_modal()}
+          phx-click-away={JS.dispatch("lsb:close-search")}
+          class="lsb lsb-opacity-0 lsb-scale-90 lsb-mx-auto lsb-max-w-xl lsb-mt-16 lsb-transform lsb-divide-y lsb-divide-gray-100 lsb-overflow-hidden lsb-rounded-xl lsb-bg-white lsb-shadow-2xl lsb-transition-all">
 
           <.form let={f} for={:search} phx-debounce={500} id="search-form" class="lsb lsb-relative">
             <i class="fal fa-search lsb lsb-pointer-events-none lsb-absolute lsb-top-3.5 lsb-left-4 lsb-h-5 lsb-w-5 lsb-text-gray-400"></i>
@@ -65,7 +68,7 @@ defmodule PhxLiveStorybook.Search do
 
           <ul id="search-list" class="lsb lsb-max-h-72 lsb-scroll-py-2 lsb-divide-y lsb-divide-gray-200 lsb-overflow-y-auto lsb-pb-2 lsb-text-sm lsb-text-gray-800">
             <%= for {entry, i} <- Enum.with_index(@entries) do %>
-              <% entry_path = @root_path <> entry.storybook_path %>
+              <% entry_path = Path.join(@root_path, entry.storybook_path) %>
 
               <li
                 id={"entry-#{i}"}
@@ -87,13 +90,37 @@ defmodule PhxLiveStorybook.Search do
     """
   end
 
-  defp show_transition_classes do
-    {"lsb-ease-out lsb-duration-1000", "lsb-opacity-0 lsb-scale-95",
-     "lsb-opacity-100 lsb-scale-100"}
+  defp show_container(js \\ %JS{}) do
+    JS.show(
+      js,
+      transition: {"lsb-ease-out lsb-duration-300", "lsb-opacity-0", "lsb-opacity-100"},
+      to: "#search-container"
+    )
   end
 
-  defp hide_transition_classes do
-    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
-     "lsb-opacity-0 lsb-scale-95"}
+  defp hide_container(js \\ %JS{}) do
+    JS.hide(
+      js,
+      transition: {"lsb-ease-in lsb-duration-200", "lsb-opacity-100", "lsb-opacity-0"},
+      to: "#search-container"
+    )
+  end
+
+  defp show_modal(js \\ %JS{}) do
+    JS.transition(
+      js,
+      {"lsb-ease-out lsb-duration-300", "lsb-opacity-0 lsb-scale-90",
+       "lsb-opacity-100 lsb-scale-100"},
+      to: "#search-modal"
+    )
+  end
+
+  defp hide_modal(js \\ %JS{}) do
+    JS.transition(
+      js,
+      {"lsb-ease-in lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
+       "lsb-opacity-0 lsb-scale-90"},
+      to: "#search-modal"
+    )
   end
 end

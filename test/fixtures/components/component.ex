@@ -4,7 +4,7 @@ defmodule Component do
   def component(assigns) do
     assigns =
       assigns
-      |> assign_new(:theme, fn -> "not set" end)
+      |> assign_new(:theme, fn -> nil end)
       |> assign_new(:label, fn -> "" end)
       |> assign_new(:index, fn -> 42 end)
       |> assign_rest()

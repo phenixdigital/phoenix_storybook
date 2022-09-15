@@ -45,11 +45,14 @@ defmodule PhxLiveStorybook.EntryLive do
         raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
 
       entry ->
+        story = current_story(entry, params)
+
         {:noreply,
          assign(socket,
            entry: entry,
            entry_path: entry_path,
-           story: current_story(entry, params),
+           story: story,
+           story_id: if(story, do: story.id, else: nil),
            page_title: entry.name,
            tab: current_tab(params, entry),
            theme: current_theme(params, socket),
@@ -69,7 +72,7 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp load_entry(socket, entry_param) do
-    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
+    entry_storybook_path = Path.join(["/" | entry_param])
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
@@ -201,7 +204,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp render_content(entry = %ComponentEntry{}, assigns = %{tab: :stories}) do
     ~H"""
-    <div class="lsb lsb-space-y-12 lsb-pb-12">
+    <div class="lsb lsb-space-y-12 lsb-pb-12" id={"entry-stories-#{entry_id(entry)}"}>
       <%= for story = %{id: story_id, description: description} <- @entry.stories(),
               story_extra_assigns = story_extra_assigns(story, assigns) do %>
         <div id={anchor_id(story)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
@@ -216,7 +219,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
@@ -236,7 +239,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class={LayoutView.sandbox_class(assigns)}>
+              <div class={LayoutView.sandbox_class(assigns)} style="width: 100%;">
                 <%= @backend_module.render_story(@entry.module(), story_id, story_extra_assigns) %>
               </div>
             <% end %>
@@ -282,7 +285,7 @@ defmodule PhxLiveStorybook.EntryLive do
   defp render_content(%PageEntry{}, assigns) do
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(assigns)}"}>
-      <%= raw(@backend_module.render_page(@entry.module, @tab)) %>
+      <%= raw(@backend_module.render_page(@entry.module, %{tab: @tab, theme: @theme})) %>
     </div>
     """
   end
@@ -301,8 +304,11 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   defp iframe_id(entry, story) do
-    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
-    "iframe-#{module}-story-#{story.id}"
+    "iframe-#{entry_id(entry)}-story-#{story.id}"
+  end
+
+  defp entry_id(entry) do
+    entry.module |> Macro.underscore() |> String.replace("/", "_")
   end
 
   defp anchor_id(%{id: id}) do
@@ -313,10 +319,10 @@ defmodule PhxLiveStorybook.EntryLive do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       socket.assigns.playground_topic,
-      {:new_theme, String.to_atom(theme)}
+      {:set_theme, String.to_atom(theme)}
     )
 
-    {:noreply, patch_to(socket, socket.assigns.entry, %{theme: theme})}
+    {:noreply, socket |> assign(:theme, theme) |> patch_to(socket.assigns.entry, %{theme: theme})}
   end
 
   def handle_event("set-tab", %{"tab" => tab}, socket) do
@@ -374,8 +380,13 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, reason)}
   end
 
-  def handle_info({:new_attributes, attrs}, socket) do
-    send_update(Playground, id: "playground", new_attributes: attrs)
+  def handle_info({:new_stories_attributes, stories_attributes}, socket) do
+    send_update(Playground, id: "playground", new_stories_attributes: stories_attributes)
+    {:noreply, socket}
+  end
+
+  def handle_info({:new_template_attributes, template_attributes}, socket) do
+    send_update(Playground, id: "playground", new_template_attributes: template_attributes)
     {:noreply, socket}
   end
 

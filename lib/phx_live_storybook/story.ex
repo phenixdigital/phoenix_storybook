@@ -1,11 +1,10 @@
 defmodule PhxLiveStorybook.Story do
   @moduledoc """
-  A story captures the rendered state of a UI component. Developers write
-  multiple stories per component that describe all the “interesting” states
-  a component can support.
+  A story captures the rendered state of a UI component. Developers write multiple stories per
+  component that describe all the “interesting” states a component can support.
 
-  Each story will be displayed in the storybook as a code
-  snippet alongside with the component preview.
+  Each story will be displayed in the storybook as a code snippet alongside with the
+  component preview.
 
   ## Usage
   ```elixir
@@ -16,7 +15,6 @@ defmodule PhxLiveStorybook.Story do
           description: "Default dropdown",
           attributes: %{
             label: "A dropdown",
-
           },
           slots: [
             ~s|<:entry path="#" label="Account settings"/>|,
@@ -30,7 +28,7 @@ defmodule PhxLiveStorybook.Story do
   """
 
   @enforce_keys [:id]
-  defstruct [:id, :description, :block, slots: [], attributes: %{}]
+  defstruct [:id, :description, :let, :block, slots: [], attributes: %{}, template: :unset]
 end
 
 defmodule PhxLiveStorybook.StoryGroup do
@@ -66,5 +64,5 @@ defmodule PhxLiveStorybook.StoryGroup do
   """
 
   @enforce_keys [:id, :stories]
-  defstruct [:id, :description, :stories]
+  defstruct [:id, :description, :stories, template: :unset]
 end

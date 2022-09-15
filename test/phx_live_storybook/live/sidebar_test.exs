@@ -26,8 +26,8 @@ defmodule PhxLiveStorybook.SidebarTest do
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 7 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 7
+      # test sidebar has 8 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 8
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -40,12 +40,12 @@ defmodule PhxLiveStorybook.SidebarTest do
     end
 
     test "sidebar with a path contains all entries, with 2 open folders" do
-      {document, _html} = render_sidebar(TreeStorybook, "a_folder/aa_component")
+      {document, _html} = render_sidebar(TreeStorybook, "/a_folder/aa_component")
       # test sidebar has 1 root entry
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 7 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 7
+      # test sidebar has 8 entries
+      assert find(document, "nav>ul>li>ul>li") |> length() == 8
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4

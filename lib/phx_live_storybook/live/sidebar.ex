@@ -10,8 +10,8 @@ defmodule PhxLiveStorybook.Sidebar do
   end
 
   def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
-    root_path = live_storybook_path(socket, :root)
-    current_path = if current_path, do: [root_path | current_path], else: [root_path]
+    root_path = Path.join("/", live_storybook_path(socket, :root))
+    current_path = if current_path, do: Path.join([root_path | current_path]), else: root_path
 
     {:ok,
      socket
@@ -19,10 +19,10 @@ defmodule PhxLiveStorybook.Sidebar do
      |> assign(
        root_path: root_path,
        root_entries: [root_entry(backend_module)],
+       entries_flat_list: backend_module.flat_list(),
        current_path: current_path
      )
-     |> assign_opened_folders(root_path)
-     |> assign(current_path: Enum.join(current_path, "/"))}
+     |> assign_opened_folders(root_path)}
   end
 
   defp root_entry(backend_module) do
@@ -44,7 +44,7 @@ defmodule PhxLiveStorybook.Sidebar do
             folder_opts[:open],
             reduce: assigns.opened_folders do
           opened_folders ->
-            MapSet.put(opened_folders, "#{root_path}#{folder_path}")
+            MapSet.put(opened_folders, Path.join(root_path, folder_path))
         end
       else
         assigns.opened_folders
@@ -52,10 +52,14 @@ defmodule PhxLiveStorybook.Sidebar do
 
     # then opening folders based on current request path
     {opened_folders, _} =
-      for path_item <- Enum.slice(assigns.current_path, 0..2),
-          reduce: {opened_folders, nil} do
+      for path_item <-
+            assigns.current_path
+            |> String.split("/")
+            |> Enum.reject(&(&1 == ""))
+            |> Enum.slice(0..-2),
+          reduce: {opened_folders, "/"} do
         {opened_folders, path_acc} ->
-          path = if path_acc, do: "#{path_acc}/#{path_item}", else: path_item
+          path = Path.join(path_acc, path_item)
           {MapSet.put(opened_folders, path), path}
       end
 
@@ -73,7 +77,7 @@ defmodule PhxLiveStorybook.Sidebar do
       <div class="lsb lsb-bg-white lsb-relative lsb-pointer-events-auto lsb-mb-4">
         <button
           id="search-button"
-          phx-click={JS.show(to: "#search-container") |> JS.dispatch("lsb:focus-input", to: "#search-input") |> JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600", to: "#entry-0")}
+          phx-click={JS.dispatch("lsb:open-search")}
           class="lsb lsb-hidden lsb-w-full lg:lsb-flex lsb-items-center lsb-text-sm lsb-leading-6 lsb-text-slate-400 lsb-rounded-md lsb-border lsb-border-1 lsb-border-slate-100 hover:lsb-border-slate-200 lsb-py-1.5 lsb-pl-2 lsb-pr-3">
 
           <i class="lsb fal fa-magnifying-glass fa-lg lsb lsb-mr-3 lsb-flex-none lsb-text-slate-400"></i>
@@ -83,7 +87,7 @@ defmodule PhxLiveStorybook.Sidebar do
       </div>
 
       <nav class="lsb lsb-flex-1 xl:lsb-sticky">
-        <%= render_entries(assign(assigns, entries: @root_entries, folder_path: [@root_path], root: true)) %>
+        <%= render_entries(assign(assigns, entries: @root_entries, folder_path: @root_path, root: true)) %>
       </nav>
 
       <div class="lsb lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
@@ -93,6 +97,7 @@ defmodule PhxLiveStorybook.Sidebar do
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
       </div>
+      <.hidden_icons entries_flat_list={@entries_flat_list}/>
     </section>
     """
   end
@@ -104,7 +109,7 @@ defmodule PhxLiveStorybook.Sidebar do
         <li class="lsb">
           <%= case entry do %>
             <% %FolderEntry{nice_name: nice_name, storybook_path: storybook_path, sub_entries: sub_entries, icon: folder_icon} -> %>
-              <% folder_path = @root_path <> storybook_path %>
+              <% folder_path = Path.join(@root_path, storybook_path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div class="lsb lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer lsb-group hover:lsb-text-indigo-600"
                 phx-click={click_action(open_folder?)} phx-target={@myself} phx-value-path={folder_path}
@@ -127,11 +132,11 @@ defmodule PhxLiveStorybook.Sidebar do
               </div>
 
               <%= if open_folder? or @root do %>
-                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: @folder_path ++ [storybook_path], root: false)) %>
+                <%= render_entries(assign(assigns, entries: sub_entries, folder_path: Path.join(@folder_path, storybook_path), root: false)) %>
               <% end %>
 
             <% %ComponentEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
-              <% entry_path =  @root_path <> storybook_path %>
+              <% entry_path = Path.join(@root_path, storybook_path) %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
                   <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
@@ -140,7 +145,7 @@ defmodule PhxLiveStorybook.Sidebar do
               </div>
 
             <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
-              <% entry_path =  @root_path <> storybook_path %>
+              <% entry_path = Path.join(@root_path, storybook_path) %>
               <div class={entry_class(@current_path, entry_path)}>
                 <%= if icon do %>
                   <i class={"lsb #{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
@@ -180,6 +185,17 @@ defmodule PhxLiveStorybook.Sidebar do
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
     MapSet.member?(opened_folders, path)
+  end
+
+  # force caching of all sidebar icons, thus preventing flickering as folders are opened
+  defp hidden_icons(assigns) do
+    ~H"""
+    <div class="lsb lsb-hidden">
+      <%= for %{icon: icon} <- @entries_flat_list do %>
+        <i class={icon}></i>
+      <% end %>
+    </div>
+    """
   end
 
   def handle_event("open-folder", %{"path" => path}, socket) do

@@ -1,6 +1,7 @@
 export const SearchHook = {
   mounted() {
     const searchContainer = document.querySelector("#search-container");
+    const searchModal = document.querySelector("#search-modal");
     const searchList = document.querySelector("#search-list");
     const searchInput = document.querySelector("#search-input");
 
@@ -31,19 +32,31 @@ export const SearchHook = {
       childList: true,
     });
 
+    window.addEventListener("lsb:open-search", () => {
+      this.liveSocket.execJS(
+        searchContainer,
+        searchContainer.getAttribute("phx-show")
+      );
+      this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-show"));
+      setTimeout(() => searchInput.focus(), 50);
+      this.liveSocket.execJS(
+        activeEntry,
+        activeEntry.getAttribute("phx-highlight")
+      );
+    });
+
+    window.addEventListener("lsb:close-search", () => {
+      this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-hide"));
+      this.liveSocket.execJS(
+        searchContainer,
+        searchContainer.getAttribute("phx-hide")
+      );
+    });
+
     window.addEventListener("keydown", (e) => {
       if ((e.metaKey && (e.key === "k" || e.key === "K")) || e.key === "/") {
         e.preventDefault();
-
-        this.liveSocket.execJS(
-          searchContainer,
-          searchContainer.getAttribute("phx-show")
-        );
-        searchInput.focus();
-        this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-highlight")
-        );
+        this.dispatchOpenSearch();
       }
     });
 
@@ -75,17 +88,11 @@ export const SearchHook = {
         this.pushEventTo("#search-container", "navigate", {
           path: link.pathname,
         });
-        this.liveSocket.execJS(
-          searchContainer,
-          searchContainer.getAttribute("phx-hide")
-        );
+        this.dispatchCloseSearch();
       }
 
       if (e.key === "Escape") {
-        this.liveSocket.execJS(
-          searchContainer,
-          searchContainer.getAttribute("phx-hide")
-        );
+        this.dispatchCloseSearch();
       }
 
       if (e.key === "Tab") {
@@ -140,15 +147,7 @@ export const SearchHook = {
       this.pushEventTo("#search-container", "navigate", {
         path: link.pathname,
       });
-      this.liveSocket.execJS(
-        searchContainer,
-        searchContainer.getAttribute("phx-hide")
-      );
-    });
-
-    searchInput.addEventListener("lsb:focus-input", (e) => {
-      // small timeout so the input is focused after the modal is shown.
-      setTimeout(() => e.target.focus(), 50);
+      this.dispatchCloseSearch();
     });
   },
 
@@ -156,5 +155,14 @@ export const SearchHook = {
     searchInput.value = "";
     this.pushEventTo("#search-container", "search", { search: { input: "" } });
   },
-};
 
+  dispatchOpenSearch() {
+    const event = new Event("lsb:open-search");
+    window.dispatchEvent(event);
+  },
+
+  dispatchCloseSearch() {
+    const event = new Event("lsb:close-search");
+    window.dispatchEvent(event);
+  },
+};

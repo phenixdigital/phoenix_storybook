@@ -109,12 +109,12 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
-  describe "entry's template is a string" do
+  describe "entry template" do
     test "with proper type it wont raise" do
       entry = %ComponentEntry{template: nil}
       assert validate(entry)
 
-      entry = %ComponentEntry{template: "<div><.story/></div>"}
+      entry = %ComponentEntry{template: "<div><.lsb-story/></div>"}
       assert validate(entry)
     end
 
@@ -122,6 +122,67 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = %ComponentEntry{template: :invalid}
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "entry template must be a binary"
+    end
+  end
+
+  describe "story template" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: nil}]}
+      assert validate(entry)
+
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: false}]}
+      assert validate(entry)
+
+      entry = %ComponentEntry{stories: [%Story{id: :foo, template: "<div><.lsb-story/></div>"}]}
+      assert validate(entry)
+    end
+
+    test "with invalid value it will raise" do
+      entry = %ComponentEntry{
+        stories: [%Story{id: :foo, template: :invalid}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "template in story :foo must be a binary"
+    end
+  end
+
+  describe "story_group template is a string" do
+    test "with proper type it wont raise" do
+      entry = %ComponentEntry{
+        stories: [%StoryGroup{id: :foo, stories: [], template: nil}]
+      }
+
+      assert validate(entry)
+
+      entry = %ComponentEntry{
+        stories: [%StoryGroup{id: :foo, stories: [], template: "<div><.lsb-story/></div>"}]
+      }
+
+      assert validate(entry)
+    end
+
+    test "with invalid value it will raise" do
+      entry = %ComponentEntry{
+        stories: [%StoryGroup{id: :foo, stories: [], template: :invalid}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "template in story_group :foo must be a binary"
+    end
+
+    test "cannot set template on a story in a group" do
+      entry = %ComponentEntry{
+        stories: [
+          %StoryGroup{
+            id: :group,
+            stories: [%Story{id: :foo, template: "<div><.lsb-story/></div>"}]
+          }
+        ]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "template in a group story cannot be set (story :foo, group :group)"
     end
   end
 
@@ -341,32 +402,69 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
-  describe "attribute options is a list and is matching declared type" do
+  describe "attribute values is a list and is matching declared type" do
     test "with an empty list it wont raise" do
-      entry = entry_with_attr(id: :attr, type: :atom, options: [])
+      entry = entry_with_attr(id: :attr, type: :atom, values: [])
       assert validate(entry)
     end
 
     test "with a list of matching type, it wont raise" do
-      entry = entry_with_attr(id: :attr, type: :atom, options: [:foo, :bar])
+      entry = entry_with_attr(id: :attr, type: :atom, values: [:foo, :bar])
       assert validate(entry)
     end
 
     test "with a list of integer and a range, it wont raise" do
-      entry = entry_with_attr(id: :attr, type: :integer, options: 1..10)
+      entry = entry_with_attr(id: :attr, type: :integer, values: 1..10)
       assert validate(entry)
     end
 
     test "without a list, it will raise" do
-      entry = entry_with_attr(id: :attr, type: :atom, options: :foo)
+      entry = entry_with_attr(id: :attr, type: :atom, values: :foo)
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "options for attr :attr must be a list of :atom"
+      assert e.description =~ "values for attr :attr must be a list of :atom"
     end
 
     test "with a list of non matching type, it will raise" do
-      entry = entry_with_attr(id: :attr, type: :atom, options: ["foo", "bar"])
+      entry = entry_with_attr(id: :attr, type: :atom, values: ["foo", "bar"])
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "options for attr :attr must be a list of :atom"
+      assert e.description =~ "values for attr :attr must be a list of :atom"
+    end
+  end
+
+  describe "attribute values! is a list and is matching declared type" do
+    test "with an empty list it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, values!: [])
+      assert validate(entry)
+    end
+
+    test "with a list of matching type, it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, values!: [:foo, :bar])
+      assert validate(entry)
+    end
+
+    test "with a list of integer and a range, it wont raise" do
+      entry = entry_with_attr(id: :attr, type: :integer, values!: 1..10)
+      assert validate(entry)
+    end
+
+    test "without a list, it will raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, values!: :foo)
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "values! for attr :attr must be a list of :atom"
+    end
+
+    test "with a list of non matching type, it will raise" do
+      entry = entry_with_attr(id: :attr, type: :atom, values!: ["foo", "bar"])
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "values! for attr :attr must be a list of :atom"
+    end
+  end
+
+  describe "attribute values & values! cant be set at the same time" do
+    test "it raises" do
+      entry = entry_with_attr(id: :attr, type: :atom, values: [:foo, :var], values!: [:foo, :bar])
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "values and values! for attr :attr cannot be set at the same time"
     end
   end
 
@@ -472,6 +570,30 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = entry_with_story_in_group(:group_id, id: :story_id, description: :not_valid)
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "description in story :story_id, group :group_id must be a binary"
+    end
+  end
+
+  describe "story let is an atom" do
+    test "with an atom let it wont raise" do
+      entry = entry_with_story(id: :story_id, let: :valid)
+      assert validate(entry)
+    end
+
+    test "with an atom let in a story group, it wont raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, let: :valid)
+      assert validate(entry)
+    end
+
+    test "with invalid type it will raise" do
+      entry = entry_with_story(id: :story_id, let: "not_valid")
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "let in story :story_id must be an atom"
+    end
+
+    test "with invalid type in a story group it will raise" do
+      entry = entry_with_story_in_group(:group_id, id: :story_id, let: "not_valid")
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "let in story :story_id, group :group_id must be an atom"
     end
   end
 
@@ -601,6 +723,48 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
       e = assert_raise CompileError, fn -> validate(entry) end
       assert e.description =~ "attribute :bar in story :foo, group :group must be of type: :atom"
+    end
+
+    test "story attribute value matching attribute values! wont raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :attr, type: :atom, values!: [:foo, :bar]}],
+        stories: [%Story{id: :foo, attributes: %{attr: :bar}}]
+      }
+
+      assert validate(entry)
+    end
+
+    test "story attribute value don't matching attribute values! will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :attr, type: :atom, values!: [:foo, :bar]}],
+        stories: [%Story{id: :foo, attributes: %{attr: :not_matching}}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "attribute :attr in story :foo must be one of [:foo, :bar]"
+    end
+
+    test "story group attribute value don't matching attribute values! will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :attr, type: :atom, values!: [:foo, :bar]}],
+        stories: [
+          %StoryGroup{id: :group, stories: [%Story{id: :foo, attributes: %{attr: :not_matching}}]}
+        ]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+
+      assert e.description =~
+               "attribute :attr in story :foo, group :group must be one of [:foo, :bar]"
+    end
+
+    test "story attribute value don't matching attribute values won't raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
+        stories: [%Story{id: :foo, attributes: %{attr: :not_matching}}]
+      }
+
+      assert validate(entry)
     end
 
     test "story with invalid block type will raise" do
@@ -749,7 +913,8 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
           doc: opts[:doc],
           default: opts[:default],
           required: opts[:required],
-          options: opts[:options]
+          values: opts[:values],
+          values!: opts[:values!]
         }
       ]
     }
@@ -760,6 +925,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       stories: [
         %Story{
           id: opts[:id],
+          let: opts[:let],
           description: opts[:description],
           attributes: opts[:attributes] || %{}
         }
@@ -775,6 +941,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
           stories: [
             %Story{
               id: opts[:id],
+              let: opts[:let],
               description: opts[:description],
               attributes: opts[:attributes] || %{}
             }
