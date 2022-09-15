@@ -20,7 +20,7 @@ defmodule TreeStorybook.Component do
       %Story{
         id: :hello,
         description: "Hello story",
-        attributes: %{label: "hello"}
+        attributes: %{label: "hello", phx_click: "greet"}
       },
       %Story{
         id: :world,
