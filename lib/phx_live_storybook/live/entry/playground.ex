@@ -502,7 +502,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: type, values: nil}) when type in [:integer, :float] do
+  defp attr_input(assigns = %{type: type, values: nil, values!: nil})
+       when type in [:integer, :float] do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""

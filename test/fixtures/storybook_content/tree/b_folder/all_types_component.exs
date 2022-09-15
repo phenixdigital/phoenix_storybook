@@ -7,9 +7,11 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
   def attributes do
     [
       %Attr{id: :label, type: :string, doc: "A label", required: true},
-      %Attr{id: :option, type: :atom, doc: "An option", values!: [:opt1, :opt2, :opt3]},
+      %Attr{id: :option, type: :atom, doc: "An option", values: [:opt1, :opt2, :opt3]},
+      %Attr{id: :enforced_option, type: :atom, doc: "An option", values!: [:opt1, :opt2, :opt3]},
       %Attr{id: :index_i, type: :integer, default: 42},
-      %Attr{id: :index_i_with_range, type: :integer, values!: 1..10, default: 5},
+      %Attr{id: :index_i_with_range, type: :integer, values: 1..10, default: 5},
+      %Attr{id: :index_i_with_enforced_range, type: :integer, values!: 1..10, default: 5},
       %Attr{id: :index_f, type: :float},
       %Attr{id: :toggle, type: :boolean, default: false},
       %Attr{id: :things, type: :list},
