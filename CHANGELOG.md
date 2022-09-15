@@ -4,6 +4,8 @@
 
 - change (breaking!): `live_storybook/2` is no longer serving assets. You must add
   `storybook_assets/1` to your router in a non CSRF-protected scope.
+- change (breaking!): attr `options` have been renamed to `values`. A new `values!` key is also
+  available to enforce story attribute values.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: theming. You can declare different themes in the application settings. The selected
   theme will be merged in all components assigns.

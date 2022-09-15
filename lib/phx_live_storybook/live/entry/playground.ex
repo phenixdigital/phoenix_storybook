@@ -290,7 +290,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                           <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
-                            fields={@fields} options={attr.options} myself={@myself}
+                            fields={@fields} values={attr.values} values!={attr.values!} myself={@myself}
                             template_attributes={Map.get(@template_attributes, @story.id, %{})}
                           />
                         </td>
@@ -502,7 +502,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: type, options: nil}) when type in [:integer, :float] do
+  defp attr_input(assigns = %{type: type, values: nil, values!: nil})
+       when type in [:integer, :float] do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
@@ -510,19 +511,23 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: :integer, options: min..max}) do
+  defp attr_input(assigns = %{type: :integer, values: min..max}) do
     ~H"""
     <%= number_input(@form, @attr_id, value: @value, min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: :string, options: nil}) do
+  defp attr_input(assigns = %{type: :integer, values!: min..max}) do
+    attr_input(%{assigns | values: min..max})
+  end
+
+  defp attr_input(assigns = %{type: :string, values: nil, values!: nil}) do
     ~H"""
     <%= text_input(@form, @attr_id, value: @value, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: _type, options: nil, value: value}) do
+  defp attr_input(assigns = %{type: _type, values: nil, values!: nil, value: value}) do
     assigns = assign(assigns, value: if(is_nil(value), do: "", else: inspect(value)))
 
     ~H"""
@@ -530,13 +535,17 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{options: options}) when not is_nil(options) do
-    assigns = assign(assigns, options: [nil | Enum.map(assigns.options, &to_string/1)])
+  defp attr_input(assigns = %{values: values}) when not is_nil(values) do
+    assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
 
     ~H"""
-    <%= select(@form, @attr_id, @options, value: @value,
+    <%= select(@form, @attr_id, @values, value: @value,
       class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
     """
+  end
+
+  defp attr_input(assigns = %{values!: values}) when not is_nil(values) do
+    attr_input(%{assigns | values: values})
   end
 
   defp on_toggle_click(attr_id, value) do
