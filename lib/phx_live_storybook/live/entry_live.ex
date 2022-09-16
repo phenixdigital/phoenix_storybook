@@ -4,6 +4,7 @@ defmodule PhxLiveStorybook.EntryLive do
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.{ComponentEntry, PageEntry}
   alias PhxLiveStorybook.Entry.{Playground, PlaygroundPreviewLive}
+  alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
   alias PhxLiveStorybook.{EventLog, Story, StoryGroup}
   alias PhxLiveStorybook.ExtraAssignsHelpers
