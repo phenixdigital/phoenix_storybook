@@ -483,11 +483,6 @@ defmodule PhxLiveStorybook.Entry.Playground do
     end
   end
 
-  defp playground_event_logs_id(entry) do
-    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
-    "#{module}-playground-event-logs"
-  end
-
   defp type_badge(assigns = %{type: :string}) do
     ~H"""
     <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= type_label(@type) %></span>

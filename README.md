@@ -131,6 +131,7 @@ In your configuration files, add the following:
 
 config :my_app, MyAppWeb.Storybook,
   content_path: Path.expand("../storybook", __DIR__),
+  # assets path are remote path, not local file-system paths
   css_path: "/assets/my_components.css",
   js_path: "/assets/my_components.js"
 ```
@@ -244,19 +245,19 @@ config :my_app, MyAppWeb.Storybook,
 
 We would love your PRs!
 
-1. Pull down phx_live_storybook to a directory next to your project (`../phx_live_storybook`). 
+1. Pull down phx_live_storybook to a directory next to your project (`../phx_live_storybook`).
 1. Change your mix file to point to this directory:
-    ```elixir
-      # {:phx_live_storybook, "~> 0.3.0"},
-      {:phx_live_storybook, path: "../phx_live_storybook"},
-    ```
+   ```elixir
+     # {:phx_live_storybook, "~> 0.3.0"},
+     {:phx_live_storybook, path: "../phx_live_storybook"},
+   ```
 1. Update the assets in phx_live_storybook since this isn't a release
-    ```bash
-      cd ../phx_live_storybook
-      mix deps.get
-      npm ci --prefix assets
-      mix assets.build
-    ```
+   ```bash
+     cd ../phx_live_storybook
+     mix deps.get
+     npm ci --prefix assets
+     mix assets.build
+   ```
 
 That should get you running against HEAD and ready to dig into the code!
 
