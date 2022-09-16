@@ -4,12 +4,30 @@ defmodule PhxLiveStorybook.TemplateHelpers do
   @story_regex ~r{(<\.lsb-story\/>)|(<\.lsb-story\s[^(\>)]*\/>)}
   @story_group_regex ~r{<\.lsb-story-group[^(\>)]*\/>}
   @html_attributes_regex ~r{(\w+)=((?:.(?!["']?\s+(?:\S+)=|\s*\/?[>]))+.["']?)?}
+  @js_push_regex ~r[(JS\.push\("(?:assign|toggle)".*value:\s+)(%{.*})(.*\))]
 
   def default_template, do: "<.lsb-story/>"
 
-  def set_template_id(template, story_id) do
-    String.replace(template, ":story_id", to_string(story_id))
+  def set_story_id(template, story_id) do
+    template = String.replace(template, ":story_id", story_id_to_s(story_id))
+
+    Regex.replace(@js_push_regex, template, fn _, open, match, close ->
+      match =
+        match
+        |> Code.eval_string()
+        |> elem(0)
+        |> Map.put(:story_id, story_id_to_serializable(story_id))
+        |> inspect()
+
+      open <> match <> close
+    end)
   end
+
+  defp story_id_to_s({group_id, story_id}), do: "#{group_id}:#{story_id}"
+  defp story_id_to_s(story_id), do: to_string(story_id)
+
+  defp story_id_to_serializable({group_id, story_id}), do: [group_id, story_id]
+  defp story_id_to_serializable(story_id), do: story_id
 
   def story_template?(template) do
     Regex.match?(@story_regex, template)

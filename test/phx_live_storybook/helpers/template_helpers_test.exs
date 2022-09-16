@@ -3,12 +3,13 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
 
   import PhxLiveStorybook.TemplateHelpers
 
-  test "set_template_id/2" do
+  test "set_story_id/2" do
     template =
-      set_template_id(
+      set_story_id(
         """
         <div id=":story_id">
-          <.lsb-story/>
+          <.lsb-story phx-click={JS.push("assign", value: %{foo: "bar"})}/>
+          <.lsb-story phx-click={JS.push("toggle", value: %{attr: :foo})}/>
         </div>
         """,
         :hello_world
@@ -16,7 +17,8 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
 
     assert template == """
            <div id="hello_world">
-             <.lsb-story/>
+             <.lsb-story phx-click={JS.push("assign", value: %{foo: "bar", story_id: :hello_world})}/>
+             <.lsb-story phx-click={JS.push("toggle", value: %{attr: :foo, story_id: :hello_world})}/>
            </div>
            """
   end

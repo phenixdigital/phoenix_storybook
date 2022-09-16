@@ -119,6 +119,7 @@ In template, you can pass some extra attributes to your story. Just add them to 
 <.form_for for={:user} let={f}>
   <.lsb-story form={f}/>
 </.form>
+"""
 ```
 
 ### JS-controlled visibility
@@ -157,13 +158,8 @@ end
 Some components don't rely on JS commands but need external assigns, like a modal that takes a
 `show={true}` or `show={false}` assign to manage its visibility state.
 
-`PhxLiveStorybook` handles special `set-story-assign/*` and `toggle-story-assign/*` events that you
+`PhxLiveStorybook` handles special `assign` and `toggle` events that you
 can leverage on to update some properties that will be passed to your components as _extra assigns_.
-
-Syntax is:
-
-- **set value**: `set-story-assign/:story_id/:assign_id/:assign_value`.
-- **toggle value**: `toggle-story-assign/:story_id/:assign_id`.
 
 ```elixir
 defmodule Storybook.Components.Slideover do
@@ -173,7 +169,7 @@ defmodule Storybook.Components.Slideover do
   def template do
     """
     <div>
-      <button phx-click="set-story-assign/:story_id/show/true">
+      <button phx-click={JS.push("assign", value: %{show: true})}>
         Open slideover
       </button>
       <.lsb-story/>
@@ -186,7 +182,7 @@ defmodule Storybook.Components.Slideover do
       %Story{
         id: :default_slideover,
         attributes: %{
-          close_event: "set-story-assign/default_slideover/show/false"
+          close_event: JS.push("assign", value: %{story_id: :default_slideover, show: false})
         },
         slots: ["<:body>Hello world</:body>"]
       }

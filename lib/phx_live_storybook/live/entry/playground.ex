@@ -177,8 +177,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}, {:events, "Event Logs", "fad fa-book"}] do %>
-          <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself}
-            class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
+          <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
             <%= event_counter(tab, Enum.count(@event_logs)) %>

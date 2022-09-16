@@ -48,7 +48,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
             template_heex(
               template,
-              "#{group_id}:#{story_id}",
+              {group_id, story_id},
               fun_or_mod,
               Map.merge(story.attributes, extra_assigns),
               story.let,
@@ -81,11 +81,11 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
             end
 
           template
-          |> TemplateHelpers.set_template_id(group_id)
+          |> TemplateHelpers.set_story_id(group_id)
           |> TemplateHelpers.replace_template_story_group(heex)
 
         true ->
-          TemplateHelpers.set_template_id(template, group_id)
+          TemplateHelpers.set_story_id(template, group_id)
       end
 
     render_component_heex(fun_or_mod, heex, opts)
@@ -130,11 +130,11 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
             end
 
           template
-          |> TemplateHelpers.set_template_id(story_or_group.id)
+          |> TemplateHelpers.set_story_id(story_or_group.id)
           |> TemplateHelpers.replace_template_story_group(heex)
 
         true ->
-          TemplateHelpers.set_template_id(template, story_or_group.id)
+          TemplateHelpers.set_story_id(template, story_or_group.id)
       end
 
     render_component_heex(fun_or_mod, heex, opts)
@@ -185,7 +185,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     extra_attributes = extract_placeholder_attributes(template, story_id, playground_topic)
 
     template
-    |> TemplateHelpers.set_template_id(story_id)
+    |> TemplateHelpers.set_story_id(story_id)
     |> TemplateHelpers.replace_template_story(
       component_heex(fun_or_mod, assigns, let, block, slots, extra_attributes)
     )
@@ -223,8 +223,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   defp eval_quoted_aliases(opts, fun_or_mod) do
+    default_aliases = [module(fun_or_mod), Phoenix.LiveView.JS]
     aliases = Keyword.get(opts, :aliases, [])
-    eval_quoted_aliases([module(fun_or_mod) | aliases])
+    eval_quoted_aliases(default_aliases ++ aliases)
   end
 
   defp eval_quoted_aliases(modules) do
