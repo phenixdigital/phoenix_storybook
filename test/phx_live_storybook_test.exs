@@ -54,7 +54,7 @@ defmodule PhxLiveStorybookTest do
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
       entries = TreeStorybook.entries()
-      assert Enum.count(entries) == 8
+      assert Enum.count(entries) == 9
 
       assert %PhxLiveStorybook.PageEntry{
                module_name: "APage",
@@ -157,6 +157,20 @@ defmodule PhxLiveStorybookTest do
                  }
                ]
              } = Enum.at(entries, 5)
+
+      assert %PhxLiveStorybook.FolderEntry{
+               name: "event",
+               storybook_path: "/event",
+               nice_name: "Event",
+               sub_entries: [
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.Event.EventComponent
+                 },
+                 %PhxLiveStorybook.ComponentEntry{
+                   module: Elixir.TreeStorybook.Event.EventLiveComponent
+                 }
+               ]
+             } = Enum.at(entries, 6)
     end
 
     test "with an empty folder it should return no entries" do

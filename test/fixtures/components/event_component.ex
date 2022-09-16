@@ -1,4 +1,4 @@
-defmodule Component do
+defmodule EventComponent do
   use Phoenix.Component
 
   def component(assigns) do
@@ -6,8 +6,9 @@ defmodule Component do
       assigns
       |> assign_new(:theme, fn -> nil end)
       |> assign_new(:label, fn -> "" end)
-      |> assign_new(:index, fn -> 42 end)
 
-    ~H"<span data-index={@index}>component: <%= @label %><%= if @theme do %> <%= @theme %><% end %></span>"
+    ~H"""
+    <button phx-click="greet">component: <%= @label %><%= if @theme do %> <%= @theme %><% end %></button>
+    """
   end
 end

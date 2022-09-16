@@ -27,15 +27,15 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 8 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 8
+      assert find(document, "nav>ul>li>ul>li") |> length() == 9
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
 
-      # fifth node (which is 1st folder) is closed
+      # 5th node (which is 1st folder) is closed
       assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 0
 
-      # sixth node (which is 2nd folder) is open (by config)
+      # 6th node (which is 2nd folder) is open (by config)
       assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
     end
 
@@ -45,15 +45,15 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 8 entries
-      assert find(document, "nav>ul>li>ul>li") |> length() == 8
+      assert find(document, "nav>ul>li>ul>li") |> length() == 9
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
 
-      # fifth node (which is 1st folder) is open (by path)
+      # 5th node (which is 1st folder) is open (by path)
       assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 2
 
-      # sixth node (which is 2nd folder) is open (by config)
+      # 6th node (which is 2nd folder) is open (by config)
       assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
     end
 
