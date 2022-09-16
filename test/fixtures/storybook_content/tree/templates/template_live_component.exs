@@ -37,7 +37,7 @@ defmodule TreeStorybook.TemplateLiveComponent do
       %Story{
         id: :hello,
         description: "Hello story",
-        attributes: %{label: "hello", phx_click: "live_greet"}
+        attributes: %{label: "hello"}
       },
       %Story{
         id: :world,

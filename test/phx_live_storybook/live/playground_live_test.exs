@@ -199,46 +199,81 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   end
 
   describe "playground event logs" do
-    test "show component type event log", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
-      events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
-      refute view |> has_element?(events_tab_selector, "(1)")
-
-      assert [playground_preview_view] = live_children(view)
-      assert playground_preview_view |> element("#playground-preview") |> render_click()
-      assert view |> has_element?(events_tab_selector, "(1)")
-
-      assert view |> element(events_tab_selector) |> render_click()
-
-      event_log = view |> element("#tree_storybook_component-playground-event-log-0") |> render()
-      assert event_log =~ "<code"
-      assert event_log =~ "live_view"
-      assert event_log =~ "event:"
-      assert event_log =~ "greet"
-    end
-
-    test "show live_view type event log", %{conn: conn} do
-      {:ok, view, _html} =
-        live(conn, "/storybook/templates/template_live_component?tab=playground")
+    test "it shows live_view type event log", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/event/event_component?tab=playground")
 
       events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
       refute view |> has_element?(events_tab_selector, "(1)")
 
       assert [playground_preview_view] = live_children(view)
-      assert playground_preview_view |> element("#playground-preview") |> render_click()
+      assert playground_preview_view |> element("button[phx-click='greet']") |> render_click()
       assert view |> has_element?(events_tab_selector, "(1)")
 
       assert view |> element(events_tab_selector) |> render_click()
 
       event_log =
         view
-        |> element("#tree_storybook_template_live_component-playground-event-log-0")
+        |> element("#tree_storybook_event_event_component-playground-event-log-0")
         |> render()
 
       assert event_log =~ "<code"
-      assert event_log =~ "live_view"
-      assert event_log =~ "event:"
-      assert event_log =~ "greet"
+      assert event_log =~ "<span class=\"lsb-text-indigo-600\">live_view </span>"
+      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
+      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet </span>"
+    end
+
+    test "it shows component type event log from a live component", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/event/event_live_component?tab=playground")
+
+      events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
+      refute view |> has_element?(events_tab_selector, "(1)")
+
+      assert [playground_preview_view] = live_children(view)
+
+      assert playground_preview_view
+             |> element("button[phx-click='greet_self']")
+             |> render_click()
+
+      assert view |> has_element?(events_tab_selector, "(1)")
+
+      assert view |> element(events_tab_selector) |> render_click()
+
+      event_log =
+        view
+        |> element("#tree_storybook_event_event_live_component-playground-event-log-0")
+        |> render()
+
+      assert event_log =~ "<code"
+      assert event_log =~ "<span class=\"lsb-text-indigo-600\">component </span>"
+      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
+      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet_self </span>"
+    end
+
+    test "it shows live_view type event log from a live component", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/event/event_live_component?tab=playground")
+
+      events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
+      refute view |> has_element?(events_tab_selector, "(1)")
+
+      assert [playground_preview_view] = live_children(view)
+
+      assert playground_preview_view
+             |> element("button[phx-click='greet_parent']")
+             |> render_click()
+
+      assert view |> has_element?(events_tab_selector, "(1)")
+
+      assert view |> element(events_tab_selector) |> render_click()
+
+      event_log =
+        view
+        |> element("#tree_storybook_event_event_live_component-playground-event-log-0")
+        |> render()
+
+      assert event_log =~ "<code"
+      assert event_log =~ "<span class=\"lsb-text-indigo-600\">live_view </span>"
+      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
+      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet_parent </span>"
     end
   end
 
