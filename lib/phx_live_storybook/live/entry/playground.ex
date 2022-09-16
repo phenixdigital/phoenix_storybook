@@ -12,6 +12,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   import PhxLiveStorybook.NavigationHelpers
 
+  def mount(socket) do
+    {:ok, assign(socket, event_logs: [])}
+  end
+
+  def update(%{new_event: event}, socket) do
+    {:ok, update(socket, :event_logs, &[event | &1])}
+  end
+
   def update(assigns, socket) do
     {:ok,
      socket
@@ -168,11 +176,12 @@ defmodule PhxLiveStorybook.Entry.Playground do
     ~H"""
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
-        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}] do %>
+        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}, {:events, "Event Logs", "fad fa-book"}] do %>
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself}
             class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
+            <%= event_counter(tab, Enum.count(@event_logs)) %>
           </a>
         <% end %>
       </nav>
@@ -185,6 +194,9 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp active_link(_current_tab, _tab) do
     "lsb lsb-border-transparent lsb-text-gray-500 hover:lsb-text-gray-700 hover:lsb-border-gray-300"
   end
+
+  defp event_counter(:events, count) when count > 0, do: "(#{count})"
+  defp event_counter(_, _), do: nil
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
@@ -241,6 +253,20 @@ defmodule PhxLiveStorybook.Entry.Playground do
     <pre class={CodeRenderer.pre_class()}>
     <%= CodeRenderer.render_multiple_stories_code(fun_or_component(@entry), @stories, TemplateHelpers.get_template(@entry.template, @story)) %>
     </pre>
+    """
+  end
+
+  defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
+    ~H"""
+    <div id={playground_event_logs_id(@entry)} class="lsb lsb-flex lsb-flex-col lsb-mb-8">
+      <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
+        <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
+          <%= for {event_log, index} <- Enum.with_index(@event_logs) do %>
+            <.event_log id={playground_event_log_id(@entry, index)} event_log={event_log} />
+          <% end %>
+        </div>
+      </div>
+    </div>
     """
   end
 
@@ -341,6 +367,51 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   defp render_lower_tab_content(_), do: ""
 
+  defp event_log(assigns) do
+    ~H"""
+    <code class="lsb" id={@id}>
+      <div class="lsb-flex lsb-items-center">
+        <span class="lsb-uncollapse lsb-mr-1" phx-click={show_event_details(@id)}>
+          <i class="fad fa-caret-right" />
+        </span>
+
+        <span class="lsb-collapse lsb-mr-1 lsb-hidden" phx-click={hide_event_details(@id)}>
+          <i class="fad fa-caret-down" />
+        </span>
+
+        <div>
+          <span class="lsb-text-gray-500"><%= @event_log.time |> Time.truncate(:second) |> Time.to_iso8601() %> </span>
+          <span class="lsb-text-indigo-600"><%= @event_log.type %> </span>
+          <span class="lsb-text-orange-400 lsb-italic">event: <span class="lsb-text-gray-400"><%= @event_log.event %> </span></span>
+        </div>
+      </div>
+
+      <div class="lsb-details lsb-hidden lsb-pl-3">
+        <%= for {key, value} <- Map.from_struct(@event_log) do %>
+          <div>
+            <span class="lsb-text-indigo-600"><%= key %>:</span>
+            <span class="lsb-text-gray-500"><%= inspect(value) %></span>
+          </div>
+        <% end %>
+      </div>
+    </code>
+    """
+  end
+
+  defp show_event_details(id) do
+    %JS{}
+    |> JS.hide()
+    |> JS.show(to: "##{id} .lsb-collapse")
+    |> JS.show(to: "##{id} .lsb-details")
+  end
+
+  defp hide_event_details(id) do
+    %JS{}
+    |> JS.hide()
+    |> JS.show(to: "##{id} .lsb-uncollapse")
+    |> JS.hide(to: "##{id} .lsb-details")
+  end
+
   defp required_badge(assigns) do
     ~H"""
     <span class="lsb lsb-hidden md:lsb-inline lsb-group lsb-relative -lsb-ml-[1.85em] lsb-pr-2">
@@ -390,6 +461,16 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp playground_preview_id(entry) do
     module = entry.module |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
+  end
+
+  defp playground_event_logs_id(entry) do
+    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+    "#{module}-playground-event-logs"
+  end
+
+  defp playground_event_log_id(entry, index) do
+    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+    "#{module}-playground-event-log-#{index}"
   end
 
   defp story_options(entry) do

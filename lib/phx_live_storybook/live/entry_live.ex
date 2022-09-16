@@ -4,6 +4,8 @@ defmodule PhxLiveStorybook.EntryLive do
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.{ComponentEntry, PageEntry}
   alias PhxLiveStorybook.Entry.Playground
+  alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
+  alias PhxLiveStorybook.EventLog
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
   alias PhxLiveStorybook.LayoutView
@@ -16,6 +18,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
     if connected?(socket) do
       PubSub.subscribe(PhxLiveStorybook.PubSub, playground_topic)
+      PubSub.subscribe(PhxLiveStorybook.PubSub, "event_logs:#{inspect(self())}")
     end
 
     {:ok,
@@ -361,6 +364,11 @@ defmodule PhxLiveStorybook.EntryLive do
   def handle_info({:playground_preview_pid, pid}, socket) do
     Process.monitor(pid)
     {:noreply, assign(socket, :playground_preview_pid, pid)}
+  end
+
+  def handle_info(event_log = %EventLog{view: PlaygroundPreviewLive}, socket) do
+    send_update(Playground, id: "playground", new_event: event_log)
+    {:noreply, socket}
   end
 
   def handle_info({:DOWN, _ref, :process, _pid, {:shutdown, :closed}}, socket) do
