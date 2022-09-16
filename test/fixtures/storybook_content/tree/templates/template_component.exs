@@ -5,11 +5,11 @@ defmodule TreeStorybook.TemplateComponent do
   def template do
     """
     <div id=":story_id" class="template-div">
-      <button id="set-foo" phx-click="set-story-assign/:story_id/label/foo">Set label to foo</button>
-      <button id="set-bar" phx-click="set-story-assign/:story_id/label/bar">Set label to bar</button>
-      <button id="toggle-status" phx-click="toggle-story-assign/:story_id/status">Toggle status</button>
-      <button id="set-status-true" phx-click="set-story-assign/:story_id/status/true">Set status to true</button>
-      <button id="set-status-false" phx-click="set-story-assign/:story_id/status/false">Set status to false</button>
+      <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
+      <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
+      <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
+      <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
+      <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
       <.lsb-story/>
     </div>
     """

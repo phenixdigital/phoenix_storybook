@@ -128,7 +128,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
 
   def handle_info(_, socket), do: {:noreply, socket}
 
-  def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+  def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
     stories =
       for story <- assigns.stories do
         {story_id, attrs} =
@@ -150,7 +150,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     {:noreply, socket |> inc_counter() |> assign(stories: stories)}
   end
 
-  def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
+  def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
     stories =
       for story <- assigns.stories do
         {story_id, attrs} =
