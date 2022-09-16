@@ -7,6 +7,7 @@
 - change (breaking!): attr `options` have been renamed to `values`. A new `values!` key is also
   available to enforce story attribute values.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
+- feature: new event log. In the playground,yYou can now track all events emitted by components.
 - feature: theming. You can declare different themes in the application settings. The selected
   theme will be merged in all components assigns.
 - feature: you can initialize the component playground with any story.
