@@ -3,10 +3,13 @@ defmodule PhxLiveStorybook.EntryLive do
 
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.{ComponentEntry, PageEntry}
-  alias PhxLiveStorybook.Entry.Playground
-  alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
+  alias PhxLiveStorybook.Entry.{Playground, PlaygroundPreviewLive}
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
-  alias PhxLiveStorybook.EventLog
+  alias PhxLiveStorybook.{EventLog, Story, StoryGroup}
+  alias PhxLiveStorybook.ExtraAssignsHelpers
+  alias PhxLiveStorybook.LayoutView
+
+  import PhxLiveStorybook.NavigationHelpers
 
   def mount(_params, session, socket) do
     playground_topic = "playground-#{inspect(self())}"
