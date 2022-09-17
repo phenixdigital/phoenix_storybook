@@ -77,8 +77,8 @@ defmodule PhxLiveStorybook.TemplateHelpers do
 
   # When rendering a story from the component Playground, the playground will pass some context (
   # topic and story_id).
-  # We use this context to wrap template values, unknown from the Playground, within a
-  # `lsb_inspect/4` call that will broadcast values to the Playground.
+  # We use this context to wrap template examples, unknown from the Playground, within a
+  # `lsb_inspect/4` call that will broadcast examples to the Playground.
   defp extract_placeholder_attributes(template, regex, {topic, story_id}) do
     [placeholder | _] = Regex.run(regex, template)
 

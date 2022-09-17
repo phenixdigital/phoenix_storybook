@@ -26,7 +26,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_attribute_default_types!(file_path, attributes)
     validate_attribute_required_type!(file_path, attributes)
     validate_attribute_default_or_required!(file_path, attributes)
-    validate_attribute_values!(file_path, attributes)
+    validate_attribute_values(file_path, attributes)
     validate_attribute_block_unicity!(file_path, attributes)
     validate_story_list_type!(file_path, stories)
     validate_story_in_group_list_type!(file_path, stories)
@@ -39,7 +39,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_story_attributes_map_type!(file_path, stories)
     validate_story_in_group_attributes_map_type!(file_path, stories)
     validate_story_attribute_types!(file_path, attributes, stories)
-    validate_story_attribute_values!(file_path, attributes, stories)
+    validate_story_attribute_values(file_path, attributes, stories)
     validate_story_required_attributes!(file_path, attributes, stories)
     validate_story_required_block!(file_path, attributes, stories)
     validate_story_required_slots!(file_path, attributes, stories)
@@ -209,26 +209,26 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_attribute_values!(file_path, attributes) do
-    for %Attr{id: attr_id, values!: values!, values: values} <- attributes,
-        !is_nil(values!),
-        !is_nil(values) do
+  defp validate_attribute_values(file_path, attributes) do
+    for %Attr{id: attr_id, values: values, examples: examples} <- attributes,
+        !is_nil(values),
+        !is_nil(examples) do
       compile_error!(
         file_path,
-        "values and values! for attr #{inspect(attr_id)} cannot be set at the same time"
+        "examples and values for attr #{inspect(attr_id)} cannot be set at the same time"
       )
-    end
-
-    for %Attr{id: attr_id, type: type, values!: values!} <- attributes, !is_nil(values!) do
-      msg = "values! for attr #{inspect(attr_id)} must be a list of #{inspect(type)}"
-      validate_type!(file_path, values!, [:list, :range], msg)
-      for val <- values!, do: validate_type!(file_path, val, type, msg)
     end
 
     for %Attr{id: attr_id, type: type, values: values} <- attributes, !is_nil(values) do
       msg = "values for attr #{inspect(attr_id)} must be a list of #{inspect(type)}"
       validate_type!(file_path, values, [:list, :range], msg)
       for val <- values, do: validate_type!(file_path, val, type, msg)
+    end
+
+    for %Attr{id: attr_id, type: type, examples: examples} <- attributes, !is_nil(examples) do
+      msg = "examples for attr #{inspect(attr_id)} must be a list of #{inspect(type)}"
+      validate_type!(file_path, examples, [:list, :range], msg)
+      for val <- examples, do: validate_type!(file_path, val, type, msg)
     end
   end
 
@@ -405,24 +405,24 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_story_attribute_values!(file_path, attributes, stories) do
-    attr_values! =
-      for %Attr{id: attr_id, values!: values!} <- attributes,
-          !is_nil(values!),
+  defp validate_story_attribute_values(file_path, attributes, stories) do
+    attr_values =
+      for %Attr{id: attr_id, values: values} <- attributes,
+          !is_nil(values),
           into: %{},
-          do: {attr_id, values!}
+          do: {attr_id, values}
 
     for %Story{id: story_id, attributes: attributes} <- stories do
       for {attr_id, attr_value} <- attributes do
-        case Map.get(attr_values!, attr_id) do
+        case Map.get(attr_values, attr_id) do
           nil ->
             :ok
 
-          values! ->
-            unless attr_value in values! do
+          values ->
+            unless attr_value in values do
               compile_error!(
                 file_path,
-                "attribute #{inspect(attr_id)} in story #{inspect(story_id)} must be one of #{inspect(values!)}"
+                "attribute #{inspect(attr_id)} in story #{inspect(story_id)} must be one of #{inspect(values)}"
               )
             end
         end
@@ -432,15 +432,15 @@ defmodule PhxLiveStorybook.EntriesValidator do
     for %StoryGroup{id: group_id, stories: stories} <- stories,
         %Story{id: story_id, attributes: attributes} <- stories do
       for {attr_id, attr_value} <- attributes do
-        case Map.get(attr_values!, attr_id) do
+        case Map.get(attr_values, attr_id) do
           nil ->
             :ok
 
-          values! ->
-            unless attr_value in values! do
+          values ->
+            unless attr_value in values do
               compile_error!(
                 file_path,
-                "attribute #{inspect(attr_id)} in story #{inspect(story_id)}, group #{inspect(group_id)} must be one of #{inspect(values!)}"
+                "attribute #{inspect(attr_id)} in story #{inspect(story_id)}, group #{inspect(group_id)} must be one of #{inspect(values)}"
               )
             end
         end

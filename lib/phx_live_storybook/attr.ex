@@ -22,12 +22,12 @@ defmodule PhxLiveStorybook.Attr do
     * Any struct module
   - `required`: `true` if the attribute is mandatory.
   - `default`: attribute default value.
-  - `values` the list or range of values suggested for the attribute
-  - `values!` the list or range of all possible values for the attribute. Unlike values, this option
+  - `examples` the list or range of examples suggested for the attribute
+  - `values` the list or range of all possible examples for the attribute. Unlike examples, this option
   enforces validation of the default value against the given list.
   - `doc`: a text documentation for this attribute.
 
   """
   @enforce_keys [:id, :type]
-  defstruct [:id, :type, :doc, :default, :values, :values!, required: false]
+  defstruct [:id, :type, :doc, :default, :examples, :values, required: false]
 end

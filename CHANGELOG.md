@@ -5,8 +5,8 @@
 - change (breaking!): configuration has been moved from config.exs files to your elixir backend module.
 - change (breaking!): `live_storybook/2` is no longer serving assets. You must add
   `storybook_assets/1` to your router in a non CSRF-protected scope.
-- change (breaking!): attr `options` have been renamed to `values`. A new `values!` key is also
-  available to enforce story attribute values.
+- change (breaking!): attr `options` have been renamed to `examples`. A new `values` key is also
+  available to enforce story attribute examples.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: new event log. In the playground, you can now track all events emitted by components.
 - feature: theming. You can declare different themes in the application settings. The selected

@@ -11,7 +11,7 @@ in your application code the same theme assign to all your components.**
 ## 2. Store the theme in a Registry
 
 An effective way to store the current theme setting so that it can be available to all your
-components, but still have different values for different (concurrent) users is to associate it to
+components, but still have different examples for different (concurrent) users is to associate it to
 the current LiveView pid.
 
 `Registry` is a native Elixir module that handles decentralized storage, linked to specific

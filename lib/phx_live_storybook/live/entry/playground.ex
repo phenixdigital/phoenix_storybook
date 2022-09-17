@@ -91,10 +91,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
     fields =
       for attr = %Attr{type: t} <- entry.attributes, t not in ~w(block slot)a, reduce: %{} do
         acc ->
-          attr_values = for %{attributes: attrs} <- stories, do: Map.get(attrs, attr.id)
+          attr_examples = for %{attributes: attrs} <- stories, do: Map.get(attrs, attr.id)
 
           field =
-            case Enum.uniq(attr_values) do
+            case Enum.uniq(attr_examples) do
               [] -> nil
               [val] -> val
               _ -> :locked
@@ -315,7 +315,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                           <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
-                            fields={@fields} values={attr.values} values!={attr.values!} myself={@myself}
+                            fields={@fields} examples={attr.examples} values={attr.values} myself={@myself}
                             template_attributes={Map.get(@template_attributes, @story.id, %{})}
                           />
                         </td>
@@ -440,14 +440,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
 
   def block_or_slot(assigns, _attr = %{type: :block}) do
     case assigns.block do
-      :locked -> "[Multiple values]"
+      :locked -> "[Multiple examples]"
       block -> block
     end
   end
 
   def block_or_slot(assigns, _attr = %{type: :slot, id: slot_id}) do
     case Map.get(assigns.slots, slot_id) do
-      :locked -> "[Multiple values]"
+      :locked -> "[Multiple examples]"
       slot -> slot
     end
   end
@@ -556,7 +556,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
       nil ->
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
-            ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+            ~H|<%= text_input(@form, @attr_id, value: "[Multiple examples]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
 
           value ->
             assigns |> assign(:value, value) |> attr_input()
@@ -582,7 +582,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: type, values: nil, values!: nil})
+  defp attr_input(assigns = %{type: type, examples: nil, values: nil})
        when type in [:integer, :float] do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
@@ -591,23 +591,23 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: :integer, values: min..max}) do
+  defp attr_input(assigns = %{type: :integer, examples: min..max}) do
     ~H"""
     <%= number_input(@form, @attr_id, value: @value, min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: :integer, values!: min..max}) do
-    attr_input(%{assigns | values: min..max})
+  defp attr_input(assigns = %{type: :integer, values: min..max}) do
+    attr_input(%{assigns | examples: min..max})
   end
 
-  defp attr_input(assigns = %{type: :string, values: nil, values!: nil}) do
+  defp attr_input(assigns = %{type: :string, examples: nil, values: nil}) do
     ~H"""
     <%= text_input(@form, @attr_id, value: @value, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: _type, values: nil, values!: nil, value: value}) do
+  defp attr_input(assigns = %{type: _type, examples: nil, values: nil, value: value}) do
     assigns = assign(assigns, value: if(is_nil(value), do: "", else: inspect(value)))
 
     ~H"""
@@ -615,17 +615,17 @@ defmodule PhxLiveStorybook.Entry.Playground do
     """
   end
 
-  defp attr_input(assigns = %{values: values}) when not is_nil(values) do
-    assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
+  defp attr_input(assigns = %{examples: examples}) when not is_nil(examples) do
+    assigns = assign(assigns, examples: [nil | Enum.map(examples, &to_string/1)])
 
     ~H"""
-    <%= select(@form, @attr_id, @values, value: @value,
+    <%= select(@form, @attr_id, @examples, value: @value,
       class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{values!: values}) when not is_nil(values) do
-    attr_input(%{assigns | values: values})
+  defp attr_input(assigns = %{values: examples}) when not is_nil(examples) do
+    attr_input(%{assigns | examples: examples})
   end
 
   defp on_toggle_click(attr_id, value) do
