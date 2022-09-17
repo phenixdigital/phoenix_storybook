@@ -417,8 +417,11 @@ defmodule PhxLiveStorybookTest do
 
     test "it raises a compile error if a page rendering raises" do
       assert_raise CompileError, ~r/an error occured while rendering page/, fn ->
-        defmodule Elixir.PhxLiveStorybook.RenderPageCrashStorybook,
-          do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+        defmodule Elixir.PhxLiveStorybook.RenderPageCrashStorybook do
+          use PhxLiveStorybook,
+            otp_app: :phx_live_storybook,
+            content_path: Path.expand("./fixtures/storybook_content/render_page_crash", __DIR__)
+        end
       end
     end
   end

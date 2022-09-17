@@ -7,8 +7,8 @@ import { SidebarHook } from "./lib/sidebar_hook";
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
   console.warn(
-    "If you need to use custom hooks or uploaders, please define them in JS file\
-  and declare this file in your Elixir app config (:js_path key) "
+    "If you need to use custom hooks or uploaders, please define them in JS file and declare this \
+    file in your Elixir backend module options (:js_path key)."
   );
   window.storybook = {};
 }
