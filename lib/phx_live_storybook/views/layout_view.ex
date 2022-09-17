@@ -41,13 +41,9 @@ defmodule PhxLiveStorybook.LayoutView do
   defp storybook_setting(conn_or_socket, key, default \\ nil)
 
   defp storybook_setting(conn_or_socket, key, default) do
-    otp_app = otp_app(conn_or_socket)
     backend_module = backend_module(conn_or_socket)
-    Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
+    backend_module.config(key, default)
   end
-
-  defp otp_app(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.otp_app
-  defp otp_app(conn = %Plug.Conn{}), do: conn.private.otp_app
 
   defp backend_module(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.backend_module
   defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module

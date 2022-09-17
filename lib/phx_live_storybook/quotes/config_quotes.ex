@@ -3,15 +3,13 @@ defmodule PhxLiveStorybook.Quotes.ConfigQuotes do
 
   # This quote provides config access helper
   @doc false
-  def config_quotes(backend_module, otp_app) do
+  def config_quotes(opts) do
     quote do
       @behaviour PhxLiveStorybook.BackendBehaviour
 
       @impl PhxLiveStorybook.BackendBehaviour
       def config(key, default \\ nil) do
-        unquote(otp_app)
-        |> Application.get_env(unquote(backend_module), [])
-        |> Keyword.get(key, default)
+        Keyword.get(unquote(opts), key, default)
       end
     end
   end
