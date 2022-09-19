@@ -18,7 +18,7 @@ defmodule PhxLiveStorybook.Attr do
     * `:map` - any map
     * `:list` - a List of any arbitrary types
     * `:block` - a block (you can only declare one)
-    * `:slots` - a list of slots
+    * `:slot` - a slot (you can declare more than one)
     * Any struct module
   - `required`: `true` if the attribute is mandatory.
   - `default`: attribute default value.
