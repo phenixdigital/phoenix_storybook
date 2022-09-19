@@ -5,7 +5,6 @@ defmodule PhxLiveStorybook.Quotes.PageQuotes do
   alias PhxLiveStorybook.PageEntry
 
   @doc false
-  # Precompiling component preview & code snippet for every component / story couple.
   def page_quotes(leave_entries, themes, caller_file) do
     page_quotes =
       for %PageEntry{module: module, navigation: navigation} <- leave_entries,

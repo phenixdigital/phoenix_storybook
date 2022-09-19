@@ -22,9 +22,9 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :default,
         attributes: %{
           label: "default label",
@@ -37,7 +37,7 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
           "<:other_slot>not displayed</:other_slot>"
         ]
       },
-      %Story{
+      %Variation{
         id: :with_struct,
         attributes: %{
           label: "foo",

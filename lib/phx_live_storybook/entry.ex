@@ -15,7 +15,7 @@ defmodule PhxLiveStorybook.Entry do
 
   Implement your component as such.
   Confer to:
-  - `PhxLiveStorybook.Story` documentation for stories.
+  - `PhxLiveStorybook.Variation` documentation for stories.
   - `PhxLiveStorybook.Attr` documentation for attributes.
 
   ```elixir
@@ -31,7 +31,7 @@ defmodule PhxLiveStorybook.Entry do
     def icon, do: "fa fa-icon"
 
     def attributes, do: []
-    def stories, do: []
+    def variations, do: []
   end
   ```
 
@@ -53,7 +53,7 @@ defmodule PhxLiveStorybook.Entry do
     def icon, do: "fa fa-icon"
 
     def attributes, do: []
-    def stories, do: []
+    def variations, do: []
   end
   ```
 
@@ -111,7 +111,7 @@ defmodule PhxLiveStorybook.Entry do
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
-    @callback stories() :: [PhxLiveStorybook.Story.t()]
+    @callback variations() :: [PhxLiveStorybook.Variation.t()]
     @callback template() :: %Phoenix.LiveView.Rendered{}
   end
 
@@ -122,7 +122,7 @@ defmodule PhxLiveStorybook.Entry do
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
-    @callback stories() :: [PhxLiveStorybook.Story.t()]
+    @callback variations() :: [PhxLiveStorybook.Variation.t()]
     @callback template() :: %Phoenix.LiveView.Rendered{}
   end
 
@@ -143,7 +143,7 @@ defmodule PhxLiveStorybook.Entry do
       @behaviour EntryBehaviour
       @behaviour unquote(component_behaviour(live?))
 
-      alias PhxLiveStorybook.{Attr, Story, StoryGroup}
+      alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
 
       @impl EntryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
@@ -170,7 +170,7 @@ defmodule PhxLiveStorybook.Entry do
       def attributes, do: []
 
       @impl unquote(component_behaviour(live?))
-      def stories, do: []
+      def variations, do: []
 
       @impl unquote(component_behaviour(live?))
       def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
@@ -181,7 +181,7 @@ defmodule PhxLiveStorybook.Entry do
                      imports: 0,
                      aliases: 0,
                      container: 0,
-                     stories: 0,
+                     variations: 0,
                      attributes: 0,
                      template: 0
     end

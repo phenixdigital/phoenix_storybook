@@ -5,11 +5,11 @@ defmodule TreeStorybook.Event.EventLiveComponent do
   def name, do: "Live Event Component (root)"
   def description, do: "event live component description"
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       }
     ]

@@ -2,14 +2,14 @@
 
 Basic component documentation is in `PhxLiveStorybook.Entry`.
 
-## Story groups
+## Variation groups
 
-You may want to present different variations of a component in a single story block.
-It is possible using `PhxLiveStorybook.StoryGroup`.
+You may want to present different variations of a component in a single variation block.
+It is possible using `PhxLiveStorybook.VariationGroup`.
 
 ## Container
 
-By default, each `story` is rendered within a `div` in the storybook DOM.
+By default, each `variation` is rendered within a `div` in the storybook DOM.
 If you need further _sandboxing_ you can opt in for `iframe` rendering.
 
 ```elixir
@@ -40,9 +40,9 @@ defmodule NestedComponent do
   def aliases, do: [MyStorybook.Helpers.JSHelpers]
   def imports, do: [{NestedComponent, nested: 1}]
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :default,
         block: """
         <.nested phx-click={JSHelpers.toggle()}>hello</.nested>
@@ -63,61 +63,61 @@ Some components, such as _modals_, _slideovers_, and _notifications_, are not vi
 start: they first need user interaction. Such components can be accompanied by an outer template,
 that will for instance render a button next to the component, to toggle its visibility state.
 
-### Story templates
+### Variation templates
 
 You can define a template in your component entry by defining a `template/0` function.
-Every story will be rendered within the defined template, the story itself is injected in place of
-`<.lsb-story/>`.
+Every variation will be rendered within the defined template, the variation itself is injected
+in place of `<.lsb-variation/>`.
 
 ```elixir
 def template do
   """
   <div class="my-custom-wrapper">
-    <.lsb-story/>
+    <.lsb-variation/>
   </div>
   """
 end
 ```
 
-You can also override the template, per story or story_group by setting the `:template` key to your
-story. Setting it to a falsy value will disable templating for this story.
+You can also override the template, per variation or variation_group by setting the `:template` key
+to your variation. Setting it to a falsy value will disable templating for this variation.
 
-### Story group templates
+### Variation group templates
 
-Story groups can also leverage on templating:
+Variation groups can also leverage on templating:
 
-- either by wrapping every story in their own template.
+- either by wrapping every variation in their own template.
 
 ```elixir
 """
-<div class="one-wrapper-for-each-story">
-  <.lsb-story/>
+<div class="one-wrapper-for-each-variation">
+  <.lsb-variation/>
 </div>
 """
 ```
 
-- or by wrapping all stories as a whole, in a single template.
+- or by wrapping all variations as a whole, in a single template.
 
 ```elixir
 """
 <div class="a-single-wrapper-for-all">
-  <.lsb-story-group/>
+  <.lsb-variation-group/>
 </div>
 """
 ```
 
-If you want to get unique id, you can use `:story_id` that will be replaced, at rendering time by
-the current story (or story group) id.
+If you want to get unique id, you can use `:variation_id` that will be replaced, at rendering time
+by the current variation (or variation group) id.
 
 ### Placeholder attributes
 
-In template, you can pass some extra attributes to your story. Just add them to the `.lsb-story` or
-`.lsb-story-group` placeholder.
+In template, you can pass some extra attributes to your variation. Just add them to the
+`.lsb-variation` or `.lsb-variation-group` placeholder.
 
 ```elixir
 """
 <.form_for for={:user} let={f}>
-  <.lsb-story form={f}/>
+  <.lsb-variation form={f}/>
 </.form>
 """
 ```
@@ -137,14 +137,14 @@ defmodule Storybook.Components.Modal do
     """
     <div>
       <button phx-click={Modal.show_modal()}>Open modal</button>
-      <.lsb-story/>
+      <.lsb-variation/>
     </div>
     """
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :default_modal,
         slots: ["<:body>hello world</:body>"]
       }
@@ -172,17 +172,17 @@ defmodule Storybook.Components.Slideover do
       <button phx-click={JS.push("assign", value: %{show: true})}>
         Open slideover
       </button>
-      <.lsb-story/>
+      <.lsb-variation/>
     </div>
     """
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :default_slideover,
         attributes: %{
-          close_event: JS.push("assign", value: %{story_id: :default_slideover, show: false})
+          close_event: JS.push("assign", value: %{variation_id: :default_slideover, show: false})
         },
         slots: ["<:body>Hello world</:body>"]
       }
@@ -193,15 +193,15 @@ end
 
 ### Template code preview
 
-By default, the code preview will render the story and its template markup as well.
-You can choose to render only the story markup, without its surrounding template by using the
+By default, the code preview will render the variation and its template markup as well.
+You can choose to render only the variation markup, without its surrounding template by using the
 `lsb-code-hidden` HTML attribute.
 
 ```elixir
 """
 <div lsb-code-hidden>
   <button phx-click={Modal.show_modal()}>Open modal</button>
-  <.lsb-story/>
+  <.lsb-variation/>
 </div>
 """
 ```
@@ -211,10 +211,10 @@ You can choose to render only the story markup, without its surrounding template
 Liveview let you define inner blocks in your components, which are either named `slots` or the
 default `inner block`.
 
-They can be passed in your stories with the `:block` and `:slots` keys :
+They can be passed in your variations with the `:block` and `:slots` keys :
 
 ```elixir
-%Story{
+%Variation{
   id: :modal,
   block: "<p>My modal body</p>",
   slots: [
@@ -234,10 +234,10 @@ They can be passed in your stories with the `:block` and `:slots` keys :
 
 You can also use [LiveView let mechanism](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#module-default-slots)
 to pass data to your default block. You just need to **declare the let attribute** you are using in
-your story.
+your variation.
 
 ```elixir
-%Story{
+%Variation{
   id: :list,
   attributes: %{entries: ~w(apple banana cherry)},
   let: :entry,
@@ -248,7 +248,7 @@ your story.
 `let` syntax can also be used with named slots, but requires no specific livebook setup.
 
 ```elixir
-%Story{
+%Variation{
   id: :table,
   attributes: %{
     rows: [

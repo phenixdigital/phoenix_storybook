@@ -15,11 +15,11 @@ defmodule TreeStorybook.Event.EventComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       }
     ]

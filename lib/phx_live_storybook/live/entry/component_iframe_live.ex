@@ -26,7 +26,7 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
            playground: params["playground"],
            entry_path: entry_path,
            entry: entry,
-           story_id: parse_atom(params["story_id"]),
+           variation_id: parse_atom(params["variation_id"]),
            topic: params["topic"],
            theme: parse_atom(params["theme"]),
            extra_assigns: %{}
@@ -47,18 +47,18 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
       assign(assigns, component_assigns: Map.merge(%{theme: assigns.theme}, assigns.extra_assigns))
 
     ~H"""
-    <%= if @story_id do %>
+    <%= if @variation_id do %>
       <%= if @playground do %>
         <%= live_render @socket, PlaygroundPreviewLive,
           id: playground_preview_id(@entry),
-          session: %{"entry_path" => @entry_path, "story_id" => @story_id,
+          session: %{"entry_path" => @entry_path, "variation_id" => @variation_id,
           "backend_module" => to_string(@backend_module), "theme" => @theme,
           "topic" => @topic},
           container: {:div, style: "height: 100vh; width: 100wh;"}
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= @backend_module.render_story(@entry.module(), @story_id, @component_assigns) %>
+          <%= @backend_module.render_variation(@entry.module(), @variation_id, @component_assigns) %>
         </div>
       <% end %>
     <% end %>
@@ -71,8 +71,8 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
   end
 
   def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
-    {_story_id, extra_assigns} =
-      ExtraAssignsHelpers.handle_set_story_assign(
+    {_variation_id, extra_assigns} =
+      ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
         assigns.extra_assigns,
         assigns.entry,
@@ -83,8 +83,8 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
   end
 
   def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
-    {_story_id, extra_assigns} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(
+    {_variation_id, extra_assigns} =
+      ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
         assigns.extra_assigns,
         assigns.entry,

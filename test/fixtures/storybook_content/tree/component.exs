@@ -15,16 +15,16 @@ defmodule TreeStorybook.Component do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       },
-      %Story{
+      %Variation{
         id: :world,
-        description: "World story",
+        description: "World variation",
         attributes: %{label: "world", index: 37}
       }
     ]

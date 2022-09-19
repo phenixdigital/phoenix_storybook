@@ -16,7 +16,7 @@ defmodule PhxLiveStorybook.ComponentEntry do
     :container,
     :template,
     attributes: [],
-    stories: []
+    variations: []
   ]
 end
 
@@ -131,7 +131,7 @@ defmodule PhxLiveStorybook.Entries do
       aliases: module.aliases(),
       container: module.container(),
       attributes: module.attributes(),
-      stories: module.stories(),
+      variations: module.variations(),
       template: module.template()
     }
     |> EntriesValidator.validate!()

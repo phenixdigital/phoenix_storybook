@@ -15,7 +15,7 @@
 PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your
 Phoenix LiveView components.
 
-- Explore all your components, and showcase them with different stories.
+- Explore all your components, and showcase them with different variations.
 - Browse your component's documentation, with their supported attributes.
 - Learn how components behave by using an interactive playground.
 
@@ -129,7 +129,7 @@ import * as Uploaders from "./uploaders";
 Then you can start creating some content for your storybook. Storybook can contain different kinds
 of _entries_:
 
-- **component entries**: to document and showcase your components across different stories (ie. _variants_)
+- **component entries**: to document and showcase your components across different variations.
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **examples**: to show how your components can be used and mixed in real UI pages.
 
@@ -152,14 +152,14 @@ defmodule MyAppWeb.Storybook.Components.Button do
   def function, do: &Button.button/1
   def description, do: "A simple generic button."
 
-  def stories do [
-    %Story{
+  def variations do [
+    %Variation{
       id: :default,
       attributes: %{
         label: "A button"
       }
     },
-    %Story{
+    %Variation{
       id: :green_button,
       attributes: %{
         label: "Still a button",

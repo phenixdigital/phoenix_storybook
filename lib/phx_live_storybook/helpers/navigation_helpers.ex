@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.NavigationHelpers do
   def path_to(socket = %{assigns: assigns}, entry, params) do
     query =
       assigns
-      |> Map.take([:theme, :tab, :story_id])
+      |> Map.take([:theme, :tab, :variation_id])
       |> Map.merge(params)
       |> Enum.reject(fn {_key, value} -> is_nil(value) end)
 

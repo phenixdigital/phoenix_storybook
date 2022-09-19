@@ -6,24 +6,24 @@ defmodule TreeStorybook.AFolder.Component do
   def name, do: "Component (a_folder)"
   def description, do: "Aa component description"
 
-  def stories do
+  def variations do
     [
-      %StoryGroup{
+      %VariationGroup{
         id: :group,
-        stories: [
-          %Story{
+        variations: [
+          %Variation{
             id: :hello,
-            description: "Hello story",
+            description: "Hello variation",
             attributes: %{label: "hello"}
           },
-          %Story{
+          %Variation{
             id: :world,
-            description: "World story",
+            description: "World variation",
             attributes: %{label: "world", index: 37}
           }
         ]
       },
-      %Story{
+      %Variation{
         id: :no_attributes
       }
     ]

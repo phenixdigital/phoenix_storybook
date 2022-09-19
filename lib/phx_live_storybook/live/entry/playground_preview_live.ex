@@ -7,8 +7,8 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
-  alias PhxLiveStorybook.{Story, StoryGroup}
   alias PhxLiveStorybook.TemplateHelpers
+  alias PhxLiveStorybook.{Variation, VariationGroup}
 
   def mount(_params, session, socket) do
     entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
@@ -23,39 +23,44 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
       )
     end
 
-    story_or_group = Enum.find(entry.stories, &(&1.id == session["story_id"]))
+    variation_or_group = Enum.find(entry.variations, &(&1.id == session["variation_id"]))
 
     {:ok,
      socket
      |> assign(entry: entry, topic: session["topic"], theme: session["theme"])
-     |> assign_stories(story_or_group), layout: false}
+     |> assign_variations(variation_or_group), layout: false}
   end
 
-  defp assign_stories(socket, story_or_group) do
-    case story_or_group do
-      story = %Story{} -> assign_stories(socket, story, [story])
-      group = %StoryGroup{stories: stories} -> assign_stories(socket, group, stories)
-      _ -> assign_stories(socket, nil, [])
+  defp assign_variations(socket, variation_or_group) do
+    case variation_or_group do
+      variation = %Variation{} ->
+        assign_variations(socket, variation, [variation])
+
+      group = %VariationGroup{variations: variations} ->
+        assign_variations(socket, group, variations)
+
+      _ ->
+        assign_variations(socket, nil, [])
     end
   end
 
-  defp assign_stories(socket, story_or_group, stories) do
+  defp assign_variations(socket, variation_or_group, variations) do
     assign(
       socket,
       counter: 0,
-      story: story_or_group,
-      story_id: if(story_or_group, do: story_or_group.id, else: nil),
-      stories:
-        for story <- stories do
+      variation: variation_or_group,
+      variation_id: if(variation_or_group, do: variation_or_group.id, else: nil),
+      variations:
+        for variation <- variations do
           %{
-            id: story.id,
-            let: story.let,
-            block: story.block,
-            slots: story.slots,
+            id: variation.id,
+            let: variation.let,
+            block: variation.block,
+            slots: variation.slots,
             attributes:
               Map.merge(
-                %{id: "playground-preview-#{story.id}", theme: socket.assigns.theme},
-                story.attributes
+                %{id: "playground-preview-#{variation.id}", theme: socket.assigns.theme},
+                variation.attributes
               )
           }
         end
@@ -63,7 +68,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   end
 
   def render(assigns) do
-    template = TemplateHelpers.get_template(assigns.entry.template, assigns.story)
+    template = TemplateHelpers.get_template(assigns.entry.template, assigns.variation)
 
     opts = [
       playground_topic: assigns.topic,
@@ -74,21 +79,21 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     ~H"""
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
-        <%= ComponentRenderer.render_multiple_stories(fun_or_component(@entry), @story, @stories, template, opts) %>
+        <%= ComponentRenderer.render_multiple_variations(fun_or_component(@entry), @variation, @variations, template, opts) %>
       </div>
     </div>
     """
   end
 
-  # Attributes passed in templates (as <.lsb-story .../> tag attributes) carry a value only known
-  # at runtime.
+  # Attributes passed in templates (as <.lsb-variation .../> tag attributes) carry a value only
+  # known at runtime.
   # Template will call `lsb_inspect/4` for each of these attributes, in order to let the Playground
   # know their current value.
-  def lsb_inspect(playground_topic, story_id, key, val) do
+  def lsb_inspect(playground_topic, variation_id, key, val) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       playground_topic,
-      {:new_template_attributes, %{story_id => %{key => val}}}
+      {:new_template_attributes, %{variation_id => %{key => val}}}
     )
 
     val
@@ -106,79 +111,81 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     do: function
 
   def handle_info({:new_attributes_input, attrs}, socket) do
-    stories =
-      for story <- socket.assigns.stories do
-        new_attrs = story.attributes |> Map.merge(attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
-        %{story | attributes: new_attrs}
+    variations =
+      for variation <- socket.assigns.variations do
+        new_attrs =
+          variation.attributes |> Map.merge(attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
+
+        %{variation | attributes: new_attrs}
       end
 
-    {:noreply, socket |> inc_counter() |> assign(stories: stories)}
+    {:noreply, socket |> inc_counter() |> assign(variations: variations)}
   end
 
   def handle_info({:set_theme, theme}, socket) do
     {:noreply,
      socket
      |> assign(:theme, theme)
-     |> assign_stories(socket.assigns.story)}
+     |> assign_variations(socket.assigns.variation)}
   end
 
-  def handle_info({:set_story, story}, socket) do
-    {:noreply, assign_stories(socket, story)}
+  def handle_info({:set_variation, variation}, socket) do
+    {:noreply, assign_variations(socket, variation)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
 
   def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
-    stories =
-      for story <- assigns.stories do
-        {story_id, attrs} =
-          ExtraAssignsHelpers.handle_set_story_assign(
+    variations =
+      for variation <- assigns.variations do
+        {variation_id, attrs} =
+          ExtraAssignsHelpers.handle_set_variation_assign(
             assign_params,
-            story.attributes,
+            variation.attributes,
             assigns.entry,
             :flat
           )
 
-        if story.id == story_id do
-          %{story | attributes: attrs}
+        if variation.id == variation_id do
+          %{variation | attributes: attrs}
         else
-          story
+          variation
         end
       end
 
-    send_stories_attributes(assigns.topic, stories)
-    {:noreply, socket |> inc_counter() |> assign(stories: stories)}
+    send_variations_attributes(assigns.topic, variations)
+    {:noreply, socket |> inc_counter() |> assign(variations: variations)}
   end
 
   def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
-    stories =
-      for story <- assigns.stories do
-        {story_id, attrs} =
-          ExtraAssignsHelpers.handle_toggle_story_assign(
+    variations =
+      for variation <- assigns.variations do
+        {variation_id, attrs} =
+          ExtraAssignsHelpers.handle_toggle_variation_assign(
             assign_params,
-            story.attributes,
+            variation.attributes,
             assigns.entry,
             :flat
           )
 
-        if story.id == story_id do
-          %{story | attributes: attrs}
+        if variation.id == variation_id do
+          %{variation | attributes: attrs}
         else
-          story
+          variation
         end
       end
 
-    send_stories_attributes(assigns.topic, stories)
-    {:noreply, socket |> inc_counter() |> assign(stories: stories)}
+    send_variations_attributes(assigns.topic, variations)
+    {:noreply, socket |> inc_counter() |> assign(variations: variations)}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}
 
-  defp send_stories_attributes(topic, stories) do
+  defp send_variations_attributes(topic, variations) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       topic,
-      {:new_stories_attributes, stories |> Enum.map(&{&1.id, &1.attributes}) |> Map.new()}
+      {:new_variations_attributes, variations |> Enum.map(&{&1.id, &1.attributes}) |> Map.new()}
     )
   end
 

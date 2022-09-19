@@ -6,7 +6,7 @@ defmodule PhxLiveStorybook.EntryLive do
   alias PhxLiveStorybook.Entry.{Playground, PlaygroundPreviewLive}
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
-  alias PhxLiveStorybook.{EventLog, Story, StoryGroup}
+  alias PhxLiveStorybook.{EventLog, Variation, VariationGroup}
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
 
@@ -44,18 +44,18 @@ defmodule PhxLiveStorybook.EntryLive do
         raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
 
       entry ->
-        story = current_story(entry, params)
+        variation = current_variation(entry, params)
 
         {:noreply,
          assign(socket,
            entry: entry,
            entry_path: entry_path,
-           story: story,
-           story_id: if(story, do: story.id, else: nil),
+           variation: variation,
+           variation_id: if(variation, do: variation.id, else: nil),
            page_title: entry.name,
            tab: current_tab(params, entry),
            theme: current_theme(params, socket),
-           story_extra_assigns: init_story_extra_assigns(entry),
+           variation_extra_assigns: init_variation_extra_assigns(entry),
            playground_error: nil
          )
          |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
@@ -75,12 +75,14 @@ defmodule PhxLiveStorybook.EntryLive do
     socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
   end
 
-  defp current_story(%ComponentEntry{stories: stories}, %{"story_id" => story_id}) do
-    Enum.find(stories, &(to_string(&1.id) == story_id))
+  defp current_variation(%ComponentEntry{variations: variations}, %{
+         "variation_id" => variation_id
+       }) do
+    Enum.find(variations, &(to_string(&1.id) == variation_id))
   end
 
-  defp current_story(%ComponentEntry{stories: [story | _]}, _), do: story
-  defp current_story(_, _), do: nil
+  defp current_variation(%ComponentEntry{variations: [variation | _]}, _), do: variation
+  defp current_variation(_, _), do: nil
 
   defp current_tab(params, entry) do
     case Map.get(params, "tab") do
@@ -89,7 +91,7 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  defp default_tab(%ComponentEntry{}), do: :stories
+  defp default_tab(%ComponentEntry{}), do: :variations
   defp default_tab(%PageEntry{navigation: []}), do: nil
   defp default_tab(%PageEntry{navigation: [{tab, _, _} | _]}), do: tab
 
@@ -107,16 +109,17 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  defp init_story_extra_assigns(%ComponentEntry{stories: stories}) do
-    extra_assigns = for %Story{id: story_id} <- stories, into: %{}, do: {story_id, %{}}
+  defp init_variation_extra_assigns(%ComponentEntry{variations: variations}) do
+    extra_assigns =
+      for %Variation{id: variation_id} <- variations, into: %{}, do: {variation_id, %{}}
 
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id} <- stories,
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id} <- variations,
         into: extra_assigns,
-        do: {{group_id, story_id}, %{}}
+        do: {{group_id, variation_id}, %{}}
   end
 
-  defp init_story_extra_assigns(_), do: nil
+  defp init_variation_extra_assigns(_), do: nil
 
   def render(assigns = %{entry: _entry}) do
     ~H"""
@@ -146,7 +149,7 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp navigation_tabs(%ComponentEntry{}) do
     [
-      {:stories, "Stories", "far fa-eye"},
+      {:variations, "Stories", "far fa-eye"},
       {:playground, "Playground", "far fa-dice"},
       {:source, "Source", "far fa-file-code"}
     ]
@@ -201,24 +204,24 @@ defmodule PhxLiveStorybook.EntryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp render_content(entry = %ComponentEntry{}, assigns = %{tab: :stories}) do
+  defp render_content(entry = %ComponentEntry{}, assigns = %{tab: :variations}) do
     ~H"""
-    <div class="lsb lsb-space-y-12 lsb-pb-12" id={"entry-stories-#{entry_id(entry)}"}>
-      <%= for story = %{id: story_id, description: description} <- @entry.stories(),
-              story_extra_assigns = story_extra_assigns(story, assigns) do %>
-        <div id={anchor_id(story)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+    <div class="lsb lsb-space-y-12 lsb-pb-12" id={"entry-variations-#{entry_id(entry)}"}>
+      <%= for variation = %{id: variation_id, description: description} <- @entry.variations(),
+              variation_extra_assigns = variation_extra_assigns(variation, assigns) do %>
+        <div id={anchor_id(variation)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
-          <!-- Story description -->
+          <!-- Variation description -->
           <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group lsb-flex lsb-justify-between">
-            <%= link to: "##{anchor_id(story)}", class: "lsb entry-anchor-link" do %>
+            <%= link to: "##{anchor_id(variation)}", class: "lsb entry-anchor-link" do %>
               <i class="lsb fal fa-link lsb-hidden group-hover:lg:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
               <%= if description do %>
                 <%= description  %>
               <% else %>
-                <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+                <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, variation_id: variation.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
@@ -226,30 +229,30 @@ defmodule PhxLiveStorybook.EntryLive do
             <% end %>
           </div>
 
-          <!-- Story component preview -->
+          <!-- Variation component preview -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
             <%= if @entry.container() == :iframe do %>
               <iframe
                 phx-update="ignore"
-                id={iframe_id(@entry, story)}
-                src={live_storybook_path(@socket, :entry_iframe, @entry_path, story_id: story.id, theme: @theme)}
+                id={iframe_id(@entry, variation)}
+                src={live_storybook_path(@socket, :entry_iframe, @entry_path, variation_id: variation.id, theme: @theme)}
                 class="lsb-w-full lsb-border-0"
                 height="0"
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
               <div class={LayoutView.sandbox_class(assigns)} style="width: 100%;">
-                <%= @backend_module.render_story(@entry.module(), story_id, story_extra_assigns) %>
+                <%= @backend_module.render_variation(@entry.module(), variation_id, variation_extra_assigns) %>
               </div>
             <% end %>
           </div>
 
-          <!-- Story code -->
+          <!-- Variation code -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm lsb-flex lsb-flex-col lsb-justify-center">
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="lsb fa fa-copy lsb-text-inherit"></i>
             </div>
-            <%= @backend_module.render_code(@entry.module(), story_id) %>
+            <%= @backend_module.render_code(@entry.module(), variation_id) %>
           </div>
 
         </div>
@@ -270,7 +273,7 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <.live_component module={Playground} id="playground"
       entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
-      story={@story}
+      variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
       topic={@playground_topic}
@@ -289,21 +292,23 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp story_extra_assigns(%Story{id: story_id}, assigns) do
-    assigns.story_extra_assigns
-    |> Map.get(story_id, %{})
+  defp variation_extra_assigns(%Variation{id: variation_id}, assigns) do
+    assigns.variation_extra_assigns
+    |> Map.get(variation_id, %{})
     |> Map.put(:theme, assigns.theme)
   end
 
-  defp story_extra_assigns(%StoryGroup{id: group_id}, assigns) do
-    for {{^group_id, story_id}, extra_assigns} <- assigns.story_extra_assigns, into: %{} do
-      {story_id, Map.merge(extra_assigns, %{id: "#{group_id}-#{story_id}", theme: assigns.theme})}
+  defp variation_extra_assigns(%VariationGroup{id: group_id}, assigns) do
+    for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
+        into: %{} do
+      {variation_id,
+       Map.merge(extra_assigns, %{id: "#{group_id}-#{variation_id}", theme: assigns.theme})}
     end
     |> Map.put(:theme, assigns.theme)
   end
 
-  defp iframe_id(entry, story) do
-    "iframe-#{entry_id(entry)}-story-#{story.id}"
+  defp iframe_id(entry, variation) do
+    "iframe-#{entry_id(entry)}-variation-#{variation.id}"
   end
 
   defp entry_id(entry) do
@@ -337,27 +342,35 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
-    {story_id, story_extra_assigns} =
-      ExtraAssignsHelpers.handle_set_story_assign(
+    {variation_id, variation_extra_assigns} =
+      ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
-        assigns.story_extra_assigns,
+        assigns.variation_extra_assigns,
         assigns.entry
       )
 
-    story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
-    {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
+    variation_extra_assigns = %{
+      assigns.variation_extra_assigns
+      | variation_id => variation_extra_assigns
+    }
+
+    {:noreply, assign(socket, :variation_extra_assigns, variation_extra_assigns)}
   end
 
   def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
-    {story_id, story_extra_assigns} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(
+    {variation_id, variation_extra_assigns} =
+      ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
-        assigns.story_extra_assigns,
+        assigns.variation_extra_assigns,
         assigns.entry
       )
 
-    story_extra_assigns = %{assigns.story_extra_assigns | story_id => story_extra_assigns}
-    {:noreply, assign(socket, :story_extra_assigns, story_extra_assigns)}
+    variation_extra_assigns = %{
+      assigns.variation_extra_assigns
+      | variation_id => variation_extra_assigns
+    }
+
+    {:noreply, assign(socket, :variation_extra_assigns, variation_extra_assigns)}
   end
 
   def handle_info({:playground_preview_pid, pid}, socket) do
@@ -379,8 +392,8 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, assign(socket, :playground_error, reason)}
   end
 
-  def handle_info({:new_stories_attributes, stories_attributes}, socket) do
-    send_update(Playground, id: "playground", new_stories_attributes: stories_attributes)
+  def handle_info({:new_variations_attributes, variations_attributes}, socket) do
+    send_update(Playground, id: "playground", new_variations_attributes: variations_attributes)
     {:noreply, socket}
   end
 

@@ -7,8 +7,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
   alias PhxLiveStorybook.ComponentEntry
   alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
   alias PhxLiveStorybook.Rendering.CodeRenderer
-  alias PhxLiveStorybook.{Story, StoryGroup}
   alias PhxLiveStorybook.TemplateHelpers
+  alias PhxLiveStorybook.{Variation, VariationGroup}
 
   import PhxLiveStorybook.NavigationHelpers
 
@@ -24,8 +24,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_stories()
-     |> assign_new_stories_attributes(assigns)
+     |> assign_variations()
+     |> assign_new_variations_attributes(assigns)
      |> assign_new_template_attributes(assigns)
      |> assign_playground_fields()
      |> assign_playground_block()
@@ -34,42 +34,47 @@ defmodule PhxLiveStorybook.Entry.Playground do
      |> assign_new(:lower_tab, fn -> :attributes end)}
   end
 
-  defp assign_stories(socket = %{assigns: assigns}) do
-    case assigns.story do
-      story = %Story{} -> assign_stories(socket, story.id, [story])
-      %StoryGroup{id: group_id, stories: stories} -> assign_stories(socket, group_id, stories)
-      _ -> assign_stories(socket, nil, [])
+  defp assign_variations(socket = %{assigns: assigns}) do
+    case assigns.variation do
+      variation = %Variation{} ->
+        assign_variations(socket, variation.id, [variation])
+
+      %VariationGroup{id: group_id, variations: variations} ->
+        assign_variations(socket, group_id, variations)
+
+      _ ->
+        assign_variations(socket, nil, [])
     end
   end
 
-  defp assign_stories(socket = %{assigns: %{story_id: id}}, id, _stories) do
+  defp assign_variations(socket = %{assigns: %{variation_id: id}}, id, _variations) do
     socket
   end
 
-  defp assign_stories(socket, id, stories) do
+  defp assign_variations(socket, id, variations) do
     socket
-    |> assign(story_id: id)
+    |> assign(variation_id: id)
     |> assign(
-      :stories,
-      for(s <- stories, do: Map.take(s, [:id, :attributes, :let, :block, :slots, :template]))
+      :variations,
+      for(s <- variations, do: Map.take(s, [:id, :attributes, :let, :block, :slots, :template]))
     )
   end
 
   # new_attributes may be passed by parent (LiveView) send_update.
   # It happens whenever parent is notified some component assign has been
   # updated by the component itself.
-  defp assign_new_stories_attributes(socket, assigns) do
-    new_attributes = Map.get(assigns, :new_stories_attributes, %{})
+  defp assign_new_variations_attributes(socket, assigns) do
+    new_attributes = Map.get(assigns, :new_variations_attributes, %{})
 
-    stories =
-      for story <- socket.assigns.stories do
-        case Map.get(new_attributes, story.id) do
-          nil -> story
-          new_attrs -> update_story_attributes(story, new_attrs)
+    variations =
+      for variation <- socket.assigns.variations do
+        case Map.get(new_attributes, variation.id) do
+          nil -> variation
+          new_attrs -> update_variation_attributes(variation, new_attrs)
         end
       end
 
-    assign(socket, stories: stories)
+    assign(socket, variations: variations)
   end
 
   defp assign_new_template_attributes(socket, assigns) do
@@ -77,21 +82,21 @@ defmodule PhxLiveStorybook.Entry.Playground do
     new_attributes = Map.get(assigns, :new_template_attributes, %{})
 
     template_attributes =
-      for {story_id, new_story_attrs} <- new_attributes, reduce: current_attributes do
+      for {variation_id, new_variation_attrs} <- new_attributes, reduce: current_attributes do
         acc ->
-          current_attrs = Map.get(acc, story_id, %{})
-          new_story_attrs = Map.merge(current_attrs, new_story_attrs)
-          Map.put(acc, story_id, new_story_attrs)
+          current_attrs = Map.get(acc, variation_id, %{})
+          new_variation_attrs = Map.merge(current_attrs, new_variation_attrs)
+          Map.put(acc, variation_id, new_variation_attrs)
       end
 
     assign(socket, template_attributes: template_attributes)
   end
 
-  defp assign_playground_fields(socket = %{assigns: %{entry: entry, stories: stories}}) do
+  defp assign_playground_fields(socket = %{assigns: %{entry: entry, variations: variations}}) do
     fields =
       for attr = %Attr{type: t} <- entry.attributes, t not in ~w(block slot)a, reduce: %{} do
         acc ->
-          attr_examples = for %{attributes: attrs} <- stories, do: Map.get(attrs, attr.id)
+          attr_examples = for %{attributes: attrs} <- variations, do: Map.get(attrs, attr.id)
 
           field =
             case Enum.uniq(attr_examples) do
@@ -106,8 +111,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     assign(socket, :fields, fields)
   end
 
-  defp assign_playground_block(socket = %{assigns: %{stories: stories}}) do
-    blocks = for story <- stories, do: story.block
+  defp assign_playground_block(socket = %{assigns: %{variations: variations}}) do
+    blocks = for variation <- variations, do: variation.block
 
     block =
       if blocks |> Enum.uniq() |> length() == 1 do
@@ -119,13 +124,13 @@ defmodule PhxLiveStorybook.Entry.Playground do
     assign(socket, :block, block)
   end
 
-  defp assign_playground_slots(socket = %{assigns: %{entry: entry, stories: stories}}) do
+  defp assign_playground_slots(socket = %{assigns: %{entry: entry, variations: variations}}) do
     slots =
       for %Attr{type: :slot, id: attr_id} <- entry.attributes, reduce: %{} do
         acc ->
           slots =
-            for story <- stories do
-              for(slot <- story.slots, String.match?(slot, ~r/^<:#{attr_id}[>\s]/), do: slot)
+            for variation <- variations do
+              for(slot <- variation.slots, String.match?(slot, ~r/^<:#{attr_id}[>\s]/), do: slot)
               |> Enum.map_join("\n", &String.trim/1)
               |> String.trim()
             end
@@ -205,7 +210,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           <iframe
             id={playground_preview_id(@entry)}
             src={live_storybook_path(@socket, :entry_iframe, @entry_path,
-                story_id: inspect(@story_id), theme: @theme, playground: true,
+                variation_id: inspect(@variation_id), theme: @theme, playground: true,
                 topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
@@ -216,7 +221,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                 id: playground_preview_id(@entry),
                 session: %{
                   "entry_path" => @entry_path,
-                  "story_id" => @story_id,
+                  "variation_id" => @variation_id,
                   "theme" => @theme,
                   "backend_module" => to_string(@backend_module),
                   "topic" => "playground-#{inspect(self())}",
@@ -230,7 +235,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
             <i class="lsb fa fa-copy lsb-text-inherit"></i>
           </div>
-          <.playground_code entry={@entry} story={@story} stories={@stories}/>
+          <.playground_code entry={@entry} variation={@variation} variations={@variations}/>
         </div>
       <% end %>
       <%= if @playground_error do %>
@@ -250,7 +255,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
   defp playground_code(assigns) do
     ~H"""
     <pre class={CodeRenderer.pre_class()}>
-    <%= CodeRenderer.render_multiple_stories_code(fun_or_component(@entry), @stories, TemplateHelpers.get_template(@entry.template, @story)) %>
+    <%= CodeRenderer.render_multiple_variations_code(fun_or_component(@entry), @variations, TemplateHelpers.get_template(@entry.template, @variation)) %>
     </pre>
     """
   end
@@ -316,7 +321,7 @@ defmodule PhxLiveStorybook.Entry.Playground do
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                           <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
                             fields={@fields} examples={attr.examples} values={attr.values} myself={@myself}
-                            template_attributes={Map.get(@template_attributes, @story.id, %{})}
+                            template_attributes={Map.get(@template_attributes, @variation.id, %{})}
                           />
                         </td>
                       </tr>
@@ -354,11 +359,11 @@ defmodule PhxLiveStorybook.Entry.Playground do
       </div>
     </.form>
     <%= unless Enum.empty?(@entry.attributes) do %>
-      <.form let={f} for={:story} id="story-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
-        <%= label f, :story_id, "Open a story", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
-        <%= select f, :story_id, story_options(@entry), "phx-change": "set-story", "phx-target": @myself,
+      <.form let={f} for={:variation} id="variation-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
+        <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
+        <%= select f, :variation_id, variation_options(@entry), "phx-change": "set-variation", "phx-target": @myself,
             class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
-            value: @story_id %>
+            value: @variation_id %>
       </.form>
     <% end %>
     """
@@ -472,14 +477,14 @@ defmodule PhxLiveStorybook.Entry.Playground do
     "#{module}-playground-event-log-#{index}"
   end
 
-  defp story_options(entry) do
-    for story <- entry.stories do
+  defp variation_options(entry) do
+    for variation <- entry.variations do
       label =
-        if story.description,
-          do: story.description,
-          else: story.id |> to_string() |> String.capitalize() |> String.replace("_", " ")
+        if variation.description,
+          do: variation.description,
+          else: variation.id |> to_string() |> String.capitalize() |> String.replace("_", " ")
 
-      {label, story.id}
+      {label, variation.id}
     end
   end
 
@@ -663,10 +668,10 @@ defmodule PhxLiveStorybook.Entry.Playground do
           end
       end
 
-    stories = update_stories_attributes(assigns.stories, fields)
+    variations = update_variations_attributes(assigns.variations, fields)
     send_attributes(assigns.topic, fields)
 
-    {:noreply, assign(socket, stories: stories, fields: fields)}
+    {:noreply, assign(socket, variations: variations, fields: fields)}
   end
 
   def handle_event(
@@ -676,28 +681,32 @@ defmodule PhxLiveStorybook.Entry.Playground do
       ) do
     fields = Map.put(assigns.fields, String.to_atom(key), value)
 
-    stories = update_stories_attributes(assigns.stories, fields)
+    variations = update_variations_attributes(assigns.variations, fields)
     send_attributes(assigns.topic, fields)
-    {:noreply, assign(socket, stories: stories, fields: fields)}
+    {:noreply, assign(socket, variations: variations, fields: fields)}
   end
 
-  def handle_event("set-story", %{"story" => %{"story_id" => story_id}}, s = %{assigns: assigns}) do
-    case Enum.find(assigns.entry.stories, &(to_string(&1.id) == story_id)) do
+  def handle_event(
+        "set-variation",
+        %{"variation" => %{"variation_id" => variation_id}},
+        s = %{assigns: assigns}
+      ) do
+    case Enum.find(assigns.entry.variations, &(to_string(&1.id) == variation_id)) do
       nil -> nil
-      story -> send_new_story(assigns.topic, story)
+      variation -> send_new_variation(assigns.topic, variation)
     end
 
-    {:noreply, patch_to(s, assigns.entry, %{tab: :playground, story_id: story_id})}
+    {:noreply, patch_to(s, assigns.entry, %{tab: :playground, variation_id: variation_id})}
   end
 
-  defp update_stories_attributes(stories, new_attrs) do
-    Enum.map(stories, &update_story_attributes(&1, new_attrs))
+  defp update_variations_attributes(variations, new_attrs) do
+    Enum.map(variations, &update_variation_attributes(&1, new_attrs))
   end
 
-  defp update_story_attributes(story, new_attrs) do
+  defp update_variation_attributes(variation, new_attrs) do
     new_attrs = Enum.reject(new_attrs, fn {_attr_id, value} -> value == :locked end) |> Map.new()
-    attrs = story.attributes |> Map.merge(new_attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
-    %{story | attributes: attrs}
+    attrs = variation.attributes |> Map.merge(new_attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)
+    %{variation | attributes: attrs}
   end
 
   defp send_attributes(topic, attributes) do
@@ -711,8 +720,8 @@ defmodule PhxLiveStorybook.Entry.Playground do
     )
   end
 
-  defp send_new_story(topic, story) do
-    PubSub.broadcast!(PhxLiveStorybook.PubSub, topic, {:set_story, story})
+  defp send_new_variation(topic, variation) do
+    PubSub.broadcast!(PhxLiveStorybook.PubSub, topic, {:set_variation, variation})
   end
 
   defp cast_value(%ComponentEntry{attributes: attributes}, attr_id, value) do

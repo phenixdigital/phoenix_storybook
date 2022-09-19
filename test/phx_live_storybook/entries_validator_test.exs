@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.EntriesValidatorTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.{Attr, ComponentEntry, Story, StoryGroup}
+  alias PhxLiveStorybook.{Attr, ComponentEntry, Variation, VariationGroup}
   alias PhxLiveStorybook.EntriesValidator
 
   defmodule MyModuleStruct, do: defstruct([])
@@ -114,7 +114,7 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       entry = %ComponentEntry{template: nil}
       assert validate(entry)
 
-      entry = %ComponentEntry{template: "<div><.lsb-story/></div>"}
+      entry = %ComponentEntry{template: "<div><.lsb-variation/></div>"}
       assert validate(entry)
     end
 
@@ -125,38 +125,43 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
-  describe "story template" do
+  describe "variation template" do
     test "with proper type it wont raise" do
-      entry = %ComponentEntry{stories: [%Story{id: :foo, template: nil}]}
+      entry = %ComponentEntry{variations: [%Variation{id: :foo, template: nil}]}
       assert validate(entry)
 
-      entry = %ComponentEntry{stories: [%Story{id: :foo, template: false}]}
+      entry = %ComponentEntry{variations: [%Variation{id: :foo, template: false}]}
       assert validate(entry)
 
-      entry = %ComponentEntry{stories: [%Story{id: :foo, template: "<div><.lsb-story/></div>"}]}
+      entry = %ComponentEntry{
+        variations: [%Variation{id: :foo, template: "<div><.lsb-variation/></div>"}]
+      }
+
       assert validate(entry)
     end
 
     test "with invalid value it will raise" do
       entry = %ComponentEntry{
-        stories: [%Story{id: :foo, template: :invalid}]
+        variations: [%Variation{id: :foo, template: :invalid}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "template in story :foo must be a binary"
+      assert e.description =~ "template in variation :foo must be a binary"
     end
   end
 
-  describe "story_group template is a string" do
+  describe "variation_group template is a string" do
     test "with proper type it wont raise" do
       entry = %ComponentEntry{
-        stories: [%StoryGroup{id: :foo, stories: [], template: nil}]
+        variations: [%VariationGroup{id: :foo, variations: [], template: nil}]
       }
 
       assert validate(entry)
 
       entry = %ComponentEntry{
-        stories: [%StoryGroup{id: :foo, stories: [], template: "<div><.lsb-story/></div>"}]
+        variations: [
+          %VariationGroup{id: :foo, variations: [], template: "<div><.lsb-variation/></div>"}
+        ]
       }
 
       assert validate(entry)
@@ -164,25 +169,27 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
     test "with invalid value it will raise" do
       entry = %ComponentEntry{
-        stories: [%StoryGroup{id: :foo, stories: [], template: :invalid}]
+        variations: [%VariationGroup{id: :foo, variations: [], template: :invalid}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "template in story_group :foo must be a binary"
+      assert e.description =~ "template in variation_group :foo must be a binary"
     end
 
-    test "cannot set template on a story in a group" do
+    test "cannot set template on a variation in a group" do
       entry = %ComponentEntry{
-        stories: [
-          %StoryGroup{
+        variations: [
+          %VariationGroup{
             id: :group,
-            stories: [%Story{id: :foo, template: "<div><.lsb-story/></div>"}]
+            variations: [%Variation{id: :foo, template: "<div><.lsb-variation/></div>"}]
           }
         ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "template in a group story cannot be set (story :foo, group :group)"
+
+      assert e.description =~
+               "template in a group variation cannot be set (variation :foo, group :group)"
     end
   end
 
@@ -489,122 +496,124 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
   end
 
-  describe "stories id" do
+  describe "variations id" do
     test "atom id wont raise" do
-      entry = entry_with_story(id: :foo)
+      entry = entry_with_variation(id: :foo)
       assert validate(entry)
     end
 
     test "invalid id will raise" do
-      entry = entry_with_story(id: "foo")
+      entry = entry_with_variation(id: "foo")
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "id for story \"foo\" must be an atom"
+      assert e.description =~ "id for variation \"foo\" must be an atom"
     end
 
-    test "unique story ids wont raise" do
+    test "unique variation ids wont raise" do
       entry = %ComponentEntry{
-        stories: [
-          %Story{id: :foo},
-          %Story{id: :bar},
-          %Story{id: :qix}
+        variations: [
+          %Variation{id: :foo},
+          %Variation{id: :bar},
+          %Variation{id: :qix}
         ]
       }
 
       assert validate(entry)
     end
 
-    test "duplicate story ids will raise" do
+    test "duplicate variation ids will raise" do
       entry = %ComponentEntry{
-        stories: [
-          %Story{id: :foo},
-          %Story{id: :bar},
-          %Story{id: :foo}
+        variations: [
+          %Variation{id: :foo},
+          %Variation{id: :bar},
+          %Variation{id: :foo}
         ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "duplicate story id: :foo"
+      assert e.description =~ "duplicate variation id: :foo"
     end
 
-    test "duplicate story ids accross 2 groups wont raise" do
+    test "duplicate variation ids accross 2 groups wont raise" do
       entry = %ComponentEntry{
-        stories: [
-          %StoryGroup{id: :group_1, stories: [%Story{id: :foo}]},
-          %StoryGroup{id: :group_2, stories: [%Story{id: :foo}]}
+        variations: [
+          %VariationGroup{id: :group_1, variations: [%Variation{id: :foo}]},
+          %VariationGroup{id: :group_2, variations: [%Variation{id: :foo}]}
         ]
       }
 
       assert validate(entry)
     end
 
-    test "duplicate story ids in same group will raise" do
+    test "duplicate variation ids in same group will raise" do
       entry = %ComponentEntry{
-        stories: [
-          %StoryGroup{id: :group_1, stories: [%Story{id: :foo}, %Story{id: :foo}]},
-          %StoryGroup{id: :group_2, stories: [%Story{id: :bar}]}
+        variations: [
+          %VariationGroup{id: :group_1, variations: [%Variation{id: :foo}, %Variation{id: :foo}]},
+          %VariationGroup{id: :group_2, variations: [%Variation{id: :bar}]}
         ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "duplicate story id: :foo in group :group_1"
+      assert e.description =~ "duplicate variation id: :foo in group :group_1"
     end
   end
 
-  describe "story description is a binary" do
+  describe "variation description is a binary" do
     test "with a binary description it wont raise" do
-      entry = entry_with_story(id: :story_id, description: "valid")
+      entry = entry_with_variation(id: :variation_id, description: "valid")
       assert validate(entry)
     end
 
-    test "with a binary description in a story group, it wont raise" do
-      entry = entry_with_story_in_group(:group_id, id: :story_id, description: "valid")
+    test "with a binary description in a variation group, it wont raise" do
+      entry = entry_with_variation_in_group(:group_id, id: :variation_id, description: "valid")
       assert validate(entry)
     end
 
     test "with invalid type it will raise" do
-      entry = entry_with_story(id: :story_id, description: :not_valid)
+      entry = entry_with_variation(id: :variation_id, description: :not_valid)
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "description in story :story_id must be a binary"
+      assert e.description =~ "description in variation :variation_id must be a binary"
     end
 
-    test "with invalid type in a story group it will raise" do
-      entry = entry_with_story_in_group(:group_id, id: :story_id, description: :not_valid)
+    test "with invalid type in a variation group it will raise" do
+      entry = entry_with_variation_in_group(:group_id, id: :variation_id, description: :not_valid)
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "description in story :story_id, group :group_id must be a binary"
+
+      assert e.description =~
+               "description in variation :variation_id, group :group_id must be a binary"
     end
   end
 
-  describe "story let is an atom" do
+  describe "variation let is an atom" do
     test "with an atom let it wont raise" do
-      entry = entry_with_story(id: :story_id, let: :valid)
+      entry = entry_with_variation(id: :variation_id, let: :valid)
       assert validate(entry)
     end
 
-    test "with an atom let in a story group, it wont raise" do
-      entry = entry_with_story_in_group(:group_id, id: :story_id, let: :valid)
+    test "with an atom let in a variation group, it wont raise" do
+      entry = entry_with_variation_in_group(:group_id, id: :variation_id, let: :valid)
       assert validate(entry)
     end
 
     test "with invalid type it will raise" do
-      entry = entry_with_story(id: :story_id, let: "not_valid")
+      entry = entry_with_variation(id: :variation_id, let: "not_valid")
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "let in story :story_id must be an atom"
+      assert e.description =~ "let in variation :variation_id must be an atom"
     end
 
-    test "with invalid type in a story group it will raise" do
-      entry = entry_with_story_in_group(:group_id, id: :story_id, let: "not_valid")
+    test "with invalid type in a variation group it will raise" do
+      entry = entry_with_variation_in_group(:group_id, id: :variation_id, let: "not_valid")
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "let in story :story_id, group :group_id must be an atom"
+      assert e.description =~ "let in variation :variation_id, group :group_id must be an atom"
     end
   end
 
-  describe "story list is a list of %Story{} or %StoryGroup{}" do
-    test "with a mix of story and story_group it won't raise" do
+  describe "variation list is a list of %Variation{} or %VariationGroup{}" do
+    test "with a mix of variation and variation_group it won't raise" do
       entry = %ComponentEntry{
-        stories: [
-          %Story{id: :foo},
-          %StoryGroup{id: :group_1, stories: []}
+        variations: [
+          %Variation{id: :foo},
+          %VariationGroup{id: :group_1, variations: []}
         ]
       }
 
@@ -612,22 +621,25 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     end
 
     test "with an empty list it won't raise" do
-      entry = %ComponentEntry{stories: []}
+      entry = %ComponentEntry{variations: []}
       assert validate(entry)
     end
 
     test "with an invalid type it will raise" do
-      entry = %ComponentEntry{stories: %Story{id: :foo}}
+      entry = %ComponentEntry{variations: %Variation{id: :foo}}
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "stories must be a list of %Story{} or %StoryGroup{}"
+      assert e.description =~ "variations must be a list of %Variation{} or %VariationGroup{}"
     end
   end
 
-  describe "story list in a group is a list of %Story{}" do
-    test "with a list of stories it won't raise" do
+  describe "variation list in a group is a list of %Variation{}" do
+    test "with a list of variations it won't raise" do
       entry = %ComponentEntry{
-        stories: [
-          %StoryGroup{id: :group_1, stories: [%Story{id: :story_1}, %Story{id: :story_2}]}
+        variations: [
+          %VariationGroup{
+            id: :group_1,
+            variations: [%Variation{id: :variation_1}, %Variation{id: :variation_2}]
+          }
         ]
       }
 
@@ -636,171 +648,192 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
 
     test "with an empty list it won't raise" do
       entry = %ComponentEntry{
-        stories: [
-          %StoryGroup{id: :group_1, stories: []}
+        variations: [
+          %VariationGroup{id: :group_1, variations: []}
         ]
       }
 
       assert validate(entry)
     end
 
-    test "with a nested %StoryGroup{} it will raise" do
+    test "with a nested %VariationGroup{} it will raise" do
       entry = %ComponentEntry{
-        stories: [
-          %StoryGroup{id: :group_1, stories: [%StoryGroup{id: :nested_group, stories: []}]}
+        variations: [
+          %VariationGroup{
+            id: :group_1,
+            variations: [%VariationGroup{id: :nested_group, variations: []}]
+          }
         ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "stories in group :group_1 must be a list of %Story{}"
+      assert e.description =~ "variations in group :group_1 must be a list of %Variation{}"
     end
   end
 
-  describe "story attributes is a map" do
+  describe "variation attributes is a map" do
     test "with a map it won't raise" do
-      entry = entry_with_story(attributes: %{})
+      entry = entry_with_variation(attributes: %{})
       assert validate(entry)
     end
 
     test "with a list it will raise" do
-      entry = entry_with_story(id: :story_id, attributes: [])
+      entry = entry_with_variation(id: :variation_id, attributes: [])
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "attributes in story :story_id must be a map"
+      assert e.description =~ "attributes in variation :variation_id must be a map"
     end
   end
 
-  describe "nested story attributes is a map" do
+  describe "nested variation attributes is a map" do
     test "with a map it won't raise" do
-      entry = entry_with_story_in_group(:group_id, attributes: %{})
+      entry = entry_with_variation_in_group(:group_id, attributes: %{})
       assert validate(entry)
     end
 
     test "with a list it will raise" do
-      entry = entry_with_story_in_group(:group_id, id: :story_id, attributes: [])
+      entry = entry_with_variation_in_group(:group_id, id: :variation_id, attributes: [])
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "attributes in story :story_id, group :group_id must be a map"
+
+      assert e.description =~
+               "attributes in variation :variation_id, group :group_id must be a map"
     end
   end
 
-  describe "story attributes match with their definition" do
-    test "story attribute without definition wont raise" do
+  describe "variation attributes match with their definition" do
+    test "variation attribute without definition wont raise" do
       entry = %ComponentEntry{
-        stories: [
-          %Story{id: :foo, attributes: %{foo: "bar"}},
-          %StoryGroup{id: :group_1, stories: [%Story{id: :foo, attributes: %{foo: "bar"}}]}
+        variations: [
+          %Variation{id: :foo, attributes: %{foo: "bar"}},
+          %VariationGroup{
+            id: :group_1,
+            variations: [%Variation{id: :foo, attributes: %{foo: "bar"}}]
+          }
         ]
       }
 
       assert validate(entry)
     end
 
-    test "story attribute with correct definition wont raise" do
+    test "variation attribute with correct definition wont raise" do
       entry = %ComponentEntry{
         attributes: [
           %Attr{id: :foo, type: :atom},
           %Attr{id: :bar, type: :integer}
         ],
-        stories: [
-          %Story{id: :foo, attributes: %{foo: :bar}},
-          %StoryGroup{id: :group_1, stories: [%Story{id: :foo, attributes: %{bar: 12}}]}
+        variations: [
+          %Variation{id: :foo, attributes: %{foo: :bar}},
+          %VariationGroup{
+            id: :group_1,
+            variations: [%Variation{id: :foo, attributes: %{bar: 12}}]
+          }
         ]
       }
 
       assert validate(entry)
     end
 
-    test "story attribute with invalid definition will raise" do
+    test "variation attribute with invalid definition will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :bar, type: :atom}],
-        stories: [%Story{id: :foo, attributes: %{bar: "bar"}}]
+        variations: [%Variation{id: :foo, attributes: %{bar: "bar"}}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "attribute :bar in story :foo must be of type: :atom"
+      assert e.description =~ "attribute :bar in variation :foo must be of type: :atom"
 
       entry = %ComponentEntry{
         attributes: [%Attr{id: :bar, type: :atom}],
-        stories: [%StoryGroup{id: :group, stories: [%Story{id: :foo, attributes: %{bar: "bar"}}]}]
-      }
-
-      e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "attribute :bar in story :foo, group :group must be of type: :atom"
-    end
-
-    test "story attribute value matching attribute values wont raise" do
-      entry = %ComponentEntry{
-        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
-        stories: [%Story{id: :foo, attributes: %{attr: :bar}}]
-      }
-
-      assert validate(entry)
-    end
-
-    test "story attribute value don't matching attribute values will raise" do
-      entry = %ComponentEntry{
-        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
-        stories: [%Story{id: :foo, attributes: %{attr: :not_matching}}]
-      }
-
-      e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "attribute :attr in story :foo must be one of [:foo, :bar]"
-    end
-
-    test "story group attribute value don't matching attribute values will raise" do
-      entry = %ComponentEntry{
-        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
-        stories: [
-          %StoryGroup{id: :group, stories: [%Story{id: :foo, attributes: %{attr: :not_matching}}]}
+        variations: [
+          %VariationGroup{
+            id: :group,
+            variations: [%Variation{id: :foo, attributes: %{bar: "bar"}}]
+          }
         ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
 
       assert e.description =~
-               "attribute :attr in story :foo, group :group must be one of [:foo, :bar]"
+               "attribute :bar in variation :foo, group :group must be of type: :atom"
     end
 
-    test "story attribute value don't matching attribute examples won't raise" do
+    test "variation attribute value matching attribute values wont raise" do
       entry = %ComponentEntry{
-        attributes: [%Attr{id: :attr, type: :atom, examples: [:foo, :bar]}],
-        stories: [%Story{id: :foo, attributes: %{attr: :not_matching}}]
+        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
+        variations: [%Variation{id: :foo, attributes: %{attr: :bar}}]
       }
 
       assert validate(entry)
     end
 
-    test "story with invalid block type will raise" do
+    test "variation attribute value don't matching attribute values will raise" do
       entry = %ComponentEntry{
-        attributes: [%Attr{id: :block, type: :block}],
-        stories: [%Story{id: :story, block: :not_a_block}]
+        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
+        variations: [%Variation{id: :foo, attributes: %{attr: :not_matching}}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "block in story :story must be a binary"
+      assert e.description =~ "attribute :attr in variation :foo must be one of [:foo, :bar]"
     end
 
-    test "story with invalid slot type will raise" do
+    test "variation group attribute value don't matching attribute values will raise" do
       entry = %ComponentEntry{
-        stories: [%Story{id: :story, slots: [:not_a_slot]}]
+        attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
+        variations: [
+          %VariationGroup{
+            id: :group,
+            variations: [%Variation{id: :foo, attributes: %{attr: :not_matching}}]
+          }
+        ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "slots in story :story must be a list of binary"
+
+      assert e.description =~
+               "attribute :attr in variation :foo, group :group must be one of [:foo, :bar]"
+    end
+
+    test "variation attribute value don't matching attribute examples won't raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :attr, type: :atom, examples: [:foo, :bar]}],
+        variations: [%Variation{id: :foo, attributes: %{attr: :not_matching}}]
+      }
+
+      assert validate(entry)
+    end
+
+    test "variation with invalid block type will raise" do
+      entry = %ComponentEntry{
+        attributes: [%Attr{id: :block, type: :block}],
+        variations: [%Variation{id: :variation, block: :not_a_block}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "block in variation :variation must be a binary"
+    end
+
+    test "variation with invalid slot type will raise" do
+      entry = %ComponentEntry{
+        variations: [%Variation{id: :variation, slots: [:not_a_slot]}]
+      }
+
+      e = assert_raise CompileError, fn -> validate(entry) end
+      assert e.description =~ "slots in variation :variation must be a list of binary"
     end
   end
 
-  describe "required story attributes" do
-    test "story with all required attributes wont raise" do
+  describe "required variation attributes" do
+    test "variation with all required attributes wont raise" do
       entry = %ComponentEntry{
         attributes: [
           %Attr{id: :foo, type: :atom, required: true},
           %Attr{id: :bar, type: :integer, required: true}
         ],
-        stories: [
-          %Story{id: :foo, attributes: %{foo: :bar, bar: 12}},
-          %StoryGroup{
+        variations: [
+          %Variation{id: :foo, attributes: %{foo: :bar, bar: 12}},
+          %VariationGroup{
             id: :group_1,
-            stories: [%Story{id: :foo, attributes: %{foo: :bar, bar: 12}}]
+            variations: [%Variation{id: :foo, attributes: %{foo: :bar, bar: 12}}]
           }
         ]
       }
@@ -808,101 +841,103 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
       assert validate(entry)
     end
 
-    test "story with missing required attributes will raise" do
+    test "variation with missing required attributes will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :bar, type: :atom, required: true}],
-        stories: [%Story{id: :foo, attributes: %{}}]
+        variations: [%Variation{id: :foo, attributes: %{}}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required attribute :bar missing from story :foo"
+      assert e.description =~ "required attribute :bar missing from variation :foo"
 
       entry = %ComponentEntry{
         attributes: [%Attr{id: :bar, type: :atom, required: true}],
-        stories: [%StoryGroup{id: :group, stories: [%Story{id: :foo, attributes: %{}}]}]
+        variations: [
+          %VariationGroup{id: :group, variations: [%Variation{id: :foo, attributes: %{}}]}
+        ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required attribute :bar missing from story :foo, group :group"
+      assert e.description =~ "required attribute :bar missing from variation :foo, group :group"
     end
 
-    test "story with required block wont raise" do
+    test "variation with required block wont raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :block, type: :block, required: true}],
-        stories: [%Story{id: :foo, block: "provided"}]
+        variations: [%Variation{id: :foo, block: "provided"}]
       }
 
       assert validate(entry)
     end
 
-    test "story without required block will raise" do
+    test "variation without required block will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :block, type: :block, required: true}],
-        stories: [%Story{id: :foo}]
+        variations: [%Variation{id: :foo}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required block missing from story :foo"
+      assert e.description =~ "required block missing from variation :foo"
     end
 
-    test "nested story without required block will raise" do
+    test "nested variation without required block will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :block, type: :block, required: true}],
-        stories: [%StoryGroup{id: :group, stories: [%Story{id: :foo}]}]
+        variations: [%VariationGroup{id: :group, variations: [%Variation{id: :foo}]}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required block missing from story :foo, group :group"
+      assert e.description =~ "required block missing from variation :foo, group :group"
     end
 
-    test "story with required slot wont raise" do
+    test "variation with required slot wont raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :slot, type: :slot, required: true}],
-        stories: [%Story{id: :foo, slots: ["<:slot>provided</:slot>"]}]
+        variations: [%Variation{id: :foo, slots: ["<:slot>provided</:slot>"]}]
       }
 
       assert validate(entry)
     end
 
-    test "story without required slot will raise" do
+    test "variation without required slot will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :slot, type: :slot, required: true}],
-        stories: [%Story{id: :foo}]
+        variations: [%Variation{id: :foo}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required slot :slot missing from story :foo"
+      assert e.description =~ "required slot :slot missing from variation :foo"
 
       entry = %ComponentEntry{
         attributes: [%Attr{id: :slot, type: :slot, required: true}],
-        stories: [%Story{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
+        variations: [%Variation{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required slot :slot missing from story :foo"
+      assert e.description =~ "required slot :slot missing from variation :foo"
     end
 
-    test "nested story without required slot will raise" do
+    test "nested variation without required slot will raise" do
       entry = %ComponentEntry{
         attributes: [%Attr{id: :slot, type: :slot, required: true}],
-        stories: [%StoryGroup{id: :group, stories: [%Story{id: :foo}]}]
+        variations: [%VariationGroup{id: :group, variations: [%Variation{id: :foo}]}]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required slot :slot missing from story :foo, group :group"
+      assert e.description =~ "required slot :slot missing from variation :foo, group :group"
 
       entry = %ComponentEntry{
         attributes: [%Attr{id: :slot, type: :slot, required: true}],
-        stories: [
-          %StoryGroup{
+        variations: [
+          %VariationGroup{
             id: :group,
-            stories: [%Story{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
+            variations: [%Variation{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
           }
         ]
       }
 
       e = assert_raise CompileError, fn -> validate(entry) end
-      assert e.description =~ "required slot :slot missing from story :foo, group :group"
+      assert e.description =~ "required slot :slot missing from variation :foo, group :group"
     end
   end
 
@@ -922,10 +957,10 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     }
   end
 
-  defp entry_with_story(opts) do
+  defp entry_with_variation(opts) do
     %ComponentEntry{
-      stories: [
-        %Story{
+      variations: [
+        %Variation{
           id: opts[:id],
           let: opts[:let],
           description: opts[:description],
@@ -935,13 +970,13 @@ defmodule PhxLiveStorybook.EntriesValidatorTest do
     }
   end
 
-  defp entry_with_story_in_group(group_id, opts) do
+  defp entry_with_variation_in_group(group_id, opts) do
     %ComponentEntry{
-      stories: [
-        %StoryGroup{
+      variations: [
+        %VariationGroup{
           id: group_id,
-          stories: [
-            %Story{
+          variations: [
+            %Variation{
               id: opts[:id],
               let: opts[:let],
               description: opts[:description],

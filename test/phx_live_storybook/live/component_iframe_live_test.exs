@@ -11,34 +11,34 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
     {:ok, conn: build_conn()}
   end
 
-  describe "story rendering" do
-    test "it renders an entry with a story", %{conn: conn} do
+  describe "variation rendering" do
+    test "it renders an entry with a variation", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
           "/storybook/iframe/component",
-          %{"story_id" => "hello", "theme" => "default"}
+          %{"variation_id" => "hello", "theme" => "default"}
         )
 
       assert html =~ "component: hello"
     end
 
-    test "it renders an entry with a story group", %{conn: conn} do
+    test "it renders an entry with a variation group", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
           "/storybook/iframe/a_folder/component",
-          %{"story_id" => "group", "theme" => "colorful"}
+          %{"variation_id" => "group", "theme" => "colorful"}
         )
 
       assert html =~ "component: hello"
       assert html =~ "component: world"
     end
 
-    test "story with a template", %{conn: conn} do
+    test "variation with a template", %{conn: conn} do
       {:ok, view, html} =
         live_with_params(conn, "/storybook/iframe/templates/template_iframe_component", %{
-          "story_id" => "hello",
+          "variation_id" => "hello",
           "theme" => "default"
         })
 
@@ -65,23 +65,23 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
   end
 
   describe "playground" do
-    test "it renders a playground with a story", %{conn: conn} do
+    test "it renders a playground with a variation", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
           "/storybook/iframe/component",
-          %{"story_id" => "hello", "playground" => true}
+          %{"variation_id" => "hello", "playground" => true}
         )
 
       assert html =~ "component: hello"
     end
 
-    test "it renders a playground with a story group", %{conn: conn} do
+    test "it renders a playground with a variation group", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
           "/storybook/iframe/a_folder/component",
-          %{"story_id" => "group", "playground" => true}
+          %{"variation_id" => "group", "playground" => true}
         )
 
       assert html =~ "component: hello"
@@ -91,7 +91,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
 
   test "it raises with an unknow entry", %{conn: conn} do
     assert_raise PhxLiveStorybook.EntryNotFound, fn ->
-      live_with_params(conn, "/storybook/iframe/unknown", %{"story_id" => "default"})
+      live_with_params(conn, "/storybook/iframe/unknown", %{"variation_id" => "default"})
     end
   end
 

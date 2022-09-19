@@ -1,16 +1,16 @@
-defmodule PhxLiveStorybook.Story do
+defmodule PhxLiveStorybook.Variation do
   @moduledoc """
-  A story captures the rendered state of a UI component. Developers write multiple stories per
-  component that describe all the “interesting” states a component can support.
+  A varaiation captures the rendered state of a UI component. Developers write multiple variations
+  per component that describe all the “interesting” states a component can support.
 
-  Each story will be displayed in the storybook as a code snippet alongside with the
+  Each variation will be displayed in the storybook as a code snippet alongside with the
   component preview.
 
   ## Usage
   ```elixir
-    def stories do
+    def variations do
       [
-        %Story{
+        %Variation{
           id: :default,
           description: "Default dropdown",
           attributes: %{
@@ -31,28 +31,28 @@ defmodule PhxLiveStorybook.Story do
   defstruct [:id, :description, :let, :block, slots: [], attributes: %{}, template: :unset]
 end
 
-defmodule PhxLiveStorybook.StoryGroup do
+defmodule PhxLiveStorybook.VariationGroup do
   @moduledoc """
-  A story group is a set of similar stories that will
-  be rendered together in a single preview <pre> block.
+  A variation group is a set of similar variations that will be rendered together in a single
+  preview <pre> block.
 
   ## Usage
   ```elixir
-    def stories do
+    def variations do
       [
-        %StoryGroup{
+        %VariationGroup{
           id: colors,
           description: "Different color buttons",
-          stories: [
-            %Story{
+          variations: [
+            %Variation{
               id: :blue_button,
               attributes: %{label: "A button", color: :blue }
             },
-            %Story{
+            %Variation{
               id: :red_button,
               attributes: %{label: "A button", color: :red }
             },
-            %Story{
+            %Variation{
               id: :green_button,
               attributes: %{label: "A button", color: :green }
             }
@@ -63,6 +63,6 @@ defmodule PhxLiveStorybook.StoryGroup do
   ```
   """
 
-  @enforce_keys [:id, :stories]
-  defstruct [:id, :description, :stories, template: :unset]
+  @enforce_keys [:id, :variations]
+  defstruct [:id, :description, :variations, template: :unset]
 end
