@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.ComponentEntry do
+defmodule PhxLiveStorybook.ComponentStory do
   @moduledoc false
   defstruct [
     :module,
@@ -20,7 +20,7 @@ defmodule PhxLiveStorybook.ComponentEntry do
   ]
 end
 
-defmodule PhxLiveStorybook.PageEntry do
+defmodule PhxLiveStorybook.PageStory do
   @moduledoc false
   defstruct [
     :name,
@@ -34,20 +34,20 @@ defmodule PhxLiveStorybook.PageEntry do
   ]
 end
 
-defmodule PhxLiveStorybook.FolderEntry do
+defmodule PhxLiveStorybook.Folder do
   @moduledoc false
-  defstruct [:name, :nice_name, :sub_entries, :storybook_path, :icon]
+  defstruct [:name, :nice_name, :items, :storybook_path, :icon]
 end
 
 # This module performs a recursive scan of all files/folders under :content_path
-# and creates an in-memory tree hierarchy of content using above Entry structs.
-defmodule PhxLiveStorybook.Entries do
+# and creates an in-memory tree hierarchy of content using above Story structs.
+defmodule PhxLiveStorybook.Stories do
   @moduledoc false
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
-  alias PhxLiveStorybook.EntriesValidator
+  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
+  alias PhxLiveStorybook.StoryValidator
 
   @doc false
-  def entries(path, folders_config) do
+  def stories(path, folders_config) do
     if path && File.dir?(path) do
       recursive_scan(path, folders_config)
     else
@@ -66,7 +66,7 @@ defmodule PhxLiveStorybook.Entries do
             folder_config = Keyword.get(folders_config, String.to_atom(storybook_path), [])
 
             [
-              folder_entry(
+              folder_story(
                 file_name,
                 folder_config,
                 storybook_path,
@@ -76,47 +76,47 @@ defmodule PhxLiveStorybook.Entries do
             ]
 
           Path.extname(file_path) == ".exs" ->
-            entry_module = entry_module(file_path)
+            story_module = story_module(file_path)
 
-            unless Code.ensure_loaded?(entry_module) do
+            unless Code.ensure_loaded?(story_module) do
               Code.eval_file(file_path)
             end
 
-            case entry_type(entry_module) do
+            case story_type(story_module) do
               nil ->
                 acc
 
               type when type in [:component, :live_component] ->
-                [component_entry(file_path, entry_module, storybook_path) | acc]
+                [component_story(file_path, story_module, storybook_path) | acc]
 
               :page ->
-                [page_entry(file_path, entry_module, storybook_path) | acc]
+                [page_story(file_path, story_module, storybook_path) | acc]
             end
 
           true ->
             acc
         end
     end
-    |> sort_entries()
+    |> sort_stories()
   end
 
-  defp folder_entry(file_name, folder_config, storybook_path, sub_entries) do
-    %FolderEntry{
+  defp folder_story(file_name, folder_config, storybook_path, items) do
+    %Folder{
       name: file_name,
       nice_name:
         Keyword.get_lazy(folder_config, :name, fn ->
           file_name |> String.capitalize() |> String.replace("_", " ")
         end),
       storybook_path: storybook_path,
-      sub_entries: sub_entries,
+      items: items,
       icon: folder_config[:icon]
     }
   end
 
-  defp component_entry(path, module, storybook_path) do
+  defp component_story(path, module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
-    %ComponentEntry{
+    %ComponentStory{
       module: module,
       type: module.storybook_type(),
       path: path,
@@ -134,13 +134,13 @@ defmodule PhxLiveStorybook.Entries do
       variations: module.variations(),
       template: module.template()
     }
-    |> EntriesValidator.validate!()
+    |> StoryValidator.validate!()
   end
 
-  defp page_entry(path, module, storybook_path) do
+  defp page_story(path, module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
-    %PageEntry{
+    %PageStory{
       module: module,
       path: path,
       storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
@@ -156,13 +156,13 @@ defmodule PhxLiveStorybook.Entries do
     if function_exported?(mod, fun, 0), do: apply(mod, fun, []), else: nil
   end
 
-  @entry_priority %{PageEntry => 0, ComponentEntry => 1, FolderEntry => 2}
-  defp sort_entries(entries) do
-    Enum.sort_by(entries, &Map.get(@entry_priority, &1.__struct__))
+  @story_priority %{PageStory => 0, ComponentStory => 1, Folder => 2}
+  defp sort_stories(stories) do
+    Enum.sort_by(stories, &Map.get(@story_priority, &1.__struct__))
   end
 
-  defp entry_module(entry_path) do
-    {:ok, contents} = File.read(entry_path)
+  defp story_module(story_path) do
+    {:ok, contents} = File.read(story_path)
 
     case Regex.run(~r/defmodule\s+([^\s]+)\s+do/, contents, capture: :all_but_first) do
       nil -> nil
@@ -170,32 +170,32 @@ defmodule PhxLiveStorybook.Entries do
     end
   end
 
-  defp entry_type(entry_module) do
+  defp story_type(story_module) do
     fun = :storybook_type
 
-    if Kernel.function_exported?(entry_module, fun, 0) do
-      apply(entry_module, fun, [])
+    if Kernel.function_exported?(story_module, fun, 0) do
+      apply(story_module, fun, [])
     else
       nil
     end
   end
 
-  def all_leaves(entries, acc \\ []) do
-    Enum.flat_map(entries, fn entry ->
-      case entry do
-        %ComponentEntry{} -> [entry | acc]
-        %PageEntry{} -> [entry | acc]
-        %FolderEntry{sub_entries: sub_entries} -> all_leaves(sub_entries, acc)
+  def all_leaves(stories, acc \\ []) do
+    Enum.flat_map(stories, fn story ->
+      case story do
+        %ComponentStory{} -> [story | acc]
+        %PageStory{} -> [story | acc]
+        %Folder{items: items} -> all_leaves(items, acc)
       end
     end)
   end
 
-  def flat_list(entries, acc \\ []) do
-    Enum.flat_map(entries, fn entry ->
-      case entry do
-        %ComponentEntry{} -> [entry | acc]
-        %PageEntry{} -> [entry | acc]
-        %FolderEntry{sub_entries: sub_entries} -> [entry | flat_list(sub_entries, acc)]
+  def flat_list(stories, acc \\ []) do
+    Enum.flat_map(stories, fn story ->
+      case story do
+        %ComponentStory{} -> [story | acc]
+        %PageStory{} -> [story | acc]
+        %Folder{items: items} -> [story | flat_list(items, acc)]
       end
     end)
   end

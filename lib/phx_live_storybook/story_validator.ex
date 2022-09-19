@@ -1,25 +1,25 @@
-defmodule PhxLiveStorybook.EntriesValidator do
+defmodule PhxLiveStorybook.StoryValidator do
   @moduledoc false
 
-  alias PhxLiveStorybook.{Attr, ComponentEntry, Variation, VariationGroup}
+  alias PhxLiveStorybook.{Attr, ComponentStory, Variation, VariationGroup}
 
   @doc """
-  This validator ensures that all entries have their properties filled with proper
+  This validator ensures that all stories have their properties filled with proper
   datatypes and that attribute declarations are consistent accross variations.
   """
   def validate!(
-        entry = %ComponentEntry{path: file_path, attributes: attributes, variations: variations}
+        story = %ComponentStory{path: file_path, attributes: attributes, variations: variations}
       ) do
-    validate_entry_name!(file_path, entry)
-    validate_entry_description!(file_path, entry)
-    validate_entry_icon!(file_path, entry)
-    validate_entry_component!(file_path, entry)
-    validate_entry_function!(file_path, entry)
-    validate_entry_aliases!(file_path, entry)
-    validate_entry_imports!(file_path, entry)
-    validate_entry_container!(file_path, entry)
-    validate_entry_template!(file_path, entry)
-    validate_attribute_list_type!(file_path, entry)
+    validate_story_name!(file_path, story)
+    validate_story_description!(file_path, story)
+    validate_story_icon!(file_path, story)
+    validate_story_component!(file_path, story)
+    validate_story_function!(file_path, story)
+    validate_story_aliases!(file_path, story)
+    validate_story_imports!(file_path, story)
+    validate_story_container!(file_path, story)
+    validate_story_template!(file_path, story)
+    validate_attribute_list_type!(file_path, story)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
     validate_attribute_doc!(file_path, attributes)
@@ -45,47 +45,47 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_variation_required_slots!(file_path, attributes, variations)
     validate_variation_template!(file_path, variations)
     validate_variation_in_group_template!(file_path, variations)
-    entry
+    story
   end
 
-  defp validate_entry_name!(file_path, entry) do
-    validate_type!(file_path, entry.name, :string, "entry name must be a binary")
+  defp validate_story_name!(file_path, story) do
+    validate_type!(file_path, story.name, :string, "story name must be a binary")
   end
 
-  defp validate_entry_description!(file_path, entry) do
+  defp validate_story_description!(file_path, story) do
     validate_type!(
       file_path,
-      entry.description,
+      story.description,
       :string,
-      "entry description must be a binary"
+      "story description must be a binary"
     )
   end
 
-  defp validate_entry_icon!(file_path, entry) do
-    validate_type!(file_path, entry.icon, :string, "entry icon must be a binary")
+  defp validate_story_icon!(file_path, story) do
+    validate_type!(file_path, story.icon, :string, "story icon must be a binary")
   end
 
-  defp validate_entry_component!(file_path, entry) do
-    validate_type!(file_path, entry.component, :atom, "entry component must be a module")
+  defp validate_story_component!(file_path, story) do
+    validate_type!(file_path, story.component, :atom, "story component must be a module")
   end
 
-  defp validate_entry_function!(file_path, entry) do
-    validate_type!(file_path, entry.function, :function, "entry function must be a function")
+  defp validate_story_function!(file_path, story) do
+    validate_type!(file_path, story.function, :function, "story function must be a function")
   end
 
-  defp validate_entry_aliases!(file_path, entry) do
-    msg = "entry aliases must be a list of atoms"
-    validate_type!(file_path, entry.aliases, :list, msg)
+  defp validate_story_aliases!(file_path, story) do
+    msg = "story aliases must be a list of atoms"
+    validate_type!(file_path, story.aliases, :list, msg)
 
-    for alias_item <- entry.aliases || [],
+    for alias_item <- story.aliases || [],
         do: validate_type!(file_path, alias_item, :atom, msg)
   end
 
-  defp validate_entry_imports!(file_path, entry) do
-    msg = "entry imports must be a list of {atom, [{atom, integer}]}"
-    validate_type!(file_path, entry.aliases, :list, msg)
+  defp validate_story_imports!(file_path, story) do
+    msg = "story imports must be a list of {atom, [{atom, integer}]}"
+    validate_type!(file_path, story.aliases, :list, msg)
 
-    for import_item <- entry.imports || [] do
+    for import_item <- story.imports || [] do
       validate_type!(file_path, import_item, {:tuple, 2}, msg)
       {mod, functions} = import_item
       validate_type!(file_path, mod, :atom, msg)
@@ -100,20 +100,20 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_entry_container!(file_path, entry) do
-    unless entry.container in ~w(nil div iframe)a do
-      compile_error!(file_path, "entry container must be either :div or :iframe")
+  defp validate_story_container!(file_path, story) do
+    unless story.container in ~w(nil div iframe)a do
+      compile_error!(file_path, "story container must be either :div or :iframe")
     end
   end
 
-  defp validate_entry_template!(file_path, entry) do
-    validate_type!(file_path, entry.template, :string, "entry template must be a binary")
+  defp validate_story_template!(file_path, story) do
+    validate_type!(file_path, story.template, :string, "story template must be a binary")
   end
 
-  defp validate_attribute_list_type!(file_path, entry) do
-    msg = "entry attributes must be a list of %Attr{}"
-    validate_type!(file_path, entry.attributes, :list, msg)
-    for attr <- entry.attributes, do: validate_type!(file_path, attr, Attr, msg)
+  defp validate_attribute_list_type!(file_path, story) do
+    msg = "story attributes must be a list of %Attr{}"
+    validate_type!(file_path, story.attributes, :list, msg)
+    for attr <- story.attributes, do: validate_type!(file_path, attr, Attr, msg)
   end
 
   defp validate_attribute_ids!(file_path, attributes) do
@@ -239,7 +239,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
   end
 
   defp validate_variation_list_type!(file_path, variations) do
-    msg = "entry variations must be a list of %Variation{} or %VariationGroup{}"
+    msg = "story variations must be a list of %Variation{} or %VariationGroup{}"
     validate_type!(file_path, variations, :list, msg)
 
     for variation <- variations,

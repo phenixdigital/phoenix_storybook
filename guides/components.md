@@ -1,6 +1,6 @@
-# Component entries
+# Component stories
 
-Basic component documentation is in `PhxLiveStorybook.Entry`.
+Basic component documentation is in `PhxLiveStorybook.Story`.
 
 ## Variation groups
 
@@ -15,7 +15,7 @@ If you need further _sandboxing_ you can opt in for `iframe` rendering.
 ```elixir
 # storybook/my_component.exs
 defmodule Storybook.MyComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
 
   def function, do: &MyComponent.my_component/1
   def container, do: :iframe
@@ -34,7 +34,7 @@ Here is an example defining both:
 
 ```elixir
 defmodule NestedComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &NestedComponent.nested_component/1
 
   def aliases, do: [MyStorybook.Helpers.JSHelpers]
@@ -65,7 +65,7 @@ that will for instance render a button next to the component, to toggle its visi
 
 ### Variation templates
 
-You can define a template in your component entry by defining a `template/0` function.
+You can define a template in your component story by defining a `template/0` function.
 Every variation will be rendered within the defined template, the variation itself is injected
 in place of `<.lsb-variation/>`.
 
@@ -129,7 +129,7 @@ classes through [JS commands](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveV
 
 ```elixir
 defmodule Storybook.Components.Modal do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
 
   def function, do: &Components.Modal.modal/1
 
@@ -163,7 +163,7 @@ can leverage on to update some properties that will be passed to your components
 
 ```elixir
 defmodule Storybook.Components.Slideover do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &Components.Slideover.slideover/1
 
   def template do
@@ -239,7 +239,7 @@ your variation.
 ```elixir
 %Variation{
   id: :list,
-  attributes: %{entries: ~w(apple banana cherry)},
+  attributes: %{stories: ~w(apple banana cherry)},
   let: :entry,
   block: "I like <%= entry %>"
 }

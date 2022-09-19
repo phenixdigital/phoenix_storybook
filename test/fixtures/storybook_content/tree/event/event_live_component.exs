@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Event.EventLiveComponent do
-  use PhxLiveStorybook.Entry, :live_component
+  use PhxLiveStorybook.Story, :live_component
   def component, do: EventLiveComponent
 
   def name, do: "Live Event Component (root)"

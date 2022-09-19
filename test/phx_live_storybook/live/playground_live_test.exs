@@ -87,7 +87,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
 
       assert html =~
-               ~r|<p>In order to use playground, you must define attributes in your.*Component.*entry\.</p>|
+               ~r|<p>In order to use playground, you must define attributes in your.*Component.*story\.</p>|
     end
   end
 

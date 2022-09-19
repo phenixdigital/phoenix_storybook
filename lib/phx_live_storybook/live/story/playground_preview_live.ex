@@ -1,9 +1,9 @@
-defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
+defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   @moduledoc false
   use PhxLiveStorybook.Web, :live_view
 
   alias Phoenix.PubSub
-  alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.ComponentStory
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   def mount(_params, session, socket) do
-    entry = load_entry(String.to_atom(session["backend_module"]), session["entry_path"])
+    story = load_story(String.to_atom(session["backend_module"]), session["story_path"])
 
     if connected?(socket) && session["topic"] do
       PubSub.subscribe(PhxLiveStorybook.PubSub, session["topic"])
@@ -23,11 +23,11 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
       )
     end
 
-    variation_or_group = Enum.find(entry.variations, &(&1.id == session["variation_id"]))
+    variation_or_group = Enum.find(story.variations, &(&1.id == session["variation_id"]))
 
     {:ok,
      socket
-     |> assign(entry: entry, topic: session["topic"], theme: session["theme"])
+     |> assign(story: story, topic: session["topic"], theme: session["theme"])
      |> assign_variations(variation_or_group), layout: false}
   end
 
@@ -68,18 +68,18 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
   end
 
   def render(assigns) do
-    template = TemplateHelpers.get_template(assigns.entry.template, assigns.variation)
+    template = TemplateHelpers.get_template(assigns.story.template, assigns.variation)
 
     opts = [
       playground_topic: assigns.topic,
-      imports: [{__MODULE__, lsb_inspect: 4} | assigns.entry.imports],
-      aliases: assigns.entry.aliases
+      imports: [{__MODULE__, lsb_inspect: 4} | assigns.story.imports],
+      aliases: assigns.story.aliases
     ]
 
     ~H"""
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
-        <%= ComponentRenderer.render_multiple_variations(fun_or_component(@entry), @variation, @variations, template, opts) %>
+        <%= ComponentRenderer.render_multiple_variations(fun_or_component(@story), @variation, @variations, template, opts) %>
       </div>
     </div>
     """
@@ -99,15 +99,15 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
     val
   end
 
-  defp load_entry(backend_module, entry_param) do
-    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
-    backend_module.find_entry_by_path(entry_storybook_path)
+  defp load_story(backend_module, story_param) do
+    story_storybook_path = "/#{Enum.join(story_param, "/")}"
+    backend_module.find_story_by_path(story_storybook_path)
   end
 
-  defp fun_or_component(%ComponentEntry{type: :live_component, component: component}),
+  defp fun_or_component(%ComponentStory{type: :live_component, component: component}),
     do: component
 
-  defp fun_or_component(%ComponentEntry{type: :component, function: function}),
+  defp fun_or_component(%ComponentStory{type: :component, function: function}),
     do: function
 
   def handle_info({:new_attributes_input, attrs}, socket) do
@@ -142,7 +142,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
           ExtraAssignsHelpers.handle_set_variation_assign(
             assign_params,
             variation.attributes,
-            assigns.entry,
+            assigns.story,
             :flat
           )
 
@@ -164,7 +164,7 @@ defmodule PhxLiveStorybook.Entry.PlaygroundPreviewLive do
           ExtraAssignsHelpers.handle_toggle_variation_assign(
             assign_params,
             variation.attributes,
-            assigns.entry,
+            assigns.story,
             :flat
           )
 

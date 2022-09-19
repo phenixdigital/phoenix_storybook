@@ -1,9 +1,9 @@
-defmodule PhxLiveStorybook.EntryLiveTest do
+defmodule PhxLiveStorybook.StoryLiveTest do
   use ExUnit.Case, async: false
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
-  @endpoint PhxLiveStorybook.EntryLiveTestEndpoint
+  @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
 
   setup do
@@ -20,8 +20,8 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_page"
     end
 
-    test "404 on unknown entry", %{conn: conn} do
-      assert_raise PhxLiveStorybook.EntryNotFound, fn ->
+    test "404 on unknown story", %{conn: conn} do
+      assert_raise PhxLiveStorybook.StoryNotFound, fn ->
         get(conn, "/storybook/wrong")
       end
     end
@@ -51,14 +51,14 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     end
 
     test "navigate to unknown tab", %{conn: conn} do
-      assert_raise PhxLiveStorybook.EntryTabNotFound, fn ->
+      assert_raise PhxLiveStorybook.StoryTabNotFound, fn ->
         get(conn, "/storybook/component", tab: "unknown")
       end
     end
   end
 
   describe "variation rendering" do
-    test "renders component entry from path", %{conn: conn} do
+    test "renders component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/component")
       assert html =~ "Component"
       assert html =~ "component description"
@@ -66,7 +66,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert html =~ "World variation"
     end
 
-    test "renders live component entry from path", %{conn: conn} do
+    test "renders live component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/live_component")
       assert html =~ "Live Component"
       assert html =~ "live component description"
@@ -74,13 +74,13 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert html =~ "World"
     end
 
-    test "renders nested component entry from path", %{conn: conn} do
+    test "renders nested component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/a_folder/component")
       assert html =~ "Component"
       assert html =~ "component description"
     end
 
-    test "renders component entry and navigate to source tab", %{conn: conn} do
+    test "renders component story and navigate to source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html = view |> element("a", "Source") |> render_click()
@@ -116,12 +116,12 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert render(view) =~ "component: hello default"
     end
 
-    test "renders component entry and navigate to source tab with select", %{conn: conn} do
+    test "renders component story and navigate to source tab with select", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html =
         view
-        |> element(".entry-nav-form select")
+        |> element(".story-nav-form select")
         |> render_change(%{navigation: %{tab: "source"}})
 
       assert_patched(view, "/storybook/component?tab=source&theme=default&variation_id=hello")
@@ -216,16 +216,16 @@ defmodule PhxLiveStorybook.EntryLiveTest do
   end
 
   describe "page rendering" do
-    test "renders a page entry", %{conn: conn} do
+    test "renders a page story", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/a_page")
       assert html =~ "A Page"
-      refute html =~ "entry-tabs"
+      refute html =~ "story-tabs"
     end
 
-    test "renders a page entry with tabs", %{conn: conn} do
+    test "renders a page story with tabs", %{conn: conn} do
       {:ok, view, html} = live(conn, "/storybook/b_page")
       assert html =~ "B Page: tab_1"
-      assert html =~ "entry-tabs"
+      assert html =~ "story-tabs"
 
       html = view |> element("a", "Tab 2") |> render_click()
       assert_patched(view, "/storybook/b_page?tab=tab_2&theme=default")
@@ -266,7 +266,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert has_element?(view, "#search-container a", "Live Component (a_folder)")
     end
 
-    test "navigates to a specified entry", %{conn: conn} do
+    test "navigates to a specified story", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_page")
 
       view

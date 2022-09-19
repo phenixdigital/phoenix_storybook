@@ -1,5 +1,5 @@
 defmodule TreeStorybook.InvalidTemplateComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &TemplateComponent.template_component/1
 
   def template do

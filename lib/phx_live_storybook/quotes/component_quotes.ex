@@ -2,19 +2,19 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   @moduledoc false
 
   alias Phoenix.HTML.Safe
-  alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.ComponentStory
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
   alias PhxLiveStorybook.TemplateHelpers
 
   # Precompiling component preview for every component / variation / theme.
-  def render_component_quotes(leave_entries, themes) do
+  def render_component_quotes(leave_stories, themes) do
     header_quote =
       quote do
         def render_variation(module, variation_id, extra_assigns \\ %{theme: nil})
       end
 
     component_quotes =
-      for %ComponentEntry{
+      for %ComponentStory{
             type: type,
             component: component,
             function: function,
@@ -24,7 +24,7 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             aliases: aliases,
             variations: variations,
             template: template
-          } <- leave_entries,
+          } <- leave_stories,
           variation <- variations,
           {theme, _label} <- themes do
         template = TemplateHelpers.get_template(template, variation)
@@ -89,19 +89,19 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   end
 
   # Precompiling component code snippet for every component / variation.
-  def render_code_quotes(leave_entries) do
+  def render_code_quotes(leave_stories) do
     header_quote =
       quote do
         def render_code(module, variation_id)
       end
 
     component_quotes =
-      for %ComponentEntry{
+      for %ComponentStory{
             type: type,
             module: module,
             variations: variations,
             template: template
-          } <- leave_entries,
+          } <- leave_stories,
           variation <- variations do
         template = TemplateHelpers.get_template(template, variation)
 

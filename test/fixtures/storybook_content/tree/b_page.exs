@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BPage do
-  use PhxLiveStorybook.Entry, :page
+  use PhxLiveStorybook.Story, :page
 
   def description, do: "b page"
 

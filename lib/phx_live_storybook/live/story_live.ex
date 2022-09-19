@@ -1,11 +1,11 @@
-defmodule PhxLiveStorybook.EntryLive do
+defmodule PhxLiveStorybook.StoryLive do
   use PhxLiveStorybook.Web, :live_view
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhxLiveStorybook.{ComponentEntry, PageEntry}
-  alias PhxLiveStorybook.Entry.{Playground, PlaygroundPreviewLive}
+  alias PhxLiveStorybook.{ComponentStory, PageStory}
   alias PhxLiveStorybook.ExtraAssignsHelpers
-  alias PhxLiveStorybook.{EntryNotFound, EntryTabNotFound}
+  alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
+  alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
   alias PhxLiveStorybook.{EventLog, Variation, VariationGroup}
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
@@ -32,30 +32,30 @@ defmodule PhxLiveStorybook.EntryLive do
   end
 
   def handle_params(params, _uri, socket) when params == %{} do
-    case first_component_entry(socket) do
+    case first_component_story(socket) do
       nil -> {:noreply, socket}
-      entry -> {:noreply, patch_to(socket, entry)}
+      story -> {:noreply, patch_to(socket, story)}
     end
   end
 
-  def handle_params(params = %{"entry" => entry_path}, _uri, socket) do
-    case load_entry(socket, entry_path) do
+  def handle_params(params = %{"story" => story_path}, _uri, socket) do
+    case load_story(socket, story_path) do
       nil ->
-        raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
+        raise StoryNotFound, "unknown story #{inspect(story_path)}"
 
-      entry ->
-        variation = current_variation(entry, params)
+      story ->
+        variation = current_variation(story, params)
 
         {:noreply,
          assign(socket,
-           entry: entry,
-           entry_path: entry_path,
+           story: story,
+           story_path: story_path,
            variation: variation,
            variation_id: if(variation, do: variation.id, else: nil),
-           page_title: entry.name,
-           tab: current_tab(params, entry),
+           page_title: story.name,
+           tab: current_tab(params, story),
            theme: current_theme(params, socket),
-           variation_extra_assigns: init_variation_extra_assigns(entry),
+           variation_extra_assigns: init_variation_extra_assigns(story),
            playground_error: nil
          )
          |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
@@ -66,34 +66,34 @@ defmodule PhxLiveStorybook.EntryLive do
     {:noreply, socket}
   end
 
-  defp first_component_entry(socket) do
+  defp first_component_story(socket) do
     socket.assigns.backend_module.all_leaves() |> Enum.at(0)
   end
 
-  defp load_entry(socket, entry_param) do
-    entry_storybook_path = Path.join(["/" | entry_param])
-    socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
+  defp load_story(socket, story_param) do
+    story_storybook_path = Path.join(["/" | story_param])
+    socket.assigns.backend_module.find_story_by_path(story_storybook_path)
   end
 
-  defp current_variation(%ComponentEntry{variations: variations}, %{
+  defp current_variation(%ComponentStory{variations: variations}, %{
          "variation_id" => variation_id
        }) do
     Enum.find(variations, &(to_string(&1.id) == variation_id))
   end
 
-  defp current_variation(%ComponentEntry{variations: [variation | _]}, _), do: variation
+  defp current_variation(%ComponentStory{variations: [variation | _]}, _), do: variation
   defp current_variation(_, _), do: nil
 
-  defp current_tab(params, entry) do
+  defp current_tab(params, story) do
     case Map.get(params, "tab") do
-      nil -> default_tab(entry)
+      nil -> default_tab(story)
       tab -> String.to_atom(tab)
     end
   end
 
-  defp default_tab(%ComponentEntry{}), do: :variations
-  defp default_tab(%PageEntry{navigation: []}), do: nil
-  defp default_tab(%PageEntry{navigation: [{tab, _, _} | _]}), do: tab
+  defp default_tab(%ComponentStory{}), do: :variations
+  defp default_tab(%PageStory{navigation: []}), do: nil
+  defp default_tab(%PageStory{navigation: [{tab, _, _} | _]}), do: tab
 
   defp current_theme(params, socket) do
     case Map.get(params, "theme") do
@@ -109,7 +109,7 @@ defmodule PhxLiveStorybook.EntryLive do
     end
   end
 
-  defp init_variation_extra_assigns(%ComponentEntry{variations: variations}) do
+  defp init_variation_extra_assigns(%ComponentStory{variations: variations}) do
     extra_assigns =
       for %Variation{id: variation_id} <- variations, into: %{}, do: {variation_id, %{}}
 
@@ -121,33 +121,33 @@ defmodule PhxLiveStorybook.EntryLive do
 
   defp init_variation_extra_assigns(_), do: nil
 
-  def render(assigns = %{entry: _entry}) do
+  def render(assigns = %{story: _story}) do
     ~H"""
-    <div class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="entry-live" phx-hook="EntryHook">
+    <div class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="story-live" phx-hook="StoryHook">
       <div class="lsb">
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
-            <%= if icon = @entry.icon do %>
+            <%= if icon = @story.icon do %>
               <i class={"lsb #{icon} lsb-pr-2 lsb-text-indigo-600"}></i>
             <% end %>
-            <%= @entry.name() %>
+            <%= @story.name() %>
           </h2>
 
-          <%=  @entry |> navigation_tabs() |> render_navigation_tabs(assigns) %>
+          <%=  @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
         <div class="lsb lsb-text-base md:lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-          <%= @entry.description() %>
+          <%= @story.description() %>
         </div>
       </div>
 
-      <%= render_content(@entry, assigns) %>
+      <%= render_content(@story, assigns) %>
     </div>
     """
   end
 
   def render(assigns), do: ~H""
 
-  defp navigation_tabs(%ComponentEntry{}) do
+  defp navigation_tabs(%ComponentStory{}) do
     [
       {:variations, "Stories", "far fa-eye"},
       {:playground, "Playground", "far fa-dice"},
@@ -155,7 +155,7 @@ defmodule PhxLiveStorybook.EntryLive do
     ]
   end
 
-  defp navigation_tabs(%PageEntry{navigation: navigation}), do: navigation
+  defp navigation_tabs(%PageStory{navigation: navigation}), do: navigation
 
   defp render_navigation_tabs([], assigns), do: ~H""
 
@@ -163,12 +163,12 @@ defmodule PhxLiveStorybook.EntryLive do
     ~H"""
     <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
-      <.form let={f} for={:navigation} id={"#{Macro.underscore(@entry.module)}-navigation-form"} class="lsb entry-nav-form lg:lsb-hidden">
+      <.form let={f} for={:navigation} id={"#{Macro.underscore(@story.module)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
         <%= select f, :tab, navigation_select_options(tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
       </.form>
 
       <!-- :lg+ version of navigation tabs -->
-      <nav class="lsb entry-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
+      <nav class="lsb story-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
         <%= for {tab, label, icon} <- tabs do %>
           <a href="#" phx-click="set-tab" phx-value-tab={tab} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}"}>
             <span class={active_span(@tab, tab)}>
@@ -204,16 +204,16 @@ defmodule PhxLiveStorybook.EntryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp render_content(entry = %ComponentEntry{}, assigns = %{tab: :variations}) do
+  defp render_content(story = %ComponentStory{}, assigns = %{tab: :variations}) do
     ~H"""
-    <div class="lsb lsb-space-y-12 lsb-pb-12" id={"entry-variations-#{entry_id(entry)}"}>
-      <%= for variation = %{id: variation_id, description: description} <- @entry.variations(),
+    <div class="lsb lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(story)}"}>
+      <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               variation_extra_assigns = variation_extra_assigns(variation, assigns) do %>
         <div id={anchor_id(variation)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
           <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group lsb-flex lsb-justify-between">
-            <%= link to: "##{anchor_id(variation)}", class: "lsb entry-anchor-link" do %>
+            <%= link to: "##{anchor_id(variation)}", class: "lsb variation-anchor-link" do %>
               <i class="lsb fal fa-link lsb-hidden group-hover:lg:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
               <%= if description do %>
                 <%= description  %>
@@ -221,7 +221,7 @@ defmodule PhxLiveStorybook.EntryLive do
                 <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, variation_id: variation.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, story, %{tab: :playground, variation_id: variation.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
@@ -231,18 +231,18 @@ defmodule PhxLiveStorybook.EntryLive do
 
           <!-- Variation component preview -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
-            <%= if @entry.container() == :iframe do %>
+            <%= if @story.container() == :iframe do %>
               <iframe
                 phx-update="ignore"
-                id={iframe_id(@entry, variation)}
-                src={live_storybook_path(@socket, :entry_iframe, @entry_path, variation_id: variation.id, theme: @theme)}
+                id={iframe_id(@story, variation)}
+                src={live_storybook_path(@socket, :story_iframe, @story_path, variation_id: variation.id, theme: @theme)}
                 class="lsb-w-full lsb-border-0"
                 height="0"
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
               <div class={LayoutView.sandbox_class(assigns)} style="width: 100%;">
-                <%= @backend_module.render_variation(@entry.module(), variation_id, variation_extra_assigns) %>
+                <%= @backend_module.render_variation(@story.module(), variation_id, variation_extra_assigns) %>
               </div>
             <% end %>
           </div>
@@ -252,7 +252,7 @@ defmodule PhxLiveStorybook.EntryLive do
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="lsb fa fa-copy lsb-text-inherit"></i>
             </div>
-            <%= @backend_module.render_code(@entry.module(), variation_id) %>
+            <%= @backend_module.render_code(@story.module(), variation_id) %>
           </div>
 
         </div>
@@ -261,18 +261,18 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp render_content(%ComponentEntry{}, assigns = %{tab: :source}) do
+  defp render_content(%ComponentStory{}, assigns = %{tab: :source}) do
     ~H"""
     <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
-      <%= @backend_module.render_source(@entry.module) %>
+      <%= @backend_module.render_source(@story.module) %>
     </div>
     """
   end
 
-  defp render_content(%ComponentEntry{}, assigns = %{tab: :playground}) do
+  defp render_content(%ComponentStory{}, assigns = %{tab: :playground}) do
     ~H"""
     <.live_component module={Playground} id="playground"
-      entry={@entry} entry_path={@entry_path} backend_module={@backend_module}
+      story={@story} story_path={@story_path} backend_module={@backend_module}
       variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
@@ -281,13 +281,13 @@ defmodule PhxLiveStorybook.EntryLive do
     """
   end
 
-  defp render_content(%ComponentEntry{}, _assigns = %{tab: tab}),
-    do: raise(EntryTabNotFound, "unknown entry tab #{inspect(tab)}")
+  defp render_content(%ComponentStory{}, _assigns = %{tab: tab}),
+    do: raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
 
-  defp render_content(%PageEntry{}, assigns) do
+  defp render_content(%PageStory{}, assigns) do
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(assigns)}"}>
-      <%= raw(@backend_module.render_page(@entry.module, %{tab: @tab, theme: @theme})) %>
+      <%= raw(@backend_module.render_page(@story.module, %{tab: @tab, theme: @theme})) %>
     </div>
     """
   end
@@ -307,12 +307,12 @@ defmodule PhxLiveStorybook.EntryLive do
     |> Map.put(:theme, assigns.theme)
   end
 
-  defp iframe_id(entry, variation) do
-    "iframe-#{entry_id(entry)}-variation-#{variation.id}"
+  defp iframe_id(story, variation) do
+    "iframe-#{story_id(story)}-variation-#{variation.id}"
   end
 
-  defp entry_id(entry) do
-    entry.module |> Macro.underscore() |> String.replace("/", "_")
+  defp story_id(story) do
+    story.module |> Macro.underscore() |> String.replace("/", "_")
   end
 
   defp anchor_id(%{id: id}) do
@@ -326,15 +326,15 @@ defmodule PhxLiveStorybook.EntryLive do
       {:set_theme, String.to_atom(theme)}
     )
 
-    {:noreply, socket |> assign(:theme, theme) |> patch_to(socket.assigns.entry, %{theme: theme})}
+    {:noreply, socket |> assign(:theme, theme) |> patch_to(socket.assigns.story, %{theme: theme})}
   end
 
   def handle_event("set-tab", %{"tab" => tab}, socket) do
-    {:noreply, patch_to(socket, socket.assigns.entry, %{tab: tab})}
+    {:noreply, patch_to(socket, socket.assigns.story, %{tab: tab})}
   end
 
   def handle_event("set-tab", %{"navigation" => %{"tab" => tab}}, socket) do
-    {:noreply, patch_to(socket, socket.assigns.entry, %{tab: tab})}
+    {:noreply, patch_to(socket, socket.assigns.story, %{tab: tab})}
   end
 
   def handle_event("clear-playground-error", _, socket) do
@@ -346,7 +346,7 @@ defmodule PhxLiveStorybook.EntryLive do
       ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
         assigns.variation_extra_assigns,
-        assigns.entry
+        assigns.story
       )
 
     variation_extra_assigns = %{
@@ -362,7 +362,7 @@ defmodule PhxLiveStorybook.EntryLive do
       ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
         assigns.variation_extra_assigns,
-        assigns.entry
+        assigns.story
       )
 
     variation_extra_assigns = %{
@@ -405,12 +405,12 @@ defmodule PhxLiveStorybook.EntryLive do
   def handle_info(_, socket), do: {:noreply, socket}
 end
 
-defmodule PhxLiveStorybook.EntryNotFound do
+defmodule PhxLiveStorybook.StoryNotFound do
   @moduledoc false
   defexception [:message, plug_status: 404]
 end
 
-defmodule PhxLiveStorybook.EntryTabNotFound do
+defmodule PhxLiveStorybook.StoryTabNotFound do
   @moduledoc false
   defexception [:message, plug_status: 404]
 end

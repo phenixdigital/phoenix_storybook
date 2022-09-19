@@ -12,15 +12,15 @@ defmodule PhxLiveStorybook.Search do
 
   def update(assigns = %{backend_module: backend_module}, socket) do
     root_path = live_storybook_path(socket, :root)
-    entries = backend_module.all_leaves()
+    stories = backend_module.all_leaves()
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(:show, false)
      |> assign(:root_path, root_path)
-     |> assign(:all_entries, entries)
-     |> assign(:entries, entries)}
+     |> assign(:all_stories, stories)
+     |> assign(:stories, stories)}
   end
 
   def handle_event("navigate", %{"path" => path}, socket) do
@@ -28,12 +28,12 @@ defmodule PhxLiveStorybook.Search do
   end
 
   def handle_event("search", %{"search" => %{"input" => ""}}, socket) do
-    {:noreply, assign(socket, :entries, socket.assigns.all_entries)}
+    {:noreply, assign(socket, :stories, socket.assigns.all_stories)}
   end
 
   def handle_event("search", %{"search" => %{"input" => input}}, socket) do
-    entries = SearchHelpers.search_by(input, socket.assigns.all_entries, [:storybook_path, :name])
-    {:noreply, assign(socket, :entries, entries)}
+    stories = SearchHelpers.search_by(input, socket.assigns.all_stories, [:storybook_path, :name])
+    {:noreply, assign(socket, :stories, stories)}
   end
 
   def render(assigns) do
@@ -60,26 +60,26 @@ defmodule PhxLiveStorybook.Search do
             <%= text_input f, :input, id: "search-input", "phx-change": "search", "phx-target": @myself, placeholder: "Search...", autocomplete: "off",  class: "lsb lsb-h-12 lsb-w-full lsb-border-0 lsb-bg-transparent lsb-pl-11 lsb-pr-4 lsb-text-gray-800 lsb-placeholder-gray-400 lsb-outline-none focus:lsb-ring-0 sm:lsb-text-sm"%>
           </.form>
 
-          <%= if Enum.empty?(@entries) do %>
+          <%= if Enum.empty?(@stories) do %>
             <div class="lsb lsb-text-center lsb-text-gray-600 lsb-py-4">
-              <p>No entries found</p>
+              <p>No stories found</p>
             </div>
           <% end %>
 
           <ul id="search-list" class="lsb lsb-max-h-72 lsb-scroll-py-2 lsb-divide-y lsb-divide-gray-200 lsb-overflow-y-auto lsb-pb-2 lsb-text-sm lsb-text-gray-800">
-            <%= for {entry, i} <- Enum.with_index(@entries) do %>
-              <% entry_path = Path.join(@root_path, entry.storybook_path) %>
+            <%= for {story, i} <- Enum.with_index(@stories) do %>
+              <% story_path = Path.join(@root_path, story.storybook_path) %>
 
               <li
-                id={"entry-#{i}"}
+                id={"story-#{i}"}
                 phx-highlight={JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600")}
                 phx-baseline={JS.remove_class("lsb-bg-slate-50 lsb-text-indigo-600")}
                 class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-space-x-4 lsb-cursor-pointer"
                 tabindex="-1">
 
-                <%= live_patch(entry.name, to: entry_path, class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
+                <%= live_patch(story.name, to: story_path, class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
                 <div class="lsb lsb-truncate">
-                  <%= LayoutView.render_breadcrumb(@socket, entry, span_class: "lsb-text-xs") %>
+                  <%= LayoutView.render_breadcrumb(@socket, story, span_class: "lsb-text-xs") %>
                 </div>
               </li>
             <% end %>

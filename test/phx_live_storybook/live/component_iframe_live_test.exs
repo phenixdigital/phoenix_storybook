@@ -3,16 +3,16 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
-  @endpoint PhxLiveStorybook.EntryLiveTestEndpoint
+  @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
 
   setup do
-    start_supervised!(PhxLiveStorybook.EntryLiveTestEndpoint)
+    start_supervised!(PhxLiveStorybook.StoryLiveTestEndpoint)
     {:ok, conn: build_conn()}
   end
 
   describe "variation rendering" do
-    test "it renders an entry with a variation", %{conn: conn} do
+    test "it renders an story with a variation", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
@@ -23,7 +23,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
       assert html =~ "component: hello"
     end
 
-    test "it renders an entry with a variation group", %{conn: conn} do
+    test "it renders an story with a variation group", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
@@ -89,8 +89,8 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
     end
   end
 
-  test "it raises with an unknow entry", %{conn: conn} do
-    assert_raise PhxLiveStorybook.EntryNotFound, fn ->
+  test "it raises with an unknow story", %{conn: conn} do
+    assert_raise PhxLiveStorybook.StoryNotFound, fn ->
       live_with_params(conn, "/storybook/iframe/unknown", %{"variation_id" => "default"})
     end
   end

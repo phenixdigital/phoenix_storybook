@@ -1,4 +1,4 @@
-export const EntryHook = {
+export const StoryHook = {
   mounted() {
     // scrolling to matching anchor if present in location hash
     if (window.location.hash) {
@@ -19,7 +19,7 @@ export const EntryHook = {
     this.bindAnchorLinks();
   },
   bindAnchorLinks() {
-    document.querySelectorAll(".entry-anchor-link").forEach((link) => {
+    document.querySelectorAll(".variation-anchor-link").forEach((link) => {
       link.addEventListener("click", (event) => {
         event.preventDefault();
         window.history.replaceState({}, "", link.hash);

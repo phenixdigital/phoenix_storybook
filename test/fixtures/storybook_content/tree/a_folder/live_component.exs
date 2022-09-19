@@ -1,5 +1,5 @@
 defmodule TreeStorybook.AFolder.LiveComponent do
-  use PhxLiveStorybook.Entry, :live_component
+  use PhxLiveStorybook.Story, :live_component
   def component, do: LiveComponent
   def name, do: "Live Component (a_folder)"
   def description, do: "Live component description"

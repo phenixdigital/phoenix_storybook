@@ -1,38 +1,38 @@
 defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.{Attr, ComponentEntry}
+  alias PhxLiveStorybook.{Attr, ComponentStory}
 
   import PhxLiveStorybook.ExtraAssignsHelpers
 
   describe "handle_set_variation_assign/3" do
-    setup :entry
+    setup :story
 
-    test "with flat mode", %{entry: entry} do
+    test "with flat mode", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "attribute" => "foo"},
                %{},
-               entry,
+               story,
                :flat
              ) ==
                {:variation_id, %{attribute: "foo"}}
     end
 
-    test "with nested mode", %{entry: entry} do
+    test "with nested mode", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "attribute" => "foo"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{attribute: "foo"}}
     end
 
-    test "with typed attributes", %{entry: entry} do
+    test "with typed attributes", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "boolean" => "true"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{boolean: true}}
@@ -40,7 +40,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "integer" => "42"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{integer: 42}}
@@ -48,7 +48,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "integer" => 42},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{integer: 42}}
@@ -56,7 +56,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "float" => "42.2"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{float: 42.2}}
@@ -64,7 +64,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "float" => 42.2},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{float: 42.2}}
@@ -72,7 +72,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "atom" => "foo"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{atom: :foo}}
@@ -80,18 +80,18 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "list" => ["foo", "bar"]},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{list: ["foo", "bar"]}}
     end
 
-    test "with mismatching typed attributes", %{entry: entry} do
+    test "with mismatching typed attributes", %{story: story} do
       assert_raise RuntimeError, ~r/type mismatch in assign/, fn ->
         handle_set_variation_assign(
           %{"variation_id" => "variation_id", "boolean" => :maybe},
           %{variation_id: %{}},
-          entry,
+          story,
           :nested
         )
       end
@@ -100,7 +100,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
         handle_set_variation_assign(
           %{"variation_id" => "variation_id", "integer" => "forty-two"},
           %{variation_id: %{}},
-          entry,
+          story,
           :nested
         )
       end
@@ -109,17 +109,17 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
         handle_set_variation_assign(
           %{"variation_id" => "variation_id", "float" => :foo},
           %{variation_id: %{}},
-          entry,
+          story,
           :nested
         )
       end
     end
 
-    test "with nil typed attributes", %{entry: entry} do
+    test "with nil typed attributes", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "boolean" => "nil"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{boolean: nil}}
@@ -127,7 +127,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "integer" => nil},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{integer: nil}}
@@ -135,7 +135,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "float" => nil},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{float: nil}}
@@ -143,27 +143,27 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "atom" => nil},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{atom: nil}}
     end
 
-    test "with with invalid param", %{entry: entry} do
+    test "with with invalid param", %{story: story} do
       assert_raise RuntimeError, ~r/missing variation_id in assign/, fn ->
-        handle_set_variation_assign(%{}, %{}, entry, :flat)
+        handle_set_variation_assign(%{}, %{}, story, :flat)
       end
     end
   end
 
   describe "handle_toggle_variation_assign/3" do
-    setup :entry
+    setup :story
 
-    test "with flat mode", %{entry: entry} do
+    test "with flat mode", %{story: story} do
       assert handle_toggle_variation_assign(
                %{"variation_id" => "variation_id", "attr" => "attribute"},
                %{},
-               entry,
+               story,
                :flat
              ) ==
                {:variation_id, %{attribute: true}}
@@ -171,40 +171,40 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_toggle_variation_assign(
                %{"variation_id" => "variation_id", "attr" => "attribute"},
                %{attribute: true},
-               entry,
+               story,
                :flat
              ) ==
                {:variation_id, %{attribute: false}}
     end
 
-    test "type mismatch with existing assign", %{entry: entry} do
+    test "type mismatch with existing assign", %{story: story} do
       assert_raise RuntimeError, ~r/type mismatch in toggle/, fn ->
         assert handle_toggle_variation_assign(
                  %{"variation_id" => "variation_id", "attr" => "attribute"},
                  %{attribute: "false"},
-                 entry,
+                 story,
                  :flat
                ) ==
                  {:variation_id, %{attribute: true}}
       end
     end
 
-    test "type mismatch with declared attribute", %{entry: entry} do
+    test "type mismatch with declared attribute", %{story: story} do
       assert_raise RuntimeError, ~r/type mismatch in toggle/, fn ->
         handle_toggle_variation_assign(
           %{"variation_id" => "variation_id", "attr" => "integer"},
           %{},
-          entry,
+          story,
           :flat
         )
       end
     end
 
-    test "with nested mode", %{entry: entry} do
+    test "with nested mode", %{story: story} do
       assert handle_toggle_variation_assign(
                %{"variation_id" => "variation_id", "attr" => "attribute"},
                %{variation_id: %{}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{attribute: true}}
@@ -212,22 +212,22 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
       assert handle_toggle_variation_assign(
                %{"variation_id" => "variation_id", "attr" => "attribute"},
                %{variation_id: %{attribute: true}},
-               entry,
+               story,
                :nested
              ) ==
                {:variation_id, %{attribute: false}}
     end
 
-    test "with with invalid param", %{entry: entry} do
+    test "with with invalid param", %{story: story} do
       assert_raise RuntimeError, ~r/missing attr in toggle/, fn ->
-        handle_toggle_variation_assign(%{}, %{}, entry, :flat)
+        handle_toggle_variation_assign(%{}, %{}, story, :flat)
       end
     end
   end
 
-  defp entry(_context) do
+  defp story(_context) do
     [
-      entry: %ComponentEntry{
+      story: %ComponentStory{
         attributes: [
           %Attr{id: :boolean, type: :boolean},
           %Attr{id: :integer, type: :integer},

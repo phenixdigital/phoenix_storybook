@@ -31,7 +31,7 @@ It performs automatic discovery of your storybook content under a specified fold
 and then automatically generates a storybook navigation sidebar. Every module detected in your
 content folder will be loaded and identified as a storybook entry.
 
-Three kinds of entries are supported:
+Three kinds of stories are supported:
 
 - `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
@@ -127,19 +127,19 @@ import * as Uploaders from "./uploaders";
 ### 5. Create some content
 
 Then you can start creating some content for your storybook. Storybook can contain different kinds
-of _entries_:
+of _stories_:
 
-- **component entries**: to document and showcase your components across different variations.
+- **component stories**: to document and showcase your components across different variations.
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **examples**: to show how your components can be used and mixed in real UI pages.
 
-_As of `0.4.0`, only component and page entries are available._
+_As of `0.4.0`, only component and page stories are available._
 
-Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
+Stories are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
 Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
 sidebar.
 
-Here is an example of a stateless (function) component entry:
+Here is an example of a stateless (function) component story:
 
 ```elixir
 # storybook/components/button.exs
@@ -147,7 +147,7 @@ defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
   # :live_component or :page are also available
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
 
   def function, do: &Button.button/1
   def description, do: "A simple generic button."
@@ -184,7 +184,7 @@ defmodule MyAppWeb.Storybook do
     # OTP name of your application.
     otp_app: :my_app,
 
-    # Path to your storybook entries (required).
+    # Path to your storybook stories (required).
     content_path: Path.expand("../storybook", __DIR__),
 
     # Path to your components stylesheet.

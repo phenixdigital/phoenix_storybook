@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Event.EventComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &EventComponent.component/1
 
   def description, do: "event component description"

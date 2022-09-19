@@ -10,13 +10,13 @@ defmodule PhxLiveStorybook.RouterTest do
       assert Routes.live_storybook_path(build_conn(), :root) == "/storybook"
     end
 
-    test "generates helper for entry" do
-      assert Routes.live_storybook_path(build_conn(), :entry, ["components", "button"]) ==
+    test "generates helper for story" do
+      assert Routes.live_storybook_path(build_conn(), :story, ["components", "button"]) ==
                "/storybook/components/button"
     end
 
-    test "generates helper for entry iframe" do
-      assert Routes.live_storybook_path(build_conn(), :entry_iframe, ["components", "button"]) ==
+    test "generates helper for story iframe" do
+      assert Routes.live_storybook_path(build_conn(), :story_iframe, ["components", "button"]) ==
                "/storybook/iframe/components/button"
     end
 

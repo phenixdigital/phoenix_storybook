@@ -1,13 +1,13 @@
-defmodule PhxLiveStorybook.Entry do
+defmodule PhxLiveStorybook.Story do
   @moduledoc """
-  An entry designates any kind of content in your storybook. For now
-  only following kinds of entries are supported: `component`, `:live_component`,
+  A story designates any kind of content in your storybook. For now
+  only following kinds of stories are supported: `component`, `:live_component`,
   and `:page`.
 
-  In order to populate your storybook, just create _entry_ scripts under your
+  In order to populate your storybook, just create _story_ scripts under your
   content path, and implement their required behaviour.
 
-  Entries must be created as `.exs` files.
+  Stories must be created as `.exs` files.
 
   ## Usage
 
@@ -21,7 +21,7 @@ defmodule PhxLiveStorybook.Entry do
   ```elixir
   # storybook/my_component.exs
   defmodule MyAppWeb.Storybook.MyComponent do
-    use PhxLiveStorybook.Entry, :component
+    use PhxLiveStorybook.Story, :component
 
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
@@ -43,7 +43,7 @@ defmodule PhxLiveStorybook.Entry do
   ```elixir
   # storybook/my_live_component.exs
   defmodule MyAppWeb.Storybook.MyLiveComponent do
-    use PhxLiveStorybook.Entry, :live_component
+    use PhxLiveStorybook.Story, :live_component
 
     # required
     def component, do: MyAppWeb.MyLiveComponent
@@ -61,7 +61,7 @@ defmodule PhxLiveStorybook.Entry do
 
   ### Page
 
-  A page is a fairly simple entry that can be used to write whatever
+  A page is a fairly simple story that can be used to write whatever
   content you want. We use it to provide some UI guidelines.
 
   You should implement the render function and an optional navigation function,
@@ -71,7 +71,7 @@ defmodule PhxLiveStorybook.Entry do
   ```elixir
   # storybook/my_page.exs
   defmodule MyAppWeb.Storybook.MyPage do
-    use PhxLiveStorybook.Entry, :page
+    use PhxLiveStorybook.Story, :page
 
     def name, do: "Another name for my page"
     def description, do: "My page description"
@@ -94,7 +94,7 @@ defmodule PhxLiveStorybook.Entry do
   ```
   """
 
-  defmodule EntryBehaviour do
+  defmodule StoryBehaviour do
     @moduledoc false
 
     @callback storybook_type() :: atom()
@@ -140,24 +140,24 @@ defmodule PhxLiveStorybook.Entry do
 
   defp component_quote(module, live?) do
     quote do
-      @behaviour EntryBehaviour
+      @behaviour StoryBehaviour
       @behaviour unquote(component_behaviour(live?))
 
       alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def name, do: unquote(module_name(module))
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def description, do: nil
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def icon, do: nil
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def container, do: :div
 
       @impl unquote(component_behaviour(live?))
@@ -192,22 +192,22 @@ defmodule PhxLiveStorybook.Entry do
     quote do
       import Phoenix.LiveView.Helpers
 
-      @behaviour EntryBehaviour
+      @behaviour StoryBehaviour
       @behaviour PageBehaviour
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def storybook_type, do: :page
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def name, do: unquote(module_name(module))
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def description, do: nil
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def icon, do: nil
 
-      @impl EntryBehaviour
+      @impl StoryBehaviour
       def container, do: :div
 
       @impl PageBehaviour

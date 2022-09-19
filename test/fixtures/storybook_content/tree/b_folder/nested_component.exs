@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BFolder.NestedComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
 
   def function, do: &NestedComponent.nested_component/1
 

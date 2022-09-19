@@ -6,27 +6,27 @@ defmodule PhxLiveStorybook.SidebarTest do
   alias PhxLiveStorybook.Sidebar
   alias PhxLiveStorybook.{FlatListStorybook, TreeStorybook}
 
-  describe "storybook with flat list of entries" do
-    test "sidebar contains those 2 entries" do
+  describe "storybook with flat list of stories" do
+    test "sidebar contains those 2 stories" do
       {document, _html} = render_sidebar(FlatListStorybook)
-      # test sidebar has 1 root entry
+      # test sidebar has 1 root story
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 2 folders beneath root
       assert find(document, "nav>ul>li>ul>li") |> length() == 2
 
-      # test those 2 entries are links (ie. not folders)
+      # test those 2 stories are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 2
     end
   end
 
-  describe "storybook with a tree of entries" do
-    test "sidebar contains all entries, with one open folder" do
+  describe "storybook with a tree of stories" do
+    test "sidebar contains all stories, with one open folder" do
       {document, _html} = render_sidebar(TreeStorybook)
-      # test sidebar has 1 root entry
+      # test sidebar has 1 root story
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 9 entries
+      # test sidebar has 9 stories
       assert find(document, "nav>ul>li>ul>li") |> length() == 9
 
       # test 4 of them are links (ie. not folders)
@@ -39,12 +39,12 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
     end
 
-    test "sidebar with a path contains all entries, with 2 open folders" do
+    test "sidebar with a path contains all stories, with 2 open folders" do
       {document, _html} = render_sidebar(TreeStorybook, "/a_folder/aa_component")
-      # test sidebar has 1 root entry
+      # test sidebar has 1 root story
       assert find(document, "nav>ul>li") |> length() == 1
 
-      # test sidebar has 9 entries
+      # test sidebar has 9 stories
       assert find(document, "nav>ul>li>ul>li") |> length() == 9
 
       # test 4 of them are links (ie. not folders)
@@ -57,10 +57,10 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
     end
 
-    test "sidebar with a path has active entry marked as active" do
+    test "sidebar with a path has active story marked as active" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
-      # test 1th entry in 1st folder is active (font-bold class)
+      # test 1th story in 1st folder is active (font-bold class)
       [{"div", [{"class", link_class} | _], _}] =
         find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li:nth-child(1)>div")
 

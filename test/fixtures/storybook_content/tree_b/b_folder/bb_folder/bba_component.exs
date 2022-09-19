@@ -1,4 +1,4 @@
 defmodule TreeBStorybook.BFolder.BBFolder.BBaComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: nil
 end

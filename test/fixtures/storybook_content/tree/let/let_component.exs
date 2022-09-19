@@ -1,12 +1,12 @@
 defmodule TreeStorybook.Let.LetComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &LetComponent.let_component/1
 
   def variations do
     [
       %Variation{
         id: :default,
-        attributes: %{entries: ~w(foo bar qix)},
+        attributes: %{stories: ~w(foo bar qix)},
         let: :entry,
         block: "**<%= entry %>**"
       }

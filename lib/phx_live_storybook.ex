@@ -6,7 +6,7 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   """
 
   alias Phoenix.LiveView.Rendered
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
+  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
 
   @doc """
   Returns a configuration value from your config.exs storybook settings.
@@ -17,56 +17,56 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @callback config(key :: atom(), default :: any()) :: any()
 
   @doc """
-  Returns a precompiled tree of your storybook entries.
+  Returns a precompiled tree of your storybook stories.
   """
-  @callback entries() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
+  @callback stories() :: [%ComponentStory{} | %Folder{} | %PageStory{}]
 
   @doc """
-  Returns all the leaves of the storybook content tree (ie. all entries that are
+  Returns all the leaves of the storybook content tree (ie. all stories that are
   not a folder)
   """
-  @callback all_leaves() :: [%ComponentEntry{} | %PageEntry{}]
+  @callback all_leaves() :: [%ComponentStory{} | %PageStory{}]
 
   @doc """
   Returns all the notes of the storybook content tree as a flat list.
   """
-  @callback flat_list() :: [%ComponentEntry{} | %PageEntry{}]
+  @callback flat_list() :: [%ComponentStory{} | %PageStory{}]
 
   @doc """
-  Returns an entry from its absolute path.
+  Returns a story from its absolute path.
   """
-  @callback find_entry_by_path(String.t()) :: %ComponentEntry{} | %PageEntry{}
+  @callback find_story_by_path(String.t()) :: %ComponentStory{} | %PageStory{}
 
   @doc """
-  Renders a specific variation for a given component entry.
+  Renders a specific variation for a given component story.
   Can be a single variation or a variation group.
   Returns a rendered HEEx template.
   """
   @callback render_variation(
-              entry_module :: any(),
+              story_module :: any(),
               variation_id :: atom(),
               theme :: atom()
             ) ::
               %Rendered{}
 
   @doc """
-  Renders code snippet of a specific variation for a given component entry.
+  Renders code snippet of a specific variation for a given component story.
   Returns a rendered HEEx template.
   """
-  @callback render_code(entry_module :: atom(), variation_id :: atom()) ::
+  @callback render_code(story_module :: atom(), variation_id :: atom()) ::
               %Rendered{}
 
   @doc """
-  Renders source of a component entry.
+  Renders source of a component story.
   Returns a rendered HEEx template.
   """
-  @callback render_source(entry_module :: atom()) :: %Rendered{}
+  @callback render_source(story_module :: atom()) :: %Rendered{}
 
   @doc """
-  Renders a tab content for a page entry.
+  Renders a tab content for a page story.
   Returns a rendered HEEx template.
   """
-  @callback render_page(entry_module :: atom(), tab :: atom()) :: %Rendered{}
+  @callback render_page(story_module :: atom(), tab :: atom()) :: %Rendered{}
 end
 
 defmodule PhxLiveStorybook do
@@ -76,14 +76,14 @@ defmodule PhxLiveStorybook do
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
-  alias PhxLiveStorybook.Entries
+  alias PhxLiveStorybook.Stories
 
   alias PhxLiveStorybook.Quotes.{
     ComponentQuotes,
     ConfigQuotes,
-    EntriesQuotes,
     PageQuotes,
-    SourceQuotes
+    SourceQuotes,
+    StoriesQuotes
   }
 
   @doc false
@@ -91,31 +91,31 @@ defmodule PhxLiveStorybook do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
     backend_module = __CALLER__.module
     otp_app = opts[:otp_app]
-    entries = entries(opts)
+    stories = stories(opts)
     themes = Keyword.get(opts, :themes, [{nil, nil}])
-    leave_entries = Entries.all_leaves(entries)
+    leave_stories = Stories.all_leaves(stories)
 
     [
-      recompilation_quotes(backend_module, otp_app, leave_entries),
+      recompilation_quotes(backend_module, otp_app, leave_stories),
       ConfigQuotes.config_quotes(opts),
-      EntriesQuotes.entries_quotes(entries),
-      ComponentQuotes.render_component_quotes(leave_entries, themes),
-      ComponentQuotes.render_code_quotes(leave_entries),
-      SourceQuotes.source_quotes(leave_entries),
-      PageQuotes.page_quotes(leave_entries, themes, __CALLER__.file)
+      StoriesQuotes.stories_quotes(stories),
+      ComponentQuotes.render_component_quotes(leave_stories, themes),
+      ComponentQuotes.render_code_quotes(leave_stories),
+      SourceQuotes.source_quotes(leave_stories),
+      PageQuotes.page_quotes(leave_stories, themes, __CALLER__.file)
     ]
   end
 
   # This quote triggers recompilation for the module whenever something
   # under content path has been touched
-  defp recompilation_quotes(backend_module, otp_app, leave_entries) do
+  defp recompilation_quotes(backend_module, otp_app, leave_stories) do
     content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
     components_pattern = if content_path, do: "#{content_path}/**/*"
 
-    modules = for %{component: mod} <- leave_entries, !is_nil(mod), into: MapSet.new(), do: mod
+    modules = for %{component: mod} <- leave_stories, !is_nil(mod), into: MapSet.new(), do: mod
 
     modules =
-      for %{function: fun} <- leave_entries,
+      for %{function: fun} <- leave_stories,
           !is_nil(fun),
           into: modules,
           do: Function.info(fun)[:module]
@@ -135,7 +135,7 @@ defmodule PhxLiveStorybook do
         @paths if unquote(content_path), do: Path.wildcard(unquote(components_pattern)), else: []
         @paths_hash :erlang.md5(@paths)
 
-        # this file should be recompiled whenever any entry file is touched
+        # this file should be recompiled whenever any story file is touched
         for path <- @paths do
           @external_resource path
         end
@@ -155,9 +155,9 @@ defmodule PhxLiveStorybook do
     [tree_quote | component_quotes]
   end
 
-  defp entries(opts) do
+  defp stories(opts) do
     content_path = Keyword.get(opts, :content_path)
     folders_config = Keyword.get(opts, :folders, [])
-    Entries.entries(content_path, folders_config)
+    Stories.stories(content_path, folders_config)
   end
 end

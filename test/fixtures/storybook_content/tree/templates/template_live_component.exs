@@ -1,5 +1,5 @@
 defmodule TreeStorybook.TemplateLiveComponent do
-  use PhxLiveStorybook.Entry, :live_component
+  use PhxLiveStorybook.Story, :live_component
   def component, do: TemplateLiveComponent
 
   def template do

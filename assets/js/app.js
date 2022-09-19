@@ -1,6 +1,6 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
-import { EntryHook } from "./lib/entry_hook";
+import { StoryHook } from "./lib/story_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
 
@@ -21,7 +21,7 @@ let csrfToken = document
   .getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
-  hooks: { ...window.storybook.Hooks, EntryHook, SearchHook, SidebarHook },
+  hooks: { ...window.storybook.Hooks, StoryHook, SearchHook, SidebarHook },
   uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
     return {

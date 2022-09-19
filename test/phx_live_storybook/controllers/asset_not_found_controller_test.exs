@@ -4,7 +4,7 @@ defmodule PhxLiveStorybook.AssetNotFoundControllerTest do
   import Phoenix.ConnTest, only: [build_conn: 0, get: 2]
   alias PhxLiveStorybook.TestRouter.Helpers, as: Routes
 
-  @endpoint PhxLiveStorybook.EntryLiveTestEndpoint
+  @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
 
   setup do

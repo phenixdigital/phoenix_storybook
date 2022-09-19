@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
 
   alias PhxLiveStorybook.Attr
 
-  def handle_set_variation_assign(params, extra_assigns, entry, mode \\ :nested) do
+  def handle_set_variation_assign(params, extra_assigns, story, mode \\ :nested) do
     context = "assign"
     variation_id = to_variation_id(params, context)
     params = Map.delete(params, "variation_id")
@@ -13,14 +13,14 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
       for {attr, value} <- params, reduce: variation_extra_assigns do
         acc ->
           attr = String.to_atom(attr)
-          value = to_value(value, attr, entry.attributes, context)
+          value = to_value(value, attr, story.attributes, context)
           Map.put(acc, attr, value)
       end
 
     {variation_id, variation_extra_assigns}
   end
 
-  def handle_toggle_variation_assign(params, extra_assigns, entry, mode \\ :nested) do
+  def handle_toggle_variation_assign(params, extra_assigns, story, mode \\ :nested) do
     context = "toggle"
 
     attr =
@@ -33,7 +33,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
     current_value = Map.get(variation_extra_assigns, attr)
     check_type!(current_value, :boolean, context)
 
-    case declared_attr_type(attr, entry.attributes) do
+    case declared_attr_type(attr, story.attributes) do
       nil ->
         :ok
 
