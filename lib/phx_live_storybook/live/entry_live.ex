@@ -204,19 +204,19 @@ defmodule PhxLiveStorybook.EntryLive do
     <div class="lsb lsb-space-y-12 lsb-pb-12" id={"entry-stories-#{entry_id(entry)}"}>
       <%= for story = %{id: story_id, description: description} <- @entry.stories(),
               story_extra_assigns = story_extra_assigns(story, assigns) do %>
-        <div id={anchor_id(story)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+        <div id={anchor_id(story)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Story description -->
-          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-group lsb-flex lsb-justify-between">
+          <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(story)}", class: "lsb entry-anchor-link" do %>
-              <i class="lsb fal fa-link lsb-hidden group-hover:lg:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
+              <i class="lsb fal fa-link lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
               <%= if description do %>
                 <%= description  %>
               <% else %>
                 <%= story_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, entry, %{tab: :playground, story_id: story.id, theme: @theme}), class: "lsb lsb-hidden" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
