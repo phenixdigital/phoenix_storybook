@@ -1,25 +1,25 @@
-defmodule PhxLiveStorybook.EntriesValidator do
+defmodule PhxLiveStorybook.StoryValidator do
   @moduledoc false
 
-  alias PhxLiveStorybook.{Attr, ComponentEntry, Story, StoryGroup}
+  alias PhxLiveStorybook.{Attr, ComponentStory, Variation, VariationGroup}
 
   @doc """
-  This validator ensures that all entries have their properties filled with proper
-  datatypes and that attribute declarations are consistent accross stories.
+  This validator ensures that all stories have their properties filled with proper
+  datatypes and that attribute declarations are consistent accross variations.
   """
   def validate!(
-        entry = %ComponentEntry{path: file_path, attributes: attributes, stories: stories}
+        story = %ComponentStory{path: file_path, attributes: attributes, variations: variations}
       ) do
-    validate_entry_name!(file_path, entry)
-    validate_entry_description!(file_path, entry)
-    validate_entry_icon!(file_path, entry)
-    validate_entry_component!(file_path, entry)
-    validate_entry_function!(file_path, entry)
-    validate_entry_aliases!(file_path, entry)
-    validate_entry_imports!(file_path, entry)
-    validate_entry_container!(file_path, entry)
-    validate_entry_template!(file_path, entry)
-    validate_attribute_list_type!(file_path, entry)
+    validate_story_name!(file_path, story)
+    validate_story_description!(file_path, story)
+    validate_story_icon!(file_path, story)
+    validate_story_component!(file_path, story)
+    validate_story_function!(file_path, story)
+    validate_story_aliases!(file_path, story)
+    validate_story_imports!(file_path, story)
+    validate_story_container!(file_path, story)
+    validate_story_template!(file_path, story)
+    validate_attribute_list_type!(file_path, story)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
     validate_attribute_doc!(file_path, attributes)
@@ -28,64 +28,64 @@ defmodule PhxLiveStorybook.EntriesValidator do
     validate_attribute_default_or_required!(file_path, attributes)
     validate_attribute_values(file_path, attributes)
     validate_attribute_block_unicity!(file_path, attributes)
-    validate_story_list_type!(file_path, stories)
-    validate_story_in_group_list_type!(file_path, stories)
-    validate_story_ids!(file_path, stories)
-    validate_story_in_group_ids!(file_path, stories)
-    validate_story_description!(file_path, stories)
-    validate_story_in_group_description!(file_path, stories)
-    validate_story_let!(file_path, stories)
-    validate_story_in_group_let!(file_path, stories)
-    validate_story_attributes_map_type!(file_path, stories)
-    validate_story_in_group_attributes_map_type!(file_path, stories)
-    validate_story_attribute_types!(file_path, attributes, stories)
-    validate_story_attribute_values(file_path, attributes, stories)
-    validate_story_required_attributes!(file_path, attributes, stories)
-    validate_story_required_block!(file_path, attributes, stories)
-    validate_story_required_slots!(file_path, attributes, stories)
-    validate_story_template!(file_path, stories)
-    validate_story_in_group_template!(file_path, stories)
-    entry
+    validate_variation_list_type!(file_path, variations)
+    validate_variation_in_group_list_type!(file_path, variations)
+    validate_variation_ids!(file_path, variations)
+    validate_variation_in_group_ids!(file_path, variations)
+    validate_variation_description!(file_path, variations)
+    validate_variation_in_group_description!(file_path, variations)
+    validate_variation_let!(file_path, variations)
+    validate_variation_in_group_let!(file_path, variations)
+    validate_variation_attributes_map_type!(file_path, variations)
+    validate_variation_in_group_attributes_map_type!(file_path, variations)
+    validate_variation_attribute_types!(file_path, attributes, variations)
+    validate_variation_attribute_values(file_path, attributes, variations)
+    validate_variation_required_attributes!(file_path, attributes, variations)
+    validate_variation_required_block!(file_path, attributes, variations)
+    validate_variation_required_slots!(file_path, attributes, variations)
+    validate_variation_template!(file_path, variations)
+    validate_variation_in_group_template!(file_path, variations)
+    story
   end
 
-  defp validate_entry_name!(file_path, entry) do
-    validate_type!(file_path, entry.name, :string, "entry name must be a binary")
+  defp validate_story_name!(file_path, story) do
+    validate_type!(file_path, story.name, :string, "story name must be a binary")
   end
 
-  defp validate_entry_description!(file_path, entry) do
+  defp validate_story_description!(file_path, story) do
     validate_type!(
       file_path,
-      entry.description,
+      story.description,
       :string,
-      "entry description must be a binary"
+      "story description must be a binary"
     )
   end
 
-  defp validate_entry_icon!(file_path, entry) do
-    validate_type!(file_path, entry.icon, :string, "entry icon must be a binary")
+  defp validate_story_icon!(file_path, story) do
+    validate_type!(file_path, story.icon, :string, "story icon must be a binary")
   end
 
-  defp validate_entry_component!(file_path, entry) do
-    validate_type!(file_path, entry.component, :atom, "entry component must be a module")
+  defp validate_story_component!(file_path, story) do
+    validate_type!(file_path, story.component, :atom, "story component must be a module")
   end
 
-  defp validate_entry_function!(file_path, entry) do
-    validate_type!(file_path, entry.function, :function, "entry function must be a function")
+  defp validate_story_function!(file_path, story) do
+    validate_type!(file_path, story.function, :function, "story function must be a function")
   end
 
-  defp validate_entry_aliases!(file_path, entry) do
-    msg = "entry aliases must be a list of atoms"
-    validate_type!(file_path, entry.aliases, :list, msg)
+  defp validate_story_aliases!(file_path, story) do
+    msg = "story aliases must be a list of atoms"
+    validate_type!(file_path, story.aliases, :list, msg)
 
-    for alias_item <- entry.aliases || [],
+    for alias_item <- story.aliases || [],
         do: validate_type!(file_path, alias_item, :atom, msg)
   end
 
-  defp validate_entry_imports!(file_path, entry) do
-    msg = "entry imports must be a list of {atom, [{atom, integer}]}"
-    validate_type!(file_path, entry.aliases, :list, msg)
+  defp validate_story_imports!(file_path, story) do
+    msg = "story imports must be a list of {atom, [{atom, integer}]}"
+    validate_type!(file_path, story.aliases, :list, msg)
 
-    for import_item <- entry.imports || [] do
+    for import_item <- story.imports || [] do
       validate_type!(file_path, import_item, {:tuple, 2}, msg)
       {mod, functions} = import_item
       validate_type!(file_path, mod, :atom, msg)
@@ -100,20 +100,20 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_entry_container!(file_path, entry) do
-    unless entry.container in ~w(nil div iframe)a do
-      compile_error!(file_path, "entry container must be either :div or :iframe")
+  defp validate_story_container!(file_path, story) do
+    unless story.container in ~w(nil div iframe)a do
+      compile_error!(file_path, "story container must be either :div or :iframe")
     end
   end
 
-  defp validate_entry_template!(file_path, entry) do
-    validate_type!(file_path, entry.template, :string, "entry template must be a binary")
+  defp validate_story_template!(file_path, story) do
+    validate_type!(file_path, story.template, :string, "story template must be a binary")
   end
 
-  defp validate_attribute_list_type!(file_path, entry) do
-    msg = "entry attributes must be a list of %Attr{}"
-    validate_type!(file_path, entry.attributes, :list, msg)
-    for attr <- entry.attributes, do: validate_type!(file_path, attr, Attr, msg)
+  defp validate_attribute_list_type!(file_path, story) do
+    msg = "story attributes must be a list of %Attr{}"
+    validate_type!(file_path, story.attributes, :list, msg)
+    for attr <- story.attributes, do: validate_type!(file_path, attr, Attr, msg)
   end
 
   defp validate_attribute_ids!(file_path, attributes) do
@@ -238,114 +238,119 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_story_list_type!(file_path, stories) do
-    msg = "entry stories must be a list of %Story{} or %StoryGroup{}"
-    validate_type!(file_path, stories, :list, msg)
-    for story <- stories, do: validate_type!(file_path, story, [Story, StoryGroup], msg)
+  defp validate_variation_list_type!(file_path, variations) do
+    msg = "story variations must be a list of %Variation{} or %VariationGroup{}"
+    validate_type!(file_path, variations, :list, msg)
+
+    for variation <- variations,
+        do: validate_type!(file_path, variation, [Variation, VariationGroup], msg)
   end
 
-  defp validate_story_in_group_list_type!(file_path, stories) do
-    for %StoryGroup{id: group_id, stories: stories} <- stories do
-      msg = "stories in group #{inspect(group_id)} must be a list of %Story{}"
-      validate_type!(file_path, stories, :list, msg)
-      for story <- stories, do: validate_type!(file_path, story, Story, msg)
+  defp validate_variation_in_group_list_type!(file_path, variations) do
+    for %VariationGroup{id: group_id, variations: variations} <- variations do
+      msg = "variations in group #{inspect(group_id)} must be a list of %Variation{}"
+      validate_type!(file_path, variations, :list, msg)
+      for variation <- variations, do: validate_type!(file_path, variation, Variation, msg)
     end
   end
 
-  defp validate_story_ids!(file_path, stories) do
-    for %Story{id: story_id} <- stories, reduce: MapSet.new() do
+  defp validate_variation_ids!(file_path, variations) do
+    for %Variation{id: variation_id} <- variations, reduce: MapSet.new() do
       acc ->
         validate_type!(
           file_path,
-          story_id,
+          variation_id,
           :atom,
-          "id for story #{inspect(story_id)} must be an atom"
+          "id for variation #{inspect(variation_id)} must be an atom"
         )
 
-        if MapSet.member?(acc, story_id) do
-          compile_error!(file_path, "duplicate story id: #{inspect(story_id)}")
+        if MapSet.member?(acc, variation_id) do
+          compile_error!(file_path, "duplicate variation id: #{inspect(variation_id)}")
         else
-          MapSet.put(acc, story_id)
+          MapSet.put(acc, variation_id)
         end
     end
   end
 
-  defp validate_story_in_group_ids!(file_path, stories) do
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id} <- stories,
+  defp validate_variation_in_group_ids!(file_path, variations) do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id} <- variations,
         reduce: MapSet.new() do
       acc ->
         validate_type!(
           file_path,
-          story_id,
+          variation_id,
           :atom,
-          "id for story #{inspect(story_id)} in group #{inspect(group_id)} must be an atom"
+          "id for variation #{inspect(variation_id)} in group #{inspect(group_id)} must be an atom"
         )
 
-        if MapSet.member?(acc, {group_id, story_id}) do
+        if MapSet.member?(acc, {group_id, variation_id}) do
           compile_error!(
             file_path,
-            "duplicate story id: #{inspect(story_id)} in group #{inspect(group_id)}"
+            "duplicate variation id: #{inspect(variation_id)} in group #{inspect(group_id)}"
           )
         else
-          MapSet.put(acc, {group_id, story_id})
+          MapSet.put(acc, {group_id, variation_id})
         end
     end
   end
 
-  defp validate_story_description!(file_path, stories) do
-    for %Story{id: story_id, description: description} <- stories do
-      msg = "description in story #{inspect(story_id)} must be a binary"
+  defp validate_variation_description!(file_path, variations) do
+    for %Variation{id: variation_id, description: description} <- variations do
+      msg = "description in variation #{inspect(variation_id)} must be a binary"
       validate_type!(file_path, description, :string, msg)
     end
   end
 
-  defp validate_story_in_group_description!(file_path, stories) do
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, description: description} <- stories do
+  defp validate_variation_in_group_description!(file_path, variations) do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, description: description} <- variations do
       msg =
-        "description in story #{inspect(story_id)}, group #{inspect(group_id)} must be a binary"
+        "description in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be a binary"
 
       validate_type!(file_path, description, :string, msg)
     end
   end
 
-  defp validate_story_let!(file_path, stories) do
-    for %Story{id: story_id, let: let} <- stories do
-      msg = "let in story #{inspect(story_id)} must be an atom"
+  defp validate_variation_let!(file_path, variations) do
+    for %Variation{id: variation_id, let: let} <- variations do
+      msg = "let in variation #{inspect(variation_id)} must be an atom"
       validate_type!(file_path, let, :atom, msg)
     end
   end
 
-  defp validate_story_in_group_let!(file_path, stories) do
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, let: let} <- stories do
-      msg = "let in story #{inspect(story_id)}, group #{inspect(group_id)} must be an atom"
+  defp validate_variation_in_group_let!(file_path, variations) do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, let: let} <- variations do
+      msg =
+        "let in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be an atom"
 
       validate_type!(file_path, let, :atom, msg)
     end
   end
 
-  defp validate_story_attributes_map_type!(file_path, stories) do
-    for %Story{id: story_id, attributes: attributes} <- stories do
-      msg = "attributes in story #{inspect(story_id)} must be a map"
+  defp validate_variation_attributes_map_type!(file_path, variations) do
+    for %Variation{id: variation_id, attributes: attributes} <- variations do
+      msg = "attributes in variation #{inspect(variation_id)} must be a map"
       validate_type!(file_path, attributes, :map, msg)
     end
   end
 
-  defp validate_story_in_group_attributes_map_type!(file_path, stories) do
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, attributes: attributes} <- stories do
-      msg = "attributes in story #{inspect(story_id)}, group #{inspect(group_id)} must be a map"
+  defp validate_variation_in_group_attributes_map_type!(file_path, variations) do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, attributes: attributes} <- variations do
+      msg =
+        "attributes in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be a map"
 
       validate_type!(file_path, attributes, :map, msg)
     end
   end
 
-  defp validate_story_attribute_types!(file_path, attributes, stories) do
+  defp validate_variation_attribute_types!(file_path, attributes, variations) do
     attr_types = for %Attr{id: attr_id, type: type} <- attributes, into: %{}, do: {attr_id, type}
 
-    for %Story{id: story_id, attributes: attributes, block: block, slots: slots} <- stories do
+    for %Variation{id: variation_id, attributes: attributes, block: block, slots: slots} <-
+          variations do
       for {attr_id, attr_value} <- attributes do
         case Map.get(attr_types, attr_id) do
           nil ->
@@ -356,12 +361,12 @@ defmodule PhxLiveStorybook.EntriesValidator do
               file_path,
               attr_value,
               type,
-              "attribute #{inspect(attr_id)} in story #{inspect(story_id)} must be of type: #{inspect(type)}"
+              "attribute #{inspect(attr_id)} in variation #{inspect(variation_id)} must be of type: #{inspect(type)}"
             )
         end
       end
 
-      msg = "slots in story #{inspect(story_id)} must be a list of binary"
+      msg = "slots in variation #{inspect(variation_id)} must be a list of binary"
       validate_type!(file_path, slots, :list, msg)
       for slot <- slots, do: validate_type!(file_path, slot, :string, msg)
 
@@ -369,12 +374,13 @@ defmodule PhxLiveStorybook.EntriesValidator do
         file_path,
         block,
         :block,
-        "block in story #{inspect(story_id)} must be a binary"
+        "block in variation #{inspect(variation_id)} must be a binary"
       )
     end
 
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, attributes: attributes, block: block, slots: slots} <- stories do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, attributes: attributes, block: block, slots: slots} <-
+          variations do
       for {attr_id, attr_value} <- attributes do
         case Map.get(attr_types, attr_id) do
           nil ->
@@ -385,13 +391,13 @@ defmodule PhxLiveStorybook.EntriesValidator do
               file_path,
               attr_value,
               type,
-              "attribute #{inspect(attr_id)} in story #{inspect(story_id)}, group #{inspect(group_id)} must be of type: #{inspect(type)}"
+              "attribute #{inspect(attr_id)} in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be of type: #{inspect(type)}"
             )
         end
       end
 
       msg =
-        "slots in story #{inspect(story_id)}, group #{inspect(group_id)} must be a list of binary"
+        "slots in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be a list of binary"
 
       validate_type!(file_path, slots, :list, msg)
       for slot <- slots, do: validate_type!(file_path, slot, :string, msg)
@@ -400,19 +406,19 @@ defmodule PhxLiveStorybook.EntriesValidator do
         file_path,
         block,
         :block,
-        "block in story #{inspect(story_id)}, group #{inspect(group_id)} must be a binary"
+        "block in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be a binary"
       )
     end
   end
 
-  defp validate_story_attribute_values(file_path, attributes, stories) do
+  defp validate_variation_attribute_values(file_path, attributes, variations) do
     attr_values =
       for %Attr{id: attr_id, values: values} <- attributes,
           !is_nil(values),
           into: %{},
           do: {attr_id, values}
 
-    for %Story{id: story_id, attributes: attributes} <- stories do
+    for %Variation{id: variation_id, attributes: attributes} <- variations do
       for {attr_id, attr_value} <- attributes do
         case Map.get(attr_values, attr_id) do
           nil ->
@@ -422,15 +428,15 @@ defmodule PhxLiveStorybook.EntriesValidator do
             unless attr_value in values do
               compile_error!(
                 file_path,
-                "attribute #{inspect(attr_id)} in story #{inspect(story_id)} must be one of #{inspect(values)}"
+                "attribute #{inspect(attr_id)} in variation #{inspect(variation_id)} must be one of #{inspect(values)}"
               )
             end
         end
       end
     end
 
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, attributes: attributes} <- stories do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, attributes: attributes} <- variations do
       for {attr_id, attr_value} <- attributes do
         case Map.get(attr_values, attr_id) do
           nil ->
@@ -440,7 +446,7 @@ defmodule PhxLiveStorybook.EntriesValidator do
             unless attr_value in values do
               compile_error!(
                 file_path,
-                "attribute #{inspect(attr_id)} in story #{inspect(story_id)}, group #{inspect(group_id)} must be one of #{inspect(values)}"
+                "attribute #{inspect(attr_id)} in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be one of #{inspect(values)}"
               )
             end
         end
@@ -448,122 +454,123 @@ defmodule PhxLiveStorybook.EntriesValidator do
     end
   end
 
-  defp validate_story_required_attributes!(file_path, attributes, stories) do
+  defp validate_variation_required_attributes!(file_path, attributes, variations) do
     required_attributes =
       for %Attr{id: attr_id, type: type, required: true} <- attributes,
           type not in [:slot, :block],
           into: MapSet.new(),
           do: attr_id
 
-    for %Story{id: story_id, attributes: attributes} <- stories,
+    for %Variation{id: variation_id, attributes: attributes} <- variations,
         attributes_keys = Map.keys(attributes) do
       for required_attribute <- required_attributes do
         unless Enum.member?(attributes_keys, required_attribute) do
           compile_error!(
             file_path,
-            "required attribute #{inspect(required_attribute)} missing from story #{inspect(story_id)}"
+            "required attribute #{inspect(required_attribute)} missing from variation #{inspect(variation_id)}"
           )
         end
       end
     end
 
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, attributes: attributes} <- stories,
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, attributes: attributes} <- variations,
         attributes_keys = Map.keys(attributes) do
       for required_attribute <- required_attributes do
         unless Enum.member?(attributes_keys, required_attribute) do
           compile_error!(
             file_path,
-            "required attribute #{inspect(required_attribute)} missing from story #{inspect(story_id)}, group #{inspect(group_id)}"
+            "required attribute #{inspect(required_attribute)} missing from variation #{inspect(variation_id)}, group #{inspect(group_id)}"
           )
         end
       end
     end
   end
 
-  defp validate_story_required_block!(file_path, attributes, stories) do
+  defp validate_variation_required_block!(file_path, attributes, variations) do
     has_required_block? = Enum.any?(attributes, &(&1.type == :block && &1.required))
 
     if has_required_block? do
-      for story = %Story{id: story_id} <- stories do
-        unless story.block do
+      for variation = %Variation{id: variation_id} <- variations do
+        unless variation.block do
           compile_error!(
             file_path,
-            "required block missing from story #{inspect(story_id)}"
+            "required block missing from variation #{inspect(variation_id)}"
           )
         end
       end
 
-      for %StoryGroup{id: group_id, stories: stories} <- stories,
-          story = %Story{id: story_id} <- stories do
-        unless story.block do
+      for %VariationGroup{id: group_id, variations: variations} <- variations,
+          variation = %Variation{id: variation_id} <- variations do
+        unless variation.block do
           compile_error!(
             file_path,
-            "required block missing from story #{inspect(story_id)}, group #{inspect(group_id)}"
+            "required block missing from variation #{inspect(variation_id)}, group #{inspect(group_id)}"
           )
         end
       end
     end
   end
 
-  defp validate_story_required_slots!(file_path, attributes, stories) do
+  defp validate_variation_required_slots!(file_path, attributes, variations) do
     required_slots =
       for %Attr{id: attr_id, type: :slot, required: true} <- attributes,
           into: MapSet.new(),
           do: attr_id
 
-    for %Story{id: story_id, slots: slots} <- stories do
+    for %Variation{id: variation_id, slots: slots} <- variations do
       for required_slot <- required_slots do
         unless Enum.any?(slots, &matching_slot?(required_slot, &1)) do
           compile_error!(
             file_path,
-            "required slot #{inspect(required_slot)} missing from story #{inspect(story_id)}"
+            "required slot #{inspect(required_slot)} missing from variation #{inspect(variation_id)}"
           )
         end
       end
     end
 
-    for %StoryGroup{id: group_id, stories: stories} <- stories,
-        %Story{id: story_id, slots: slots} <- stories do
+    for %VariationGroup{id: group_id, variations: variations} <- variations,
+        %Variation{id: variation_id, slots: slots} <- variations do
       for required_slot <- required_slots do
         unless Enum.any?(slots, &matching_slot?(required_slot, &1)) do
           compile_error!(
             file_path,
-            "required slot #{inspect(required_slot)} missing from story #{inspect(story_id)}, group #{inspect(group_id)}"
+            "required slot #{inspect(required_slot)} missing from variation #{inspect(variation_id)}, group #{inspect(group_id)}"
           )
         end
       end
     end
   end
 
-  defp validate_story_template!(file_path, stories) do
-    for %Story{id: story_id, template: template} when template not in [:unset, nil, false] <-
-          stories do
+  defp validate_variation_template!(file_path, variations) do
+    for %Variation{id: var_id, template: template} when template not in [:unset, nil, false] <-
+          variations do
       validate_type!(
         file_path,
         template,
         :string,
-        "template in story #{inspect(story_id)} must be a binary or a falsy value"
+        "template in variation #{inspect(var_id)} must be a binary or a falsy value"
       )
     end
   end
 
-  defp validate_story_in_group_template!(file_path, stories) do
-    for %StoryGroup{id: group_id, stories: stories, template: template} <- stories do
+  defp validate_variation_in_group_template!(file_path, variations) do
+    for %VariationGroup{id: group_id, variations: variations, template: template} <- variations do
       if template != :unset do
         validate_type!(
           file_path,
           template,
           :string,
-          "template in story_group #{inspect(group_id)} must be a binary"
+          "template in variation_group #{inspect(group_id)} must be a binary"
         )
       end
 
-      for %Story{id: story_id, template: template} when template not in [nil, false, :unset] <-
-            stories do
+      for %Variation{id: variation_id, template: template}
+          when template not in [nil, false, :unset] <-
+            variations do
         compile_error!(
           file_path,
-          "template in a group story cannot be set (story #{inspect(story_id)}, group #{inspect(group_id)})"
+          "template in a group variation cannot be set (variation #{inspect(variation_id)}, group #{inspect(group_id)})"
         )
       end
     end

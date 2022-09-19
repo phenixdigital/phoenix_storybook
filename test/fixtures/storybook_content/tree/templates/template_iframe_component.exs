@@ -1,5 +1,5 @@
 defmodule TreeStorybook.TemplateIframeComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &TemplateComponent.template_component/1
   def container, do: :iframe
 
@@ -11,7 +11,7 @@ defmodule TreeStorybook.TemplateIframeComponent do
       <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
       <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
       <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
-      <.lsb-story/>
+      <.lsb-variation/>
     </div>
     """
   end
@@ -33,16 +33,16 @@ defmodule TreeStorybook.TemplateIframeComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       },
-      %Story{
+      %Variation{
         id: :world,
-        description: "World story",
+        description: "World variation",
         attributes: %{label: "world"}
       }
     ]

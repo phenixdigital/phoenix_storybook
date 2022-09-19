@@ -1,9 +1,9 @@
-defmodule PhxLiveStorybook.EntryLiveTest do
+defmodule PhxLiveStorybook.StoryLiveTest do
   use ExUnit.Case, async: false
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
-  @endpoint PhxLiveStorybook.EntryLiveTestEndpoint
+  @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
 
   setup do
@@ -20,8 +20,8 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_page"
     end
 
-    test "404 on unknown entry", %{conn: conn} do
-      assert_raise PhxLiveStorybook.EntryNotFound, fn ->
+    test "404 on unknown story", %{conn: conn} do
+      assert_raise PhxLiveStorybook.StoryNotFound, fn ->
         get(conn, "/storybook/wrong")
       end
     end
@@ -51,40 +51,40 @@ defmodule PhxLiveStorybook.EntryLiveTest do
     end
 
     test "navigate to unknown tab", %{conn: conn} do
-      assert_raise PhxLiveStorybook.EntryTabNotFound, fn ->
+      assert_raise PhxLiveStorybook.StoryTabNotFound, fn ->
         get(conn, "/storybook/component", tab: "unknown")
       end
     end
   end
 
-  describe "story rendering" do
-    test "renders component entry from path", %{conn: conn} do
+  describe "variation rendering" do
+    test "renders component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/component")
       assert html =~ "Component"
       assert html =~ "component description"
-      assert html =~ "Hello story"
-      assert html =~ "World story"
+      assert html =~ "Hello variation"
+      assert html =~ "World variation"
     end
 
-    test "renders live component entry from path", %{conn: conn} do
+    test "renders live component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/live_component")
       assert html =~ "Live Component"
       assert html =~ "live component description"
-      assert html =~ "Hello story"
+      assert html =~ "Hello variation"
       assert html =~ "World"
     end
 
-    test "renders nested component entry from path", %{conn: conn} do
+    test "renders nested component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/a_folder/component")
       assert html =~ "Component"
       assert html =~ "component description"
     end
 
-    test "renders component entry and navigate to source tab", %{conn: conn} do
+    test "renders component story and navigate to source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html = view |> element("a", "Source") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=hello&tab=source&theme=default")
+      assert_patched(view, "/storybook/component?tab=source&theme=default&variation_id=hello")
       assert html =~ "defmodule"
     end
 
@@ -92,13 +92,22 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       view |> element("a.lsb-theme", "Colorful") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=hello&tab=stories&theme=colorful")
+
+      assert_patched(
+        view,
+        "/storybook/component?tab=variations&theme=colorful&variation_id=hello"
+      )
 
       view |> element("a", "Source") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=hello&tab=source&theme=colorful")
+      assert_patched(view, "/storybook/component?tab=source&theme=colorful&variation_id=hello")
 
       html = view |> element("a", "Playground") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=hello&tab=playground&theme=colorful")
+
+      assert_patched(
+        view,
+        "/storybook/component?tab=playground&theme=colorful&variation_id=hello"
+      )
+
       assert html =~ "component: hello colorful"
 
       Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground-#{inspect(view.pid)}")
@@ -107,19 +116,19 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert render(view) =~ "component: hello default"
     end
 
-    test "renders component entry and navigate to source tab with select", %{conn: conn} do
+    test "renders component story and navigate to source tab with select", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html =
         view
-        |> element(".entry-nav-form select")
+        |> element(".story-nav-form select")
         |> render_change(%{navigation: %{tab: "source"}})
 
-      assert_patched(view, "/storybook/component?story_id=hello&tab=source&theme=default")
+      assert_patched(view, "/storybook/component?tab=source&theme=default&variation_id=hello")
       assert html =~ "defmodule"
     end
 
-    test "component story with template", %{conn: conn} do
+    test "component variation with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component")
       hello_element = element(view, "#hello .lsb-sandbox")
       world_element = element(view, "#world .lsb-sandbox")
@@ -149,7 +158,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert render(world_element) =~ "template_component: foo / status: false"
     end
 
-    test "live_component story with template", %{conn: conn} do
+    test "live_component variation with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_live_component")
       hello_element = element(view, "#hello .lsb-sandbox")
       world_element = element(view, "#world .lsb-sandbox")
@@ -173,50 +182,50 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert render(world_element) =~ "template_live_component: foo / status: false"
     end
 
-    test "component story_group with template", %{conn: conn} do
+    test "component variation_group with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component")
 
-      story_one = element(view, ~s|[id="group:one"] span|)
-      story_two = element(view, ~s|[id="group:two"] span|)
+      variation_one = element(view, ~s|[id="group:one"] span|)
+      variation_two = element(view, ~s|[id="group:two"] span|)
 
-      assert render(story_one) =~ "template_component: one / status: false"
-      assert render(story_two) =~ "template_component: two / status: false"
+      assert render(variation_one) =~ "template_component: one / status: false"
+      assert render(variation_two) =~ "template_component: two / status: false"
 
       view |> element(~s|[id="group:one"] #set-bar|) |> render_click()
-      assert render(story_one) =~ "template_component: bar / status: false"
-      assert render(story_two) =~ "template_component: two / status: false"
+      assert render(variation_one) =~ "template_component: bar / status: false"
+      assert render(variation_two) =~ "template_component: two / status: false"
 
       view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
-      assert render(story_one) =~ "template_component: bar / status: false"
-      assert render(story_two) =~ "template_component: two / status: true"
+      assert render(variation_one) =~ "template_component: bar / status: false"
+      assert render(variation_two) =~ "template_component: two / status: true"
     end
 
-    test "can open playground from different stories", %{conn: conn} do
+    test "can open playground from different variations", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       element(view, "#hello a", "Open in playground") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=hello&tab=playground&theme=default")
+      assert_patched(view, "/storybook/component?tab=playground&theme=default&variation_id=hello")
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
 
       view |> element("a", "Stories") |> render_click()
 
       element(view, "#world a", "Open in playground") |> render_click()
-      assert_patched(view, "/storybook/component?story_id=world&tab=playground&theme=default")
+      assert_patched(view, "/storybook/component?tab=playground&theme=default&variation_id=world")
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
   end
 
   describe "page rendering" do
-    test "renders a page entry", %{conn: conn} do
+    test "renders a page story", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/a_page")
       assert html =~ "A Page"
-      refute html =~ "entry-tabs"
+      refute html =~ "story-tabs"
     end
 
-    test "renders a page entry with tabs", %{conn: conn} do
+    test "renders a page story with tabs", %{conn: conn} do
       {:ok, view, html} = live(conn, "/storybook/b_page")
       assert html =~ "B Page: tab_1"
-      assert html =~ "entry-tabs"
+      assert html =~ "story-tabs"
 
       html = view |> element("a", "Tab 2") |> render_click()
       assert_patched(view, "/storybook/b_page?tab=tab_2&theme=default")
@@ -257,7 +266,7 @@ defmodule PhxLiveStorybook.EntryLiveTest do
       assert has_element?(view, "#search-container a", "Live Component (a_folder)")
     end
 
-    test "navigates to a specified entry", %{conn: conn} do
+    test "navigates to a specified story", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_page")
 
       view

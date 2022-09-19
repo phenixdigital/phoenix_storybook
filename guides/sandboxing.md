@@ -114,7 +114,7 @@ Just add the `iframe` option to it.
 # storybook/components/button.exs
 defmodule MyAppWeb.Storybook.Components.Button do
  alias MyAppWeb.Components.Button
- use PhxLiveStorybook.Entry, :component
+ use PhxLiveStorybook.Story, :component
 
  def function, do: &Button.button/1
  def container, do: :iframe

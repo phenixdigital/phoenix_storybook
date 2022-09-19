@@ -66,9 +66,9 @@ defmodule PhxLiveStorybook.Router do
 
           live_session session_name, session_opts do
             live(
-              "/iframe/*entry",
-              PhxLiveStorybook.ComponentIframeLive,
-              :entry_iframe,
+              "/iframe/*story",
+              PhxLiveStorybook.Story.ComponentIframeLive,
+              :story_iframe,
               route_opts
             )
           end
@@ -77,8 +77,8 @@ defmodule PhxLiveStorybook.Router do
             PhxLiveStorybook.Router.__options__(opts, :live_storybook, :root)
 
           live_session session_name, session_opts do
-            live("/", PhxLiveStorybook.EntryLive, :root, route_opts)
-            live("/*entry", PhxLiveStorybook.EntryLive, :entry, route_opts)
+            live("/", PhxLiveStorybook.StoryLive, :root, route_opts)
+            live("/*story", PhxLiveStorybook.StoryLive, :story, route_opts)
           end
         end
       end

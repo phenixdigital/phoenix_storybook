@@ -3,13 +3,13 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
 
   import PhxLiveStorybook.TemplateHelpers
 
-  test "set_story_id/2" do
+  test "set_variation_id/2" do
     template =
-      set_story_id(
+      set_variation_id(
         """
-        <div id=":story_id">
-          <.lsb-story phx-click={JS.push("assign", value: %{foo: "bar"})}/>
-          <.lsb-story phx-click={JS.push("toggle", value: %{attr: :foo})}/>
+        <div id=":variation_id">
+          <.lsb-variation phx-click={JS.push("assign", value: %{foo: "bar"})}/>
+          <.lsb-variation phx-click={JS.push("toggle", value: %{attr: :foo})}/>
         </div>
         """,
         :hello_world
@@ -17,48 +17,48 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
 
     assert template == """
            <div id="hello_world">
-             <.lsb-story phx-click={JS.push("assign", value: %{foo: "bar", story_id: :hello_world})}/>
-             <.lsb-story phx-click={JS.push("toggle", value: %{attr: :foo, story_id: :hello_world})}/>
+             <.lsb-variation phx-click={JS.push("assign", value: %{foo: "bar", variation_id: :hello_world})}/>
+             <.lsb-variation phx-click={JS.push("toggle", value: %{attr: :foo, variation_id: :hello_world})}/>
            </div>
            """
   end
 
-  test "story_template?/1" do
-    assert story_template?("<div><.lsb-story/></div>")
-    assert story_template?("<div><.lsb-story  /></div>")
-    assert story_template?("<div><.lsb-story whatever /></div>")
+  test "variation_template?/1" do
+    assert variation_template?("<div><.lsb-variation/></div>")
+    assert variation_template?("<div><.lsb-variation  /></div>")
+    assert variation_template?("<div><.lsb-variation whatever /></div>")
 
-    assert story_template?("""
+    assert variation_template?("""
            <div>
-             <.lsb-story/>
+             <.lsb-variation/>
            </div>
            """)
 
-    refute story_template?("<div><story/></div>")
-    refute story_template?("<div><.lsb-story-group/></div>")
+    refute variation_template?("<div><variation/></div>")
+    refute variation_template?("<div><.lsb-variation-group/></div>")
   end
 
-  test "story_group_template?/1" do
-    assert story_group_template?("<div><.lsb-story-group/></div>")
-    assert story_group_template?("<div><.lsb-story-group  /></div>")
-    assert story_group_template?("<div><.lsb-story-group whatever /></div>")
+  test "variation_group_template?/1" do
+    assert variation_group_template?("<div><.lsb-variation-group/></div>")
+    assert variation_group_template?("<div><.lsb-variation-group  /></div>")
+    assert variation_group_template?("<div><.lsb-variation-group whatever /></div>")
 
-    assert story_group_template?("""
+    assert variation_group_template?("""
            <div>
-             <.lsb-story-group/>
+             <.lsb-variation-group/>
            </div>
            """)
 
-    refute story_group_template?("<div><story-group/></div>")
-    refute story_group_template?("<div><.lsb-story/></div>")
+    refute variation_group_template?("<div><variation-group/></div>")
+    refute variation_group_template?("<div><.lsb-variation/></div>")
   end
 
-  test "replace_template_story/2" do
+  test "replace_template_variation/2" do
     heex =
-      replace_template_story(
+      replace_template_variation(
         """
         <div>
-          <.lsb-story/>
+          <.lsb-variation/>
         </div>
         """,
         "<span/>"
@@ -71,13 +71,13 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
            """
   end
 
-  test "replace_template_story/2 with indentation" do
+  test "replace_template_variation/2 with indentation" do
     heex =
-      replace_template_story(
+      replace_template_variation(
         """
         <div>
           <div>
-            <.lsb-story/>
+            <.lsb-variation/>
           </div>
         </div>
         """,
@@ -104,12 +104,12 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
            """
   end
 
-  test "replace_template_story_group/2" do
+  test "replace_template_variation_group/2" do
     heex =
-      replace_template_story_group(
+      replace_template_variation_group(
         """
         <div>
-          <.lsb-story-group/>
+          <.lsb-variation-group/>
         </div>
         """,
         "<span/>"
@@ -123,38 +123,43 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
   end
 
   test "code_hidden?/1" do
-    assert code_hidden?("<div lsb-code-hidden><.lsb-story/></div>")
-    refute code_hidden?("<div><.lsb-story/></div>")
+    assert code_hidden?("<div lsb-code-hidden><.lsb-variation/></div>")
+    refute code_hidden?("<div><.lsb-variation/></div>")
   end
 
   test "extract_placeholder_attributes/2" do
     assert extract_placeholder_attributes("<span/>") == ""
-    assert extract_placeholder_attributes("<.lsb-story/>") == ""
-    assert extract_placeholder_attributes("<.lsb-story-group/>") == ""
-    assert extract_placeholder_attributes(~s|<.lsb-story foo="bar"/>|) == ~s|foo="bar"|
+    assert extract_placeholder_attributes("<.lsb-variation/>") == ""
+    assert extract_placeholder_attributes("<.lsb-variation-group/>") == ""
+    assert extract_placeholder_attributes(~s|<.lsb-variation foo="bar"/>|) == ~s|foo="bar"|
 
-    assert extract_placeholder_attributes(~s|<.lsb-story-group form={f} foo="bar"/>|) ==
+    assert extract_placeholder_attributes(~s|<.lsb-variation-group form={f} foo="bar"/>|) ==
              ~s|form={f} foo="bar"|
 
-    assert extract_placeholder_attributes(~s|<.lsb-story label="foo" status={true}/>|) ==
+    assert extract_placeholder_attributes(~s|<.lsb-variation label="foo" status={true}/>|) ==
              ~s|label="foo" status={true}|
   end
 
   test "extract_placeholder_attributes/2 with inspection" do
-    assert extract_placeholder_attributes("<span/>", {"topic", :story_id}) == ""
-    assert extract_placeholder_attributes("<.lsb-story/>", {"topic", :story_id}) == ""
-    assert extract_placeholder_attributes("<.lsb-story-group/>", {"topic", :story_id}) == ""
+    assert extract_placeholder_attributes("<span/>", {"topic", :variation_id}) == ""
+    assert extract_placeholder_attributes("<.lsb-variation/>", {"topic", :variation_id}) == ""
 
-    assert extract_placeholder_attributes(~s|<.lsb-story foo={f}/>|, {"topic", :story_id}) ==
-             ~s|foo={lsb_inspect("topic", :story_id, :foo, f)}|
+    assert extract_placeholder_attributes("<.lsb-variation-group/>", {"topic", :variation_id}) ==
+             ""
 
-    assert extract_placeholder_attributes(~s|<.lsb-story foo={"bar"}/>|, {"topic", :story_id}) ==
-             ~s|foo={lsb_inspect("topic", :story_id, :foo, "bar")}|
+    assert extract_placeholder_attributes(~s|<.lsb-variation foo={f}/>|, {"topic", :variation_id}) ==
+             ~s|foo={lsb_inspect("topic", :variation_id, :foo, f)}|
 
     assert extract_placeholder_attributes(
-             ~s|<.lsb-story-group form={f} foo="bar"/>|,
-             {"topic", :story_id}
+             ~s|<.lsb-variation foo={"bar"}/>|,
+             {"topic", :variation_id}
            ) ==
-             ~s|form={lsb_inspect("topic", :story_id, :form, f)} foo={lsb_inspect("topic", :story_id, :foo, "bar")}|
+             ~s|foo={lsb_inspect("topic", :variation_id, :foo, "bar")}|
+
+    assert extract_placeholder_attributes(
+             ~s|<.lsb-variation-group form={f} foo="bar"/>|,
+             {"topic", :variation_id}
+           ) ==
+             ~s|form={lsb_inspect("topic", :variation_id, :form, f)} foo={lsb_inspect("topic", :variation_id, :foo, "bar")}|
   end
 end

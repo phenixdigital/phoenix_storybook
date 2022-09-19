@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Event.EventComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &EventComponent.component/1
 
   def description, do: "event component description"
@@ -15,11 +15,11 @@ defmodule TreeStorybook.Event.EventComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       }
     ]

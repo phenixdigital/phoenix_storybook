@@ -1,16 +1,16 @@
 defmodule TreeStorybook.TemplateComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &TemplateComponent.template_component/1
 
   def template do
     """
-    <div id=":story_id" class="template-div">
+    <div id=":variation_id" class="template-div">
       <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
       <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
       <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
       <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
       <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
-      <.lsb-story/>
+      <.lsb-variation/>
     </div>
     """
   end
@@ -31,91 +31,91 @@ defmodule TreeStorybook.TemplateComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       },
-      %Story{
+      %Variation{
         id: :world,
-        description: "World story",
+        description: "World variation",
         attributes: %{label: "world"}
       },
-      %StoryGroup{
+      %VariationGroup{
         id: :group,
-        stories: [
-          %Story{
+        variations: [
+          %Variation{
             id: :one,
             attributes: %{label: "one"}
           },
-          %Story{
+          %Variation{
             id: :two,
             attributes: %{label: "two"}
           }
         ]
       },
-      %Story{
-        id: :story_template,
-        template: ~s|<div class="story-template"><.lsb-story/></div>|,
-        attributes: %{label: "story template"}
+      %Variation{
+        id: :variation_template,
+        template: ~s|<div class="variation-template"><.lsb-variation/></div>|,
+        attributes: %{label: "variation template"}
       },
-      %Story{
+      %Variation{
         id: :no_template,
         template: false,
-        attributes: %{label: "story without template"}
+        attributes: %{label: "variation without template"}
       },
-      %Story{
+      %Variation{
         id: :no_placeholder,
         template: "<div></div>",
         attributes: %{label: ""}
       },
-      %StoryGroup{
+      %VariationGroup{
         id: :group_template,
-        template: ~s|<div class="group-template"><.lsb-story/></div>|,
-        stories: [
-          %Story{
+        template: ~s|<div class="group-template"><.lsb-variation/></div>|,
+        variations: [
+          %Variation{
             id: :one,
             attributes: %{label: "one"}
           },
-          %Story{
+          %Variation{
             id: :two,
             attributes: %{label: "two"}
           }
         ]
       },
-      %StoryGroup{
+      %VariationGroup{
         id: :group_template_single,
-        template: ~s|<div class="group-template"><.lsb-story-group/></div>|,
-        stories: [
-          %Story{
+        template: ~s|<div class="group-template"><.lsb-variation-group/></div>|,
+        variations: [
+          %Variation{
             id: :one,
             attributes: %{label: "one"}
           },
-          %Story{
+          %Variation{
             id: :two,
             attributes: %{label: "two"}
           }
         ]
       },
-      %StoryGroup{
+      %VariationGroup{
         id: :no_placeholder_group,
         template: "<div></div>",
-        stories: [
-          %Story{
+        variations: [
+          %Variation{
             id: :one,
             attributes: %{label: "one"}
           },
-          %Story{
+          %Variation{
             id: :two,
             attributes: %{label: "two"}
           }
         ]
       },
-      %Story{
+      %Variation{
         id: :template_attributes,
-        template: ~s(<.lsb-story label="from_template" status={true}/>)
+        template: ~s(<.lsb-variation label="from_template" status={true}/>)
       }
     ]
   end

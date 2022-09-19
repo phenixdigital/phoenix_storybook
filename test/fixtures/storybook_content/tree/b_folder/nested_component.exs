@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BFolder.NestedComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
 
   def function, do: &NestedComponent.nested_component/1
 
@@ -7,9 +7,9 @@ defmodule TreeStorybook.BFolder.NestedComponent do
     [{NestedComponent, nested: 1}]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :default,
         block: """
         <.nested>hello</.nested>

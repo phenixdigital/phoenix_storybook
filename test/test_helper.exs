@@ -62,7 +62,7 @@ defmodule PhxLiveStorybook.TestRouter do
 end
 
 for endpoint <- [
-      PhxLiveStorybook.EntryLiveTestEndpoint,
+      PhxLiveStorybook.StoryLiveTestEndpoint,
       PhxLiveStorybook.PlaygroundLiveTestEndpoint
     ] do
   defmodule endpoint do

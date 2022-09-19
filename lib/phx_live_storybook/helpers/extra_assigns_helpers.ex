@@ -3,24 +3,24 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
 
   alias PhxLiveStorybook.Attr
 
-  def handle_set_story_assign(params, extra_assigns, entry, mode \\ :nested) do
+  def handle_set_variation_assign(params, extra_assigns, story, mode \\ :nested) do
     context = "assign"
-    story_id = to_story_id(params, context)
-    params = Map.delete(params, "story_id")
-    story_extra_assigns = to_story_extra_assigns(extra_assigns, story_id, mode)
+    variation_id = to_variation_id(params, context)
+    params = Map.delete(params, "variation_id")
+    variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id, mode)
 
-    story_extra_assigns =
-      for {attr, value} <- params, reduce: story_extra_assigns do
+    variation_extra_assigns =
+      for {attr, value} <- params, reduce: variation_extra_assigns do
         acc ->
           attr = String.to_atom(attr)
-          value = to_value(value, attr, entry.attributes, context)
+          value = to_value(value, attr, story.attributes, context)
           Map.put(acc, attr, value)
       end
 
-    {story_id, story_extra_assigns}
+    {variation_id, variation_extra_assigns}
   end
 
-  def handle_toggle_story_assign(params, extra_assigns, entry, mode \\ :nested) do
+  def handle_toggle_variation_assign(params, extra_assigns, story, mode \\ :nested) do
     context = "toggle"
 
     attr =
@@ -28,12 +28,12 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
       |> Map.get_lazy("attr", fn -> raise "missing attr in #{context}" end)
       |> String.to_atom()
 
-    story_id = to_story_id(params, context)
-    story_extra_assigns = to_story_extra_assigns(extra_assigns, story_id, mode)
-    current_value = Map.get(story_extra_assigns, attr)
+    variation_id = to_variation_id(params, context)
+    variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id, mode)
+    current_value = Map.get(variation_extra_assigns, attr)
     check_type!(current_value, :boolean, context)
 
-    case declared_attr_type(attr, entry.attributes) do
+    case declared_attr_type(attr, story.attributes) do
       nil ->
         :ok
 
@@ -47,21 +47,21 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
         )
     end
 
-    story_extra_assigns = Map.put(story_extra_assigns, attr, !current_value)
-    {story_id, story_extra_assigns}
+    variation_extra_assigns = Map.put(variation_extra_assigns, attr, !current_value)
+    {variation_id, variation_extra_assigns}
   end
 
-  defp to_story_id(%{"story_id" => [group_id, story_id]}, _ctx),
-    do: {String.to_atom(group_id), String.to_atom(story_id)}
+  defp to_variation_id(%{"variation_id" => [group_id, variation_id]}, _ctx),
+    do: {String.to_atom(group_id), String.to_atom(variation_id)}
 
-  defp to_story_id(%{"story_id" => story_id}, _ctx), do: String.to_atom(story_id)
-  defp to_story_id(_, context), do: raise("missing story_id in #{context}")
+  defp to_variation_id(%{"variation_id" => variation_id}, _ctx), do: String.to_atom(variation_id)
+  defp to_variation_id(_, context), do: raise("missing variation_id in #{context}")
 
-  defp to_story_extra_assigns(extra_assigns, story_id, :nested) do
-    Map.get(extra_assigns, story_id)
+  defp to_variation_extra_assigns(extra_assigns, variation_id, :nested) do
+    Map.get(extra_assigns, variation_id)
   end
 
-  defp to_story_extra_assigns(extra_assigns, _story_id, :flat) do
+  defp to_variation_extra_assigns(extra_assigns, _variation_id, :flat) do
     extra_assigns
   end
 

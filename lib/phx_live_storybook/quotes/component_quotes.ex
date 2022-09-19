@@ -2,19 +2,19 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
   @moduledoc false
 
   alias Phoenix.HTML.Safe
-  alias PhxLiveStorybook.ComponentEntry
+  alias PhxLiveStorybook.ComponentStory
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
   alias PhxLiveStorybook.TemplateHelpers
 
-  # Precompiling component preview for every component / story / theme.
-  def render_component_quotes(leave_entries, themes) do
+  # Precompiling component preview for every component / variation / theme.
+  def render_component_quotes(leave_stories, themes) do
     header_quote =
       quote do
-        def render_story(module, story_id, extra_assigns \\ %{theme: nil})
+        def render_variation(module, variation_id, extra_assigns \\ %{theme: nil})
       end
 
     component_quotes =
-      for %ComponentEntry{
+      for %ComponentStory{
             type: type,
             component: component,
             function: function,
@@ -22,28 +22,28 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
             module_name: module_name,
             imports: imports,
             aliases: aliases,
-            stories: stories,
+            variations: variations,
             template: template
-          } <- leave_entries,
-          story <- stories,
+          } <- leave_stories,
+          variation <- variations,
           {theme, _label} <- themes do
-        template = TemplateHelpers.get_template(template, story)
-        unique_story_id = Macro.underscore("#{module_name}-#{story.id}")
+        template = TemplateHelpers.get_template(template, variation)
+        unique_variation_id = Macro.underscore("#{module_name}-#{variation.id}")
 
         case type do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(
+              def render_variation(
                     unquote(module),
-                    unquote(story.id),
+                    unquote(variation.id),
                     extra_assigns = %{theme: unquote(theme)}
                   ) do
-                ComponentRenderer.render_story(
+                ComponentRenderer.render_variation(
                   unquote(function),
-                  unquote(Macro.escape(story)),
+                  unquote(Macro.escape(variation)),
                   unquote(template),
-                  Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                  Map.put(extra_assigns, :id, unquote(unique_variation_id)),
                   imports: unquote(imports),
                   aliases: unquote(aliases)
                 )
@@ -53,16 +53,16 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           :live_component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_story(
+              def render_variation(
                     unquote(module),
-                    unquote(story.id),
+                    unquote(variation.id),
                     extra_assigns = %{theme: unquote(theme)}
                   ) do
-                ComponentRenderer.render_story(
+                ComponentRenderer.render_variation(
                   unquote(component),
-                  unquote(Macro.escape(story)),
+                  unquote(Macro.escape(variation)),
                   unquote(template),
-                  Map.put(extra_assigns, :id, unquote(unique_story_id)),
+                  Map.put(extra_assigns, :id, unquote(unique_variation_id)),
                   imports: unquote(imports),
                   aliases: unquote(aliases)
                 )
@@ -78,8 +78,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
         [
           quote do
             @impl PhxLiveStorybook.BackendBehaviour
-            def render_story(_module, _story_id, _theme) do
-              raise "no story has been defined yet in this storybook"
+            def render_variation(_module, _variation_id, _theme) do
+              raise "no variation has been defined yet in this storybook"
             end
           end
         ]
@@ -88,30 +88,30 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
     [header_quote | component_quotes]
   end
 
-  # Precompiling component code snippet for every component / story.
-  def render_code_quotes(leave_entries) do
+  # Precompiling component code snippet for every component / variation.
+  def render_code_quotes(leave_stories) do
     header_quote =
       quote do
-        def render_code(module, story_id)
+        def render_code(module, variation_id)
       end
 
     component_quotes =
-      for %ComponentEntry{
+      for %ComponentStory{
             type: type,
             module: module,
-            stories: stories,
+            variations: variations,
             template: template
-          } <- leave_entries,
-          story <- stories do
-        template = TemplateHelpers.get_template(template, story)
+          } <- leave_stories,
+          variation <- variations do
+        template = TemplateHelpers.get_template(template, variation)
 
         case type do
           :component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(story.id)) do
+              def render_code(unquote(module), unquote(variation.id)) do
                 unquote(
-                  CodeRenderer.render_story_code(module.function(), story, template)
+                  CodeRenderer.render_variation_code(module.function(), variation, template)
                   |> to_raw_html()
                 )
               end
@@ -120,9 +120,9 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
           :live_component ->
             quote do
               @impl PhxLiveStorybook.BackendBehaviour
-              def render_code(unquote(module), unquote(story.id)) do
+              def render_code(unquote(module), unquote(variation.id)) do
                 unquote(
-                  CodeRenderer.render_story_code(module.component(), story, template)
+                  CodeRenderer.render_variation_code(module.component(), variation, template)
                   |> to_raw_html()
                 )
               end
@@ -137,8 +137,8 @@ defmodule PhxLiveStorybook.Quotes.ComponentQuotes do
         [
           quote do
             @impl PhxLiveStorybook.BackendBehaviour
-            def render_code(_module, _story_id) do
-              raise "no story has been defined yet in this storybook"
+            def render_code(_module, _variation_id) do
+              raise "no variation has been defined yet in this storybook"
             end
           end
         ]
