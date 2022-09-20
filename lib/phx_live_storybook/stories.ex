@@ -12,13 +12,11 @@ end
 defmodule PhxLiveStorybook.PageStory do
   @moduledoc false
   defstruct [
-    :name,
-    :description,
     :module,
-    :path,
-    :module_name,
     :storybook_path,
+    :name,
     :icon,
+    :description,
     :navigation
   ]
 end
@@ -78,7 +76,7 @@ defmodule PhxLiveStorybook.Stories do
                 [component_story(story_module, storybook_path) | acc]
 
               :page ->
-                [page_story(file_path, story_module, storybook_path) | acc]
+                [page_story(story_module, storybook_path) | acc]
             end
 
           true ->
@@ -113,18 +111,16 @@ defmodule PhxLiveStorybook.Stories do
     }
   end
 
-  defp page_story(path, module, storybook_path) do
+  defp page_story(module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
     %PageStory{
       module: module,
-      path: path,
       storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
-      module_name: module_name,
       name: module.name(),
       description: module.description(),
-      navigation: module.navigation(),
-      icon: module.icon()
+      icon: module.icon(),
+      navigation: module.navigation()
     }
   end
 

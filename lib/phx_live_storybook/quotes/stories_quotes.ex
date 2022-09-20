@@ -24,7 +24,7 @@ defmodule PhxLiveStorybook.Quotes.StoriesQuotes do
 
     single_quote =
       quote do
-        def story_file_suffix, do: ".exs"
+        def story_file_suffix, do: ".story.exs"
 
         def load_story(story_path) do
           content_path = Keyword.get(unquote(opts), :content_path)

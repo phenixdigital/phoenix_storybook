@@ -37,7 +37,6 @@ defmodule PhxLiveStorybookTest do
       assert Enum.count(stories) == 9
 
       assert %PhxLiveStorybook.PageStory{
-               module_name: "APage",
                module: Elixir.TreeStorybook.APage,
                name: "A Page",
                description: "a page",
@@ -47,7 +46,6 @@ defmodule PhxLiveStorybookTest do
              } = Enum.at(stories, 0)
 
       assert %PhxLiveStorybook.PageStory{
-               module_name: "BPage",
                module: Elixir.TreeStorybook.BPage,
                name: "B Page",
                description: "b page",

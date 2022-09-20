@@ -13,7 +13,7 @@ By default, each `variation` is rendered within a `div` in the storybook DOM.
 If you need further _sandboxing_ you can opt in for `iframe` rendering.
 
 ```elixir
-# storybook/my_component.exs
+# storybook/my_component.story.exs
 defmodule Storybook.MyComponent do
   use PhxLiveStorybook.Story, :component
 

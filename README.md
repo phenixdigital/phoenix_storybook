@@ -135,14 +135,14 @@ of _stories_:
 
 _As of `0.4.0`, only component and page stories are available._
 
-Stories are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
+Stories are described as Elixir scripts (`.story.exs`) created under your `:content_path` folder.
 Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
 sidebar.
 
 Here is an example of a stateless (function) component story:
 
 ```elixir
-# storybook/components/button.exs
+# storybook/components/button.story.exs
 defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
@@ -178,7 +178,7 @@ end
 Of all config settings, only the `:otp_app, and `:content_path` keys are mandatory.
 
 ```elixir
-# config/config.exs
+# lib/my_app_web/storybook.ex
 defmodule MyAppWeb.Storybook do
   use PhxLiveStorybook,
     # OTP name of your application.

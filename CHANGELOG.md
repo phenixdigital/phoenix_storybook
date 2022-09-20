@@ -5,6 +5,7 @@
 - change (breaking!): configuration has been moved from config.exs files to your elixir backend module.
 - change (breaking!): `stories` have been re-rebranded as `variations`, `Story` became `Variation`
   and `StoryGroup` became `VariationGroup`
+- change (breaking!): story (former entry) files must be created in `*.story.exs` files.
 - change (breaking!): `entries` have been re-rebranded as `stories`.
 - change (breaking!): `live_storybook/2` is no longer serving assets. You must add
   `storybook_assets/1` to your router in a non CSRF-protected scope.
