@@ -2,11 +2,8 @@ defmodule PhxLiveStorybook.ComponentStory do
   @moduledoc false
   defstruct [
     :module,
-    :path,
     :storybook_path,
-    :type,
     :name,
-    :module_name,
     :icon,
     :description
   ]
@@ -78,7 +75,7 @@ defmodule PhxLiveStorybook.Stories do
                 acc
 
               type when type in [:component, :live_component] ->
-                [component_story(file_path, story_module, storybook_path) | acc]
+                [component_story(story_module, storybook_path) | acc]
 
               :page ->
                 [page_story(file_path, story_module, storybook_path) | acc]
@@ -104,16 +101,13 @@ defmodule PhxLiveStorybook.Stories do
     }
   end
 
-  defp component_story(path, module, storybook_path) do
+  defp component_story(module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
     %ComponentStory{
       module: module,
-      type: module.storybook_type(),
-      path: path,
       storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
       name: module.name(),
-      module_name: module_name,
       description: module.description(),
       icon: module.icon()
     }

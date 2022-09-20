@@ -8,6 +8,14 @@ defmodule PhxLiveStorybook.StoryValidator do
   datatypes and that attribute declarations are consistent accross variations.
   """
   def validate!(story) do
+    case story.storybook_type() do
+      :component -> validate_component!(story)
+      :live_component -> validate_component!(story)
+      :page -> story
+    end
+  end
+
+  defp validate_component!(story) do
     file_path = story.__info__(:compile)[:source]
     {attributes, variations} = {story.attributes(), story.variations()}
     validate_story_name!(file_path, story)

@@ -175,10 +175,6 @@ defmodule PhxLiveStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
 
-      def file_path do
-        __MODULE__.__info__(:compile)[:source]
-      end
-
       defoverridable name: 0,
                      description: 0,
                      icon: 0,

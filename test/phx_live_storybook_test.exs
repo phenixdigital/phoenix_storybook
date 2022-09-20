@@ -21,31 +21,13 @@ defmodule PhxLiveStorybookTest do
       assert FlatListStorybook.stories() == [
                %ComponentStory{
                  module: Elixir.FlatListStorybook.AComponent,
-                 module_name: "AComponent",
-                 type: :component,
                  name: "A Component",
-                 imports: [],
-                 aliases: [],
-                 path: content_path("flat_list/a_component.exs"),
-                 storybook_path: "/a_component",
-                 container: :div,
-                 attributes: [],
-                 variations: [],
-                 template: "<.lsb-variation/>"
+                 storybook_path: "/a_component"
                },
                %ComponentStory{
                  module: Elixir.FlatListStorybook.BComponent,
-                 module_name: "BComponent",
-                 type: :live_component,
                  name: "B Component",
-                 imports: [],
-                 aliases: [],
-                 path: content_path("flat_list/b_component.exs"),
-                 storybook_path: "/b_component",
-                 container: :div,
-                 attributes: [],
-                 variations: [],
-                 template: "<.lsb-variation/>"
+                 storybook_path: "/b_component"
                }
              ]
     end
@@ -75,53 +57,16 @@ defmodule PhxLiveStorybookTest do
 
       assert %PhxLiveStorybook.ComponentStory{
                module: Elixir.TreeStorybook.Component,
-               module_name: "Component",
-               type: :component,
                name: "Component",
                description: "component description",
-               storybook_path: "/component",
-               attributes: [
-                 %PhxLiveStorybook.Attr{
-                   id: :label,
-                   required: true,
-                   type: :string,
-                   doc: "component label"
-                 }
-               ],
-               variations: [
-                 %PhxLiveStorybook.Variation{
-                   attributes: %{label: "hello"},
-                   description: "Hello variation",
-                   id: :hello
-                 },
-                 %PhxLiveStorybook.Variation{
-                   attributes: %{index: 37, label: "world"},
-                   description: "World variation",
-                   id: :world
-                 }
-               ]
+               storybook_path: "/component"
              } = Enum.at(stories, 2)
 
       assert %PhxLiveStorybook.ComponentStory{
                module: Elixir.TreeStorybook.LiveComponent,
-               module_name: "LiveComponent",
                name: "Live Component (root)",
-               type: :live_component,
-               component: LiveComponent,
                description: "live component description",
-               storybook_path: "/live_component",
-               variations: [
-                 %PhxLiveStorybook.Variation{
-                   attributes: %{label: "hello"},
-                   description: "Hello variation",
-                   id: :hello
-                 },
-                 %PhxLiveStorybook.Variation{
-                   attributes: %{label: "world"},
-                   block: "<span>inner block</span>\n",
-                   id: :world
-                 }
-               ]
+               storybook_path: "/live_component"
              } = Enum.at(stories, 3)
 
       assert %PhxLiveStorybook.Folder{
@@ -199,30 +144,12 @@ defmodule PhxLiveStorybookTest do
                %ComponentStory{
                  storybook_path: "/b_folder/bb_folder/b_ba_component",
                  module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
-                 type: :component,
-                 module_name: "BBaComponent",
-                 imports: [],
-                 aliases: [],
-                 name: "B Ba Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
-                 container: :div,
-                 attributes: [],
-                 variations: [],
-                 template: "<.lsb-variation/>"
+                 name: "B Ba Component"
                },
                %ComponentStory{
                  storybook_path: "/b_folder/bb_folder/bbb_component",
                  module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
-                 type: :component,
-                 module_name: "BbbComponent",
-                 imports: [],
-                 aliases: [],
-                 name: "Bbb Component",
-                 path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
-                 container: :div,
-                 attributes: [],
-                 variations: [],
-                 template: "<.lsb-variation/>"
+                 name: "Bbb Component"
                }
              ]
     end
@@ -234,9 +161,5 @@ defmodule PhxLiveStorybookTest do
     test "with empty sub folders" do
       assert EmptyFoldersStorybook.all_leaves() == []
     end
-  end
-
-  defp content_path(storybook_path) do
-    ["fixtures", "storybook_content", storybook_path] |> Path.join() |> Path.expand(__DIR__)
   end
 end
