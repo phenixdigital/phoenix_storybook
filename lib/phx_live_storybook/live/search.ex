@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.Search do
     root_path = live_storybook_path(socket, :root)
 
     stories =
-      backend_module.all_leaves()
+      backend_module.leaves()
       |> Enum.map(& &1.module)
       |> Enum.map(&%{module: &1, name: &1.name(), path: backend_module.story_path(&1)})
 
@@ -79,7 +79,7 @@ defmodule PhxLiveStorybook.Search do
                 class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-space-x-4 lsb-cursor-pointer"
                 tabindex="-1">
 
-                <%= live_patch(story.name, to: story.path, class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
+                <%= live_patch(story.name, to: Path.join(@root_path, story.path), class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
                 <div class="lsb lsb-truncate">
                   <%= LayoutView.render_breadcrumb(@socket, story.path, span_class: "lsb-text-xs") %>
                 </div>

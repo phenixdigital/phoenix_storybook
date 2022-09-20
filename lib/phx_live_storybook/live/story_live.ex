@@ -70,7 +70,7 @@ defmodule PhxLiveStorybook.StoryLive do
   end
 
   defp first_component_story(socket) do
-    socket.assigns.backend_module.all_leaves() |> Enum.at(0, %{}) |> Map.get(:module)
+    socket.assigns.backend_module.leaves() |> Enum.at(0, %{}) |> Map.get(:module)
   end
 
   defp load_story(socket, story_param) do

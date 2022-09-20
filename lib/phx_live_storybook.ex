@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Behaviour implemented by your backend module.
   """
 
-  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   @doc """
   Returns a configuration value from your config.exs storybook settings.
@@ -16,23 +16,28 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @doc """
   Returns a precompiled tree of your storybook stories.
   """
-  @callback stories() :: [%ComponentStory{} | %Folder{} | %PageStory{}]
+  @callback content_tree() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
 
   @doc """
   Returns all the leaves of the storybook content tree (ie. all stories that are
   not a folder)
   """
-  @callback all_leaves() :: [%ComponentStory{} | %PageStory{}]
+  @callback leaves() :: [%ComponentEntry{} | %PageEntry{}]
 
   @doc """
   Returns all the notes of the storybook content tree as a flat list.
   """
-  @callback flat_list() :: [%ComponentStory{} | %PageStory{}]
+  @callback flat_list() :: [%ComponentEntry{} | %PageEntry{}]
 
   @doc """
   Returns a story from its absolute path.
   """
-  @callback find_story_by_path(String.t()) :: %ComponentStory{} | %PageStory{}
+  @callback find_entry_by_path(String.t()) :: %ComponentEntry{} | %FolderEntry{} | %PageEntry{}
+
+  @doc """
+  Returns the storybook path of any story, from its module.
+  """
+  @callback story_path(atom()) :: String.t()
 end
 
 defmodule PhxLiveStorybook do
@@ -42,76 +47,141 @@ defmodule PhxLiveStorybook do
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
-  alias PhxLiveStorybook.Quotes.{ConfigQuotes, StoriesQuotes}
-  alias PhxLiveStorybook.Stories
+  alias PhxLiveStorybook.Entries
+  alias PhxLiveStorybook.StoryValidator
+
+  require Logger
 
   @doc false
   defmacro __using__(opts) do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
-    backend_module = __CALLER__.module
-    otp_app = opts[:otp_app]
-    stories = stories(opts)
-    leave_stories = Stories.all_leaves(stories)
 
     [
-      recompilation_quotes(backend_module, otp_app, leave_stories),
-      ConfigQuotes.config_quotes(opts),
-      StoriesQuotes.stories_quotes(opts, stories)
+      behaviour_quote(),
+      recompilation_quotes(opts),
+      config_quotes(opts),
+      stories_quotes(opts)
     ]
   end
 
-  # This quote triggers recompilation for the module whenever something
-  # under content path has been touched
-  defp recompilation_quotes(backend_module, otp_app, leave_stories) do
-    content_path = Application.get_env(otp_app, backend_module, []) |> Keyword.get(:content_path)
+  defp behaviour_quote do
+    quote do
+      @behaviour PhxLiveStorybook.BackendBehaviour
+    end
+  end
+
+  # This quote triggers recompilation for the module whenever a new file or any index file under
+  # content_path has been touched.
+  defp recompilation_quotes(opts) do
+    content_path = Keyword.get(opts, :content_path)
     components_pattern = if content_path, do: "#{content_path}/**/*"
 
-    modules = for %{component: mod} <- leave_stories, !is_nil(mod), into: MapSet.new(), do: mod
+    quote do
+      @paths if unquote(content_path), do: Path.wildcard(unquote(components_pattern)), else: []
+      @paths_hash :erlang.md5(@paths)
 
-    modules =
-      for %{function: fun} <- leave_stories,
-          !is_nil(fun),
-          into: modules,
-          do: Function.info(fun)[:module]
-
-    modules_with_paths = for mod <- modules, do: {mod, to_string(mod.__info__(:compile)[:source])}
-
-    component_quotes =
-      for {module, path} <- modules_with_paths do
-        quote do
-          @external_resource unquote(path)
-          require unquote(module)
+      def __mix_recompile__? do
+        if unquote(components_pattern) do
+          unquote(components_pattern) |> Path.wildcard() |> :erlang.md5() !=
+            @paths_hash
+        else
+          false
         end
       end
+    end
+  end
 
-    tree_quote =
-      quote do
-        @paths if unquote(content_path), do: Path.wildcard(unquote(components_pattern)), else: []
-        @paths_hash :erlang.md5(@paths)
+  @doc false
+  defp stories_quotes(opts) do
+    content_path = Keyword.get(opts, :content_path)
+    content_tree = content_tree(opts)
+    entries = Entries.flat_list(content_tree)
+    leaves = Entries.leaves(content_tree)
 
-        # this file should be recompiled whenever any story file is touched
-        for path <- @paths do
-          @external_resource path
-        end
-
-        # this file should be recompiled whenever any file under content_path has been created or
-        # deleted
-        def __mix_recompile__? do
-          if unquote(components_pattern) do
-            unquote(components_pattern) |> Path.wildcard() |> :erlang.md5() !=
-              @paths_hash
-          else
-            false
+    find_entry_by_path_quotes =
+      for entry <- entries do
+        quote do
+          @impl PhxLiveStorybook.BackendBehaviour
+          def find_entry_by_path(unquote(entry.storybook_path)) do
+            unquote(Macro.escape(entry))
           end
         end
       end
 
-    [tree_quote | component_quotes]
+    story_path_quotes =
+      for entry <- leaves do
+        quote do
+          @impl PhxLiveStorybook.BackendBehaviour
+          def story_path(unquote(entry.module)) do
+            unquote(
+              entry.storybook_path
+              |> String.replace_prefix(content_path, "")
+              |> String.replace_prefix("/", "")
+              |> String.replace_suffix(Entries.story_file_suffix(), "")
+            )
+          end
+        end
+      end
+
+    single_quote =
+      quote do
+        def load_story(story_path) do
+          content_path = Keyword.get(unquote(opts), :content_path)
+          story_path = String.replace_prefix(story_path, "/", "")
+
+          story_path =
+            if String.ends_with?(story_path, Entries.story_file_suffix()) do
+              story_path
+            else
+              story_path <> Entries.story_file_suffix()
+            end
+
+          try do
+            Code.put_compiler_option(:ignore_module_conflict, true)
+            [{story_module, _} | _] = Code.compile_file(story_path, content_path)
+            StoryValidator.validate!(story_module)
+          rescue
+            e in Code.LoadError ->
+              Logger.bare_log(:warning, "could not load story #{inspect(story_path)}")
+              Logger.bare_log(:warning, inspect(e))
+              nil
+          after
+            Code.put_compiler_option(:ignore_module_conflict, false)
+          end
+        end
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def find_entry_by_path(_), do: nil
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def story_path(_), do: nil
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def content_tree, do: unquote(Macro.escape(content_tree))
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def leaves, do: unquote(Macro.escape(Entries.leaves(leaves)))
+
+        @impl PhxLiveStorybook.BackendBehaviour
+        def flat_list, do: unquote(Macro.escape(entries))
+      end
+
+    find_entry_by_path_quotes ++ story_path_quotes ++ [single_quote]
   end
 
-  defp stories(opts) do
+  @doc false
+  defp config_quotes(opts) do
+    quote do
+      @impl PhxLiveStorybook.BackendBehaviour
+      def config(key, default \\ nil) do
+        Keyword.get(unquote(opts), key, default)
+      end
+    end
+  end
+
+  defp content_tree(opts) do
     content_path = Keyword.get(opts, :content_path)
     folders_config = Keyword.get(opts, :folders, [])
-    Stories.stories(content_path, folders_config)
+    Entries.content_tree(content_path, folders_config)
   end
 end

@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.Sidebar do
   use PhxLiveStorybook.Web, :live_component
 
   alias Phoenix.LiveView.JS
-  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   def mount(socket) do
     {:ok, assign(socket, :opened_folders, MapSet.new())}
@@ -18,16 +18,16 @@ defmodule PhxLiveStorybook.Sidebar do
      |> assign(assigns)
      |> assign(
        root_path: root_path,
-       root_stories: [root_story(backend_module)],
+       root: [root_entry(backend_module)],
        stories_flat_list: backend_module.flat_list(),
        current_path: current_path
      )
      |> assign_opened_folders(root_path)}
   end
 
-  defp root_story(backend_module) do
-    %Folder{
-      items: backend_module.stories(),
+  defp root_entry(backend_module) do
+    %FolderEntry{
+      items: backend_module.content_tree(),
       storybook_path: "",
       name: "root",
       nice_name: "Storybook",
@@ -87,7 +87,7 @@ defmodule PhxLiveStorybook.Sidebar do
       </div>
 
       <nav class="lsb lsb-flex-1 xl:lsb-sticky">
-        <%= render_stories(assign(assigns, stories: @root_stories, folder_path: @root_path, root: true)) %>
+        <%= render_stories(assign(assigns, stories: @root, folder_path: @root_path, root: true)) %>
       </nav>
 
       <div class="lsb lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
@@ -108,7 +108,7 @@ defmodule PhxLiveStorybook.Sidebar do
       <%= for story <- @stories do %>
         <li class="lsb">
           <%= case story do %>
-            <% %Folder{nice_name: nice_name, storybook_path: storybook_path, items: items, icon: folder_icon} -> %>
+            <% %FolderEntry{nice_name: nice_name, storybook_path: storybook_path, items: items, icon: folder_icon} -> %>
               <% folder_path = Path.join(@root_path, storybook_path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div class="lsb lsb-flex lsb-items-center lsb-py-3 lg:lsb-py-1.5 -lsb-ml-2 lsb-group lsb-cursor-pointer lsb-group hover:lsb-text-indigo-600"
@@ -135,7 +135,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= render_stories(assign(assigns, stories: items, folder_path: Path.join(@folder_path, storybook_path), root: false)) %>
               <% end %>
 
-            <% %ComponentStory{name: name, storybook_path: storybook_path, icon: icon} -> %>
+            <% %ComponentEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
               <% story_path = Path.join(@root_path, storybook_path) %>
               <div class={story_class(@current_path, story_path)}>
                 <%= if icon do %>
@@ -144,7 +144,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <%= patch_to(assigns, name, story_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
 
-            <% %PageStory{name: name, storybook_path: storybook_path, icon: icon} -> %>
+            <% %PageEntry{name: name, storybook_path: storybook_path, icon: icon} -> %>
               <% story_path = Path.join(@root_path, storybook_path) %>
               <div class={story_class(@current_path, story_path)}>
                 <%= if icon do %>

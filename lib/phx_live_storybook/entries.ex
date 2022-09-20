@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.ComponentStory do
+defmodule PhxLiveStorybook.ComponentEntry do
   @moduledoc false
   defstruct [
     :module,
@@ -9,7 +9,7 @@ defmodule PhxLiveStorybook.ComponentStory do
   ]
 end
 
-defmodule PhxLiveStorybook.PageStory do
+defmodule PhxLiveStorybook.PageEntry do
   @moduledoc false
   defstruct [
     :module,
@@ -21,19 +21,22 @@ defmodule PhxLiveStorybook.PageStory do
   ]
 end
 
-defmodule PhxLiveStorybook.Folder do
+defmodule PhxLiveStorybook.FolderEntry do
   @moduledoc false
   defstruct [:name, :nice_name, :items, :storybook_path, :icon]
 end
 
 # This module performs a recursive scan of all files/folders under :content_path
 # and creates an in-memory tree hierarchy of content using above Story structs.
-defmodule PhxLiveStorybook.Stories do
+defmodule PhxLiveStorybook.Entries do
   @moduledoc false
-  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   @doc false
-  def stories(path, folders_config) do
+  def story_file_suffix, do: ".story.exs"
+
+  @doc false
+  def content_tree(path, folders_config) do
     if path && File.dir?(path) do
       recursive_scan(path, folders_config)
     else
@@ -61,7 +64,7 @@ defmodule PhxLiveStorybook.Stories do
               | acc
             ]
 
-          Path.extname(file_path) == ".exs" ->
+          String.ends_with?(file_path, story_file_suffix()) ->
             story_module = story_module(file_path)
 
             unless Code.ensure_loaded?(story_module) do
@@ -87,7 +90,7 @@ defmodule PhxLiveStorybook.Stories do
   end
 
   defp folder_story(file_name, folder_config, storybook_path, items) do
-    %Folder{
+    %FolderEntry{
       name: file_name,
       nice_name:
         Keyword.get_lazy(folder_config, :name, fn ->
@@ -102,7 +105,7 @@ defmodule PhxLiveStorybook.Stories do
   defp component_story(module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
-    %ComponentStory{
+    %ComponentEntry{
       module: module,
       storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
       name: module.name(),
@@ -114,7 +117,7 @@ defmodule PhxLiveStorybook.Stories do
   defp page_story(module, storybook_path) do
     module_name = module |> to_string() |> String.split(".") |> Enum.at(-1)
 
-    %PageStory{
+    %PageEntry{
       module: module,
       storybook_path: Path.join(["/", storybook_path, Macro.underscore(module_name)]),
       name: module.name(),
@@ -124,7 +127,7 @@ defmodule PhxLiveStorybook.Stories do
     }
   end
 
-  @story_priority %{PageStory => 0, ComponentStory => 1, Folder => 2}
+  @story_priority %{PageEntry => 0, ComponentEntry => 1, FolderEntry => 2}
   defp sort_stories(stories) do
     Enum.sort_by(stories, &Map.get(@story_priority, &1.__struct__))
   end
@@ -148,22 +151,22 @@ defmodule PhxLiveStorybook.Stories do
     end
   end
 
-  def all_leaves(stories, acc \\ []) do
-    Enum.flat_map(stories, fn story ->
-      case story do
-        %ComponentStory{} -> [story | acc]
-        %PageStory{} -> [story | acc]
-        %Folder{items: items} -> all_leaves(items, acc)
+  def leaves(content_tree, acc \\ []) do
+    Enum.flat_map(content_tree, fn entry ->
+      case entry do
+        %ComponentEntry{} -> [entry | acc]
+        %PageEntry{} -> [entry | acc]
+        %FolderEntry{items: items} -> leaves(items, acc)
       end
     end)
   end
 
-  def flat_list(stories, acc \\ []) do
-    Enum.flat_map(stories, fn story ->
-      case story do
-        %ComponentStory{} -> [story | acc]
-        %PageStory{} -> [story | acc]
-        %Folder{items: items} -> [story | flat_list(items, acc)]
+  def flat_list(content_tree, acc \\ []) do
+    Enum.flat_map(content_tree, fn entry ->
+      case entry do
+        %ComponentEntry{} -> [entry | acc]
+        %PageEntry{} -> [entry | acc]
+        %FolderEntry{items: items} -> [entry | flat_list(items, acc)]
       end
     end)
   end

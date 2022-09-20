@@ -2,16 +2,16 @@ defmodule PhxLiveStorybook.StoryTest do
   use ExUnit.Case, async: true
 
   test "component story default behaviors" do
-    defmodule MyComponentStory do
+    defmodule MyComponentEntry do
       use PhxLiveStorybook.Story, :component
       def function, do: nil
     end
 
-    assert MyComponentStory.name() == "My Component Story"
-    assert MyComponentStory.variations() == []
-    assert MyComponentStory.storybook_type() == :component
-    assert MyComponentStory.description() == nil
-    assert MyComponentStory.icon() == nil
+    assert MyComponentEntry.name() == "My Component Entry"
+    assert MyComponentEntry.variations() == []
+    assert MyComponentEntry.storybook_type() == :component
+    assert MyComponentEntry.description() == nil
+    assert MyComponentEntry.icon() == nil
   end
 
   test "live_component story default behaviors" do
@@ -28,16 +28,16 @@ defmodule PhxLiveStorybook.StoryTest do
   end
 
   test "page story default behaviors" do
-    defmodule MyPageStory do
+    defmodule MyPageEntry do
       use PhxLiveStorybook.Story, :page
       def component, do: nil
     end
 
-    assert MyPageStory.name() == "My Page Story"
-    assert MyPageStory.storybook_type() == :page
-    assert MyPageStory.description() == nil
-    assert MyPageStory.icon() == nil
-    assert MyPageStory.navigation() == []
-    assert MyPageStory.render(%{}) == false
+    assert MyPageEntry.name() == "My Page Entry"
+    assert MyPageEntry.storybook_type() == :page
+    assert MyPageEntry.description() == nil
+    assert MyPageEntry.icon() == nil
+    assert MyPageEntry.navigation() == []
+    assert MyPageEntry.render(%{}) == false
   end
 end

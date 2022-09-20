@@ -5,7 +5,7 @@ defmodule PhxLiveStorybook.LayoutView do
   alias Makeup.Styles.HTML.StyleMap
   alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.AssetHelpers
-  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
+  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
 
   @env Application.compile_env(:phx_live_storybook, :env)
 
@@ -79,12 +79,12 @@ defmodule PhxLiveStorybook.LayoutView do
     {_, breadcrumb} =
       for path_item <- Path.split(story_path), reduce: {"", []} do
         {path, breadcrumb} ->
-          path = path <> "/" <> path_item
+          path = Path.join(["/", path, path_item])
 
-          case backend_module.find_story_by_path(path) do
-            %Folder{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
-            %ComponentStory{name: name} -> {path, [name | breadcrumb]}
-            %PageStory{name: name} -> {path, [name | breadcrumb]}
+          case backend_module.find_entry_by_path(path) do
+            %FolderEntry{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
+            %ComponentEntry{name: name} -> {path, [name | breadcrumb]}
+            %PageEntry{name: name} -> {path, [name | breadcrumb]}
           end
       end
 

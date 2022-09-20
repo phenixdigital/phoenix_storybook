@@ -10,7 +10,7 @@ defmodule PhxLiveStorybook.SearchTest do
     test "has no story" do
       {_document, html} = render_search(EmptyFilesStorybook)
 
-      assert EmptyFilesStorybook.stories() == []
+      assert EmptyFilesStorybook.content_tree() == []
       assert String.contains?(html, "No stories found")
     end
 
