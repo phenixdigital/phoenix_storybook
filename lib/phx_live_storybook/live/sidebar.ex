@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Sidebar do
 
   def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
     root_path = Path.join("/", live_storybook_path(socket, :root))
-    current_path = if current_path, do: Path.join([root_path | current_path]), else: root_path
+    current_path = if current_path, do: Path.join(root_path, current_path), else: root_path
 
     {:ok,
      socket
@@ -54,7 +54,7 @@ defmodule PhxLiveStorybook.Sidebar do
     {opened_folders, _} =
       for path_item <-
             assigns.current_path
-            |> String.split("/")
+            |> Path.split()
             |> Enum.reject(&(&1 == ""))
             |> Enum.slice(0..-2),
           reduce: {opened_folders, "/"} do

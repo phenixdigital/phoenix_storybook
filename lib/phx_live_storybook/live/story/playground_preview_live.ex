@@ -3,7 +3,6 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   use PhxLiveStorybook.Web, :live_view
 
   alias Phoenix.PubSub
-  alias PhxLiveStorybook.ComponentStory
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
@@ -11,7 +10,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   def mount(_params, session, socket) do
-    story = load_story(String.to_atom(session["backend_module"]), session["story_path"])
+    story = String.to_atom(session["backend_module"]).load_story(session["story_path"])
 
     if connected?(socket) && session["topic"] do
       PubSub.subscribe(PhxLiveStorybook.PubSub, session["topic"])
@@ -23,7 +22,8 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
       )
     end
 
-    variation_or_group = Enum.find(story.variations, &(&1.id == session["variation_id"]))
+    variation_or_group =
+      Enum.find(story.variations(), &(to_string(&1.id) == session["variation_id"]))
 
     {:ok,
      socket
@@ -99,16 +99,12 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
     val
   end
 
-  defp load_story(backend_module, story_param) do
-    story_storybook_path = "/#{Enum.join(story_param, "/")}"
-    backend_module.find_story_by_path(story_storybook_path)
+  defp fun_or_component(story) do
+    case story.storybook_type() do
+      :component -> story.function()
+      :live_component -> story.component()
+    end
   end
-
-  defp fun_or_component(%ComponentStory{type: :live_component, component: component}),
-    do: component
-
-  defp fun_or_component(%ComponentStory{type: :component, function: function}),
-    do: function
 
   def handle_info({:new_attributes_input, attrs}, socket) do
     variations =

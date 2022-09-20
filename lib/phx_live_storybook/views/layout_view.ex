@@ -9,8 +9,8 @@ defmodule PhxLiveStorybook.LayoutView do
 
   @env Application.compile_env(:phx_live_storybook, :env)
 
-  def render_breadcrumb(socket, story, opts \\ []) do
-    breadcrumb(socket, story)
+  def render_breadcrumb(socket, story_path, opts \\ []) do
+    breadcrumb(socket, story_path)
     |> Enum.intersperse(:separator)
     |> Enum.map_join("", fn
       :separator ->
@@ -73,11 +73,11 @@ defmodule PhxLiveStorybook.LayoutView do
 
   defp asset_file_name(path, _env), do: path
 
-  defp breadcrumb(socket, story) do
+  defp breadcrumb(socket, story_path) do
     backend_module = backend_module(socket)
 
     {_, breadcrumb} =
-      for path_item <- String.split(story.storybook_path, "/", trim: true), reduce: {"", []} do
+      for path_item <- Path.split(story_path), reduce: {"", []} do
         {path, breadcrumb} ->
           path = path <> "/" <> path_item
 

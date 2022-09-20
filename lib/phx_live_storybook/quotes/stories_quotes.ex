@@ -3,10 +3,12 @@ defmodule PhxLiveStorybook.Quotes.StoriesQuotes do
 
   alias PhxLiveStorybook.Stories
 
+  require Logger
+
   @doc false
   # This quote inlines a stories/0 function to return the content
   # tree of current storybook.
-  def stories_quotes(stories) do
+  def stories_quotes(opts, stories) do
     flat_list = Stories.flat_list(stories)
 
     find_story_by_path_quotes =
@@ -21,6 +23,43 @@ defmodule PhxLiveStorybook.Quotes.StoriesQuotes do
 
     single_quote =
       quote do
+        def story_file_suffix, do: ".exs"
+
+        def load_story(story_path) do
+          content_path = Keyword.get(unquote(opts), :content_path)
+          story_path = String.replace_prefix(story_path, "/", "")
+
+          story_path =
+            if String.ends_with?(story_path, story_file_suffix()) do
+              story_path
+            else
+              story_path <> story_file_suffix()
+            end
+
+          try do
+            Code.put_compiler_option(:ignore_module_conflict, true)
+            [{story_module, _} | _] = Code.compile_file(story_path, content_path)
+            story_module
+          rescue
+            e in Code.LoadError ->
+              Logger.bare_log(:warning, "could not load story #{inspect(story_path)}")
+              Logger.bare_log(:warning, inspect(e))
+              nil
+          after
+            Code.put_compiler_option(:ignore_module_conflict, false)
+          end
+        end
+
+        def story_path(story_module) do
+          content_path = Keyword.get(unquote(opts), :content_path)
+
+          story_module.__info__(:compile)[:source]
+          |> to_string()
+          |> String.replace_prefix(content_path, "")
+          |> String.replace_prefix("/", "")
+          |> String.replace_suffix(story_file_suffix(), "")
+        end
+
         @impl PhxLiveStorybook.BackendBehaviour
         def find_story_by_path(_), do: nil
 

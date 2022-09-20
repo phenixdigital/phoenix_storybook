@@ -1,23 +1,26 @@
 defmodule PhxLiveStorybook.StoryLive do
   use PhxLiveStorybook.Web, :live_view
 
+  alias Phoenix.HTML.Safe
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhxLiveStorybook.{ComponentStory, PageStory}
+
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
   alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
   alias PhxLiveStorybook.{EventLog, Variation, VariationGroup}
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
+  alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
 
   import PhxLiveStorybook.NavigationHelpers
 
   def mount(_params, session, socket) do
     playground_topic = "playground-#{inspect(self())}"
+    event_logs_topic = "event_logs:#{inspect(self())}"
 
     if connected?(socket) do
       PubSub.subscribe(PhxLiveStorybook.PubSub, playground_topic)
-      PubSub.subscribe(PhxLiveStorybook.PubSub, "event_logs:#{inspect(self())}")
+      PubSub.subscribe(PhxLiveStorybook.PubSub, event_logs_topic)
     end
 
     {:ok,
@@ -34,7 +37,7 @@ defmodule PhxLiveStorybook.StoryLive do
   def handle_params(params, _uri, socket) when params == %{} do
     case first_component_story(socket) do
       nil -> {:noreply, socket}
-      story -> {:noreply, patch_to(socket, story)}
+      story -> {:noreply, patch_to(socket, socket.assigns.backend_module.story_path(story))}
     end
   end
 
@@ -44,18 +47,18 @@ defmodule PhxLiveStorybook.StoryLive do
         raise StoryNotFound, "unknown story #{inspect(story_path)}"
 
       story ->
-        variation = current_variation(story, params)
+        variation = current_variation(story.storybook_type(), story, params)
 
         {:noreply,
          assign(socket,
            story: story,
-           story_path: story_path,
+           story_path: socket.assigns.backend_module.story_path(story),
            variation: variation,
            variation_id: if(variation, do: variation.id, else: nil),
-           page_title: story.name,
+           page_title: story.name(),
            tab: current_tab(params, story),
            theme: current_theme(params, socket),
-           variation_extra_assigns: init_variation_extra_assigns(story),
+           variation_extra_assigns: init_variation_extra_assigns(story.storybook_type(), story),
            playground_error: nil
          )
          |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
@@ -67,22 +70,27 @@ defmodule PhxLiveStorybook.StoryLive do
   end
 
   defp first_component_story(socket) do
-    socket.assigns.backend_module.all_leaves() |> Enum.at(0)
+    socket.assigns.backend_module.all_leaves() |> Enum.at(0, %{}) |> Map.get(:module)
   end
 
   defp load_story(socket, story_param) do
-    story_storybook_path = Path.join(["/" | story_param])
-    socket.assigns.backend_module.find_story_by_path(story_storybook_path)
+    story_path = Path.join(story_param)
+    socket.assigns.backend_module.load_story(story_path)
   end
 
-  defp current_variation(%ComponentStory{variations: variations}, %{
-         "variation_id" => variation_id
-       }) do
-    Enum.find(variations, &(to_string(&1.id) == variation_id))
+  defp current_variation(type, story, %{"variation_id" => variation_id})
+       when type in [:component, :live_component] do
+    Enum.find(story.variations(), &(to_string(&1.id) == variation_id))
   end
 
-  defp current_variation(%ComponentStory{variations: [variation | _]}, _), do: variation
-  defp current_variation(_, _), do: nil
+  defp current_variation(type, story, _) when type in [:component, :live_component] do
+    case story.variations() do
+      [variation | _] -> variation
+      _ -> nil
+    end
+  end
+
+  defp current_variation(_type, _story, _params), do: nil
 
   defp current_tab(params, story) do
     case Map.get(params, "tab") do
@@ -91,9 +99,19 @@ defmodule PhxLiveStorybook.StoryLive do
     end
   end
 
-  defp default_tab(%ComponentStory{}), do: :variations
-  defp default_tab(%PageStory{navigation: []}), do: nil
-  defp default_tab(%PageStory{navigation: [{tab, _, _} | _]}), do: tab
+  defp default_tab(story_module) when is_atom(story_module) do
+    default_tab(story_module.storybook_type(), story_module)
+  end
+
+  defp default_tab(:component, _story_module), do: :variations
+  defp default_tab(:live_component, _story_module), do: :variations
+
+  defp default_tab(:page, story_module) do
+    case story_module.navigation() do
+      [] -> nil
+      [{tab, _, _} | _] -> tab
+    end
+  end
 
   defp current_theme(params, socket) do
     case Map.get(params, "theme") do
@@ -109,17 +127,17 @@ defmodule PhxLiveStorybook.StoryLive do
     end
   end
 
-  defp init_variation_extra_assigns(%ComponentStory{variations: variations}) do
+  defp init_variation_extra_assigns(type, story) when type in [:component, :live_component] do
     extra_assigns =
-      for %Variation{id: variation_id} <- variations, into: %{}, do: {variation_id, %{}}
+      for %Variation{id: variation_id} <- story.variations(), into: %{}, do: {variation_id, %{}}
 
-    for %VariationGroup{id: group_id, variations: variations} <- variations,
+    for %VariationGroup{id: group_id, variations: variations} <- story.variations(),
         %Variation{id: variation_id} <- variations,
         into: extra_assigns,
         do: {{group_id, variation_id}, %{}}
   end
 
-  defp init_variation_extra_assigns(_), do: nil
+  defp init_variation_extra_assigns(_type, _story), do: nil
 
   def render(assigns = %{story: _story}) do
     ~H"""
@@ -127,7 +145,7 @@ defmodule PhxLiveStorybook.StoryLive do
       <div class="lsb">
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
-            <%= if icon = @story.icon do %>
+            <%= if icon = @story.icon() do %>
               <i class={"lsb #{icon} lsb-pr-2 lsb-text-indigo-600"}></i>
             <% end %>
             <%= @story.name() %>
@@ -140,22 +158,26 @@ defmodule PhxLiveStorybook.StoryLive do
         </div>
       </div>
 
-      <%= render_content(@story, assigns) %>
+      <%= render_content(@story.storybook_type(), @story, assigns) %>
     </div>
     """
   end
 
   def render(assigns), do: ~H""
 
-  defp navigation_tabs(%ComponentStory{}) do
-    [
-      {:variations, "Stories", "far fa-eye"},
-      {:playground, "Playground", "far fa-dice"},
-      {:source, "Source", "far fa-file-code"}
-    ]
-  end
+  defp navigation_tabs(story) do
+    case story.storybook_type() do
+      type when type in [:component, :live_component] ->
+        [
+          {:variations, "Stories", "far fa-eye"},
+          {:playground, "Playground", "far fa-dice"},
+          {:source, "Source", "far fa-file-code"}
+        ]
 
-  defp navigation_tabs(%PageStory{navigation: navigation}), do: navigation
+      :page ->
+        story.navigation()
+    end
+  end
 
   defp render_navigation_tabs([], assigns), do: ~H""
 
@@ -163,7 +185,7 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
-      <.form let={f} for={:navigation} id={"#{Macro.underscore(@story.module)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
+      <.form let={f} for={:navigation} id={"#{Macro.underscore(@story)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
         <%= select f, :tab, navigation_select_options(tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
       </.form>
 
@@ -204,10 +226,11 @@ defmodule PhxLiveStorybook.StoryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp render_content(story = %ComponentStory{}, assigns = %{tab: :variations}) do
+  defp render_content(type, story, assigns = %{tab: :variations})
+       when type in [:component, :live_component] do
     ~H"""
     <div class="lsb lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(story)}"}>
-      <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
+      <%= for variation = %{id: variation_id, description: description} <- story.variations(),
               variation_extra_assigns = variation_extra_assigns(variation, assigns) do %>
         <div id={anchor_id(variation)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
@@ -221,7 +244,7 @@ defmodule PhxLiveStorybook.StoryLive do
                 <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, story, %{tab: :playground, variation_id: variation.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
+            <%= live_patch to: path_to(@socket, @story_path, %{tab: :playground, variation_id: variation.id, theme: @theme}), class: "lsb lsb-group lsb-hidden md:group-hover:lsb-inline-block" do %>
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-300 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
@@ -231,18 +254,18 @@ defmodule PhxLiveStorybook.StoryLive do
 
           <!-- Variation component preview -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
-            <%= if @story.container() == :iframe do %>
+            <%= if story.container() == :iframe do %>
               <iframe
                 phx-update="ignore"
                 id={iframe_id(@story, variation)}
-                src={live_storybook_path(@socket, :story_iframe, @story_path, variation_id: variation.id, theme: @theme)}
+                src={live_storybook_path(@socket, :story_iframe, Path.split(@story_path), variation_id: variation.id, theme: @theme)}
                 class="lsb-w-full lsb-border-0"
                 height="0"
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
               <div class={LayoutView.sandbox_class(assigns)} style="width: 100%;">
-                <%= @backend_module.render_variation(@story.module(), variation_id, variation_extra_assigns) %>
+                <%= ComponentRenderer.render_variation(story, variation_id, variation_extra_assigns) %>
               </div>
             <% end %>
           </div>
@@ -252,27 +275,28 @@ defmodule PhxLiveStorybook.StoryLive do
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <i class="lsb fa fa-copy lsb-text-inherit"></i>
             </div>
-            <%= @backend_module.render_code(@story.module(), variation_id) %>
+            <%= CodeRenderer.render_variation_code(story, variation_id) %>
           </div>
-
         </div>
       <% end %>
     </div>
     """
   end
 
-  defp render_content(%ComponentStory{}, assigns = %{tab: :source}) do
+  defp render_content(type, story, assigns = %{tab: :source})
+       when type in [:component, :live_component] do
     ~H"""
     <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
-      <%= @backend_module.render_source(@story.module) %>
+      <%= story |> CodeRenderer.render_component_source() |> to_raw_html() %>
     </div>
     """
   end
 
-  defp render_content(%ComponentStory{}, assigns = %{tab: :playground}) do
+  defp render_content(type, story_module, assigns = %{tab: :playground})
+       when type in [:component, :live_component] do
     ~H"""
     <.live_component module={Playground} id="playground"
-      story={@story} story_path={@story_path} backend_module={@backend_module}
+      story={story_module} story_path={@story_path} backend_module={@backend_module}
       variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
@@ -281,15 +305,23 @@ defmodule PhxLiveStorybook.StoryLive do
     """
   end
 
-  defp render_content(%ComponentStory{}, _assigns = %{tab: tab}),
-    do: raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
+  defp render_content(type, _story, _assigns = %{tab: tab})
+       when type in [:component, :live_component],
+       do: raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
 
-  defp render_content(%PageStory{}, assigns) do
+  defp render_content(:page, story, assigns) do
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(assigns)}"}>
-      <%= raw(@backend_module.render_page(@story.module, %{tab: @tab, theme: @theme})) %>
+      <%= story.render(%{tab: @tab, theme: @theme}) |> to_raw_html() %>
     </div>
     """
+  end
+
+  defp to_raw_html(heex) do
+    heex
+    |> Safe.to_iodata()
+    |> IO.iodata_to_binary()
+    |> Phoenix.HTML.raw()
   end
 
   defp variation_extra_assigns(%Variation{id: variation_id}, assigns) do
@@ -311,8 +343,8 @@ defmodule PhxLiveStorybook.StoryLive do
     "iframe-#{story_id(story)}-variation-#{variation.id}"
   end
 
-  defp story_id(story) do
-    story.module |> Macro.underscore() |> String.replace("/", "_")
+  defp story_id(story_module) do
+    story_module |> Macro.underscore() |> String.replace("/", "_")
   end
 
   defp anchor_id(%{id: id}) do
@@ -326,15 +358,16 @@ defmodule PhxLiveStorybook.StoryLive do
       {:set_theme, String.to_atom(theme)}
     )
 
-    {:noreply, socket |> assign(:theme, theme) |> patch_to(socket.assigns.story, %{theme: theme})}
+    {:noreply,
+     socket |> assign(:theme, theme) |> patch_to(socket.assigns.story_path, %{theme: theme})}
   end
 
   def handle_event("set-tab", %{"tab" => tab}, socket) do
-    {:noreply, patch_to(socket, socket.assigns.story, %{tab: tab})}
+    {:noreply, patch_to(socket, socket.assigns.story_path, %{tab: tab})}
   end
 
   def handle_event("set-tab", %{"navigation" => %{"tab" => tab}}, socket) do
-    {:noreply, patch_to(socket, socket.assigns.story, %{tab: tab})}
+    {:noreply, patch_to(socket, socket.assigns.story_path, %{tab: tab})}
   end
 
   def handle_event("clear-playground-error", _, socket) do

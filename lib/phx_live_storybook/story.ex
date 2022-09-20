@@ -90,7 +90,6 @@ defmodule PhxLiveStorybook.Story do
       \"\"\"
     end
   end
-
   ```
   """
 
@@ -175,6 +174,10 @@ defmodule PhxLiveStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
 
+      def file_path do
+        __MODULE__.__info__(:compile)[:source]
+      end
+
       defoverridable name: 0,
                      description: 0,
                      icon: 0,
@@ -214,6 +217,10 @@ defmodule PhxLiveStorybook.Story do
       def navigation, do: []
 
       def render(_assigns), do: false
+
+      def file_path do
+        __MODULE__.__info__(:compile)[:source]
+      end
 
       defoverridable name: 0, description: 0, icon: 0, navigation: 0, container: 0, render: 1
     end

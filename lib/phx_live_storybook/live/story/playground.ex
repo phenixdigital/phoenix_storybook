@@ -4,7 +4,6 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhxLiveStorybook.Attr
-  alias PhxLiveStorybook.ComponentStory
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.TemplateHelpers
@@ -94,7 +93,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp assign_playground_fields(socket = %{assigns: %{story: story, variations: variations}}) do
     fields =
-      for attr = %Attr{type: t} <- story.attributes, t not in ~w(block slot)a, reduce: %{} do
+      for attr = %Attr{type: t} <- story.attributes(), t not in ~w(block slot)a, reduce: %{} do
         acc ->
           attr_examples = for %{attributes: attrs} <- variations, do: Map.get(attrs, attr.id)
 
@@ -126,7 +125,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp assign_playground_slots(socket = %{assigns: %{story: story, variations: variations}}) do
     slots =
-      for %Attr{type: :slot, id: attr_id} <- story.attributes, reduce: %{} do
+      for %Attr{type: :slot, id: attr_id} <- story.attributes(), reduce: %{} do
         acc ->
           slots =
             for variation <- variations do
@@ -209,8 +208,8 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= if @story.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@story)}
-            src={live_storybook_path(@socket, :story_iframe, @story_path,
-                variation_id: inspect(@variation_id), theme: @theme, playground: true,
+            src={live_storybook_path(@socket, :story_iframe, Path.split(@story_path),
+                variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
                 topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
@@ -221,8 +220,8 @@ defmodule PhxLiveStorybook.Story.Playground do
                 id: playground_preview_id(@story),
                 session: %{
                   "story_path" => @story_path,
-                  "variation_id" => @variation_id,
-                  "theme" => @theme,
+                  "variation_id" => to_string(@variation_id),
+                  "theme" => to_string(@theme),
                   "backend_module" => to_string(@backend_module),
                   "topic" => "playground-#{inspect(self())}",
                 },
@@ -255,7 +254,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp playground_code(assigns) do
     ~H"""
     <pre class={CodeRenderer.pre_class()}>
-    <%= CodeRenderer.render_multiple_variations_code(fun_or_component(@story), @variations, TemplateHelpers.get_template(@story.template, @variation)) %>
+    <%= CodeRenderer.render_multiple_variations_code(fun_or_component(@story.storybook_type(), @story), @variations, TemplateHelpers.get_template(@story.template(), @variation)) %>
     </pre>
     """
   end
@@ -292,15 +291,15 @@ defmodule PhxLiveStorybook.Story.Playground do
                   </tr>
                 </thead>
                 <tbody class="lsb lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
-                  <%= if Enum.empty?(@story.attributes) do %>
+                  <%= if Enum.empty?(@story.attributes()) do %>
                   <tr>
                     <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
                       <i class="lsb lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
-                      <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @story.name %></code> story.</p>
+                      <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @story.name() %></code> story.</p>
                     </td>
                   </tr>
                   <% else %>
-                    <%= for attr <- @story.attributes, attr.type not in [:block, :slot] do %>
+                    <%= for attr <- @story.attributes(), attr.type not in [:block, :slot] do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if attr.required do %>
@@ -326,7 +325,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                         </td>
                       </tr>
                     <% end %>
-                    <%= for attr <- @story.attributes, attr.type in [:block, :slot] do %>
+                    <%= for attr <- @story.attributes(), attr.type in [:block, :slot] do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if attr.required do %>
@@ -358,7 +357,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         </div>
       </div>
     </.form>
-    <%= unless Enum.empty?(@story.attributes) do %>
+    <%= unless Enum.empty?(@story.attributes()) do %>
       <.form let={f} for={:variation} id="variation-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
         <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
@@ -458,27 +457,27 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp form_id(story) do
-    module = story.module |> Macro.underscore() |> String.replace("/", "_")
+    module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-form"
   end
 
   defp playground_preview_id(story) do
-    module = story.module |> Macro.underscore() |> String.replace("/", "_")
+    module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
   end
 
   defp playground_event_logs_id(story) do
-    module = story.module |> Macro.underscore() |> String.replace("/", "_")
+    module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-event-logs"
   end
 
   defp playground_event_log_id(story, index) do
-    module = story.module |> Macro.underscore() |> String.replace("/", "_")
+    module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-event-log-#{index}"
   end
 
   defp variation_options(story) do
-    for variation <- story.variations do
+    for variation <- story.variations() do
       label =
         if variation.description,
           do: variation.description,
@@ -637,11 +636,8 @@ defmodule PhxLiveStorybook.Story.Playground do
     JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
   end
 
-  defp fun_or_component(%ComponentStory{type: :live_component, component: component}),
-    do: component
-
-  defp fun_or_component(%ComponentStory{type: :component, function: function}),
-    do: function
+  defp fun_or_component(:component, story), do: story.function()
+  defp fun_or_component(:live_component, story), do: story.component()
 
   def handle_event("upper-tab-navigation", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, :upper_tab, String.to_atom(tab))}
@@ -659,7 +655,7 @@ defmodule PhxLiveStorybook.Story.Playground do
           key = String.to_atom(key),
           reduce: assigns.fields do
         acc ->
-          attr_definition = Enum.find(story.attributes, &(&1.id == key))
+          attr_definition = Enum.find(story.attributes(), &(&1.id == key))
 
           if (is_nil(value) || value == "") and !attr_definition.required do
             Map.put(acc, key, nil)
@@ -691,12 +687,12 @@ defmodule PhxLiveStorybook.Story.Playground do
         %{"variation" => %{"variation_id" => variation_id}},
         s = %{assigns: assigns}
       ) do
-    case Enum.find(assigns.story.variations, &(to_string(&1.id) == variation_id)) do
+    case Enum.find(assigns.story.variations(), &(to_string(&1.id) == variation_id)) do
       nil -> nil
       variation -> send_new_variation(assigns.topic, variation)
     end
 
-    {:noreply, patch_to(s, assigns.story, %{tab: :playground, variation_id: variation_id})}
+    {:noreply, patch_to(s, assigns.story_path, %{tab: :playground, variation_id: variation_id})}
   end
 
   defp update_variations_attributes(variations, new_attrs) do
@@ -724,8 +720,8 @@ defmodule PhxLiveStorybook.Story.Playground do
     PubSub.broadcast!(PhxLiveStorybook.PubSub, topic, {:set_variation, variation})
   end
 
-  defp cast_value(%ComponentStory{attributes: attributes}, attr_id, value) do
-    attr = Enum.find(attributes, &(&1.id == attr_id))
+  defp cast_value(story, attr_id, value) do
+    attr = story.attributes() |> Enum.find(&(&1.id == attr_id))
 
     case attr.type do
       :atom -> String.to_atom(value)

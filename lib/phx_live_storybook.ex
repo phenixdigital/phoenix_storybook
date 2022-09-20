@@ -1,11 +1,8 @@
 defmodule PhxLiveStorybook.BackendBehaviour do
   @moduledoc """
   Behaviour implemented by your backend module.
-
-  Most of it is precompiled through macros.
   """
 
-  alias Phoenix.LiveView.Rendered
   alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
 
   @doc """
@@ -36,37 +33,6 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Returns a story from its absolute path.
   """
   @callback find_story_by_path(String.t()) :: %ComponentStory{} | %PageStory{}
-
-  @doc """
-  Renders a specific variation for a given component story.
-  Can be a single variation or a variation group.
-  Returns a rendered HEEx template.
-  """
-  @callback render_variation(
-              story_module :: any(),
-              variation_id :: atom(),
-              theme :: atom()
-            ) ::
-              %Rendered{}
-
-  @doc """
-  Renders code snippet of a specific variation for a given component story.
-  Returns a rendered HEEx template.
-  """
-  @callback render_code(story_module :: atom(), variation_id :: atom()) ::
-              %Rendered{}
-
-  @doc """
-  Renders source of a component story.
-  Returns a rendered HEEx template.
-  """
-  @callback render_source(story_module :: atom()) :: %Rendered{}
-
-  @doc """
-  Renders a tab content for a page story.
-  Returns a rendered HEEx template.
-  """
-  @callback render_page(story_module :: atom(), tab :: atom()) :: %Rendered{}
 end
 
 defmodule PhxLiveStorybook do
@@ -76,15 +42,8 @@ defmodule PhxLiveStorybook do
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
+  alias PhxLiveStorybook.Quotes.{ConfigQuotes, StoriesQuotes}
   alias PhxLiveStorybook.Stories
-
-  alias PhxLiveStorybook.Quotes.{
-    ComponentQuotes,
-    ConfigQuotes,
-    PageQuotes,
-    SourceQuotes,
-    StoriesQuotes
-  }
 
   @doc false
   defmacro __using__(opts) do
@@ -92,17 +51,12 @@ defmodule PhxLiveStorybook do
     backend_module = __CALLER__.module
     otp_app = opts[:otp_app]
     stories = stories(opts)
-    themes = Keyword.get(opts, :themes, [{nil, nil}])
     leave_stories = Stories.all_leaves(stories)
 
     [
       recompilation_quotes(backend_module, otp_app, leave_stories),
       ConfigQuotes.config_quotes(opts),
-      StoriesQuotes.stories_quotes(stories),
-      ComponentQuotes.render_component_quotes(leave_stories, themes),
-      ComponentQuotes.render_code_quotes(leave_stories),
-      SourceQuotes.source_quotes(leave_stories),
-      PageQuotes.page_quotes(leave_stories, themes, __CALLER__.file)
+      StoriesQuotes.stories_quotes(opts, stories)
     ]
   end
 

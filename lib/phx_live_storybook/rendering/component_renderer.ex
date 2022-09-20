@@ -10,6 +10,31 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
+  Renders a specific variation for a given component story.
+  Can be a single variation or a variation group.
+  Returns a rendered HEEx template.
+  """
+  def render_variation(story, variation_id, extra_assigns) do
+    variation = story.variations() |> Enum.find(&(to_string(&1.id) == to_string(variation_id)))
+    template = TemplateHelpers.get_template(story.template(), variation)
+    extra_assigns = Map.put(extra_assigns, :id, unique_id(story, variation_id))
+    opts = [imports: story.imports(), aliases: story.aliases()]
+
+    case story.storybook_type() do
+      :component ->
+        render_variation(story.function(), variation, template, extra_assigns, opts)
+
+      :live_component ->
+        render_variation(story.component(), variation, template, extra_assigns, opts)
+    end
+  end
+
+  defp unique_id(story, variation_id) do
+    story_module_name = story |> to_string() |> String.split(".") |> Enum.at(-1)
+    Macro.underscore("#{story_module_name}-#{variation_id}")
+  end
+
+  @doc """
   Renders a variation or a group of variation for a component.
   """
   def render_variation(fun_or_mod, variation = %Variation{}, template, extra_assigns, opts) do
