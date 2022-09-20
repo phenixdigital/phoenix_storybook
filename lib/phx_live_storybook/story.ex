@@ -100,7 +100,6 @@ defmodule PhxLiveStorybook.Story do
     @callback name() :: String.t()
     @callback description() :: String.t()
     @callback icon() :: String.t()
-    @callback container() :: atom()
   end
 
   defmodule ComponentBehaviour do
@@ -109,6 +108,7 @@ defmodule PhxLiveStorybook.Story do
     @callback function() :: function()
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
+    @callback container() :: atom()
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
     @callback template() :: %Phoenix.LiveView.Rendered{}
@@ -120,6 +120,7 @@ defmodule PhxLiveStorybook.Story do
     @callback component() :: atom()
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
+    @callback container() :: atom()
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
     @callback template() :: %Phoenix.LiveView.Rendered{}
@@ -156,7 +157,7 @@ defmodule PhxLiveStorybook.Story do
       @impl StoryBehaviour
       def icon, do: nil
 
-      @impl StoryBehaviour
+      @impl unquote(component_behaviour(live?))
       def container, do: :div
 
       @impl unquote(component_behaviour(live?))
@@ -210,9 +211,6 @@ defmodule PhxLiveStorybook.Story do
       @impl StoryBehaviour
       def icon, do: nil
 
-      @impl StoryBehaviour
-      def container, do: :div
-
       @impl PageBehaviour
       def navigation, do: []
 
@@ -222,7 +220,7 @@ defmodule PhxLiveStorybook.Story do
         __MODULE__.__info__(:compile)[:source]
       end
 
-      defoverridable name: 0, description: 0, icon: 0, navigation: 0, container: 0, render: 1
+      defoverridable name: 0, description: 0, icon: 0, navigation: 0, render: 1
     end
   end
 

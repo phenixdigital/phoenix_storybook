@@ -8,15 +8,7 @@ defmodule PhxLiveStorybook.ComponentStory do
     :name,
     :module_name,
     :icon,
-    :description,
-    :function,
-    :component,
-    :imports,
-    :aliases,
-    :container,
-    :template,
-    attributes: [],
-    variations: []
+    :description
   ]
 end
 
@@ -44,7 +36,6 @@ end
 defmodule PhxLiveStorybook.Stories do
   @moduledoc false
   alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
-  alias PhxLiveStorybook.StoryValidator
 
   @doc false
   def stories(path, folders_config) do
@@ -124,17 +115,8 @@ defmodule PhxLiveStorybook.Stories do
       name: module.name(),
       module_name: module_name,
       description: module.description(),
-      icon: module.icon(),
-      component: call_if_exported(module, :component),
-      function: call_if_exported(module, :function),
-      imports: module.imports(),
-      aliases: module.aliases(),
-      container: module.container(),
-      attributes: module.attributes(),
-      variations: module.variations(),
-      template: module.template()
+      icon: module.icon()
     }
-    |> StoryValidator.validate!()
   end
 
   defp page_story(path, module, storybook_path) do
@@ -150,10 +132,6 @@ defmodule PhxLiveStorybook.Stories do
       navigation: module.navigation(),
       icon: module.icon()
     }
-  end
-
-  defp call_if_exported(mod, fun) do
-    if function_exported?(mod, fun, 0), do: apply(mod, fun, []), else: nil
   end
 
   @story_priority %{PageStory => 0, ComponentStory => 1, Folder => 2}

@@ -1,15 +1,15 @@
 defmodule PhxLiveStorybook.StoryValidator do
   @moduledoc false
 
-  alias PhxLiveStorybook.{Attr, ComponentStory, Variation, VariationGroup}
+  alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
 
   @doc """
   This validator ensures that all stories have their properties filled with proper
   datatypes and that attribute declarations are consistent accross variations.
   """
-  def validate!(
-        story = %ComponentStory{path: file_path, attributes: attributes, variations: variations}
-      ) do
+  def validate!(story) do
+    file_path = story.__info__(:compile)[:source]
+    {attributes, variations} = {story.attributes(), story.variations()}
     validate_story_name!(file_path, story)
     validate_story_description!(file_path, story)
     validate_story_icon!(file_path, story)
@@ -49,28 +49,32 @@ defmodule PhxLiveStorybook.StoryValidator do
   end
 
   defp validate_story_name!(file_path, story) do
-    validate_type!(file_path, story.name, :string, "story name must be a binary")
+    validate_type!(file_path, story.name(), :string, "story name must be a binary")
   end
 
   defp validate_story_description!(file_path, story) do
     validate_type!(
       file_path,
-      story.description,
+      story.description(),
       :string,
       "story description must be a binary"
     )
   end
 
   defp validate_story_icon!(file_path, story) do
-    validate_type!(file_path, story.icon, :string, "story icon must be a binary")
+    validate_type!(file_path, story.icon(), :string, "story icon must be a binary")
   end
 
   defp validate_story_component!(file_path, story) do
-    validate_type!(file_path, story.component, :atom, "story component must be a module")
+    if story.storybook_type() == :live_component do
+      validate_type!(file_path, story.component(), :atom, "story component must be a module")
+    end
   end
 
   defp validate_story_function!(file_path, story) do
-    validate_type!(file_path, story.function, :function, "story function must be a function")
+    if story.storybook_type() == :component do
+      validate_type!(file_path, story.function(), :function, "story function must be a function")
+    end
   end
 
   defp validate_story_aliases!(file_path, story) do

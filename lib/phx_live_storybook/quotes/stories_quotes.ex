@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.Quotes.StoriesQuotes do
   @moduledoc false
 
   alias PhxLiveStorybook.Stories
+  alias PhxLiveStorybook.StoryValidator
 
   require Logger
 
@@ -39,7 +40,7 @@ defmodule PhxLiveStorybook.Quotes.StoriesQuotes do
           try do
             Code.put_compiler_option(:ignore_module_conflict, true)
             [{story_module, _} | _] = Code.compile_file(story_path, content_path)
-            story_module
+            StoryValidator.validate!(story_module)
           rescue
             e in Code.LoadError ->
               Logger.bare_log(:warning, "could not load story #{inspect(story_path)}")
