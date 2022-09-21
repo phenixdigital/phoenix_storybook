@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.TreeStorybook
   import Phoenix.LiveViewTest
