@@ -286,7 +286,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       })
       |> render_change()
 
-      assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}
+      assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}, 200
     end
   end
 

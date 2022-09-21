@@ -2,6 +2,8 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
   use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.TreeStorybook
+  alias PhxLiveStorybook.Rendering.CodeRenderer
+  import Phoenix.LiveViewTest, only: [rendered_to_string: 1]
 
   setup_all do
     [
@@ -75,8 +77,20 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
     end
   end
 
+  describe "render_component_source/2" do
+    test "it renders a component source", %{component: component} do
+      source = CodeRenderer.render_component_source(component) |> rendered_to_string()
+      assert source =~ ~r/<pre.*lsb highlight.*\/pre>/s
+    end
+
+    test "it renders a live component source", %{live_component: component} do
+      source = CodeRenderer.render_component_source(component) |> rendered_to_string()
+      assert source =~ ~r/<pre.*lsb highlight.*\/pre>/s
+    end
+  end
+
   defp render_variation_code(story, variation_id) do
-    PhxLiveStorybook.Rendering.CodeRenderer.render_variation_code(story, variation_id)
-    |> Phoenix.LiveViewTest.rendered_to_string()
+    CodeRenderer.render_variation_code(story, variation_id)
+    |> rendered_to_string()
   end
 end

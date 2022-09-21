@@ -152,7 +152,6 @@ defmodule PhxLiveStorybook.Entries do
       case entry do
         %StoryEntry{} -> [entry | acc]
         %FolderEntry{entries: entries} -> leaves(entries, acc)
-        %IndexEntry{} -> acc
       end
     end)
   end
@@ -162,7 +161,6 @@ defmodule PhxLiveStorybook.Entries do
       case entry do
         %StoryEntry{} -> [entry | acc]
         %FolderEntry{entries: entries} -> [entry | flat_list(entries, acc)]
-        %IndexEntry{} -> acc
       end
     end)
   end

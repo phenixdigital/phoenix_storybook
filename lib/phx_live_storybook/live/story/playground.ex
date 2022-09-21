@@ -368,8 +368,6 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  defp render_lower_tab_content(_), do: ""
-
   defp event_log(assigns) do
     ~H"""
     <code class="lsb" id={@id}>

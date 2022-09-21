@@ -27,15 +27,22 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     end
 
     test "navigate in sidebar", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_folder/component")
+      {:ok, view, _html} = live(conn, "/storybook/component")
 
       assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
                "live component description"
 
-      # B folder is open
+      # A folder is open
+      refute has_element?(view, "#sidebar a", "Component (a_folder)")
+
+      # Opening A folder
+      element(view, "#sidebar div", "A Folder") |> render_click()
+      assert has_element?(view, "#sidebar a", "Component (a_folder)")
+
+      # B folder is alredy open (by its index.exs file)
       assert has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
 
-      # opening "B folder" then reaching items inside
+      # reaching items inside
       assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
                "All types component description"
 
