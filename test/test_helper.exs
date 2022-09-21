@@ -56,6 +56,8 @@ defmodule PhxLiveStorybook.TestRouter do
 end
 
 for endpoint <- [
+      PhxLiveStorybook.AssetNotFoundControllerEndpoint,
+      PhxLiveStorybook.ComponentIframeLiveEndpoint,
       PhxLiveStorybook.StoryLiveTestEndpoint,
       PhxLiveStorybook.PlaygroundLiveTestEndpoint
     ] do

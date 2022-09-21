@@ -3,11 +3,10 @@ defmodule PhxLiveStorybook.AssetNotFoundControllerTest do
 
   import Phoenix.ConnTest, only: [build_conn: 0, get: 2]
   alias PhxLiveStorybook.TestRouter.Helpers, as: Routes
-
-  @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
+  @endpoint PhxLiveStorybook.AssetNotFoundControllerEndpoint
   @moduletag :capture_log
 
-  setup do
+  setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
   end

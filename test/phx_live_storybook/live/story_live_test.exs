@@ -6,7 +6,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
   @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
 
-  setup do
+  setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
   end

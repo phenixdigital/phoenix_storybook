@@ -1,32 +1,37 @@
 defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
   use ExUnit.Case, async: false
 
+  alias PhxLiveStorybook.TreeStorybook
   import Phoenix.LiveViewTest
 
+  setup_all do
+    [
+      component: TreeStorybook.load_story("/component", validate: false),
+      live_component: TreeStorybook.load_story("/live_component", validate: false),
+      afolder_component: TreeStorybook.load_story("/a_folder/component", validate: false),
+      template_component:
+        TreeStorybook.load_story("/templates/template_component", validate: false)
+    ]
+  end
+
   describe "render_variation/2" do
-    alias PhxLiveStorybook.TreeStorybook
-
-    test "it should return HEEX for each component/variation couple" do
-      component = TreeStorybook.load_story("/component")
-
+    test "it should return HEEX for each component/variation couple",
+         %{component: component, live_component: live_component} do
       assert render_variation(component, :hello) |> rendered_to_string() ==
                "<span data-index=\"42\">component: hello</span>"
 
       assert render_variation(component, :world) |> rendered_to_string() ==
                "<span data-index=\"37\">component: world</span>"
 
-      component = TreeStorybook.load_story("/live_component")
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "live_component-hello"}] =
-               render_variation(component, :hello).dynamic.([])
+               render_variation(live_component, :hello).dynamic.([])
 
       assert [%Phoenix.LiveView.Component{id: "live_component-world"}] =
-               render_variation(component, :world).dynamic.([])
+               render_variation(live_component, :world).dynamic.([])
     end
 
-    test "it also works for a variation group" do
-      component = TreeStorybook.load_story("/a_folder/component")
-
+    test "it also works for a variation group", %{afolder_component: component} do
       assert render_variation(component, :group)
              |> rendered_to_string() ==
                String.trim("""
@@ -38,15 +43,13 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert render_variation(component, :group)
     end
 
-    test "it is working with a variation without any attributes" do
-      component = TreeStorybook.load_story("/a_folder/component")
-
+    test "it is working with a variation without any attributes", %{afolder_component: component} do
       assert render_variation(component, :no_attributes) |> rendered_to_string() ==
                "<span data-index=\"42\">component: </span>"
     end
 
     test "it is working with an inner_block requiring a let attribute" do
-      component = TreeStorybook.load_story("/let/let_component")
+      component = TreeStorybook.load_story("/let/let_component", validate: false)
       html = render_variation(component, :default) |> rendered_to_string()
 
       assert html =~ "**foo**"
@@ -55,15 +58,13 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
-      component = TreeStorybook.load_story("/let/let_live_component")
+      component = TreeStorybook.load_story("/let/let_live_component", validate: false)
 
       assert [%Phoenix.LiveView.Component{id: "let_live_component-default"}] =
                render_variation(component, :default).dynamic.([])
     end
 
-    test "renders a variation with story template" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation with story template", %{template_component: component} do
       html =
         render_variation(component, :hello)
         |> rendered_to_string()
@@ -73,9 +74,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 1
     end
 
-    test "renders a variation with its own template" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation with its own template", %{template_component: component} do
       html =
         render_variation(component, :variation_template)
         |> rendered_to_string()
@@ -85,9 +84,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 1
     end
 
-    test "renders a variation with which disables story's template" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation with which disables story's template", %{
+      template_component: component
+    } do
       html =
         render_variation(component, :no_template)
         |> rendered_to_string()
@@ -97,9 +96,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 1
     end
 
-    test "renders a variation group with story template" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation group with story template", %{template_component: component} do
       html =
         render_variation(component, :group)
         |> rendered_to_string()
@@ -111,9 +108,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a variation group with its own template" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation group with its own template", %{template_component: component} do
       html =
         render_variation(component, :group_template)
         |> rendered_to_string()
@@ -125,9 +120,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a variation group with a <.lsb-variation-group/> placeholder template" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation group with a <.lsb-variation-group/> placeholder template", %{
+      template_component: component
+    } do
       html =
         render_variation(component, :group_template_single)
         |> rendered_to_string()
@@ -138,9 +133,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a variation with a template, but no placeholder" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation with a template, but no placeholder", %{
+      template_component: component
+    } do
       assert render_variation(component, :no_placeholder)
              |> rendered_to_string() == "<div></div>"
     end
@@ -153,7 +148,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "renders a variation with an invalid template placeholder will raise" do
-      component = TreeStorybook.load_story("/templates/invalid_template_component")
+      component =
+        TreeStorybook.load_story("/templates/invalid_template_component", validate: false)
+
       msg = "Cannot use <.lsb-variation-group/> placeholder in a variation template."
 
       assert_raise RuntimeError, msg, fn ->
@@ -161,9 +158,9 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       end
     end
 
-    test "renders a variation with a template passing extra attributes" do
-      component = TreeStorybook.load_story("/templates/template_component")
-
+    test "renders a variation with a template passing extra attributes", %{
+      template_component: component
+    } do
       assert render_variation(component, :template_attributes)
              |> rendered_to_string() ==
                "<span>template_component: from_template / status: true</span>"

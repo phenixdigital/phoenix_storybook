@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybookTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.{FolderEntry, StoryEntry}
 
@@ -124,7 +124,7 @@ defmodule PhxLiveStorybookTest do
   describe "load_story/1 & story_path/1" do
     test "it returns the path when the module is loaded" do
       path = "/a_folder/component"
-      module = TreeStorybook.load_story(path)
+      module = TreeStorybook.load_story(path, validate: false)
       assert TreeStorybook.storybook_path(module) == path
     end
   end

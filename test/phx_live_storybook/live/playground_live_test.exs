@@ -6,8 +6,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   @endpoint PhxLiveStorybook.PlaygroundLiveTestEndpoint
   @moduletag :capture_log
 
-  setup do
-    start_supervised!(PhxLiveStorybook.PlaygroundLiveTestEndpoint)
+  setup_all do
+    start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
   end
 

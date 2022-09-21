@@ -17,6 +17,7 @@ end
 # and creates an in-memory tree hierarchy of content using above Story structs.
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
+  alias PhxLiveStorybook.CodeHelpers
   alias PhxLiveStorybook.{FolderEntry, IndexEntry, StoryEntry}
 
   require Logger
@@ -54,7 +55,7 @@ defmodule PhxLiveStorybook.Entries do
             [story_entry(file_path, storybook_path) | acc]
 
           String.ends_with?(file_path, index_file_suffix()) ->
-            index_module = load_index(file_path, storybook_path)
+            index_module = CodeHelpers.load_exs(file_path, storybook_path)
             [index_entry(index_module, storybook_path) | acc]
 
           true ->
@@ -97,19 +98,6 @@ defmodule PhxLiveStorybook.Entries do
 
         %{folder | entries: other_entries}
     end
-  end
-
-  defp load_index(file_path, storybook_path) do
-    Code.put_compiler_option(:ignore_module_conflict, true)
-    [{index_module, _} | _] = Code.compile_file(file_path, storybook_path)
-    index_module
-  rescue
-    e in Code.LoadError ->
-      Logger.bare_log(:warning, "could not load index #{inspect(file_path)}")
-      Logger.bare_log(:warning, inspect(e))
-      nil
-  after
-    Code.put_compiler_option(:ignore_module_conflict, false)
   end
 
   defp root_entry(content_tree) do

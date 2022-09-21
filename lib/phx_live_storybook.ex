@@ -46,6 +46,7 @@ defmodule PhxLiveStorybook do
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
+  alias PhxLiveStorybook.CodeHelpers
   alias PhxLiveStorybook.Entries
   alias PhxLiveStorybook.StoryValidator
 
@@ -129,22 +130,14 @@ defmodule PhxLiveStorybook do
 
     single_quote =
       quote do
-        def load_story(story_path) do
+        def load_story(story_path, opts \\ []) do
           content_path = Keyword.get(unquote(opts), :content_path)
           story_path = String.replace_prefix(story_path, "/", "")
           story_path = story_path <> Entries.story_file_suffix()
 
-          try do
-            Code.put_compiler_option(:ignore_module_conflict, true)
-            [{story_module, _} | _] = Code.compile_file(story_path, content_path)
-            StoryValidator.validate!(story_module)
-          rescue
-            e in Code.LoadError ->
-              Logger.bare_log(:warning, "could not load story #{inspect(story_path)}")
-              Logger.bare_log(:warning, inspect(e))
-              nil
-          after
-            Code.put_compiler_option(:ignore_module_conflict, false)
+          case CodeHelpers.load_exs(story_path, content_path) do
+            nil -> nil
+            story -> if opts[:validate] == false, do: story, else: StoryValidator.validate!(story)
           end
         end
 
