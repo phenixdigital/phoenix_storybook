@@ -1,0 +1,1 @@
+defmodule PhxLiveStorybook.BadScript do

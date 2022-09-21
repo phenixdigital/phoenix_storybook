@@ -17,7 +17,7 @@ end
 # and creates an in-memory tree hierarchy of content using above Story structs.
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
-  alias PhxLiveStorybook.CodeHelpers
+  alias PhxLiveStorybook.ExsLoader
   alias PhxLiveStorybook.{FolderEntry, IndexEntry, StoryEntry}
 
   require Logger
@@ -45,7 +45,7 @@ defmodule PhxLiveStorybook.Entries do
             [story_entry(file_path, storybook_path) | acc]
 
           String.ends_with?(file_path, index_file_suffix()) ->
-            index_module = CodeHelpers.load_exs(file_path, storybook_path)
+            index_module = ExsLoader.load_exs(file_path, storybook_path, immediate: true)
             [index_entry(index_module, storybook_path) | acc]
 
           true ->

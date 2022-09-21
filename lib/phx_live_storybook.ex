@@ -46,7 +46,7 @@ defmodule PhxLiveStorybook do
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
-  alias PhxLiveStorybook.CodeHelpers
+  alias PhxLiveStorybook.ExsLoader
   alias PhxLiveStorybook.Entries
   alias PhxLiveStorybook.StoryValidator
 
@@ -141,7 +141,7 @@ defmodule PhxLiveStorybook do
           story_path = String.replace_prefix(story_path, "/", "")
           story_path = story_path <> Entries.story_file_suffix()
 
-          case CodeHelpers.load_exs(story_path, content_path) do
+          case ExsLoader.load_exs(story_path, content_path) do
             nil -> nil
             story -> if opts[:validate] == false, do: story, else: StoryValidator.validate!(story)
           end
