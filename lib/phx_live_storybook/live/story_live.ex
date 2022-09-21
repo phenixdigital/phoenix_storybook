@@ -238,12 +238,12 @@ defmodule PhxLiveStorybook.StoryLive do
     <div class="lsb lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- story.variations(),
               variation_extra_assigns = variation_extra_assigns(variation, assigns) do %>
-        <div id={anchor_id(variation)} class="lsb lsb-group lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
+        <div id={anchor_id(variation)} class="lsb lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
           <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "lsb variation-anchor-link" do %>
-              <i class="lsb fal fa-link lsb-hidden group-hover:lg:lsb-inline -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
+              <i class="lsb fal fa-link lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
               <%= if description do %>
                 <%= description  %>
               <% else %>
