@@ -228,17 +228,20 @@ We would love your PRs!
 
 1. Pull down phx_live_storybook to a directory next to your project (`../phx_live_storybook`).
 2. Change your mix file to point to this directory:
-   ```elixir
-     # {:phx_live_storybook, "~> 0.3.0"},
-     {:phx_live_storybook, path: "../phx_live_storybook"},
-   ```
+
+```elixir
+# {:phx_live_storybook, "~> 0.3.0"},
+{:phx_live_storybook, path: "../phx_live_storybook"},
+```
+
 3. Update the assets in phx_live_storybook since this isn't a release
-   ```bash
-     cd ../phx_live_storybook
-     mix deps.get
-     npm ci --prefix assets
-     mix assets.build
-   ```
+
+```bash
+cd ../phx_live_storybook
+mix deps.get
+npm ci --prefix assets
+mix assets.build
+```
 
 And make sure you read the [CONTRIBUTING](CONTRIBUTING.md) guide.
 
