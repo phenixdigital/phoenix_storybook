@@ -12,6 +12,7 @@ defmodule PhxLiveStorybook.Sidebar do
   def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
     root_path = Path.join("/", live_storybook_path(socket, :root))
     current_path = if current_path, do: Path.join(root_path, current_path), else: root_path
+    content_flat_list = backend_module.flat_list()
 
     {:ok,
      socket
@@ -19,19 +20,18 @@ defmodule PhxLiveStorybook.Sidebar do
      |> assign(
        root_path: root_path,
        content_tree: backend_module.content_tree(),
-       stories_flat_list: backend_module.flat_list(),
+       content_flat_list: content_flat_list,
        current_path: current_path
      )
      |> assign_opened_folders(root_path)}
   end
 
   defp assign_opened_folders(socket = %{assigns: assigns}, root_path) do
-    # reading pre-opened folders from config
+    # reading pre-opened folders from index files
     opened_folders =
       if MapSet.size(assigns.opened_folders) == 0 do
-        for {folder_path, folder_opts} <- assigns.backend_module.config(:folders, []),
+        for %FolderEntry{open?: true, path: folder_path} <- socket.assigns.content_flat_list,
             folder_path = folder_path |> to_string() |> String.replace_trailing("/", ""),
-            folder_opts[:open],
             reduce: assigns.opened_folders do
           opened_folders ->
             MapSet.put(opened_folders, Path.join(root_path, folder_path))
@@ -87,7 +87,7 @@ defmodule PhxLiveStorybook.Sidebar do
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
       </div>
-      <.hidden_icons stories_flat_list={@stories_flat_list}/>
+      <.hidden_icons content_flat_list={@content_flat_list}/>
     </section>
     """
   end
@@ -174,7 +174,7 @@ defmodule PhxLiveStorybook.Sidebar do
   defp hidden_icons(assigns) do
     ~H"""
     <div class="lsb lsb-hidden">
-      <%= for %{icon: icon} <- @stories_flat_list do %>
+      <%= for %{icon: icon} <- @content_flat_list do %>
         <i class={icon}></i>
       <% end %>
     </div>

@@ -5,12 +5,12 @@ end
 
 defmodule PhxLiveStorybook.IndexEntry do
   @moduledoc false
-  defstruct [:path, :folder_name, :folder_icon, :entry]
+  defstruct [:path, :folder_name, :folder_icon, :folder_open?, :entry]
 end
 
 defmodule PhxLiveStorybook.FolderEntry do
   @moduledoc false
-  defstruct [:name, :entries, :path, :icon]
+  defstruct [:name, :entries, :path, :icon, open?: false]
 end
 
 # This module performs a recursive scan of all files/folders under :content_path
@@ -38,18 +38,8 @@ defmodule PhxLiveStorybook.Entries do
         cond do
           File.dir?(file_path) ->
             storybook_path = Path.join(["/", storybook_path, file_name])
-            folder_config = Keyword.get(folders_config, String.to_atom(storybook_path), [])
-
-            [
-              folder_entry(
-                file_name,
-                folder_config,
-                storybook_path,
-                recursive_scan(file_path, folders_config, storybook_path)
-              )
-              |> maybe_apply_index()
-              | acc
-            ]
+            sub_entries = recursive_scan(file_path, folders_config, storybook_path)
+            [folder_entry(file_name, storybook_path, sub_entries) |> maybe_apply_index() | acc]
 
           String.ends_with?(file_path, story_file_suffix()) ->
             [story_entry(file_path, storybook_path) | acc]
@@ -65,6 +55,41 @@ defmodule PhxLiveStorybook.Entries do
     |> sort_stories()
   end
 
+  defp root_entry(content_tree) do
+    %FolderEntry{
+      entries: content_tree,
+      path: "",
+      name: "Storybook",
+      icon: "fal fa-book-open"
+    }
+  end
+
+  defp folder_entry(file_name, path, entries) do
+    %FolderEntry{
+      name: file_name |> String.capitalize() |> String.replace("_", " "),
+      path: path,
+      entries: entries
+    }
+  end
+
+  defp story_entry(file_path, storybook_path) do
+    %StoryEntry{
+      path: Path.join(["/", storybook_path, story_file_name(file_path)]),
+      name: story_name(file_path),
+      icon: nil
+    }
+  end
+
+  defp index_entry(module, path) do
+    %IndexEntry{
+      path: module_path(module, path),
+      folder_name: module.folder_name(),
+      folder_icon: module.folder_icon(),
+      folder_open?: module.folder_open?(),
+      entry: &module.entry/1
+    }
+  end
+
   defp maybe_apply_index(folder = %FolderEntry{entries: entries}) do
     groups = Enum.group_by(entries, &is_struct(&1, IndexEntry))
     index = Map.get(groups, true, [])
@@ -77,6 +102,7 @@ defmodule PhxLiveStorybook.Entries do
       [index | _] ->
         folder = if index.folder_name, do: %{folder | name: index.folder_name}, else: folder
         folder = if index.folder_icon, do: %{folder | icon: index.folder_icon}, else: folder
+        folder = if index.folder_open?, do: %{folder | open?: index.folder_open?}, else: folder
 
         other_entries =
           for entry <- other_entries do
@@ -98,44 +124,6 @@ defmodule PhxLiveStorybook.Entries do
 
         %{folder | entries: other_entries}
     end
-  end
-
-  defp root_entry(content_tree) do
-    %FolderEntry{
-      entries: content_tree,
-      path: "",
-      name: "Storybook",
-      icon: "fal fa-book-open"
-    }
-  end
-
-  defp folder_entry(file_name, folder_config, path, entries) do
-    %FolderEntry{
-      name:
-        Keyword.get_lazy(folder_config, :name, fn ->
-          file_name |> String.capitalize() |> String.replace("_", " ")
-        end),
-      path: path,
-      entries: entries,
-      icon: folder_config[:icon]
-    }
-  end
-
-  defp story_entry(file_path, storybook_path) do
-    %StoryEntry{
-      path: Path.join(["/", storybook_path, story_file_name(file_path)]),
-      name: story_name(file_path),
-      icon: nil
-    }
-  end
-
-  defp index_entry(module, path) do
-    %IndexEntry{
-      path: module_path(module, path),
-      folder_name: module.folder_name(),
-      folder_icon: module.folder_icon(),
-      entry: &module.entry/1
-    }
   end
 
   defp story_file_name(file_path) do

@@ -32,21 +32,15 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
                "live component description"
 
-      # reaching items under "A folder" which is open by default (cf. config.exs)
-      assert view |> element("#sidebar a", "Live Component (a_folder)") |> render_click() =~
-               "Live component description"
-
-      # B folder is closed, items inside are not visible
-      refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
+      # B folder is open
+      assert has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
 
       # opening "B folder" then reaching items inside
-      element(view, "#sidebar div", "B folder") |> render_click()
-
       assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
                "All types component description"
 
       # closing "B folder"
-      element(view, "#sidebar div", "B folder") |> render_click()
+      element(view, "#sidebar div", "Config Name") |> render_click()
       refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
     end
 

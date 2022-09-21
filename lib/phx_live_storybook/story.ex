@@ -1,13 +1,14 @@
 defmodule PhxLiveStorybook.Story do
   @moduledoc """
-  A story designates any kind of content in your storybook. For now
-  only following kinds of stories are supported: `component`, `:live_component`,
-  and `:page`.
+  A story designates any kind of content in your storybook. For now only following kinds of stories
+  are supported: `component`, `:live_component`, and `:page`.
 
-  In order to populate your storybook, just create _story_ scripts under your
-  content path, and implement their required behaviour.
+  In order to populate your storybook, just create _story_ scripts under your content path, and
+  implement their required behaviour.
 
-  Stories must be created as `.exs` files.
+  Stories must be created as `story.exs` files.
+
+  In dev environment, stories are lazily compiled when reached from the UI.
 
   ## Usage
 
@@ -15,7 +16,7 @@ defmodule PhxLiveStorybook.Story do
 
   Implement your component as such.
   Confer to:
-  - `PhxLiveStorybook.Variation` documentation for stories.
+  - `PhxLiveStorybook.Variation` documentation for variations.
   - `PhxLiveStorybook.Attr` documentation for attributes.
 
   ```elixir
@@ -34,8 +35,8 @@ defmodule PhxLiveStorybook.Story do
 
   ### Live Component
 
-  Very similar to components, except that you need to define a `component/0` function
-  instead of `function/0`.
+  Very similar to components, except that you need to define a `component/0` function instead of
+  `function/0`.
 
   ```elixir
   # storybook/my_live_component.exs
@@ -54,12 +55,11 @@ defmodule PhxLiveStorybook.Story do
 
   ### Page
 
-  A page is a fairly simple story that can be used to write whatever
-  content you want. We use it to provide some UI guidelines.
+  A page is a fairly simple story that can be used to write whatever content you want. We use it to
+  provide some UI guidelines.
 
-  You should implement the render function and an optional navigation function,
-  if you want a tab based sub-navigation. Current tab is passed as `:tab`
-  in `render/1` assigns.
+  You should implement the render function and an optional navigation function, if you want a tab
+  based sub-navigation. Current tab is passed as `:tab` in `render/1` assigns.
 
   ```elixir
   # storybook/my_page.exs
@@ -70,15 +70,13 @@ defmodule PhxLiveStorybook.Story do
 
     def navigation do
       [
-        {:tab_id, "Tab Name", "tab-icon"},
-        {:tab_id, "Tab Name", "tab-icon"}
+        {:tab_one, "Tab One", "tab-icon"},
+        {:tab_two, "Tab Two", "tab-icon"}
       ]
     end
 
     def render(assigns) do
-      ~H\"\"\"
-      <div>Your HEEX template</div>
-      \"\"\"
+      ~H"<div>Your HEEX template</div>"
     end
   end
   ```

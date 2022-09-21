@@ -21,11 +21,7 @@ end
 defmodule PhxLiveStorybook.TreeStorybook do
   use PhxLiveStorybook,
     otp_app: :phx_live_storybook,
-    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
-    folders: [
-      "/a_folder": [icon: "fa-icon"],
-      "/b_folder": [open: true, name: "Config Name"]
-    ]
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__)
 end
 
 defmodule PhxLiveStorybook.TreeBStorybook do
@@ -36,7 +32,6 @@ end
 defmodule PhxLiveStorybook.TestStorybook do
   use PhxLiveStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
-    folders: [a_folder: [open: true]],
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]

@@ -199,18 +199,6 @@ defmodule MyAppWeb.Storybook do
     # Custom storybook title. Default is "Live Storybook".
     title: "My Live Storybook",
 
-    # Folder settings.
-    # Each folder is designated by its relative path from the storybook mounting point.
-    # For each folder you can:
-    # - make it open by default in the sidebar, with `open: true`.
-    # - give it a custom name in the sidebar
-    # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
-    folders: [
-      "/": [icon: "fas fa-banana"],
-      "/components": [icon: "far fa-toolbox", open: true],
-      "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
-    ]
-
     # Theme settings.
     # Each theme must have a name, and an optional dropdown_class.
     # When set, a dropdown is displayed in storybook header to let the user pick a theme.

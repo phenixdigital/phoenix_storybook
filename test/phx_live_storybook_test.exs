@@ -55,7 +55,7 @@ defmodule PhxLiveStorybookTest do
 
       assert %FolderEntry{
                path: "/a_folder",
-               icon: "fa-icon",
+               icon: "fa fa-icon",
                name: "A Folder",
                entries: [%StoryEntry{}, %StoryEntry{}]
              } = Enum.at(entries, 4)
