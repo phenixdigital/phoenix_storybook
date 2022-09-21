@@ -21,8 +21,6 @@ defmodule PhxLiveStorybook.Router do
   rendering.
 
   ## Options
-    * `:otp_app` - _Required_ - OTP name of your Phoenix application.
-      It must match `:otp_app` of your backend module and settings.
     * `:backend_module` - _Required_ - Name of your backend module.
     * `:live_socket_path` - Configures the socket path. It must match
       the `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
@@ -39,9 +37,7 @@ defmodule PhxLiveStorybook.Router do
 
   scope "/" do
     pipe_through :browser
-    live_storybook "/storybook",
-      otp_app: :my_app,
-      backend_module: MyAppWeb.Storybook
+    live_storybook "/storybook", backend_module: MyAppWeb.Storybook
   end
   ```
   """
@@ -92,9 +88,6 @@ defmodule PhxLiveStorybook.Router do
     live_socket_path = Keyword.get(opts, :live_socket_path, "/live")
     assets_path = Keyword.get(opts, :assets_path, @default_assets_path)
 
-    otp_app =
-      Keyword.get_lazy(opts, :otp_app, fn -> raise "Missing mandatory :otp_app option." end)
-
     backend_module =
       Keyword.get_lazy(opts, :backend_module, fn ->
         raise "Missing mandatory :backend_module option."
@@ -106,14 +99,12 @@ defmodule PhxLiveStorybook.Router do
         root_layout: {PhxLiveStorybook.LayoutView, root_layout},
         session: %{
           "backend_module" => backend_module,
-          "otp_app" => otp_app,
           "assets_path" => assets_path
         }
       ],
       [
         private: %{
           live_socket_path: live_socket_path,
-          otp_app: otp_app,
           backend_module: backend_module,
           application_router: Keyword.get(opts, :application_router),
           assets_path: assets_path

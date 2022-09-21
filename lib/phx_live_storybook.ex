@@ -162,6 +162,7 @@ defmodule PhxLiveStorybook do
     quote do
       @impl PhxLiveStorybook.BackendBehaviour
       def config(key, default \\ nil) do
+        # otp_app = unquote(opts)
         Keyword.get(unquote(opts), key, default)
       end
     end

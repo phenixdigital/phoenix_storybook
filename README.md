@@ -95,10 +95,7 @@ end
 scope "/", PhxLiveStorybookSampleWeb do
   pipe_through(:browser)
   ...
-  live_storybook("/storybook",
-    otp_app: :my_app,
-    backend_module: MyAppWeb.Storybook
-  )
+  live_storybook "/storybook", backend_module: MyAppWeb.Storybook
 end
 ```
 
