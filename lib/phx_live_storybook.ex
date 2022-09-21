@@ -46,8 +46,8 @@ defmodule PhxLiveStorybook do
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
-  alias PhxLiveStorybook.ExsLoader
   alias PhxLiveStorybook.Entries
+  alias PhxLiveStorybook.ExsLoader
   alias PhxLiveStorybook.StoryValidator
 
   require Logger
