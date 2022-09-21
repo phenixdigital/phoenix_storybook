@@ -3,7 +3,7 @@ defmodule PhxLiveStorybookTest do
 
   import Phoenix.LiveViewTest
 
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry}
+  alias PhxLiveStorybook.{ComponentStory, Folder}
 
   alias PhxLiveStorybook.{
     EmptyFilesStorybook,
@@ -14,14 +14,14 @@ defmodule PhxLiveStorybookTest do
     TreeBStorybook
   }
 
-  describe "entries/0" do
-    test "when no content path set it should return no entries" do
-      assert NoContentStorybook.entries() == []
+  describe "stories/0" do
+    test "when no content path set it should return no stories" do
+      assert NoContentStorybook.stories() == []
     end
 
-    test "with a flat list of entries, it should return a flat list of 2 components" do
-      assert FlatListStorybook.entries() == [
-               %ComponentEntry{
+    test "with a flat list of stories, it should return a flat list of 2 components" do
+      assert FlatListStorybook.stories() == [
+               %ComponentStory{
                  module: Elixir.FlatListStorybook.AComponent,
                  module_name: "AComponent",
                  type: :component,
@@ -32,10 +32,10 @@ defmodule PhxLiveStorybookTest do
                  storybook_path: "/a_component",
                  container: :div,
                  attributes: [],
-                 stories: [],
-                 template: "<.lsb-story/>"
+                 variations: [],
+                 template: "<.lsb-variation/>"
                },
-               %ComponentEntry{
+               %ComponentStory{
                  module: Elixir.FlatListStorybook.BComponent,
                  module_name: "BComponent",
                  type: :live_component,
@@ -46,17 +46,17 @@ defmodule PhxLiveStorybookTest do
                  storybook_path: "/b_component",
                  container: :div,
                  attributes: [],
-                 stories: [],
-                 template: "<.lsb-story/>"
+                 variations: [],
+                 template: "<.lsb-variation/>"
                }
              ]
     end
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
-      entries = TreeStorybook.entries()
-      assert Enum.count(entries) == 8
+      stories = TreeStorybook.stories()
+      assert Enum.count(stories) == 9
 
-      assert %PhxLiveStorybook.PageEntry{
+      assert %PhxLiveStorybook.PageStory{
                module_name: "APage",
                module: Elixir.TreeStorybook.APage,
                name: "A Page",
@@ -64,18 +64,18 @@ defmodule PhxLiveStorybookTest do
                storybook_path: "/a_page",
                icon: "fa fa-page",
                navigation: []
-             } = Enum.at(entries, 0)
+             } = Enum.at(stories, 0)
 
-      assert %PhxLiveStorybook.PageEntry{
+      assert %PhxLiveStorybook.PageStory{
                module_name: "BPage",
                module: Elixir.TreeStorybook.BPage,
                name: "B Page",
                description: "b page",
                storybook_path: "/b_page",
                navigation: [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
-             } = Enum.at(entries, 1)
+             } = Enum.at(stories, 1)
 
-      assert %PhxLiveStorybook.ComponentEntry{
+      assert %PhxLiveStorybook.ComponentStory{
                module: Elixir.TreeStorybook.Component,
                module_name: "Component",
                type: :component,
@@ -90,21 +90,21 @@ defmodule PhxLiveStorybookTest do
                    doc: "component label"
                  }
                ],
-               stories: [
-                 %PhxLiveStorybook.Story{
+               variations: [
+                 %PhxLiveStorybook.Variation{
                    attributes: %{label: "hello"},
-                   description: "Hello story",
+                   description: "Hello variation",
                    id: :hello
                  },
-                 %PhxLiveStorybook.Story{
+                 %PhxLiveStorybook.Variation{
                    attributes: %{index: 37, label: "world"},
-                   description: "World story",
+                   description: "World variation",
                    id: :world
                  }
                ]
-             } = Enum.at(entries, 2)
+             } = Enum.at(stories, 2)
 
-      assert %PhxLiveStorybook.ComponentEntry{
+      assert %PhxLiveStorybook.ComponentStory{
                module: Elixir.TreeStorybook.LiveComponent,
                module_name: "LiveComponent",
                name: "Live Component (root)",
@@ -112,76 +112,90 @@ defmodule PhxLiveStorybookTest do
                component: LiveComponent,
                description: "live component description",
                storybook_path: "/live_component",
-               stories: [
-                 %PhxLiveStorybook.Story{
+               variations: [
+                 %PhxLiveStorybook.Variation{
                    attributes: %{label: "hello"},
-                   description: "Hello story",
+                   description: "Hello variation",
                    id: :hello
                  },
-                 %PhxLiveStorybook.Story{
+                 %PhxLiveStorybook.Variation{
                    attributes: %{label: "world"},
                    block: "<span>inner block</span>\n",
                    id: :world
                  }
                ]
-             } = Enum.at(entries, 3)
+             } = Enum.at(stories, 3)
 
-      assert %PhxLiveStorybook.FolderEntry{
+      assert %PhxLiveStorybook.Folder{
                name: "a_folder",
                storybook_path: "/a_folder",
                icon: "fa-icon",
                nice_name: "A folder",
-               sub_entries: [
-                 %PhxLiveStorybook.ComponentEntry{
+               items: [
+                 %PhxLiveStorybook.ComponentStory{
                    module: Elixir.TreeStorybook.AFolder.Component
                  },
-                 %PhxLiveStorybook.ComponentEntry{
+                 %PhxLiveStorybook.ComponentStory{
                    module: Elixir.TreeStorybook.AFolder.LiveComponent
                  }
                ]
-             } = Enum.at(entries, 4)
+             } = Enum.at(stories, 4)
 
-      assert %PhxLiveStorybook.FolderEntry{
+      assert %PhxLiveStorybook.Folder{
                name: "b_folder",
                storybook_path: "/b_folder",
                nice_name: "Config Name",
-               sub_entries: [
-                 %PhxLiveStorybook.ComponentEntry{
+               items: [
+                 %PhxLiveStorybook.ComponentStory{
                    module: Elixir.TreeStorybook.BFolder.AllTypesComponent
                  },
-                 %PhxLiveStorybook.ComponentEntry{
+                 %PhxLiveStorybook.ComponentStory{
                    module: Elixir.TreeStorybook.BFolder.Component
                  },
-                 %PhxLiveStorybook.ComponentEntry{
+                 %PhxLiveStorybook.ComponentStory{
                    module: Elixir.TreeStorybook.BFolder.NestedComponent
                  }
                ]
-             } = Enum.at(entries, 5)
+             } = Enum.at(stories, 5)
+
+      assert %PhxLiveStorybook.Folder{
+               name: "event",
+               storybook_path: "/event",
+               nice_name: "Event",
+               items: [
+                 %PhxLiveStorybook.ComponentStory{
+                   module: Elixir.TreeStorybook.Event.EventComponent
+                 },
+                 %PhxLiveStorybook.ComponentStory{
+                   module: Elixir.TreeStorybook.Event.EventLiveComponent
+                 }
+               ]
+             } = Enum.at(stories, 6)
     end
 
-    test "with an empty folder it should return no entries" do
-      assert EmptyFilesStorybook.entries() == []
+    test "with an empty folder it should return no stories" do
+      assert EmptyFilesStorybook.stories() == []
     end
 
     test "with empty sub-folders, it should return a flat list of 2 folders" do
-      assert EmptyFoldersStorybook.entries() == [
-               %FolderEntry{
+      assert EmptyFoldersStorybook.stories() == [
+               %Folder{
                  name: "empty_a",
                  nice_name: "Empty a",
-                 sub_entries: [],
+                 items: [],
                  storybook_path: "/empty_a"
                },
-               %FolderEntry{
+               %Folder{
                  name: "empty_b",
                  nice_name: "Empty b",
-                 sub_entries: [],
+                 items: [],
                  storybook_path: "/empty_b"
                }
              ]
     end
   end
 
-  describe "render_story/2" do
+  describe "render_variation/2" do
     alias Elixir.TreeStorybook.{
       Component,
       LiveComponent,
@@ -189,23 +203,23 @@ defmodule PhxLiveStorybookTest do
       TemplateComponent
     }
 
-    test "it should return HEEX for each component/story couple" do
-      assert TreeStorybook.render_story(Component, :hello) |> rendered_to_string() ==
+    test "it should return HEEX for each component/variation couple" do
+      assert TreeStorybook.render_variation(Component, :hello) |> rendered_to_string() ==
                "<span data-index=\"42\">component: hello</span>"
 
-      assert TreeStorybook.render_story(Component, :world) |> rendered_to_string() ==
+      assert TreeStorybook.render_variation(Component, :world) |> rendered_to_string() ==
                "<span data-index=\"37\">component: world</span>"
 
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "live_component-hello"}] =
-               TreeStorybook.render_story(LiveComponent, :hello).dynamic.([])
+               TreeStorybook.render_variation(LiveComponent, :hello).dynamic.([])
 
       assert [%Phoenix.LiveView.Component{id: "live_component-world"}] =
-               TreeStorybook.render_story(LiveComponent, :world).dynamic.([])
+               TreeStorybook.render_variation(LiveComponent, :world).dynamic.([])
     end
 
-    test "it also works for a story group" do
-      assert TreeStorybook.render_story(Elixir.TreeStorybook.AFolder.Component, :group)
+    test "it also works for a variation group" do
+      assert TreeStorybook.render_variation(Elixir.TreeStorybook.AFolder.Component, :group)
              |> rendered_to_string() ==
                String.trim("""
                <span data-index=\"42\">component: hello</span>
@@ -217,20 +231,24 @@ defmodule PhxLiveStorybookTest do
                %Phoenix.LiveView.Component{id: "live_component-group-hello"},
                %Phoenix.LiveView.Component{id: "live_component-group-world"}
              ] =
-               TreeStorybook.render_story(Elixir.TreeStorybook.AFolder.LiveComponent, :group).dynamic.(
-                 []
-               )
+               TreeStorybook.render_variation(
+                 Elixir.TreeStorybook.AFolder.LiveComponent,
+                 :group
+               ).dynamic.([])
     end
 
-    test "it is working with a story without any attributes" do
-      assert TreeStorybook.render_story(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
+    test "it is working with a variation without any attributes" do
+      assert TreeStorybook.render_variation(
+               Elixir.TreeStorybook.AFolder.Component,
+               :no_attributes
+             )
              |> rendered_to_string() ==
                "<span data-index=\"42\">component: </span>"
     end
 
     test "it is working with an inner_block requiring a let attribute" do
       html =
-        TreeStorybook.render_story(Elixir.TreeStorybook.Let.LetComponent, :default)
+        TreeStorybook.render_variation(Elixir.TreeStorybook.Let.LetComponent, :default)
         |> rendered_to_string()
 
       assert html =~ "**foo**"
@@ -240,14 +258,15 @@ defmodule PhxLiveStorybookTest do
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
       assert [%Phoenix.LiveView.Component{id: "let_live_component-default"}] =
-               TreeStorybook.render_story(Elixir.TreeStorybook.Let.LetLiveComponent, :default).dynamic.(
-                 []
-               )
+               TreeStorybook.render_variation(
+                 Elixir.TreeStorybook.Let.LetLiveComponent,
+                 :default
+               ).dynamic.([])
     end
 
-    test "renders a story with entry template" do
+    test "renders a variation with story template" do
       html =
-        TreeStorybook.render_story(TemplateComponent, :hello)
+        TreeStorybook.render_variation(TemplateComponent, :hello)
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
@@ -255,19 +274,19 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 1
     end
 
-    test "renders a story with its own template" do
+    test "renders a variation with its own template" do
       html =
-        TreeStorybook.render_story(TemplateComponent, :story_template)
+        TreeStorybook.render_variation(TemplateComponent, :variation_template)
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
-      assert html |> Floki.attribute("class") |> hd() == "story-template"
+      assert html |> Floki.attribute("class") |> hd() == "variation-template"
       assert html |> Floki.find("span") |> length() == 1
     end
 
-    test "renders a story with which disables entry's template" do
+    test "renders a variation with which disables story's template" do
       html =
-        TreeStorybook.render_story(TemplateComponent, :no_template)
+        TreeStorybook.render_variation(TemplateComponent, :no_template)
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
@@ -275,9 +294,9 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 1
     end
 
-    test "renders a story group with entry template" do
+    test "renders a variation group with story template" do
       html =
-        TreeStorybook.render_story(TemplateComponent, :group)
+        TreeStorybook.render_variation(TemplateComponent, :group)
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
@@ -287,9 +306,9 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a story group with its own template" do
+    test "renders a variation group with its own template" do
       html =
-        TreeStorybook.render_story(TemplateComponent, :group_template)
+        TreeStorybook.render_variation(TemplateComponent, :group_template)
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
@@ -299,9 +318,9 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a story group with a <.lsb-story-group/> placeholder template" do
+    test "renders a variation group with a <.lsb-variation-group/> placeholder template" do
       html =
-        TreeStorybook.render_story(TemplateComponent, :group_template_single)
+        TreeStorybook.render_variation(TemplateComponent, :group_template_single)
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
@@ -310,33 +329,33 @@ defmodule PhxLiveStorybookTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a story with a template, but no placeholder" do
-      assert TreeStorybook.render_story(TemplateComponent, :no_placeholder)
+    test "renders a variation with a template, but no placeholder" do
+      assert TreeStorybook.render_variation(TemplateComponent, :no_placeholder)
              |> rendered_to_string() == "<div></div>"
     end
 
-    test "renders a story group with a template, but no placeholder" do
-      assert TreeStorybook.render_story(TemplateComponent, :no_placeholder_group)
+    test "renders a variation group with a template, but no placeholder" do
+      assert TreeStorybook.render_variation(TemplateComponent, :no_placeholder_group)
              |> rendered_to_string() == "<div></div>"
     end
 
-    test "renders a story with an invalid template placeholder will raise" do
-      msg = "Cannot use <.lsb-story-group/> placeholder in a story template."
+    test "renders a variation with an invalid template placeholder will raise" do
+      msg = "Cannot use <.lsb-variation-group/> placeholder in a variation template."
 
       assert_raise RuntimeError, msg, fn ->
-        TreeStorybook.render_story(InvalidTemplateComponent, :invalid_template_placeholder)
+        TreeStorybook.render_variation(InvalidTemplateComponent, :invalid_template_placeholder)
       end
     end
 
-    test "renders a story with a template passing extra attributes" do
-      assert TreeStorybook.render_story(TemplateComponent, :template_attributes)
+    test "renders a variation with a template passing extra attributes" do
+      assert TreeStorybook.render_variation(TemplateComponent, :template_attributes)
              |> rendered_to_string() ==
                "<span>template_component: from_template / status: true</span>"
     end
   end
 
   describe "render_code/2" do
-    test "it should return HEEX for each component/story couple" do
+    test "it should return HEEX for each component/variation couple" do
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Component, :hello)
       assert code =~ ~r|<pre.*</pre>|s
 
@@ -344,14 +363,17 @@ defmodule PhxLiveStorybookTest do
       assert code =~ ~r|<pre.*</pre>|s
 
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :hello)
+
       assert code =~ ~r|<pre.*</pre>|s
 
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.LiveComponent, :world)
+
       assert code =~ ~r|<pre.*</pre>|s
     end
 
-    test "it also works for a story group" do
+    test "it also works for a variation group" do
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :group)
+
       assert code =~ ~r|<pre.*</pre>|s
 
       {:safe, code} =
@@ -360,7 +382,7 @@ defmodule PhxLiveStorybookTest do
       assert code =~ ~r|<pre.*</pre>|s
     end
 
-    test "it is working with a story without any attributes" do
+    test "it is working with a variation without any attributes" do
       {:safe, code} =
         TreeStorybook.render_code(Elixir.TreeStorybook.AFolder.Component, :no_attributes)
 
@@ -369,6 +391,7 @@ defmodule PhxLiveStorybookTest do
 
     test "it is working with an inner_block requiring a let attribute" do
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.Let.LetComponent, :default)
+
       assert code =~ ~r|<pre.*</pre>|s
     end
 
@@ -381,12 +404,16 @@ defmodule PhxLiveStorybookTest do
 
     test "it is working with a template component" do
       {:safe, code} = TreeStorybook.render_code(Elixir.TreeStorybook.TemplateComponent, :hello)
+
       assert Regex.match?(~r/<pre.*template-div.*\/pre>/s, code)
     end
 
     test "it prints aliases struct names" do
       {:safe, code} =
-        TreeStorybook.render_code(Elixir.TreeStorybook.BFolder.AllTypesComponent, :with_struct)
+        TreeStorybook.render_code(
+          Elixir.TreeStorybook.BFolder.AllTypesComponent,
+          :with_struct
+        )
 
       assert Regex.match?(~r/<pre.*Struct.*\/pre>/s, code)
       refute Regex.match?(~r/<pre.*AllTypesComponent.*\/pre>/s, code)
@@ -403,8 +430,11 @@ defmodule PhxLiveStorybookTest do
 
     test "it raises a compile error if a page rendering raises" do
       assert_raise CompileError, ~r/an error occured while rendering page/, fn ->
-        defmodule Elixir.PhxLiveStorybook.RenderPageCrashStorybook,
-          do: use(PhxLiveStorybook, otp_app: :phx_live_storybook)
+        defmodule Elixir.PhxLiveStorybook.RenderPageCrashStorybook do
+          use PhxLiveStorybook,
+            otp_app: :phx_live_storybook,
+            content_path: Path.expand("./fixtures/storybook_content/render_page_crash", __DIR__)
+        end
       end
     end
   end
@@ -424,7 +454,7 @@ defmodule PhxLiveStorybookTest do
   describe "all_leaves/0" do
     test "with a tree it should return all leaves" do
       assert TreeBStorybook.all_leaves() == [
-               %ComponentEntry{
+               %ComponentStory{
                  storybook_path: "/b_folder/bb_folder/b_ba_component",
                  module: Elixir.TreeBStorybook.BFolder.BBFolder.BBaComponent,
                  type: :component,
@@ -435,10 +465,10 @@ defmodule PhxLiveStorybookTest do
                  path: content_path("tree_b/b_folder/bb_folder/bba_component.exs"),
                  container: :div,
                  attributes: [],
-                 stories: [],
-                 template: "<.lsb-story/>"
+                 variations: [],
+                 template: "<.lsb-variation/>"
                },
-               %ComponentEntry{
+               %ComponentStory{
                  storybook_path: "/b_folder/bb_folder/bbb_component",
                  module: Elixir.TreeBStorybook.BFolder.BbFolder.BbbComponent,
                  type: :component,
@@ -449,8 +479,8 @@ defmodule PhxLiveStorybookTest do
                  path: content_path("tree_b/b_folder/bb_folder/bbb_component.exs"),
                  container: :div,
                  attributes: [],
-                 stories: [],
-                 template: "<.lsb-story/>"
+                 variations: [],
+                 template: "<.lsb-variation/>"
                }
              ]
     end

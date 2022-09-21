@@ -1,17 +1,17 @@
 defmodule TreeStorybook.TemplateIframeComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &TemplateComponent.template_component/1
   def container, do: :iframe
 
   def template do
     """
     <div>
-      <button id="set-foo" phx-click="set-story-assign/:story_id/label/foo">Set label to foo</button>
-      <button id="set-bar" phx-click="set-story-assign/:story_id/label/bar">Set label to bar</button>
-      <button id="toggle-status" phx-click="toggle-story-assign/:story_id/status">Toggle status</button>
-      <button id="set-status-true" phx-click="set-story-assign/:story_id/status/true">Set status to true</button>
-      <button id="set-status-false" phx-click="set-story-assign/:story_id/status/false">Set status to false</button>
-      <.lsb-story/>
+      <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
+      <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
+      <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
+      <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
+      <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
+      <.lsb-variation/>
     </div>
     """
   end
@@ -33,16 +33,16 @@ defmodule TreeStorybook.TemplateIframeComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       },
-      %Story{
+      %Variation{
         id: :world,
-        description: "World story",
+        description: "World variation",
         attributes: %{label: "world"}
       }
     ]

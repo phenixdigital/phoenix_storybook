@@ -4,9 +4,9 @@ defmodule LetLiveComponent do
   def render(assigns) do
     ~H"""
     <ul>
-      <%= for entry <- @entries do %>
+      <%= for story <- @stories do %>
         <li>
-          <%= render_slot(@inner_block, entry) %>
+          <%= render_slot(@inner_block, story) %>
         </li>
       <% end %>
     </ul>

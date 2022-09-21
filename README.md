@@ -15,7 +15,7 @@
 PhxLiveStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your
 Phoenix LiveView components.
 
-- Explore all your components, and showcase them with different stories.
+- Explore all your components, and showcase them with different variations.
 - Browse your component's documentation, with their supported attributes.
 - Learn how components behave by using an interactive playground.
 
@@ -31,13 +31,11 @@ It performs automatic discovery of your storybook content under a specified fold
 and then automatically generates a storybook navigation sidebar. Every module detected in your
 content folder will be loaded and identified as a storybook entry.
 
-Three kinds of entries are supported:
+Three kinds of stories are supported:
 
 - `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
 - `example` to show how your components can be used and mixed in real UI pages. (not available now)
-
-Almost everything, from sidebar rendering to component preview, is performed at compile time.
 
 ## Installation
 
@@ -47,8 +45,7 @@ To start using `PhxLiveStorybook` in your phoenix application you will need to f
 2. Create your storybook backend module
 3. Add storybook access to your router
 4. Make your components assets available
-5. Configure your storybook
-6. Create some content
+5. Create some content
 
 ### 1. Add the `phx_live_storybook` dependency
 
@@ -69,7 +66,12 @@ Create a new module under your application lib folder:
 ```elixir
 # lib/my_app_web/storybook.ex
 defmodule MyAppWeb.Storybook do
-  use PhxLiveStorybook, otp_app: :my_app
+  use PhxLiveStorybook,
+    otp_app: :my_app,
+    content_path: Path.expand("../storybook", __DIR__),
+    # assets path are remote path, not local file-system paths
+    css_path: "/assets/my_components.css",
+    js_path: "/assets/my_components.js"
 end
 ```
 
@@ -122,35 +124,22 @@ import * as Uploaders from "./uploaders";
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
 
-### 5. Configure your storybook
-
-In your configuration files, add the following:
-
-```elixir
-# config/config.exs
-
-config :my_app, MyAppWeb.Storybook,
-  content_path: Path.expand("../storybook", __DIR__),
-  css_path: "/assets/my_components.css",
-  js_path: "/assets/my_components.js"
-```
-
-### 6. Create some content
+### 5. Create some content
 
 Then you can start creating some content for your storybook. Storybook can contain different kinds
-of _entries_:
+of _stories_:
 
-- **component entries**: to document and showcase your components across different stories (ie. _variants_)
+- **component stories**: to document and showcase your components across different variations.
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **examples**: to show how your components can be used and mixed in real UI pages.
 
-_As of `0.4.0`, only component and page entries are available._
+_As of `0.4.0`, only component and page stories are available._
 
-Entries are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
+Stories are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
 Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
 sidebar.
 
-Here is an example of a stateless (function) component entry:
+Here is an example of a stateless (function) component story:
 
 ```elixir
 # storybook/components/button.exs
@@ -158,19 +147,19 @@ defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
   # :live_component or :page are also available
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
 
   def function, do: &Button.button/1
   def description, do: "A simple generic button."
 
-  def stories do [
-    %Story{
+  def variations do [
+    %Variation{
       id: :default,
       attributes: %{
         label: "A button"
       }
     },
-    %Story{
+    %Variation{
       id: :green_button,
       attributes: %{
         label: "Still a button",
@@ -186,60 +175,87 @@ end
 
 ### Configuration
 
-Of all config settings, only the `:content_path` key is mandatory.
+Of all config settings, only the `:otp_app, and `:content_path` keys are mandatory.
 
 ```elixir
 # config/config.exs
-config :my_app, MyAppWeb.Storybook,
+defmodule MyAppWeb.Storybook do
+  use PhxLiveStorybook,
+    # OTP name of your application.
+    otp_app: :my_app,
 
-  # Path to your storybook entries (required).
-  content_path: Path.expand("../storybook", __DIR__),
+    # Path to your storybook stories (required).
+    content_path: Path.expand("../storybook", __DIR__),
 
-  # Path to your components stylesheet.
-  css_path: "/assets/my_components.css",
+    # Path to your components stylesheet.
+    # Remote path, not local file-system path
+    css_path: "/assets/my_components.css",
 
-  # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
-  # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
-  js_path: "/assets/my_components.js",
+    # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
+    # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
+    # Remote path, not local file-system path.
+    js_path: "/assets/my_components.js",
 
-  # Custom storybook title. Default is "Live Storybook".
-  title: "My Live Storybook",
+    # Custom storybook title. Default is "Live Storybook".
+    title: "My Live Storybook",
 
-  # Folder settings.
-  # Each folder is designated by its relative path from the storybook mounting point.
-  # For each folder you can:
-  # - make it open by default in the sidebar, with `open: true`.
-  # - give it a custom name in the sidebar
-  # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
-  folders: [
-    "/": [icon: "fas fa-banana"],
-    "/components": [icon: "far fa-toolbox", open: true],
-    "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
-  ]
+    # Folder settings.
+    # Each folder is designated by its relative path from the storybook mounting point.
+    # For each folder you can:
+    # - make it open by default in the sidebar, with `open: true`.
+    # - give it a custom name in the sidebar
+    # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
+    folders: [
+      "/": [icon: "fas fa-banana"],
+      "/components": [icon: "far fa-toolbox", open: true],
+      "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
+    ]
 
-  # Theme settings.
-  # Each theme must have a name, and an optional dropdown_class.
-  # When set, a dropdown is displayed in storybook header to let the user pick a theme.
-  # The dropdown_class is used to render the theme in the dropdown and identify which current
-  # theme is active.
-  #
-  # The chosen theme key will be passed as an assign to all components.
-  # ex: <.component theme={:colorful}/>
-  #
-  # The chosen theme class will also be added to the `.lsb-sandbox` container.
-  # ex: <div class="lsb-sandbox theme-colorful">...</div>
-  #
-  # If no theme has been selected or if no theme is present in the URL the first one is enabled.
-  themes: [
-    default: [name: "Default"],
-    colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
-  ]
+    # Theme settings.
+    # Each theme must have a name, and an optional dropdown_class.
+    # When set, a dropdown is displayed in storybook header to let the user pick a theme.
+    # The dropdown_class is used to render the theme in the dropdown and identify which current
+    # theme is active.
+    #
+    # The chosen theme key will be passed as an assign to all components.
+    # ex: <.component theme={:colorful}/>
+    #
+    # The chosen theme class will also be added to the `.lsb-sandbox` container.
+    # ex: <div class="lsb-sandbox theme-colorful">...</div>
+    #
+    # If no theme has been selected or if no theme is present in the URL the first one is enabled.
+    themes: [
+      default: [name: "Default"],
+      colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+    ]
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
 
 <!-- MDOC !-->
 
-### License
+## Contributing
+
+We would love your PRs!
+
+1. Pull down phx_live_storybook to a directory next to your project (`../phx_live_storybook`).
+2. Change your mix file to point to this directory:
+   ```elixir
+     # {:phx_live_storybook, "~> 0.3.0"},
+     {:phx_live_storybook, path: "../phx_live_storybook"},
+   ```
+3. Update the assets in phx_live_storybook since this isn't a release
+   ```bash
+     cd ../phx_live_storybook
+     mix deps.get
+     npm ci --prefix assets
+     mix assets.build
+   ```
+
+And make sure you read the [CONTRIBUTING](CONTRIBUTING.md) guide.
+
+That should get you running against HEAD and ready to dig into the code!
+
+## License
 
 MIT License. Copyright (c) 2022 Christian Blavier

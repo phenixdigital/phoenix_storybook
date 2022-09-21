@@ -6,15 +6,15 @@ defmodule PhxLiveStorybook.SearchTest do
   alias PhxLiveStorybook.Search
   alias PhxLiveStorybook.{EmptyFilesStorybook, FlatListStorybook}
 
-  describe "search list entries" do
-    test "has no entry" do
+  describe "search list stories" do
+    test "has no story" do
       {_document, html} = render_search(EmptyFilesStorybook)
 
-      assert EmptyFilesStorybook.entries() == []
-      assert String.contains?(html, "No entries found")
+      assert EmptyFilesStorybook.stories() == []
+      assert String.contains?(html, "No stories found")
     end
 
-    test "contains all entries" do
+    test "contains all stories" do
       {document, html} = render_search(FlatListStorybook)
 
       assert find(document, "ul>li") |> length() == 2

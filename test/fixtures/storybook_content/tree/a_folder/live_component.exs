@@ -1,5 +1,5 @@
 defmodule TreeStorybook.AFolder.LiveComponent do
-  use PhxLiveStorybook.Entry, :live_component
+  use PhxLiveStorybook.Story, :live_component
   def component, do: LiveComponent
   def name, do: "Live Component (a_folder)"
   def description, do: "Live component description"
@@ -11,26 +11,26 @@ defmodule TreeStorybook.AFolder.LiveComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %StoryGroup{
+      %VariationGroup{
         id: :group,
-        stories: [
-          %Story{
+        variations: [
+          %Variation{
             id: :hello,
-            description: "Hello story",
+            description: "Hello variation",
             attributes: %{label: "hello"},
             block: """
             <span>inner block</span>
             """
           },
-          %Story{
+          %Variation{
             id: :world,
             attributes: %{label: "world"}
           }
         ]
       },
-      %Story{
+      %Variation{
         id: :default,
         attributes: %{label: "hello"},
         block: """

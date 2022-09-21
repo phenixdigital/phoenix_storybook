@@ -1,4 +1,4 @@
 defmodule FlatListStorybook.BComponent do
-  use PhxLiveStorybook.Entry, :live_component
+  use PhxLiveStorybook.Story, :live_component
   def component, do: nil
 end

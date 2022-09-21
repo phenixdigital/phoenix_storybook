@@ -1,17 +1,52 @@
 ExUnit.start()
 
-for module <- [
-      PhxLiveStorybook.EmptyFilesStorybook,
-      PhxLiveStorybook.EmptyFoldersStorybook,
-      PhxLiveStorybook.FlatListStorybook,
-      PhxLiveStorybook.NoContentStorybook,
-      PhxLiveStorybook.TestStorybook,
-      PhxLiveStorybook.TreeStorybook,
-      PhxLiveStorybook.TreeBStorybook
-    ] do
-  defmodule module do
-    use PhxLiveStorybook, otp_app: :phx_live_storybook
-  end
+defmodule PhxLiveStorybook.EmptyFilesStorybook do
+  use PhxLiveStorybook,
+    otp_app: :phx_live_storybook,
+    content_path: Path.expand("./fixtures/storybook_content/empty_files", __DIR__)
+end
+
+defmodule PhxLiveStorybook.EmptyFoldersStorybook do
+  use PhxLiveStorybook,
+    otp_app: :phx_live_storybook,
+    content_path: Path.expand("./fixtures/storybook_content/empty_folders", __DIR__)
+end
+
+defmodule PhxLiveStorybook.FlatListStorybook do
+  use PhxLiveStorybook,
+    otp_app: :phx_live_storybook,
+    content_path: Path.expand("./fixtures/storybook_content/flat_list", __DIR__)
+end
+
+defmodule PhxLiveStorybook.NoContentStorybook do
+  use PhxLiveStorybook,
+    otp_app: :phx_live_storybook,
+    content_path: nil
+end
+
+defmodule PhxLiveStorybook.TreeStorybook do
+  use PhxLiveStorybook,
+    otp_app: :phx_live_storybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    folders: [
+      "/a_folder": [icon: "fa-icon"],
+      "/b_folder": [open: true, name: "Config Name"]
+    ]
+end
+
+defmodule PhxLiveStorybook.TreeBStorybook do
+  use PhxLiveStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree_b", __DIR__)
+end
+
+defmodule PhxLiveStorybook.TestStorybook do
+  use PhxLiveStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    folders: [a_folder: [open: true]],
+    themes: [
+      default: [name: "Default"],
+      colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+    ]
 end
 
 defmodule PhxLiveStorybook.TestRouter do
@@ -27,7 +62,7 @@ defmodule PhxLiveStorybook.TestRouter do
 end
 
 for endpoint <- [
-      PhxLiveStorybook.EntryLiveTestEndpoint,
+      PhxLiveStorybook.StoryLiveTestEndpoint,
       PhxLiveStorybook.PlaygroundLiveTestEndpoint
     ] do
   defmodule endpoint do

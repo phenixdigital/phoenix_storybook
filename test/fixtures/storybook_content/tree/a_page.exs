@@ -1,5 +1,5 @@
 defmodule TreeStorybook.APage do
-  use PhxLiveStorybook.Entry, :page
+  use PhxLiveStorybook.Story, :page
 
   def description, do: "a page"
   def icon, do: "fa fa-page"

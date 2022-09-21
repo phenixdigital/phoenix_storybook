@@ -5,19 +5,19 @@ defmodule PhxLiveStorybook.LayoutView do
   alias Makeup.Styles.HTML.StyleMap
   alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.AssetHelpers
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
+  alias PhxLiveStorybook.{ComponentStory, Folder, PageStory}
 
   @env Application.compile_env(:phx_live_storybook, :env)
 
-  def render_breadcrumb(socket, entry, opts \\ []) do
-    breadcrumb(socket, entry)
+  def render_breadcrumb(socket, story, opts \\ []) do
+    breadcrumb(socket, story)
     |> Enum.intersperse(:separator)
     |> Enum.map_join("", fn
       :separator ->
         ~s|<i class="lsb fat fa-angle-right lsb-px-2 lsb-text-slate-500"></i>|
 
-      entry_name ->
-        ~s|<span class="lsb #{opts[:span_class]} [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap">#{entry_name}</span>|
+      story_name ->
+        ~s|<span class="lsb #{opts[:span_class]} [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap">#{story_name}</span>|
     end)
     |> raw()
   end
@@ -41,13 +41,9 @@ defmodule PhxLiveStorybook.LayoutView do
   defp storybook_setting(conn_or_socket, key, default \\ nil)
 
   defp storybook_setting(conn_or_socket, key, default) do
-    otp_app = otp_app(conn_or_socket)
     backend_module = backend_module(conn_or_socket)
-    Application.get_env(otp_app, backend_module, []) |> Keyword.get(key, default)
+    backend_module.config(key, default)
   end
-
-  defp otp_app(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.otp_app
-  defp otp_app(conn = %Plug.Conn{}), do: conn.private.otp_app
 
   defp backend_module(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.backend_module
   defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module
@@ -77,18 +73,18 @@ defmodule PhxLiveStorybook.LayoutView do
 
   defp asset_file_name(path, _env), do: path
 
-  defp breadcrumb(socket, entry) do
+  defp breadcrumb(socket, story) do
     backend_module = backend_module(socket)
 
     {_, breadcrumb} =
-      for path_item <- String.split(entry.storybook_path, "/", trim: true), reduce: {"", []} do
+      for path_item <- String.split(story.storybook_path, "/", trim: true), reduce: {"", []} do
         {path, breadcrumb} ->
           path = path <> "/" <> path_item
 
-          case backend_module.find_entry_by_path(path) do
-            %FolderEntry{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
-            %ComponentEntry{name: name} -> {path, [name | breadcrumb]}
-            %PageEntry{name: name} -> {path, [name | breadcrumb]}
+          case backend_module.find_story_by_path(path) do
+            %Folder{nice_name: nice_name} -> {path, [nice_name | breadcrumb]}
+            %ComponentStory{name: name} -> {path, [name | breadcrumb]}
+            %PageStory{name: name} -> {path, [name | breadcrumb]}
           end
       end
 

@@ -47,24 +47,24 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
 
-    test "we can switch to another story from the playground", %{conn: conn} do
+    test "we can switch to another variation from the playground", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
 
       view
-      |> element("#story-selection-form_story_id")
-      |> render_change(%{story: %{story_id: "world"}})
+      |> element("#variation-selection-form_variation_id")
+      |> render_change(%{variation: %{variation_id: "world"}})
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
 
-    test "we can switch to another story group from the playground", %{conn: conn} do
+    test "we can switch to another variation group from the playground", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_folder/live_component?tab=playground")
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
 
       view
-      |> element("#story-selection-form_story_id")
-      |> render_change(%{story: %{story_id: "default"}})
+      |> element("#variation-selection-form_variation_id")
+      |> render_change(%{variation: %{variation_id: "default"}})
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
     end
@@ -78,7 +78,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   end
 
   describe "empty playground" do
-    test "with no stories, it does not crash", %{conn: conn} do
+    test "with no variations, it does not crash", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
       assert html =~ "Component"
     end
@@ -87,7 +87,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
 
       assert html =~
-               ~r|<p>In order to use playground, you must define attributes in your.*Component.*entry\.</p>|
+               ~r|<p>In order to use playground, you must define attributes in your.*Component.*story\.</p>|
     end
   end
 
@@ -198,6 +198,85 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     end
   end
 
+  describe "playground event logs" do
+    test "it shows live_view type event log", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/event/event_component?tab=playground")
+
+      events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
+      refute view |> has_element?(events_tab_selector, "(1)")
+
+      assert [playground_preview_view] = live_children(view)
+      assert playground_preview_view |> element("button[phx-click='greet']") |> render_click()
+      assert view |> has_element?(events_tab_selector, "(1)")
+
+      assert view |> element(events_tab_selector) |> render_click()
+
+      event_log =
+        view
+        |> element("#tree_storybook_event_event_component-playground-event-log-0")
+        |> render()
+
+      assert event_log =~ "<code"
+      assert event_log =~ "<span class=\"lsb-text-indigo-600\">live_view </span>"
+      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
+      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet </span>"
+    end
+
+    test "it shows component type event log from a live component", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/event/event_live_component?tab=playground")
+
+      events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
+      refute view |> has_element?(events_tab_selector, "(1)")
+
+      assert [playground_preview_view] = live_children(view)
+
+      assert playground_preview_view
+             |> element("button[phx-click='greet_self']")
+             |> render_click()
+
+      assert view |> has_element?(events_tab_selector, "(1)")
+
+      assert view |> element(events_tab_selector) |> render_click()
+
+      event_log =
+        view
+        |> element("#tree_storybook_event_event_live_component-playground-event-log-0")
+        |> render()
+
+      assert event_log =~ "<code"
+      assert event_log =~ "<span class=\"lsb-text-indigo-600\">component </span>"
+      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
+      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet_self </span>"
+    end
+
+    test "it shows live_view type event log from a live component", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/event/event_live_component?tab=playground")
+
+      events_tab_selector = "a[phx-click='lower-tab-navigation'][phx-value-tab='events']"
+      refute view |> has_element?(events_tab_selector, "(1)")
+
+      assert [playground_preview_view] = live_children(view)
+
+      assert playground_preview_view
+             |> element("button[phx-click='greet_parent']")
+             |> render_click()
+
+      assert view |> has_element?(events_tab_selector, "(1)")
+
+      assert view |> element(events_tab_selector) |> render_click()
+
+      event_log =
+        view
+        |> element("#tree_storybook_event_event_live_component-playground-event-log-0")
+        |> render()
+
+      assert event_log =~ "<code"
+      assert event_log =~ "<span class=\"lsb-text-indigo-600\">live_view </span>"
+      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
+      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet_parent </span>"
+    end
+  end
+
   describe "component preview crash handling" do
     test "an error message is displayed when component crashes", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
@@ -239,7 +318,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: false"
     end
 
-    test "playground form is in sync with stories assigns", %{conn: conn} do
+    test "playground form is in sync with variations assigns", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
       assert [playground_preview_view] = live_children(view)
       playground_element = element(playground_preview_view, "#playground-preview-live")
@@ -265,9 +344,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: true"
     end
 
-    test "playground form is in sync with a group of stories", %{conn: conn} do
+    test "playground form is in sync with a group of variations", %{conn: conn} do
       {:ok, view, _html} =
-        live(conn, "/storybook/templates/template_component?tab=playground&story_id=group")
+        live(conn, "/storybook/templates/template_component?tab=playground&variation_id=group")
 
       assert [playground_preview_view] = live_children(view)
       playground_element = element(playground_preview_view, "#playground-preview-live")
@@ -282,7 +361,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       form_label_selector = "#tree_storybook_template_component-playground-form_label"
       form_toggle_selector = "#tree_storybook_template_component-playground-form_status"
 
-      assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
+      assert get_element_attribute(view, form_label_selector, "value") == "[Multiple examples]"
 
       playground_preview_view |> element("#two #set-foo") |> render_click()
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -295,18 +374,18 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: true"
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
+      assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple examples]"
       playground_preview_view |> element("#two #toggle-status") |> render_click()
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
       assert render(playground_element) =~ "template_component: bar / status: true"
       refute render(playground_element) =~ "template_component: bar / status: false"
     end
 
-    test "playground with template values", %{conn: conn} do
+    test "playground with template examples", %{conn: conn} do
       {:ok, view, _html} =
         live(
           conn,
-          "/storybook/templates/template_component?tab=playground&story_id=template_attributes"
+          "/storybook/templates/template_component?tab=playground&variation_id=template_attributes"
         )
 
       assert [playground_preview_view] = live_children(view)
@@ -325,11 +404,11 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
                ["disabled"]
     end
 
-    test "playground with a story_group, and an empty template", %{conn: conn} do
+    test "playground with a variation_group, and an empty template", %{conn: conn} do
       {:ok, view, _html} =
         live(
           conn,
-          "/storybook/templates/template_component?tab=playground&story_id=no_placeholder_group"
+          "/storybook/templates/template_component?tab=playground&variation_id=no_placeholder_group"
         )
 
       assert [playground_preview_view] = live_children(view)
@@ -344,22 +423,22 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert view |> element("pre") |> render() =~ "hello"
     end
 
-    test "component code is visible for a story_group with a template", %{conn: conn} do
+    test "component code is visible for a variation_group with a template", %{conn: conn} do
       {:ok, view, _html} =
         live(
           conn,
-          "/storybook/templates/template_component?tab=playground&story_id=group_template"
+          "/storybook/templates/template_component?tab=playground&variation_id=group_template"
         )
 
       view |> element("a", "Code") |> render_click()
       assert view |> element("pre") |> render() =~ "one"
     end
 
-    test "component code is visible for a story_group with a single template", %{conn: conn} do
+    test "component code is visible for a variation_group with a single template", %{conn: conn} do
       {:ok, view, _html} =
         live(
           conn,
-          "/storybook/templates/template_component?tab=playground&story_id=group_template_single"
+          "/storybook/templates/template_component?tab=playground&variation_id=group_template_single"
         )
 
       view |> element("a", "Code") |> render_click()

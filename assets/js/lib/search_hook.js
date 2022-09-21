@@ -5,25 +5,25 @@ export const SearchHook = {
     const searchList = document.querySelector("#search-list");
     const searchInput = document.querySelector("#search-input");
 
-    let allEntries = searchList.children;
-    let firstEntry = searchList.firstElementChild;
-    let lastEntry = searchList.lastElementChild;
-    let activeEntry = firstEntry;
+    let allStories = searchList.children;
+    let firstStory = searchList.firstElementChild;
+    let lastStory = searchList.lastElementChild;
+    let activeStory = firstStory;
 
     let observer = new MutationObserver((mutations) => {
-      allEntries = searchList.children;
-      firstEntry = searchList.firstElementChild;
-      lastEntry = searchList.lastElementChild;
+      allStories = searchList.children;
+      firstStory = searchList.firstElementChild;
+      lastStory = searchList.lastElementChild;
 
-      if (allEntries.length > 0) {
+      if (allStories.length > 0) {
         this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-baseline")
+          activeStory,
+          activeStory.getAttribute("phx-baseline")
         );
-        activeEntry = firstEntry;
+        activeStory = firstStory;
         this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-highlight")
+          activeStory,
+          activeStory.getAttribute("phx-highlight")
         );
       }
     });
@@ -40,8 +40,8 @@ export const SearchHook = {
       this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-show"));
       setTimeout(() => searchInput.focus(), 50);
       this.liveSocket.execJS(
-        activeEntry,
-        activeEntry.getAttribute("phx-highlight")
+        activeStory,
+        activeStory.getAttribute("phx-highlight")
       );
     });
 
@@ -60,20 +60,20 @@ export const SearchHook = {
       }
     });
 
-    [...allEntries].forEach((entry) => {
-      entry.addEventListener("mouseover", (e) => {
-        if (e.movementX != 0 && e.movementY != 0 && e.target == entry) {
+    [...allStories].forEach((story) => {
+      story.addEventListener("mouseover", (e) => {
+        if (e.movementX != 0 && e.movementY != 0 && e.target == story) {
           // This prevents clipping when switching back and forth
           // between mouse navigation and keyboard navigation
 
           this.liveSocket.execJS(
-            activeEntry,
-            activeEntry.getAttribute("phx-baseline")
+            activeStory,
+            activeStory.getAttribute("phx-baseline")
           );
-          activeEntry = e.target;
+          activeStory = e.target;
           this.liveSocket.execJS(
-            activeEntry,
-            activeEntry.getAttribute("phx-highlight")
+            activeStory,
+            activeStory.getAttribute("phx-highlight")
           );
         }
       });
@@ -82,7 +82,7 @@ export const SearchHook = {
     searchContainer.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const link = activeEntry.firstElementChild;
+        const link = activeStory.firstElementChild;
 
         this.resetInput(searchInput);
         this.pushEventTo("#search-container", "navigate", {
@@ -103,45 +103,45 @@ export const SearchHook = {
 
       if (e.key === "ArrowUp") {
         this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-baseline")
+          activeStory,
+          activeStory.getAttribute("phx-baseline")
         );
 
-        if (activeEntry == firstEntry) {
-          activeEntry = lastEntry;
+        if (activeStory == firstStory) {
+          activeStory = lastStory;
         } else {
-          activeEntry = activeEntry.previousElementSibling;
+          activeStory = activeStory.previousElementSibling;
         }
 
         this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-highlight")
+          activeStory,
+          activeStory.getAttribute("phx-highlight")
         );
-        activeEntry.scrollIntoView({ block: "nearest", inline: "nearest" });
+        activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
 
       if (e.key === "ArrowDown") {
         this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-baseline")
+          activeStory,
+          activeStory.getAttribute("phx-baseline")
         );
 
-        if (activeEntry == lastEntry) {
-          activeEntry = firstEntry;
+        if (activeStory == lastStory) {
+          activeStory = firstStory;
         } else {
-          activeEntry = activeEntry.nextElementSibling;
+          activeStory = activeStory.nextElementSibling;
         }
 
         this.liveSocket.execJS(
-          activeEntry,
-          activeEntry.getAttribute("phx-highlight")
+          activeStory,
+          activeStory.getAttribute("phx-highlight")
         );
-        activeEntry.scrollIntoView({ block: "nearest", inline: "nearest" });
+        activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
     });
 
     searchList.addEventListener("click", (e) => {
-      const link = activeEntry.firstElementChild;
+      const link = activeStory.firstElementChild;
 
       this.resetInput(searchInput);
       this.pushEventTo("#search-container", "navigate", {

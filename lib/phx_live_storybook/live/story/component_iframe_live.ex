@@ -1,10 +1,10 @@
-defmodule PhxLiveStorybook.ComponentIframeLive do
+defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   @moduledoc false
   use Phoenix.LiveView
 
-  alias PhxLiveStorybook.Entry.PlaygroundPreviewLive
-  alias PhxLiveStorybook.EntryNotFound
   alias PhxLiveStorybook.ExtraAssignsHelpers
+  alias PhxLiveStorybook.Story.PlaygroundPreviewLive
+  alias PhxLiveStorybook.StoryNotFound
 
   def mount(_params, session, socket) do
     {:ok,
@@ -15,18 +15,18 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
      ), layout: {PhxLiveStorybook.LayoutView, "live_iframe.html"}}
   end
 
-  def handle_params(params = %{"entry" => entry_path}, _uri, socket) do
-    case load_entry(socket, entry_path) do
+  def handle_params(params = %{"story" => story_path}, _uri, socket) do
+    case load_story(socket, story_path) do
       nil ->
-        raise EntryNotFound, "unknown entry #{inspect(entry_path)}"
+        raise StoryNotFound, "unknown story #{inspect(story_path)}"
 
-      entry ->
+      story ->
         {:noreply,
          assign(socket,
            playground: params["playground"],
-           entry_path: entry_path,
-           entry: entry,
-           story_id: parse_atom(params["story_id"]),
+           story_path: story_path,
+           story: story,
+           variation_id: parse_atom(params["variation_id"]),
            topic: params["topic"],
            theme: parse_atom(params["theme"]),
            extra_assigns: %{}
@@ -34,9 +34,9 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
     end
   end
 
-  defp load_entry(socket, entry_param) do
-    entry_storybook_path = "/#{Enum.join(entry_param, "/")}"
-    socket.assigns.backend_module.find_entry_by_path(entry_storybook_path)
+  defp load_story(socket, story_param) do
+    story_storybook_path = "/#{Enum.join(story_param, "/")}"
+    socket.assigns.backend_module.find_story_by_path(story_storybook_path)
   end
 
   defp parse_atom(nil), do: nil
@@ -47,47 +47,47 @@ defmodule PhxLiveStorybook.ComponentIframeLive do
       assign(assigns, component_assigns: Map.merge(%{theme: assigns.theme}, assigns.extra_assigns))
 
     ~H"""
-    <%= if @story_id do %>
+    <%= if @variation_id do %>
       <%= if @playground do %>
         <%= live_render @socket, PlaygroundPreviewLive,
-          id: playground_preview_id(@entry),
-          session: %{"entry_path" => @entry_path, "story_id" => @story_id,
+          id: playground_preview_id(@story),
+          session: %{"story_path" => @story_path, "variation_id" => @variation_id,
           "backend_module" => to_string(@backend_module), "theme" => @theme,
           "topic" => @topic},
           container: {:div, style: "height: 100vh; width: 100wh;"}
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= @backend_module.render_story(@entry.module(), @story_id, @component_assigns) %>
+          <%= @backend_module.render_variation(@story.module(), @variation_id, @component_assigns) %>
         </div>
       <% end %>
     <% end %>
     """
   end
 
-  defp playground_preview_id(entry) do
-    module = entry.module |> Macro.underscore() |> String.replace("/", "_")
+  defp playground_preview_id(story) do
+    module = story.module |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
   end
 
-  def handle_event("set-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {_story_id, extra_assigns} =
-      ExtraAssignsHelpers.handle_set_story_assign(
+  def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
+    {_variation_id, extra_assigns} =
+      ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
         assigns.extra_assigns,
-        assigns.entry,
+        assigns.story,
         :flat
       )
 
     {:noreply, assign(socket, extra_assigns: extra_assigns)}
   end
 
-  def handle_event("toggle-story-assign/" <> assign_params, _, socket = %{assigns: assigns}) do
-    {_story_id, extra_assigns} =
-      ExtraAssignsHelpers.handle_toggle_story_assign(
+  def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
+    {_variation_id, extra_assigns} =
+      ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
         assigns.extra_assigns,
-        assigns.entry,
+        assigns.story,
         :flat
       )
 

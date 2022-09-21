@@ -1,19 +1,19 @@
 defmodule TreeStorybook.LiveComponent do
-  use PhxLiveStorybook.Entry, :live_component
+  use PhxLiveStorybook.Story, :live_component
   def component, do: LiveComponent
 
   def name, do: "Live Component (root)"
   def description, do: "live component description"
   def container, do: :iframe
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :hello,
-        description: "Hello story",
+        description: "Hello variation",
         attributes: %{label: "hello"}
       },
-      %Story{
+      %Variation{
         id: :world,
         attributes: %{label: "world"},
         block: """

@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BFolder.AllTypesComponent do
-  use PhxLiveStorybook.Entry, :component
+  use PhxLiveStorybook.Story, :component
   def function, do: &AllTypesComponent.all_types_component/1
   def name, do: "AllTypesComponent (b_folder)"
   def description, do: "All types component description"
@@ -7,9 +7,11 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
   def attributes do
     [
       %Attr{id: :label, type: :string, doc: "A label", required: true},
-      %Attr{id: :option, type: :atom, doc: "An option", options: [:opt1, :opt2, :opt3]},
+      %Attr{id: :option, type: :atom, doc: "An option", examples: [:opt1, :opt2, :opt3]},
+      %Attr{id: :enforced_option, type: :atom, doc: "An option", values: [:opt1, :opt2, :opt3]},
       %Attr{id: :index_i, type: :integer, default: 42},
-      %Attr{id: :index_i_with_range, type: :integer, options: 1..10, default: 5},
+      %Attr{id: :index_i_with_range, type: :integer, examples: 1..10, default: 5},
+      %Attr{id: :index_i_with_enforced_range, type: :integer, values: 1..10, default: 5},
       %Attr{id: :index_f, type: :float},
       %Attr{id: :toggle, type: :boolean, default: false},
       %Attr{id: :things, type: :list},
@@ -20,9 +22,9 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
     ]
   end
 
-  def stories do
+  def variations do
     [
-      %Story{
+      %Variation{
         id: :default,
         attributes: %{
           label: "default label",
@@ -35,7 +37,7 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
           "<:other_slot>not displayed</:other_slot>"
         ]
       },
-      %Story{
+      %Variation{
         id: :with_struct,
         attributes: %{
           label: "foo",

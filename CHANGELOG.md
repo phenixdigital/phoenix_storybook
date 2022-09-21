@@ -2,12 +2,19 @@
 
 ## v0.4.0 (not yet released)
 
+- change (breaking!): configuration has been moved from config.exs files to your elixir backend module.
+- change (breaking!): `stories` have been re-rebranded as `variations`, `Story` became `Variation`
+  and `StoryGroup` became `VariationGroup`
+- change (breaking!): `entries` have been re-rebranded as `stories`.
 - change (breaking!): `live_storybook/2` is no longer serving assets. You must add
   `storybook_assets/1` to your router in a non CSRF-protected scope.
+- change (breaking!): attr `options` have been renamed to `examples`. A new `values` key is also
+  available to enforce variation attribute examples.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
+- feature: new event log. In the playground, you can now track all events emitted by components.
 - feature: theming. You can declare different themes in the application settings. The selected
   theme will be merged in all components assigns.
-- feature: you can initialize the component playground with any story.
+- feature: you can initialize the component playground with any variation.
 - feature: templates. You can provide HTML templates to render stories, which can help with modals,
   slide-overs... (see this [guide](guides/components.md) for more details).
 - feature: provide custom aliases & imports to your stories/templates
