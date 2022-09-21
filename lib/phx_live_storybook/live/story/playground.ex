@@ -295,7 +295,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                   <tr>
                     <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
                       <i class="lsb lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
-                      <p>In order to use playground, you must define attributes in your <code class="lsb-font-bold"><%= @story.name() %></code> story.</p>
+                      <p>In order to use playground, you must define attributes in your story.</p>
                     </td>
                   </tr>
                   <% else %>

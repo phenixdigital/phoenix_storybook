@@ -2,7 +2,6 @@ defmodule TreeStorybook.LiveComponent do
   use PhxLiveStorybook.Story, :live_component
   def component, do: LiveComponent
 
-  def name, do: "Live Component (root)"
   def description, do: "live component description"
   def container, do: :iframe
 

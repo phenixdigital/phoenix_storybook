@@ -12,11 +12,7 @@ defmodule PhxLiveStorybook.Search do
 
   def update(assigns = %{backend_module: backend_module}, socket) do
     root_path = live_storybook_path(socket, :root)
-
-    stories =
-      backend_module.leaves()
-      |> Enum.map(& &1.module)
-      |> Enum.map(&%{module: &1, name: &1.name(), path: backend_module.story_path(&1)})
+    stories = backend_module.leaves()
 
     {:ok,
      socket

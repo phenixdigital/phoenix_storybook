@@ -18,12 +18,6 @@ defmodule PhxLiveStorybook.FlatListStorybook do
     content_path: Path.expand("./fixtures/storybook_content/flat_list", __DIR__)
 end
 
-defmodule PhxLiveStorybook.NoContentStorybook do
-  use PhxLiveStorybook,
-    otp_app: :phx_live_storybook,
-    content_path: nil
-end
-
 defmodule PhxLiveStorybook.TreeStorybook do
   use PhxLiveStorybook,
     otp_app: :phx_live_storybook,

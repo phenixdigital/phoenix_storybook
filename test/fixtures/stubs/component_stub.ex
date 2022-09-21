@@ -8,13 +8,7 @@ defmodule PhxLiveStorybook.ComponentStub do
   def storybook_type, do: :component
 
   @impl StoryBehaviour
-  def name, do: "component"
-
-  @impl StoryBehaviour
   def description, do: "description"
-
-  @impl StoryBehaviour
-  def icon, do: nil
 
   @impl ComponentBehaviour
   def function, do: fn -> "" end

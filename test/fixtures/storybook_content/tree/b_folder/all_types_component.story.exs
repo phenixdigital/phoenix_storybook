@@ -1,7 +1,6 @@
 defmodule TreeStorybook.BFolder.AllTypesComponent do
   use PhxLiveStorybook.Story, :component
   def function, do: &AllTypesComponent.all_types_component/1
-  def name, do: "AllTypesComponent (b_folder)"
   def description, do: "All types component description"
 
   def attributes do

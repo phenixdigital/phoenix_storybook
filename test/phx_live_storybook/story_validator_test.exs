@@ -15,22 +15,14 @@ defmodule PhxLiveStorybook.StoryValidatorTest do
     end
 
     test "with proper types it wont raise" do
-      mock = component_stub(name: "name", description: "description", icon: "fa fa-icon")
+      mock = component_stub(description: "description")
       assert validate(mock)
     end
 
     test "with invalid types it will raise" do
-      mock = component_stub(name: :name)
-      e = assert_raise CompileError, fn -> validate(mock) end
-      assert e.description =~ "story name must be a binary"
-
       mock = component_stub(description: :description)
       e = assert_raise CompileError, fn -> validate(mock) end
       assert e.description =~ "story description must be a binary"
-
-      mock = component_stub(icon: :icon)
-      e = assert_raise CompileError, fn -> validate(mock) end
-      assert e.description =~ "story icon must be a binary"
     end
   end
 

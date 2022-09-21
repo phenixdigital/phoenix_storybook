@@ -1,5 +1,5 @@
 defmodule PhxLiveStorybook.PlaygroundLiveTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
@@ -85,9 +85,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
     test "with no attributes, it prints a placeholder", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
-
-      assert html =~
-               ~r|<p>In order to use playground, you must define attributes in your.*Component.*story\.</p>|
+      assert html =~ ~r|In order to use playground, you must define attributes in your story|
     end
   end
 

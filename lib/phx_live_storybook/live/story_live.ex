@@ -35,9 +35,9 @@ defmodule PhxLiveStorybook.StoryLive do
   end
 
   def handle_params(params, _uri, socket) when params == %{} do
-    case first_component_story(socket) do
+    case first_story_path(socket) do
       nil -> {:noreply, socket}
-      story -> {:noreply, patch_to(socket, socket.assigns.backend_module.story_path(story))}
+      path -> {:noreply, patch_to(socket, path)}
     end
   end
 
@@ -48,14 +48,16 @@ defmodule PhxLiveStorybook.StoryLive do
 
       story ->
         variation = current_variation(story.storybook_type(), story, params)
+        story_entry = story_entry(socket, story_path)
 
         {:noreply,
          assign(socket,
            story: story,
-           story_path: socket.assigns.backend_module.story_path(story),
+           story_entry: story_entry,
+           story_path: socket.assigns.backend_module.storybook_path(story),
            variation: variation,
            variation_id: if(variation, do: variation.id, else: nil),
-           page_title: story.name(),
+           page_title: story_entry.name,
            tab: current_tab(params, story),
            theme: current_theme(params, socket),
            variation_extra_assigns: init_variation_extra_assigns(story.storybook_type(), story),
@@ -69,13 +71,18 @@ defmodule PhxLiveStorybook.StoryLive do
     {:noreply, socket}
   end
 
-  defp first_component_story(socket) do
-    socket.assigns.backend_module.leaves() |> Enum.at(0, %{}) |> Map.get(:module)
+  defp first_story_path(socket) do
+    socket.assigns.backend_module.leaves() |> Enum.at(0, %{}) |> Map.get(:path)
   end
 
   defp load_story(socket, story_param) do
     story_path = Path.join(story_param)
     socket.assigns.backend_module.load_story(story_path)
+  end
+
+  defp story_entry(socket, story_param) do
+    story_path = Path.join(["/" | story_param])
+    socket.assigns.backend_module.find_entry_by_path(story_path)
   end
 
   defp current_variation(type, story, %{"variation_id" => variation_id})
@@ -145,10 +152,10 @@ defmodule PhxLiveStorybook.StoryLive do
       <div class="lsb">
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
-            <%= if icon = @story.icon() do %>
+            <%= if icon = @story_entry.icon do %>
               <i class={"lsb #{icon} lsb-pr-2 lsb-text-indigo-600"}></i>
             <% end %>
-            <%= @story.name() %>
+            <%= @story_entry.name %>
           </h2>
 
           <%=  @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>

@@ -85,7 +85,7 @@ defmodule PhxLiveStorybook.SidebarTest do
 
       # test default folder name (properly humanized)
       [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")
-      assert String.contains?(html, "A folder")
+      assert String.contains?(html, "A Folder")
 
       # test config folder name
       [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(6)>div>span")

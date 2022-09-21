@@ -25,10 +25,7 @@ defmodule PhxLiveStorybook.Story do
 
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
-
-    def name, do: "Another name for my component"
     def description, do: "My component description"
-    def icon, do: "fa fa-icon"
 
     def attributes, do: []
     def variations, do: []
@@ -47,11 +44,7 @@ defmodule PhxLiveStorybook.Story do
 
     # required
     def component, do: MyAppWeb.MyLiveComponent
-
-    def name, do: "Another name for my component"
     def description, do: "My live component description"
-    def icon, do: "fa fa-icon"
-
     def attributes, do: []
     def variations, do: []
   end
@@ -73,9 +66,7 @@ defmodule PhxLiveStorybook.Story do
   defmodule MyAppWeb.Storybook.MyPage do
     use PhxLiveStorybook.Story, :page
 
-    def name, do: "Another name for my page"
     def description, do: "My page description"
-    def icon, do: "fa fa-icon"
 
     def navigation do
       [
@@ -97,9 +88,7 @@ defmodule PhxLiveStorybook.Story do
     @moduledoc false
 
     @callback storybook_type() :: atom()
-    @callback name() :: String.t()
     @callback description() :: String.t()
-    @callback icon() :: String.t()
   end
 
   defmodule ComponentBehaviour do
@@ -133,12 +122,12 @@ defmodule PhxLiveStorybook.Story do
   end
 
   @doc false
-  def live_component(module), do: component_quote(module, true)
+  def live_component, do: component_quote(true)
 
   @doc false
-  def component(module), do: component_quote(module, false)
+  def component, do: component_quote(false)
 
-  defp component_quote(module, live?) do
+  defp component_quote(live?) do
     quote do
       @behaviour StoryBehaviour
       @behaviour unquote(component_behaviour(live?))
@@ -149,13 +138,7 @@ defmodule PhxLiveStorybook.Story do
       def storybook_type, do: unquote(storybook_type(live?))
 
       @impl StoryBehaviour
-      def name, do: unquote(module_name(module))
-
-      @impl StoryBehaviour
       def description, do: nil
-
-      @impl StoryBehaviour
-      def icon, do: nil
 
       @impl unquote(component_behaviour(live?))
       def container, do: :div
@@ -175,9 +158,7 @@ defmodule PhxLiveStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
 
-      defoverridable name: 0,
-                     description: 0,
-                     icon: 0,
+      defoverridable description: 0,
                      imports: 0,
                      aliases: 0,
                      container: 0,
@@ -188,7 +169,7 @@ defmodule PhxLiveStorybook.Story do
   end
 
   @doc false
-  def page(module) do
+  def page do
     quote do
       import Phoenix.LiveView.Helpers
 
@@ -199,13 +180,7 @@ defmodule PhxLiveStorybook.Story do
       def storybook_type, do: :page
 
       @impl StoryBehaviour
-      def name, do: unquote(module_name(module))
-
-      @impl StoryBehaviour
       def description, do: nil
-
-      @impl StoryBehaviour
-      def icon, do: nil
 
       @impl PageBehaviour
       def navigation, do: []
@@ -216,7 +191,7 @@ defmodule PhxLiveStorybook.Story do
         __MODULE__.__info__(:compile)[:source]
       end
 
-      defoverridable name: 0, description: 0, icon: 0, navigation: 0, render: 1
+      defoverridable description: 0, navigation: 0, render: 1
     end
   end
 
@@ -228,20 +203,10 @@ defmodule PhxLiveStorybook.Story do
   def storybook_type(_live = true), do: :live_component
   def storybook_type(_live = false), do: :component
 
-  @doc false
-  def module_name(module) do
-    module
-    |> Module.split()
-    |> Enum.at(-1)
-    |> Macro.underscore()
-    |> String.split("_")
-    |> Enum.map_join(" ", &String.capitalize/1)
-  end
-
   @doc """
   Convenience helper for using the functions above.
   """
   defmacro __using__(which) when is_atom(which) do
-    apply(__MODULE__, which, [__CALLER__.module])
+    apply(__MODULE__, which, [])
   end
 end

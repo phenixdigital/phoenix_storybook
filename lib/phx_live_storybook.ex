@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   Behaviour implemented by your backend module.
   """
 
-  alias PhxLiveStorybook.{ComponentEntry, FolderEntry, PageEntry}
+  alias PhxLiveStorybook.{FolderEntry, StoryEntry}
 
   @doc """
   Returns a configuration value from your config.exs storybook settings.
@@ -16,28 +16,27 @@ defmodule PhxLiveStorybook.BackendBehaviour do
   @doc """
   Returns a precompiled tree of your storybook stories.
   """
-  @callback content_tree() :: [%ComponentEntry{} | %FolderEntry{} | %PageEntry{}]
+  @callback content_tree() :: [%FolderEntry{} | %StoryEntry{}]
 
   @doc """
-  Returns all the leaves of the storybook content tree (ie. all stories that are
-  not a folder)
+  Returns all the leaves (only stories) of the storybook content tree.
   """
-  @callback leaves() :: [%ComponentEntry{} | %PageEntry{}]
+  @callback leaves() :: [%StoryEntry{}]
 
   @doc """
-  Returns all the notes of the storybook content tree as a flat list.
+  Returns all the nodes (stoires & folders) of the storybook content tree as a flat list.
   """
-  @callback flat_list() :: [%ComponentEntry{} | %PageEntry{}]
+  @callback flat_list() :: [%FolderEntry{} | %StoryEntry{}]
 
   @doc """
-  Returns a story from its absolute path.
+  Returns an entry from its absolute storybook path (not filesystem).
   """
-  @callback find_entry_by_path(String.t()) :: %ComponentEntry{} | %FolderEntry{} | %PageEntry{}
+  @callback find_entry_by_path(String.t()) :: %FolderEntry{} | %StoryEntry{}
 
   @doc """
-  Returns the storybook path of any story, from its module.
+  Retuns a storybook path from a story module.
   """
-  @callback story_path(atom()) :: String.t()
+  @callback storybook_path(atom()) :: String.t()
 end
 
 defmodule PhxLiveStorybook do
@@ -57,28 +56,49 @@ defmodule PhxLiveStorybook do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
 
     [
-      behaviour_quote(),
+      main_quote(opts),
       recompilation_quotes(opts),
       config_quotes(opts),
       stories_quotes(opts)
     ]
   end
 
-  defp behaviour_quote do
+  defp main_quote(opts) do
     quote do
       @behaviour PhxLiveStorybook.BackendBehaviour
+
+      @impl PhxLiveStorybook.BackendBehaviour
+      def storybook_path(story_module) do
+        if Code.ensure_loaded?(story_module) do
+          content_path = Keyword.get(unquote(opts), :content_path)
+
+          file_path =
+            story_module.__info__(:compile)[:source]
+            |> to_string()
+            |> String.replace_prefix(content_path, "")
+            |> String.replace_suffix(Entries.story_file_suffix(), "")
+        end
+      end
     end
   end
 
   # This quote triggers recompilation for the module whenever a new file or any index file under
   # content_path has been touched.
   defp recompilation_quotes(opts) do
-    content_path = Keyword.get(opts, :content_path)
-    components_pattern = if content_path, do: "#{content_path}/**/*"
+    content_path =
+      Keyword.get_lazy(opts, :content_path, fn -> raise "content_path key must be set" end)
+
+    components_pattern = Path.join(content_path, "**/*")
+    index_pattern = Path.join(content_path, "**/*#{Entries.index_file_suffix()}")
 
     quote do
-      @paths if unquote(content_path), do: Path.wildcard(unquote(components_pattern)), else: []
+      @index_paths Path.wildcard(unquote(index_pattern))
+      @paths Path.wildcard(unquote(components_pattern))
       @paths_hash :erlang.md5(@paths)
+
+      for index_path <- @index_paths do
+        @external_resource index_path
+      end
 
       def __mix_recompile__? do
         if unquote(components_pattern) do
@@ -93,7 +113,6 @@ defmodule PhxLiveStorybook do
 
   @doc false
   defp stories_quotes(opts) do
-    content_path = Keyword.get(opts, :content_path)
     content_tree = content_tree(opts)
     entries = Entries.flat_list(content_tree)
     leaves = Entries.leaves(content_tree)
@@ -102,23 +121,8 @@ defmodule PhxLiveStorybook do
       for entry <- entries do
         quote do
           @impl PhxLiveStorybook.BackendBehaviour
-          def find_entry_by_path(unquote(entry.storybook_path)) do
+          def find_entry_by_path(unquote(entry.path)) do
             unquote(Macro.escape(entry))
-          end
-        end
-      end
-
-    story_path_quotes =
-      for entry <- leaves do
-        quote do
-          @impl PhxLiveStorybook.BackendBehaviour
-          def story_path(unquote(entry.module)) do
-            unquote(
-              entry.storybook_path
-              |> String.replace_prefix(content_path, "")
-              |> String.replace_prefix("/", "")
-              |> String.replace_suffix(Entries.story_file_suffix(), "")
-            )
           end
         end
       end
@@ -128,13 +132,7 @@ defmodule PhxLiveStorybook do
         def load_story(story_path) do
           content_path = Keyword.get(unquote(opts), :content_path)
           story_path = String.replace_prefix(story_path, "/", "")
-
-          story_path =
-            if String.ends_with?(story_path, Entries.story_file_suffix()) do
-              story_path
-            else
-              story_path <> Entries.story_file_suffix()
-            end
+          story_path = story_path <> Entries.story_file_suffix()
 
           try do
             Code.put_compiler_option(:ignore_module_conflict, true)
@@ -154,9 +152,6 @@ defmodule PhxLiveStorybook do
         def find_entry_by_path(_), do: nil
 
         @impl PhxLiveStorybook.BackendBehaviour
-        def story_path(_), do: nil
-
-        @impl PhxLiveStorybook.BackendBehaviour
         def content_tree, do: unquote(Macro.escape(content_tree))
 
         @impl PhxLiveStorybook.BackendBehaviour
@@ -166,7 +161,7 @@ defmodule PhxLiveStorybook do
         def flat_list, do: unquote(Macro.escape(entries))
       end
 
-    find_entry_by_path_quotes ++ story_path_quotes ++ [single_quote]
+    find_entry_by_path_quotes ++ [single_quote]
   end
 
   @doc false

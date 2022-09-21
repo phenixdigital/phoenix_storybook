@@ -18,9 +18,7 @@ defmodule PhxLiveStorybook.StoryValidator do
   defp validate_component!(story) do
     file_path = story.__info__(:compile)[:source]
     {attributes, variations} = {story.attributes(), story.variations()}
-    validate_story_name!(file_path, story)
     validate_story_description!(file_path, story)
-    validate_story_icon!(file_path, story)
     validate_story_component!(file_path, story)
     validate_story_function!(file_path, story)
     validate_story_aliases!(file_path, story)
@@ -56,10 +54,6 @@ defmodule PhxLiveStorybook.StoryValidator do
     story
   end
 
-  defp validate_story_name!(file_path, story) do
-    validate_type!(file_path, story.name(), :string, "story name must be a binary")
-  end
-
   defp validate_story_description!(file_path, story) do
     validate_type!(
       file_path,
@@ -67,10 +61,6 @@ defmodule PhxLiveStorybook.StoryValidator do
       :string,
       "story description must be a binary"
     )
-  end
-
-  defp validate_story_icon!(file_path, story) do
-    validate_type!(file_path, story.icon(), :string, "story icon must be a binary")
   end
 
   defp validate_story_component!(file_path, story) do

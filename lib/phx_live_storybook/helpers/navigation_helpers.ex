@@ -10,6 +10,8 @@ defmodule PhxLiveStorybook.NavigationHelpers do
   end
 
   def path_to(socket = %{assigns: assigns}, story_path, params) do
+    story_path = String.replace_prefix(story_path, "/", "")
+
     query =
       assigns
       |> Map.take([:theme, :tab, :variation_id])
