@@ -172,7 +172,7 @@ end
 
 ### Configuration
 
-Of all config settings, only the `:otp_app, and `:content_path` keys are mandatory.
+Of all config settings, only the `:otp_app`, and `:content_path` keys are mandatory.
 
 ```elixir
 # lib/my_app_web/storybook.ex
@@ -213,6 +213,14 @@ defmodule MyAppWeb.Storybook do
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
     ]
+```
+
+All settings can be overridden from your config files.
+
+```elixir
+# config/config.exs
+config :my_app, MyAppWeb.Storybook,
+  content_path: "overridden/content/path"
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).

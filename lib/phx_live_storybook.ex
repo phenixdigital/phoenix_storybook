@@ -55,6 +55,7 @@ defmodule PhxLiveStorybook do
   @doc false
   defmacro __using__(opts) do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
+    opts = merge_opts_and_config(opts, __CALLER__.module)
 
     [
       main_quote(opts),
@@ -62,6 +63,11 @@ defmodule PhxLiveStorybook do
       config_quotes(opts),
       stories_quotes(opts)
     ]
+  end
+
+  defp merge_opts_and_config(opts, backend_module) do
+    config_opts = Application.get_env(opts[:otp_app], backend_module, [])
+    Keyword.merge(opts, config_opts)
   end
 
   defp main_quote(opts) do
@@ -157,20 +163,19 @@ defmodule PhxLiveStorybook do
     find_entry_by_path_quotes ++ [single_quote]
   end
 
+  defp content_tree(opts) do
+    content_path = Keyword.get(opts, :content_path)
+    folders_config = Keyword.get(opts, :folders, [])
+    Entries.content_tree(content_path, folders_config)
+  end
+
   @doc false
   defp config_quotes(opts) do
     quote do
       @impl PhxLiveStorybook.BackendBehaviour
       def config(key, default \\ nil) do
-        # otp_app = unquote(opts)
         Keyword.get(unquote(opts), key, default)
       end
     end
-  end
-
-  defp content_tree(opts) do
-    content_path = Keyword.get(opts, :content_path)
-    folders_config = Keyword.get(opts, :folders, [])
-    Entries.content_tree(content_path, folders_config)
   end
 end
