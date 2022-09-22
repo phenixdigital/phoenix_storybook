@@ -124,7 +124,7 @@ defmodule PhxLiveStorybookTest do
   describe "load_story/1 & story_path/1" do
     test "it returns the path when the module is loaded" do
       path = "/a_folder/component"
-      module = TreeStorybook.load_story(path, validate: false)
+      module = TreeStorybook.load_story(path)
       assert TreeStorybook.storybook_path(module) == path
     end
   end

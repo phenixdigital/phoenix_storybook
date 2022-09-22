@@ -6,11 +6,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
 
   setup_all do
     [
-      component: TreeStorybook.load_story("/component", validate: false),
-      live_component: TreeStorybook.load_story("/live_component", validate: false),
-      afolder_component: TreeStorybook.load_story("/a_folder/component", validate: false),
-      template_component:
-        TreeStorybook.load_story("/templates/template_component", validate: false)
+      component: TreeStorybook.load_story("/component"),
+      live_component: TreeStorybook.load_story("/live_component"),
+      afolder_component: TreeStorybook.load_story("/a_folder/component"),
+      template_component: TreeStorybook.load_story("/templates/template_component")
     ]
   end
 
@@ -49,7 +48,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "it is working with an inner_block requiring a let attribute" do
-      component = TreeStorybook.load_story("/let/let_component", validate: false)
+      component = TreeStorybook.load_story("/let/let_component")
       html = render_variation(component, :default) |> rendered_to_string()
 
       assert html =~ "**foo**"
@@ -58,7 +57,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
-      component = TreeStorybook.load_story("/let/let_live_component", validate: false)
+      component = TreeStorybook.load_story("/let/let_live_component")
 
       assert [%Phoenix.LiveView.Component{id: "let_live_component-default"}] =
                render_variation(component, :default).dynamic.([])
@@ -148,8 +147,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "renders a variation with an invalid template placeholder will raise" do
-      component =
-        TreeStorybook.load_story("/templates/invalid_template_component", validate: false)
+      component = TreeStorybook.load_story("/templates/invalid_template_component")
 
       msg = "Cannot use <.lsb-variation-group/> placeholder in a variation template."
 

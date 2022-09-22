@@ -21,7 +21,8 @@ end
 defmodule PhxLiveStorybook.TreeStorybook do
   use PhxLiveStorybook,
     otp_app: :phx_live_storybook,
-    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__)
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy
 end
 
 defmodule PhxLiveStorybook.TreeBStorybook do
@@ -32,6 +33,7 @@ end
 defmodule PhxLiveStorybook.TestStorybook do
   use PhxLiveStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]

@@ -47,7 +47,7 @@ defmodule PhxLiveStorybook do
              |> Enum.fetch!(1)
 
   alias PhxLiveStorybook.Entries
-  alias PhxLiveStorybook.ExsLoader
+  alias PhxLiveStorybook.ExsCompiler
   alias PhxLiveStorybook.StoryValidator
 
   require Logger
@@ -56,12 +56,14 @@ defmodule PhxLiveStorybook do
   defmacro __using__(opts) do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
     opts = merge_opts_and_config(opts, __CALLER__.module)
+    content_tree = content_tree(opts)
 
     [
       main_quote(opts),
       recompilation_quotes(opts),
+      story_compilation_quotes(opts, content_tree),
       config_quotes(opts),
-      stories_quotes(opts)
+      stories_quotes(opts, content_tree)
     ]
   end
 
@@ -86,6 +88,46 @@ defmodule PhxLiveStorybook do
             |> String.replace_suffix(Entries.story_file_suffix(), "")
         end
       end
+    end
+  end
+
+  defp story_compilation_quotes(opts, content_tree) do
+    content_path = Keyword.get(opts, :content_path)
+
+    case compilation_mode(opts) do
+      :lazy ->
+        quote do
+          def load_story(story_path) do
+            story_path = String.replace_prefix(story_path, "/", "")
+            story_path = story_path <> Entries.story_file_suffix()
+
+            case ExsCompiler.compile_exs(story_path, unquote(content_path)) do
+              nil -> nil
+              story -> StoryValidator.validate!(story)
+            end
+          end
+        end
+
+      :eager ->
+        for story_entry <- Entries.leaves(content_tree) do
+          story_name = String.replace_prefix(story_entry.path, "/", "")
+          story_path = story_name <> Entries.story_file_suffix()
+
+          case ExsCompiler.compile_exs(story_path, content_path, immediate: true) do
+            nil ->
+              nil
+
+            story ->
+              StoryValidator.validate!(story)
+
+              quote do
+                @external_resource Path.join(unquote(content_path), unquote(story_path))
+                def load_story(unquote(story_name)) do
+                  unquote(story)
+                end
+              end
+          end
+        end
     end
   end
 
@@ -119,8 +161,7 @@ defmodule PhxLiveStorybook do
   end
 
   @doc false
-  defp stories_quotes(opts) do
-    content_tree = content_tree(opts)
+  defp stories_quotes(_opts, content_tree) do
     entries = Entries.flat_list(content_tree)
     leaves = Entries.leaves(content_tree)
 
@@ -136,17 +177,6 @@ defmodule PhxLiveStorybook do
 
     single_quote =
       quote do
-        def load_story(story_path, opts \\ []) do
-          content_path = Keyword.get(unquote(opts), :content_path)
-          story_path = String.replace_prefix(story_path, "/", "")
-          story_path = story_path <> Entries.story_file_suffix()
-
-          case ExsLoader.load_exs(story_path, content_path) do
-            nil -> nil
-            story -> if opts[:validate] == false, do: story, else: StoryValidator.validate!(story)
-          end
-        end
-
         @impl PhxLiveStorybook.BackendBehaviour
         def find_entry_by_path(_), do: nil
 
@@ -167,6 +197,20 @@ defmodule PhxLiveStorybook do
     content_path = Keyword.get(opts, :content_path)
     folders_config = Keyword.get(opts, :folders, [])
     Entries.content_tree(content_path, folders_config)
+  end
+
+  defp compilation_mode(opts) do
+    case Keyword.get(opts, :compilation_mode) do
+      mode when mode in [:lazy, :eager] ->
+        mode
+
+      _ ->
+        if Code.ensure_loaded?(Mix) and Mix.env() == :dev do
+          :lazy
+        else
+          :eager
+        end
+    end
   end
 
   @doc false

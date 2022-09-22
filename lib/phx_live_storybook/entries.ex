@@ -17,7 +17,7 @@ end
 # and creates an in-memory tree hierarchy of content using above Story structs.
 defmodule PhxLiveStorybook.Entries do
   @moduledoc false
-  alias PhxLiveStorybook.ExsLoader
+  alias PhxLiveStorybook.ExsCompiler
   alias PhxLiveStorybook.{FolderEntry, IndexEntry, StoryEntry}
 
   require Logger
@@ -26,11 +26,13 @@ defmodule PhxLiveStorybook.Entries do
   def index_file_suffix, do: ".index.exs"
 
   def content_tree(path, folders_config) do
-    content_tree = if(path && File.dir?(path), do: recursive_scan(path, folders_config), else: [])
+    content_tree =
+      if(path && File.dir?(path), do: recursive_scan(path, path, folders_config), else: [])
+
     [content_tree |> root_entry() |> maybe_apply_index()]
   end
 
-  defp recursive_scan(path, folders_config, storybook_path \\ "") do
+  defp recursive_scan(root_path, path, folders_config, storybook_path \\ "") do
     for file_name <- path |> File.ls!() |> Enum.sort(:desc),
         file_path = Path.join(path, file_name),
         reduce: [] do
@@ -38,14 +40,15 @@ defmodule PhxLiveStorybook.Entries do
         cond do
           File.dir?(file_path) ->
             storybook_path = Path.join(["/", storybook_path, file_name])
-            sub_entries = recursive_scan(file_path, folders_config, storybook_path)
+            sub_entries = recursive_scan(root_path, file_path, folders_config, storybook_path)
             [folder_entry(file_name, storybook_path, sub_entries) |> maybe_apply_index() | acc]
 
           String.ends_with?(file_path, story_file_suffix()) ->
             [story_entry(file_path, storybook_path) | acc]
 
           String.ends_with?(file_path, index_file_suffix()) ->
-            index_module = ExsLoader.load_exs(file_path, storybook_path, immediate: true)
+            file_path = storybook_path |> Path.join(file_name) |> String.replace_prefix("/", "")
+            index_module = ExsCompiler.compile_exs(file_path, root_path, immediate: true)
             [index_entry(index_module, storybook_path) | acc]
 
           true ->

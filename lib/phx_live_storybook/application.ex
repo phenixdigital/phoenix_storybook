@@ -11,7 +11,7 @@ defmodule PhxLiveStorybook.Application do
     Supervisor.start_link(
       [
         {Phoenix.PubSub, name: PhxLiveStorybook.PubSub},
-        {PhxLiveStorybook.ExsLoader, []}
+        {PhxLiveStorybook.ExsCompiler, []}
       ],
       strategy: :one_for_one,
       name: PhxLiveStorybook.Supervisor
