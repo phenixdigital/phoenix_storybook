@@ -17,10 +17,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
 
   def handle_params(params = %{"story" => story_path}, _uri, socket) do
     case load_story(socket, story_path) do
-      nil ->
-        raise StoryNotFound, "unknown story #{inspect(story_path)}"
-
-      story ->
+      {:ok, story} ->
         {:noreply,
          assign(socket,
            playground: params["playground"],
@@ -31,6 +28,12 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
            theme: params["theme"],
            extra_assigns: %{}
          )}
+
+      {:error, _error, exception} ->
+        raise exception
+
+      {:error, :not_found} ->
+        raise StoryNotFound, "unknown story #{inspect(story_path)}"
     end
   end
 
@@ -48,9 +51,12 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
       <%= if @playground do %>
         <%= live_render @socket, PlaygroundPreviewLive,
           id: playground_preview_id(@story),
-          session: %{"story_path" => Path.join(@story_path), "variation_id" => @variation_id,
-          "backend_module" => to_string(@backend_module), "theme" => @theme,
-          "topic" => @topic},
+          session: %{
+            "story" => @story,
+            "variation_id" => @variation_id,
+            "theme" => @theme,
+            "topic" => @topic
+            },
           container: {:div, style: "height: 100vh; width: 100wh;"}
         %>
       <% else %>

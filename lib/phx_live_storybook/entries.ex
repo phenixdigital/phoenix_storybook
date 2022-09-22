@@ -48,7 +48,7 @@ defmodule PhxLiveStorybook.Entries do
 
           String.ends_with?(file_path, index_file_suffix()) ->
             file_path = storybook_path |> Path.join(file_name) |> String.replace_prefix("/", "")
-            index_module = ExsCompiler.compile_exs(file_path, root_path, immediate: true)
+            index_module = ExsCompiler.compile_exs!(file_path, root_path)
             [index_entry(index_module, storybook_path) | acc]
 
           true ->

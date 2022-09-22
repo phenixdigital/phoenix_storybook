@@ -102,32 +102,37 @@ defmodule PhxLiveStorybook do
             story_path = story_path <> Entries.story_file_suffix()
 
             case ExsCompiler.compile_exs(story_path, unquote(content_path)) do
-              nil -> nil
-              story -> StoryValidator.validate!(story)
+              {:ok, story} -> StoryValidator.validate(story)
+              {:error, message, exception} -> {:error, message, exception}
             end
           end
         end
 
       :eager ->
-        for story_entry <- Entries.leaves(content_tree) do
-          story_name = String.replace_prefix(story_entry.path, "/", "")
-          story_path = story_name <> Entries.story_file_suffix()
+        quotes =
+          for story_entry <- Entries.leaves(content_tree) do
+            story_name = String.replace_prefix(story_entry.path, "/", "")
+            story_path = story_name <> Entries.story_file_suffix()
 
-          case ExsCompiler.compile_exs(story_path, content_path, immediate: true) do
-            nil ->
-              nil
+            story =
+              story_path
+              |> ExsCompiler.compile_exs!(content_path)
+              |> StoryValidator.validate!()
 
-            story ->
-              StoryValidator.validate!(story)
-
-              quote do
-                @external_resource Path.join(unquote(content_path), unquote(story_path))
-                def load_story(unquote(story_name)) do
-                  unquote(story)
-                end
+            quote do
+              @external_resource Path.join(unquote(content_path), unquote(story_path))
+              def load_story(unquote(story_name)) do
+                {:ok, unquote(story)}
               end
+            end
           end
-        end
+
+        quotes ++
+          [
+            quote do
+              def load_story(_), do: {:error, :not_found}
+            end
+          ]
     end
   end
 

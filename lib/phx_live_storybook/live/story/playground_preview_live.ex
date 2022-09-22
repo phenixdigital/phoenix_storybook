@@ -10,7 +10,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   def mount(_params, session, socket) do
-    story = String.to_atom(session["backend_module"]).load_story(session["story_path"])
+    story = session["story"]
 
     if connected?(socket) && session["topic"] do
       PubSub.subscribe(PhxLiveStorybook.PubSub, session["topic"])

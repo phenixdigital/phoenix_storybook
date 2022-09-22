@@ -90,7 +90,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
   end
 
   test "it raises with an unknow story", %{conn: conn} do
-    assert_raise PhxLiveStorybook.StoryNotFound, fn ->
+    assert_raise RuntimeError, fn ->
       live_with_params(conn, "/storybook/iframe/unknown", %{"variation_id" => "default"})
     end
   end

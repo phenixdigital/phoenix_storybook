@@ -6,10 +6,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
 
   setup_all do
     [
-      component: TreeStorybook.load_story("/component"),
-      live_component: TreeStorybook.load_story("/live_component"),
-      afolder_component: TreeStorybook.load_story("/a_folder/component"),
-      template_component: TreeStorybook.load_story("/templates/template_component")
+      component: TreeStorybook.load_story("/component") |> elem(1),
+      live_component: TreeStorybook.load_story("/live_component") |> elem(1),
+      afolder_component: TreeStorybook.load_story("/a_folder/component") |> elem(1),
+      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1)
     ]
   end
 
@@ -48,7 +48,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "it is working with an inner_block requiring a let attribute" do
-      component = TreeStorybook.load_story("/let/let_component")
+      {:ok, component} = TreeStorybook.load_story("/let/let_component")
       html = render_variation(component, :default) |> rendered_to_string()
 
       assert html =~ "**foo**"
@@ -57,7 +57,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
-      component = TreeStorybook.load_story("/let/let_live_component")
+      {:ok, component} = TreeStorybook.load_story("/let/let_live_component")
 
       assert [%Phoenix.LiveView.Component{id: "let_live_component-default"}] =
                render_variation(component, :default).dynamic.([])
@@ -140,14 +140,14 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     end
 
     test "renders a variation group with a template, but no placeholder" do
-      component = TreeStorybook.load_story("/templates/template_component")
+      {:ok, component} = TreeStorybook.load_story("/templates/template_component")
 
       assert render_variation(component, :no_placeholder_group)
              |> rendered_to_string() == "<div></div>"
     end
 
     test "renders a variation with an invalid template placeholder will raise" do
-      component = TreeStorybook.load_story("/templates/invalid_template_component")
+      {:ok, component} = TreeStorybook.load_story("/templates/invalid_template_component")
 
       msg = "Cannot use <.lsb-variation-group/> placeholder in a variation template."
 

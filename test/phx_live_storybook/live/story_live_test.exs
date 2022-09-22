@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
   use ExUnit.Case, async: true
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
+  import ExUnit.CaptureLog
 
   @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
@@ -20,10 +21,9 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_page"
     end
 
-    test "404 on unknown story", %{conn: conn} do
-      assert_raise PhxLiveStorybook.StoryNotFound, fn ->
-        get(conn, "/storybook/wrong")
-      end
+    test "error message on unknown story", %{conn: conn} do
+      log = capture_log(fn -> get(conn, "/storybook/wrong") end)
+      assert log =~ ~s|Could not compile "wrong.story.exs"|
     end
 
     test "navigate in sidebar", %{conn: conn} do

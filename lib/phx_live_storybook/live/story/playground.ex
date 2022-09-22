@@ -219,10 +219,9 @@ defmodule PhxLiveStorybook.Story.Playground do
           <%= live_render @socket, PlaygroundPreviewLive,
                 id: playground_preview_id(@story),
                 session: %{
-                  "story_path" => @story_path,
+                  "story" => @story,
                   "variation_id" => to_string(@variation_id),
                   "theme" => to_string(@theme),
-                  "backend_module" => to_string(@backend_module),
                   "topic" => "playground-#{inspect(self())}",
                 },
                 container: {:div, style: "height: 100%; width: 100%;"}

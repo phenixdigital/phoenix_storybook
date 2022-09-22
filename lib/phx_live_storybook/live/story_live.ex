@@ -42,15 +42,14 @@ defmodule PhxLiveStorybook.StoryLive do
 
   def handle_params(params = %{"story" => story_path}, _uri, socket) do
     case load_story(socket, story_path) do
-      nil ->
-        raise StoryNotFound, "unknown story #{inspect(story_path)}"
-
-      story ->
+      {:ok, story} ->
         variation = current_variation(story.storybook_type(), story, params)
         story_entry = story_entry(socket, story_path)
 
         {:noreply,
          assign(socket,
+           story_load_error: nil,
+           story_load_exception: nil,
            story: story,
            story_entry: story_entry,
            story_path: socket.assigns.backend_module.storybook_path(story),
@@ -62,7 +61,19 @@ defmodule PhxLiveStorybook.StoryLive do
            variation_extra_assigns: init_variation_extra_assigns(story.storybook_type(), story),
            playground_error: nil
          )
-         |> push_event("lsb:close-sidebar", %{"id" => "#sidebar"})}
+         |> close_sidebar()}
+
+      {:error, :not_found} ->
+        raise StoryNotFound, "unknown story #{inspect(story_path)}"
+
+      {:error, error, exception} ->
+        {:noreply,
+         assign(socket,
+           story_load_error: error,
+           story_load_exception: exception,
+           story_path: Path.join(["/" | story_path])
+         )
+         |> close_sidebar()}
     end
   end
 
@@ -144,6 +155,24 @@ defmodule PhxLiveStorybook.StoryLive do
   end
 
   defp init_variation_extra_assigns(_type, _story), do: nil
+
+  defp close_sidebar(socket), do: push_event(socket, "lsb:close-sidebar", %{"id" => "#sidebar"})
+
+  def render(assigns = %{story_load_error: error, story_load_exception: exception})
+      when not is_nil(error) do
+    ~H"""
+    <div class="lsb lsb-my-6 md:lsb-my-12 lsb-space-y-6 lsb-flex lsb-flex-col">
+      <h1 class="lsb lsb-pb-8 lsb-font-medium lsb-text-red-500 lsb-text-lg md:lsb-text-xl lg:lsb-text-2xl lsb-align-middle">
+        <i class="fad fa-bomb"></i>
+        <%= error %>
+      </h1>
+
+      <div class="lsb lsb-border lsb-rounded-md lsb-border-slate-100 lsb-bg-slate-800 lsb-p-2 lsb-overflow-x-scroll">
+        <pre class="lsb lsb-text-sm lsb-leading-loose lsb-text-red-500"><%= exception %></pre>
+      </div>
+    </div>
+    """
+  end
 
   def render(assigns = %{story: _story}) do
     ~H"""

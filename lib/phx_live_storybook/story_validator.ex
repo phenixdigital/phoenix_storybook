@@ -2,10 +2,26 @@ defmodule PhxLiveStorybook.StoryValidator do
   @moduledoc false
 
   alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
+  require Logger
 
   @doc """
-  This validator ensures that all stories have their properties filled with proper
-  datatypes and that attribute declarations are consistent accross variations.
+  This validator ensures that all stories have their properties filled with proper datatypes
+  and that attribute declarations are consistent accross variations.
+  Returns either `{:ok, story}` or `{:error, message}`.
+  """
+  def validate(story) do
+    story = validate!(story)
+    {:ok, story}
+  rescue
+    e ->
+      message = "Could not validate #{inspect(story)}:"
+      exception = Exception.format(:error, e, __STACKTRACE__)
+      Logger.error(message <> "\n\n" <> exception)
+      {:error, message, exception}
+  end
+
+  @doc """
+  Same as `validate/1`, but raises a `CompileError` if the story is invalid.
   """
   def validate!(story) do
     case story.storybook_type() do

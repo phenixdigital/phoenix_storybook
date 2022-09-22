@@ -13,21 +13,29 @@ defmodule PhxLiveStorybook.ExsCompilerTest do
 
   describe "compile_exs/2" do
     test "can load an exs", %{exs: exs, path: path} do
-      assert ExsCompiler.compile_exs(exs, path) == PhxLiveStorybook.Script
+      assert ExsCompiler.compile_exs(exs, path) == {:ok, PhxLiveStorybook.Script}
     end
 
     test "can load same exs twice", %{exs: exs, path: path} do
-      assert ExsCompiler.compile_exs(exs, path) == PhxLiveStorybook.Script
-      assert ExsCompiler.compile_exs(exs, path) == PhxLiveStorybook.Script
+      assert ExsCompiler.compile_exs(exs, path) == {:ok, PhxLiveStorybook.Script}
+      assert ExsCompiler.compile_exs(exs, path) == {:ok, PhxLiveStorybook.Script}
     end
 
-    test "can load an exs in immediate mode", %{exs: exs, path: path} do
-      assert ExsCompiler.compile_exs(exs, path, immediate: true) == PhxLiveStorybook.Script
+    test "returns an error tuple with bad script", %{bad_exs: exs, path: path} do
+      log = capture_log(fn -> assert {:error, _, _} = ExsCompiler.compile_exs(exs, path) end)
+      assert log =~ ~s|Could not compile "#{exs}"|
+    end
+  end
+
+  describe "compile_exs!/2" do
+    test "can load a valid exs", %{exs: exs, path: path} do
+      assert ExsCompiler.compile_exs!(exs, path) == PhxLiveStorybook.Script
     end
 
-    test "returns nil with bad script", %{bad_exs: exs, path: path} do
-      log = capture_log(fn -> assert is_nil(ExsCompiler.compile_exs(exs, path)) end)
-      assert log =~ ~s|could not compile "#{exs}"|
+    test "it raises with bad script", %{bad_exs: exs, path: path} do
+      assert_raise TokenMissingError, fn ->
+        ExsCompiler.compile_exs!(exs, path)
+      end
     end
   end
 end

@@ -7,11 +7,11 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
 
   setup_all do
     [
-      component: TreeStorybook.load_story("/component"),
-      live_component: TreeStorybook.load_story("/live_component"),
-      afolder_component: TreeStorybook.load_story("/a_folder/component"),
-      afolder_live_component: TreeStorybook.load_story("/a_folder/live_component"),
-      template_component: TreeStorybook.load_story("/templates/template_component")
+      component: TreeStorybook.load_story("/component") |> elem(1),
+      live_component: TreeStorybook.load_story("/live_component") |> elem(1),
+      afolder_component: TreeStorybook.load_story("/a_folder/component") |> elem(1),
+      afolder_live_component: TreeStorybook.load_story("/a_folder/live_component") |> elem(1),
+      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1)
     ]
   end
 
@@ -50,25 +50,25 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
     end
 
     test "it is working with an inner_block requiring a let attribute" do
-      component = TreeStorybook.load_story("/let/let_component")
+      {:ok, component} = TreeStorybook.load_story("/let/let_component")
       code = render_variation_code(component, :default)
       assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
-      component = TreeStorybook.load_story("/let/let_live_component")
+      {:ok, component} = TreeStorybook.load_story("/let/let_live_component")
       code = render_variation_code(component, :default)
       assert code =~ ~r|<pre.*</pre>|s
     end
 
     test "it is working with a template component" do
-      component = TreeStorybook.load_story("/templates/template_component")
+      {:ok, component} = TreeStorybook.load_story("/templates/template_component")
       code = render_variation_code(component, :hello)
       assert Regex.match?(~r/<pre.*template-div.*\/pre>/s, code)
     end
 
     test "it prints aliases struct names" do
-      component = TreeStorybook.load_story("/b_folder/all_types_component")
+      {:ok, component} = TreeStorybook.load_story("/b_folder/all_types_component")
       code = render_variation_code(component, :with_struct)
       assert Regex.match?(~r/<pre.*Struct.*\/pre>/s, code)
       refute Regex.match?(~r/<pre.*AllTypesComponent.*\/pre>/s, code)
