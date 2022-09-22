@@ -1,13 +1,13 @@
 defmodule PhxLiveStorybook.ComponentIframeLiveTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
-  @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
+  @endpoint PhxLiveStorybook.ComponentIframeLiveEndpoint
   @moduletag :capture_log
 
-  setup do
-    start_supervised!(PhxLiveStorybook.StoryLiveTestEndpoint)
+  setup_all do
+    start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
   end
 
@@ -90,7 +90,7 @@ defmodule PhxLiveStorybook.ComponentIframeLiveTest do
   end
 
   test "it raises with an unknow story", %{conn: conn} do
-    assert_raise PhxLiveStorybook.StoryNotFound, fn ->
+    assert_raise RuntimeError, fn ->
       live_with_params(conn, "/storybook/iframe/unknown", %{"variation_id" => "default"})
     end
   end

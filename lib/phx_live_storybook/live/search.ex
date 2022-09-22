@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.Search do
 
   def update(assigns = %{backend_module: backend_module}, socket) do
     root_path = live_storybook_path(socket, :root)
-    stories = backend_module.all_leaves()
+    stories = backend_module.leaves()
 
     {:ok,
      socket
@@ -32,7 +32,7 @@ defmodule PhxLiveStorybook.Search do
   end
 
   def handle_event("search", %{"search" => %{"input" => input}}, socket) do
-    stories = SearchHelpers.search_by(input, socket.assigns.all_stories, [:storybook_path, :name])
+    stories = SearchHelpers.search_by(input, socket.assigns.all_stories, [:path, :name])
     {:noreply, assign(socket, :stories, stories)}
   end
 
@@ -68,8 +68,6 @@ defmodule PhxLiveStorybook.Search do
 
           <ul id="search-list" class="lsb lsb-max-h-72 lsb-scroll-py-2 lsb-divide-y lsb-divide-gray-200 lsb-overflow-y-auto lsb-pb-2 lsb-text-sm lsb-text-gray-800">
             <%= for {story, i} <- Enum.with_index(@stories) do %>
-              <% story_path = Path.join(@root_path, story.storybook_path) %>
-
               <li
                 id={"story-#{i}"}
                 phx-highlight={JS.add_class("lsb-bg-slate-50 lsb-text-indigo-600")}
@@ -77,9 +75,9 @@ defmodule PhxLiveStorybook.Search do
                 class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-space-x-4 lsb-cursor-pointer"
                 tabindex="-1">
 
-                <%= live_patch(story.name, to: story_path, class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
+                <%= live_patch(story.name, to: Path.join(@root_path, story.path), class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
                 <div class="lsb lsb-truncate">
-                  <%= LayoutView.render_breadcrumb(@socket, story, span_class: "lsb-text-xs") %>
+                  <%= LayoutView.render_breadcrumb(@socket, story.path, span_class: "lsb-text-xs") %>
                 </div>
               </li>
             <% end %>

@@ -85,7 +85,7 @@ defmodule PhxLiveStorybook.SidebarTest do
 
       # test default folder name (properly humanized)
       [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")
-      assert String.contains?(html, "A folder")
+      assert String.contains?(html, "A Folder")
 
       # test config folder name
       [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(6)>div>span")
@@ -98,7 +98,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       render_component(Sidebar,
         id: "sidebar",
         backend_module: backend_module,
-        current_path: String.split(path, "/")
+        current_path: path
       )
 
     {:ok, document} = Floki.parse_document(html)

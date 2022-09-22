@@ -18,20 +18,11 @@ defmodule PhxLiveStorybook.FlatListStorybook do
     content_path: Path.expand("./fixtures/storybook_content/flat_list", __DIR__)
 end
 
-defmodule PhxLiveStorybook.NoContentStorybook do
-  use PhxLiveStorybook,
-    otp_app: :phx_live_storybook,
-    content_path: nil
-end
-
 defmodule PhxLiveStorybook.TreeStorybook do
   use PhxLiveStorybook,
     otp_app: :phx_live_storybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
-    folders: [
-      "/a_folder": [icon: "fa-icon"],
-      "/b_folder": [open: true, name: "Config Name"]
-    ]
+    compilation_mode: :lazy
 end
 
 defmodule PhxLiveStorybook.TreeBStorybook do
@@ -42,7 +33,7 @@ end
 defmodule PhxLiveStorybook.TestStorybook do
   use PhxLiveStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
-    folders: [a_folder: [open: true]],
+    compilation_mode: :lazy,
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
@@ -62,6 +53,8 @@ defmodule PhxLiveStorybook.TestRouter do
 end
 
 for endpoint <- [
+      PhxLiveStorybook.AssetNotFoundControllerEndpoint,
+      PhxLiveStorybook.ComponentIframeLiveEndpoint,
       PhxLiveStorybook.StoryLiveTestEndpoint,
       PhxLiveStorybook.PlaygroundLiveTestEndpoint
     ] do

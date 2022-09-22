@@ -6,8 +6,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   @endpoint PhxLiveStorybook.PlaygroundLiveTestEndpoint
   @moduletag :capture_log
 
-  setup do
-    start_supervised!(PhxLiveStorybook.PlaygroundLiveTestEndpoint)
+  setup_all do
+    start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
   end
 
@@ -85,9 +85,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
     test "with no attributes, it prints a placeholder", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
-
-      assert html =~
-               ~r|<p>In order to use playground, you must define attributes in your.*Component.*story\.</p>|
+      assert html =~ ~r|In order to use playground, you must define attributes in your story|
     end
   end
 
@@ -127,6 +125,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       })
       |> render_change()
 
+      wait_for_preview_lv(view)
+
       assert view |> element("#playground-preview-live") |> render() =~ "index_i: 37"
     end
 
@@ -139,6 +139,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
         playground: %{index_f: "42.1"}
       })
       |> render_change()
+
+      wait_for_preview_lv(view)
 
       assert view |> element("#playground-preview-live") |> render() =~ "index_f: 42.1"
     end
@@ -153,6 +155,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       })
       |> render_change()
 
+      wait_for_preview_lv(view)
+
       assert view |> element("#playground-preview-live") |> render() =~ "index_i: wrong"
     end
 
@@ -164,6 +168,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
         playground: %{option: "opt3"}
       })
       |> render_change()
+
+      wait_for_preview_lv(view)
 
       assert view |> element("#playground-preview-live") |> render() =~ "option: opt3"
     end
@@ -234,8 +240,8 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
              |> element("button[phx-click='greet_self']")
              |> render_click()
 
+      wait_for_lv(view)
       assert view |> has_element?(events_tab_selector, "(1)")
-
       assert view |> element(events_tab_selector) |> render_click()
 
       event_log =
@@ -288,7 +294,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       })
       |> render_change()
 
-      assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}
+      :sys.get_state(view.pid)
+
+      assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}, 200
     end
   end
 
@@ -453,5 +461,14 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     |> Floki.parse_fragment!()
     |> Floki.attribute(attribute)
     |> Enum.at(0)
+  end
+
+  defp wait_for_lv(view) do
+    :sys.get_state(view.pid)
+  end
+
+  defp wait_for_preview_lv(view) do
+    [playground_preview_view] = live_children(view)
+    :sys.get_state(playground_preview_view.pid)
   end
 end

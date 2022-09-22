@@ -3,13 +3,13 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   use Phoenix.LiveView
 
   alias PhxLiveStorybook.ExtraAssignsHelpers
+  alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.StoryNotFound
 
   def mount(_params, session, socket) do
     {:ok,
      assign(socket,
-       otp_app: session["otp_app"],
        backend_module: session["backend_module"],
        assets_path: session["assets_path"]
      ), layout: {PhxLiveStorybook.LayoutView, "live_iframe.html"}}
@@ -17,30 +17,30 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
 
   def handle_params(params = %{"story" => story_path}, _uri, socket) do
     case load_story(socket, story_path) do
-      nil ->
-        raise StoryNotFound, "unknown story #{inspect(story_path)}"
-
-      story ->
+      {:ok, story} ->
         {:noreply,
          assign(socket,
            playground: params["playground"],
            story_path: story_path,
            story: story,
-           variation_id: parse_atom(params["variation_id"]),
+           variation_id: params["variation_id"],
            topic: params["topic"],
-           theme: parse_atom(params["theme"]),
+           theme: params["theme"],
            extra_assigns: %{}
          )}
+
+      {:error, _error, exception} ->
+        raise exception
+
+      {:error, :not_found} ->
+        raise StoryNotFound, "unknown story #{inspect(story_path)}"
     end
   end
 
   defp load_story(socket, story_param) do
-    story_storybook_path = "/#{Enum.join(story_param, "/")}"
-    socket.assigns.backend_module.find_story_by_path(story_storybook_path)
+    story_path = Path.join(story_param)
+    socket.assigns.backend_module.load_story(story_path)
   end
-
-  defp parse_atom(nil), do: nil
-  defp parse_atom(atom_s), do: String.to_atom(atom_s)
 
   def render(assigns) do
     assigns =
@@ -51,14 +51,17 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
       <%= if @playground do %>
         <%= live_render @socket, PlaygroundPreviewLive,
           id: playground_preview_id(@story),
-          session: %{"story_path" => @story_path, "variation_id" => @variation_id,
-          "backend_module" => to_string(@backend_module), "theme" => @theme,
-          "topic" => @topic},
+          session: %{
+            "story" => @story,
+            "variation_id" => @variation_id,
+            "theme" => @theme,
+            "topic" => @topic
+            },
           container: {:div, style: "height: 100vh; width: 100wh;"}
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= @backend_module.render_variation(@story.module(), @variation_id, @component_assigns) %>
+          <%= ComponentRenderer.render_variation(@story, @variation_id, @component_assigns) %>
         </div>
       <% end %>
     <% end %>
@@ -66,7 +69,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   end
 
   defp playground_preview_id(story) do
-    module = story.module |> Macro.underscore() |> String.replace("/", "_")
+    module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
   end
 

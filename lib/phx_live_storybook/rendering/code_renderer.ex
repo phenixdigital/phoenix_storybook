@@ -15,16 +15,27 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias PhxLiveStorybook.{Variation, VariationGroup}
 
   @doc """
-  Renders a `Variation` (or `VariationGroup`) code snippet, wrapped in a `<pre>` tag.
+  Renders code snippet of a specific variation for a given component story.
+  Returns a rendered HEEx template.
   """
-  def render_variation_code(
-        fun_or_mod,
-        variation_or_group,
-        template,
-        assigns \\ %{}
-      )
+  def render_variation_code(story, variation_id) do
+    variation = story.variations() |> Enum.find(&(to_string(&1.id) == to_string(variation_id)))
+    template = TemplateHelpers.get_template(story.template(), variation)
 
-  def render_variation_code(fun_or_mod, s = %Variation{}, template, assigns) do
+    case story.storybook_type() do
+      :component -> render_variation_code(story.function(), variation, template)
+      :live_component -> render_variation_code(story.component(), variation, template)
+    end
+  end
+
+  defp render_variation_code(
+         fun_or_mod,
+         variation_or_group,
+         template,
+         assigns \\ %{}
+       )
+
+  defp render_variation_code(fun_or_mod, s = %Variation{}, template, assigns) do
     if TemplateHelpers.code_hidden?(template) do
       render_variation_code(fun_or_mod, s, TemplateHelpers.default_template(), assigns)
     else
@@ -39,12 +50,12 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     end
   end
 
-  def render_variation_code(
-        fun_or_mod,
-        group = %VariationGroup{variations: variations},
-        template,
-        assigns
-      ) do
+  defp render_variation_code(
+         fun_or_mod,
+         group = %VariationGroup{variations: variations},
+         template,
+         assigns
+       ) do
     if TemplateHelpers.code_hidden?(template) do
       render_variation_code(fun_or_mod, group, TemplateHelpers.default_template(), assigns)
     else
@@ -117,7 +128,8 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   end
 
   @doc """
-  Renders a component's (live or not) source code, wrapped in a `<pre>` tag.
+  Renders source of a component story.
+  Returns a rendered HEEx template.
   """
   def render_component_source(module, assigns \\ %{}) do
     if source = component_source(module, module.storybook_type()) do

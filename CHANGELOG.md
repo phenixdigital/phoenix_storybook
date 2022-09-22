@@ -6,10 +6,12 @@
 - change (breaking!): `stories` have been re-rebranded as `variations`, `Story` became `Variation`
   and `StoryGroup` became `VariationGroup`
 - change (breaking!): `entries` have been re-rebranded as `stories`.
+- change (breaking!): story (former entry) files must be created in `*.story.exs` files.
+- change (breaking!): sidebar custom story names and icons are now defined in `*.index.exs` files.
 - change (breaking!): `live_storybook/2` is no longer serving assets. You must add
   `storybook_assets/1` to your router in a non CSRF-protected scope.
 - change (breaking!): attr `options` have been renamed to `examples`. A new `values` key is also
-  available to enforce variation attribute examples.
+  available to enforce variation attribute values.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: new event log. In the playground, you can now track all events emitted by components.
 - feature: theming. You can declare different themes in the application settings. The selected
@@ -20,6 +22,8 @@
 - feature: provide custom aliases & imports to your stories/templates
   (see this [guide](guides/components.md) for more details).
 - feature: you can provide a `let` attribute to your inner blocks.
+- improvement: stories compilation is lazy in dev environment (and eager in other envs). This
+  behavior can be tweaked with the `:compilation_mode` config key.
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
 - bugfix: empty inner_block are no longer passed to all components.

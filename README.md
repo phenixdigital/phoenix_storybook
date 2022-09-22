@@ -95,10 +95,7 @@ end
 scope "/", PhxLiveStorybookSampleWeb do
   pipe_through(:browser)
   ...
-  live_storybook("/storybook",
-    otp_app: :my_app,
-    backend_module: MyAppWeb.Storybook
-  )
+  live_storybook "/storybook", backend_module: MyAppWeb.Storybook
 end
 ```
 
@@ -135,14 +132,14 @@ of _stories_:
 
 _As of `0.4.0`, only component and page stories are available._
 
-Stories are described as Elixir scripts (`.exs`) created under your `:content_path` folder.
+Stories are described as Elixir scripts (`.story.exs`) created under your `:content_path` folder.
 Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
 sidebar.
 
 Here is an example of a stateless (function) component story:
 
 ```elixir
-# storybook/components/button.exs
+# storybook/components/button.story.exs
 defmodule MyAppWeb.Storybook.Components.Button do
   alias MyAppWeb.Components.Button
 
@@ -175,10 +172,10 @@ end
 
 ### Configuration
 
-Of all config settings, only the `:otp_app, and `:content_path` keys are mandatory.
+Of all config settings, only the `:otp_app`, and `:content_path` keys are mandatory.
 
 ```elixir
-# config/config.exs
+# lib/my_app_web/storybook.ex
 defmodule MyAppWeb.Storybook do
   use PhxLiveStorybook,
     # OTP name of your application.
@@ -199,18 +196,6 @@ defmodule MyAppWeb.Storybook do
     # Custom storybook title. Default is "Live Storybook".
     title: "My Live Storybook",
 
-    # Folder settings.
-    # Each folder is designated by its relative path from the storybook mounting point.
-    # For each folder you can:
-    # - make it open by default in the sidebar, with `open: true`.
-    # - give it a custom name in the sidebar
-    # - give it a custom icon in the sidebar, with a FontAwesome 6+ CSS class.
-    folders: [
-      "/": [icon: "fas fa-banana"],
-      "/components": [icon: "far fa-toolbox", open: true],
-      "components/live": [icon: "fal fa-bolt", name: "Live!!!"]
-    ]
-
     # Theme settings.
     # Each theme must have a name, and an optional dropdown_class.
     # When set, a dropdown is displayed in storybook header to let the user pick a theme.
@@ -227,7 +212,22 @@ defmodule MyAppWeb.Storybook do
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
-    ]
+
+    # Story compilation mode, can be either `:eager` or `:lazy`.
+    # It defaults to `:lazy` in dev environment, `:eager` in other environments.
+    #   - When eager: all .story.exs & .index.exs files are compiled upfront.
+    #   - When lazy: ony .index.exs files are compiled upfront and .story.exs are compile when the
+    #     matching story is loaded in UI.
+    compilation_mode: :eager
+  ]
+```
+
+All settings can be overridden from your config files.
+
+```elixir
+# config/config.exs
+config :my_app, MyAppWeb.Storybook,
+  content_path: "overridden/content/path"
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
@@ -240,17 +240,20 @@ We would love your PRs!
 
 1. Pull down phx_live_storybook to a directory next to your project (`../phx_live_storybook`).
 2. Change your mix file to point to this directory:
-   ```elixir
-     # {:phx_live_storybook, "~> 0.3.0"},
-     {:phx_live_storybook, path: "../phx_live_storybook"},
-   ```
+
+```elixir
+# {:phx_live_storybook, "~> 0.3.0"},
+{:phx_live_storybook, path: "../phx_live_storybook"},
+```
+
 3. Update the assets in phx_live_storybook since this isn't a release
-   ```bash
-     cd ../phx_live_storybook
-     mix deps.get
-     npm ci --prefix assets
-     mix assets.build
-   ```
+
+```bash
+cd ../phx_live_storybook
+mix deps.get
+npm ci --prefix assets
+mix assets.build
+```
 
 And make sure you read the [CONTRIBUTING](CONTRIBUTING.md) guide.
 

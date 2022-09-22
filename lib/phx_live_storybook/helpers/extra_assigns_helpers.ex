@@ -13,7 +13,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
       for {attr, value} <- params, reduce: variation_extra_assigns do
         acc ->
           attr = String.to_atom(attr)
-          value = to_value(value, attr, story.attributes, context)
+          value = to_value(value, attr, story.attributes(), context)
           Map.put(acc, attr, value)
       end
 
@@ -33,7 +33,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
     current_value = Map.get(variation_extra_assigns, attr)
     check_type!(current_value, :boolean, context)
 
-    case declared_attr_type(attr, story.attributes) do
+    case declared_attr_type(attr, story.attributes()) do
       nil ->
         :ok
 

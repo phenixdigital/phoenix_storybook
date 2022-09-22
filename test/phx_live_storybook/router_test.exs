@@ -26,18 +26,7 @@ defmodule PhxLiveStorybook.RouterTest do
           use Phoenix.Router
           import PhxLiveStorybook.Router
 
-          live_storybook("/storybook", otp_app: :phx_live_storybook)
-        end
-      end)
-    end
-
-    test "raises when otp_app is missing" do
-      assert_raise(RuntimeError, fn ->
-        defmodule NoBackendModuleRouter do
-          use Phoenix.Router
-          import PhxLiveStorybook.Router
-
-          live_storybook("/storybook", backend_module: PhxLiveStorybook.TestStorybook)
+          live_storybook("/storybook", [])
         end
       end)
     end

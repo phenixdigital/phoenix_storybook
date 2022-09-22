@@ -9,14 +9,14 @@ defmodule PhxLiveStorybook.MixProject do
       version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
-      aliases: aliases(),
       config_path: "./config/config.exs",
       elixirc_paths: elixirc_paths(Mix.env()),
-      deps: deps(),
-      description: "A pluggable storybook for your LiveView components.",
-      package: package(),
       name: "phx_live_storybook",
+      description: "A pluggable storybook for your LiveView components.",
       source_url: "https://github.com/phenixdigital/phx_live_storybook",
+      aliases: aliases(),
+      deps: deps(),
+      package: package(),
       docs: docs(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -47,7 +47,8 @@ defmodule PhxLiveStorybook.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
-      {:floki, "~> 0.33.0", only: :test}
+      {:floki, "~> 0.33.0", only: :test},
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 

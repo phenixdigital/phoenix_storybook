@@ -1,12 +1,13 @@
 defmodule PhxLiveStorybook.StoryLiveTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
+  import ExUnit.CaptureLog
 
   @endpoint PhxLiveStorybook.StoryLiveTestEndpoint
   @moduletag :capture_log
 
-  setup do
+  setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
   end
@@ -20,33 +21,33 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       assert get(conn, "/storybook") |> redirected_to() =~ "/storybook/a_page"
     end
 
-    test "404 on unknown story", %{conn: conn} do
-      assert_raise PhxLiveStorybook.StoryNotFound, fn ->
-        get(conn, "/storybook/wrong")
-      end
+    test "error message on unknown story", %{conn: conn} do
+      log = capture_log(fn -> get(conn, "/storybook/wrong") end)
+      assert log =~ ~s|Could not compile "wrong.story.exs"|
     end
 
     test "navigate in sidebar", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_folder/component")
+      {:ok, view, _html} = live(conn, "/storybook/component")
 
       assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
                "live component description"
 
-      # reaching items under "A folder" which is open by default (cf. config.exs)
-      assert view |> element("#sidebar a", "Live Component (a_folder)") |> render_click() =~
-               "Live component description"
+      # A folder is open
+      refute has_element?(view, "#sidebar a", "Component (a_folder)")
 
-      # B folder is closed, items inside are not visible
-      refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
+      # Opening A folder
+      element(view, "#sidebar div", "A Folder") |> render_click()
+      assert has_element?(view, "#sidebar a", "Component (a_folder)")
 
-      # opening "B folder" then reaching items inside
-      element(view, "#sidebar div", "B folder") |> render_click()
+      # B folder is alredy open (by its index.exs file)
+      assert has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
 
+      # reaching items inside
       assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
                "All types component description"
 
       # closing "B folder"
-      element(view, "#sidebar div", "B folder") |> render_click()
+      element(view, "#sidebar div", "Config Name") |> render_click()
       refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
     end
 
@@ -273,7 +274,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       |> with_target("#search-container")
       |> render_change("navigate", %{"path" => "/storybook/component"})
 
-      assert_patch(view, "/storybook/component")
+      assert_patch(view, "/storybook/component", 200)
     end
   end
 end

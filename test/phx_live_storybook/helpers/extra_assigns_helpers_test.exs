@@ -1,9 +1,14 @@
 defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.{Attr, ComponentStory}
-
+  alias PhxLiveStorybook.Attr
+  alias PhxLiveStorybook.Story.{ComponentBehaviour, StoryBehaviour}
   import PhxLiveStorybook.ExtraAssignsHelpers
+
+  setup_all do
+    Mox.defmock(StoryMock, for: [StoryBehaviour, ComponentBehaviour])
+    :ok
+  end
 
   describe "handle_set_variation_assign/3" do
     setup :story
@@ -226,16 +231,18 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
   end
 
   defp story(_context) do
-    [
-      story: %ComponentStory{
-        attributes: [
-          %Attr{id: :boolean, type: :boolean},
-          %Attr{id: :integer, type: :integer},
-          %Attr{id: :float, type: :float},
-          %Attr{id: :atom, type: :atom},
-          %Attr{id: :list, type: :list}
-        ]
-      }
-    ]
+    Mox.stub_with(StoryMock, PhxLiveStorybook.ComponentStub)
+
+    Mox.stub(StoryMock, :attributes, fn ->
+      [
+        %Attr{id: :boolean, type: :boolean},
+        %Attr{id: :integer, type: :integer},
+        %Attr{id: :float, type: :float},
+        %Attr{id: :atom, type: :atom},
+        %Attr{id: :list, type: :list}
+      ]
+    end)
+
+    [story: StoryMock]
   end
 end
