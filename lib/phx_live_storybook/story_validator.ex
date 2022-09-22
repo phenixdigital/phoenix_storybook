@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.StoryValidator do
     {:ok, story}
   rescue
     e ->
-      message = "Could not validate #{inspect(story)}:"
+      message = "Could not validate #{inspect(story)}"
       exception = Exception.format(:error, e, __STACKTRACE__)
       Logger.error(message <> "\n\n" <> exception)
       {:error, message, exception}
@@ -27,8 +27,15 @@ defmodule PhxLiveStorybook.StoryValidator do
     case story.storybook_type() do
       :component -> validate_component!(story)
       :live_component -> validate_component!(story)
-      :page -> story
+      :page -> validate_page!(story)
     end
+  end
+
+  defp validate_page!(story) do
+    file_path = story.__info__(:compile)[:source]
+    validate_story_description!(file_path, story)
+    validate_page_navigation!(file_path, story)
+    story
   end
 
   defp validate_component!(story) do
@@ -36,11 +43,11 @@ defmodule PhxLiveStorybook.StoryValidator do
     {attributes, variations} = {story.attributes(), story.variations()}
     validate_story_description!(file_path, story)
     validate_story_component!(file_path, story)
-    validate_story_function!(file_path, story)
-    validate_story_aliases!(file_path, story)
-    validate_story_imports!(file_path, story)
-    validate_story_container!(file_path, story)
-    validate_story_template!(file_path, story)
+    validate_component_function!(file_path, story)
+    validate_component_aliases!(file_path, story)
+    validate_component_imports!(file_path, story)
+    validate_component_container!(file_path, story)
+    validate_component_template!(file_path, story)
     validate_attribute_list_type!(file_path, story)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
@@ -79,19 +86,32 @@ defmodule PhxLiveStorybook.StoryValidator do
     )
   end
 
+  defp validate_page_navigation!(file_path, story) do
+    msg = "page navigation must be a list of {atom, binary, binary}"
+    validate_type!(file_path, story.navigation(), [:list], msg)
+
+    for nav <- story.navigation() do
+      validate_type!(file_path, nav, {:tuple, 3}, msg)
+      {tab, name, icon} = nav
+      validate_type!(file_path, tab, :atom, msg)
+      validate_type!(file_path, name, :string, msg)
+      validate_type!(file_path, icon, :string, msg)
+    end
+  end
+
   defp validate_story_component!(file_path, story) do
     if story.storybook_type() == :live_component do
       validate_type!(file_path, story.component(), :atom, "story component must be a module")
     end
   end
 
-  defp validate_story_function!(file_path, story) do
+  defp validate_component_function!(file_path, story) do
     if story.storybook_type() == :component do
       validate_type!(file_path, story.function(), :function, "story function must be a function")
     end
   end
 
-  defp validate_story_aliases!(file_path, story) do
+  defp validate_component_aliases!(file_path, story) do
     msg = "story aliases must be a list of atoms"
     validate_type!(file_path, story.aliases, :list, msg)
 
@@ -99,7 +119,7 @@ defmodule PhxLiveStorybook.StoryValidator do
         do: validate_type!(file_path, alias_item, :atom, msg)
   end
 
-  defp validate_story_imports!(file_path, story) do
+  defp validate_component_imports!(file_path, story) do
     msg = "story imports must be a list of {atom, [{atom, integer}]}"
     validate_type!(file_path, story.aliases, :list, msg)
 
@@ -118,13 +138,13 @@ defmodule PhxLiveStorybook.StoryValidator do
     end
   end
 
-  defp validate_story_container!(file_path, story) do
+  defp validate_component_container!(file_path, story) do
     unless story.container in ~w(nil div iframe)a do
       compile_error!(file_path, "story container must be either :div or :iframe")
     end
   end
 
-  defp validate_story_template!(file_path, story) do
+  defp validate_component_template!(file_path, story) do
     validate_type!(file_path, story.template, :string, "story template must be a binary")
   end
 

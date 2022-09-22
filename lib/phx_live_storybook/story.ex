@@ -98,7 +98,7 @@ defmodule PhxLiveStorybook.Story do
     @callback container() :: atom()
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
-    @callback template() :: %Phoenix.LiveView.Rendered{}
+    @callback template() :: String.t()
   end
 
   defmodule LiveComponentBehaviour do
@@ -110,13 +110,14 @@ defmodule PhxLiveStorybook.Story do
     @callback container() :: atom()
     @callback attributes() :: [PhxLiveStorybook.Attr.t()]
     @callback variations() :: [PhxLiveStorybook.Variation.t()]
-    @callback template() :: %Phoenix.LiveView.Rendered{}
+    @callback template() :: String.t()
   end
 
   defmodule PageBehaviour do
     @moduledoc false
 
     @callback navigation() :: [{atom(), String.t(), String.t()}]
+    @callback render(map()) :: %Phoenix.LiveView.Rendered{}
   end
 
   @doc false
@@ -183,6 +184,7 @@ defmodule PhxLiveStorybook.Story do
       @impl PageBehaviour
       def navigation, do: []
 
+      @impl PageBehaviour
       def render(_assigns), do: false
 
       def file_path do

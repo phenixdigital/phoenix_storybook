@@ -161,14 +161,14 @@ defmodule PhxLiveStorybook.StoryLive do
   def render(assigns = %{story_load_error: error, story_load_exception: exception})
       when not is_nil(error) do
     ~H"""
-    <div class="lsb lsb-my-6 md:lsb-my-12 lsb-space-y-6 lsb-flex lsb-flex-col">
-      <h1 class="lsb lsb-pb-8 lsb-font-medium lsb-text-red-500 lsb-text-lg md:lsb-text-xl lg:lsb-text-2xl lsb-align-middle">
+    <div class="lsb lsb-my-6 md:lsb-my-12 lsb-space-y-4 md:lsb-space-y-8 lsb-flex lsb-flex-col">
+      <h1 class="lsb lsb-font-medium lsb-text-red-500 lsb-text-lg md:lsb-text-xl lg:lsb-text-2xl lsb-align-middle">
         <i class="fad fa-bomb"></i>
         <%= error %>
       </h1>
 
-      <div class="lsb lsb-border lsb-rounded-md lsb-border-slate-100 lsb-bg-slate-800 lsb-p-2 lsb-overflow-x-scroll">
-        <pre class="lsb lsb-text-sm lsb-leading-loose lsb-text-red-500"><%= exception %></pre>
+      <div class="lsb lsb-border lsb-rounded-md lsb-border-slate-100 lsb-bg-slate-800 lsb-p-4 lsb-overflow-x-scroll">
+        <pre class="lsb lsb-text-xs md:lsb-text-sm lsb-leading-loose lsb-text-red-500"><%= exception %></pre>
       </div>
     </div>
     """

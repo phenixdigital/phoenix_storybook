@@ -37,7 +37,7 @@ defmodule PhxLiveStorybook.ExsCompiler do
     {:ok, module}
   rescue
     e ->
-      message = "Could not compile #{inspect(path)}:"
+      message = "Could not compile #{inspect(path)}"
       exception = Exception.format(:error, e, __STACKTRACE__)
       Logger.error(message <> "\n\n" <> exception)
       {:error, message, exception}

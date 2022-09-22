@@ -1,9 +1,10 @@
 defmodule PhxLiveStorybook.StoryValidatorTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.Story.{ComponentBehaviour, LiveComponentBehaviour, StoryBehaviour}
+  alias PhxLiveStorybook.Story.{ComponentBehaviour, LiveComponentBehaviour, PageBehaviour}
+  alias PhxLiveStorybook.Story.StoryBehaviour
   alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
-  alias PhxLiveStorybook.{ComponentStub, LiveComponentStub}
+  alias PhxLiveStorybook.{ComponentStub, LiveComponentStub, PageStub}
   alias PhxLiveStorybook.StoryValidator
 
   defmodule MyModuleStruct, do: defstruct([])
@@ -16,9 +17,35 @@ defmodule PhxLiveStorybook.StoryValidatorTest do
 
     @tag :capture_log
     test "with a invalid story it returns an :error tuple" do
-      mock = component_stub(description: :description)
+      mock = component_stub(description: :invalid)
       {:error, message, _exception} = validate(mock)
       assert message =~ "Could not validate"
+    end
+  end
+
+  describe "page story base attributes" do
+    test "with a valid story it returns a :ok tuple" do
+      mock = page_stub()
+      assert validate(mock) == {:ok, mock}
+    end
+
+    test "with an invalid description it raises" do
+      mock = page_stub(description: :invalid)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "story description must be a binary"
+    end
+  end
+
+  describe "page navigation" do
+    test "with a valid navigation it wont raise" do
+      mock = page_stub(navigation: [{:tab, "", ""}])
+      assert validate!(mock) == mock
+    end
+
+    test "with an invalid navigation it will raise" do
+      mock = page_stub(navigation: [:tab])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "page navigation must be a list of {atom, binary, binary}"
     end
   end
 
@@ -1052,6 +1079,10 @@ defmodule PhxLiveStorybook.StoryValidatorTest do
 
   defp live_component_stub(stubs) do
     create_stub([StoryBehaviour, LiveComponentBehaviour], LiveComponentStub, stubs)
+  end
+
+  defp page_stub(stubs \\ []) do
+    create_stub([StoryBehaviour, PageBehaviour], PageStub, stubs)
   end
 
   defp create_stub(behaviours, stub, stubs) do
