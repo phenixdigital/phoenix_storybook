@@ -208,7 +208,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= if @story.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@story)}
-            src={live_storybook_path(@socket, :story_iframe, Path.split(@story_path),
+            src={live_storybook_path(@socket, :story_iframe, @story_path |> String.replace_prefix("/", "") |> Path.split(),
                 variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
                 topic: @topic)}
             height="128"

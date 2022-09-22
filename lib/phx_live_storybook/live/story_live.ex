@@ -293,7 +293,7 @@ defmodule PhxLiveStorybook.StoryLive do
               <iframe
                 phx-update="ignore"
                 id={iframe_id(@story, variation)}
-                src={live_storybook_path(@socket, :story_iframe, Path.split(@story_path), variation_id: variation.id, theme: @theme)}
+                src={live_storybook_path(@socket, :story_iframe, @story_path |> String.replace_prefix("/", "") |> Path.split() , variation_id: variation.id, theme: @theme)}
                 class="lsb-w-full lsb-border-0"
                 height="0"
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
