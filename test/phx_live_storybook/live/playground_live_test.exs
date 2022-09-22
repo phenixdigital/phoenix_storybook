@@ -372,7 +372,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       form_label_selector = "#tree_storybook_template_component-playground-form_label"
       form_toggle_selector = "#tree_storybook_template_component-playground-form_status"
 
-      assert get_element_attribute(view, form_label_selector, "value") == "[Multiple examples]"
+      assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
 
       playground_preview_view |> element(~s|[id="group:two"] #set-foo|) |> render_click()
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -385,7 +385,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: true"
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple examples]"
+      assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
       playground_preview_view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
       assert render(playground_element) =~ "template_component: bar / status: true"

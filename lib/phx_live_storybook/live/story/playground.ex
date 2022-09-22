@@ -445,14 +445,14 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   def block_or_slot(assigns, _attr = %{type: :block}) do
     case assigns.block do
-      :locked -> "[Multiple examples]"
+      :locked -> "[Multiple values]"
       block -> block
     end
   end
 
   def block_or_slot(assigns, _attr = %{type: :slot, id: slot_id}) do
     case Map.get(assigns.slots, slot_id) do
-      :locked -> "[Multiple examples]"
+      :locked -> "[Multiple values]"
       slot -> slot
     end
   end
@@ -561,7 +561,7 @@ defmodule PhxLiveStorybook.Story.Playground do
       nil ->
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
-            ~H|<%= text_input(@form, @attr_id, value: "[Multiple examples]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+            ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
 
           value ->
             assigns |> assign(:value, value) |> attr_input()
