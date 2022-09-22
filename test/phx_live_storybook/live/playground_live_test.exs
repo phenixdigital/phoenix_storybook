@@ -342,13 +342,16 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_label_selector, "value") == "foo"
 
       view |> form(form_selector, %{playground: %{label: "bar"}}) |> render_change()
+      wait_for_preview_lv(view)
       assert render(playground_element) =~ "template_component: bar / status: false"
 
       playground_preview_view |> element("#toggle-status") |> render_click()
       assert render(playground_element) =~ "template_component: bar / status: true"
 
+      wait_for_lv(view)
       assert get_element_attribute(view, form_toggle_selector, "value") == "true"
       view |> form(form_selector, %{playground: %{status: true}}) |> render_change()
+      wait_for_preview_lv(view)
       assert render(playground_element) =~ "template_component: bar / status: true"
     end
 
@@ -361,7 +364,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
       assert render(playground_element) =~ "template_component: one"
       assert render(playground_element) =~ "template_component: two"
-      playground_preview_view |> element("#one #set-foo") |> render_click()
+      playground_preview_view |> element(~s|[id="group:one"] #set-foo|) |> render_click()
       assert render(playground_element) =~ "template_component: foo / status: false"
       assert render(playground_element) =~ "template_component: two / status: false"
 
@@ -371,19 +374,19 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
       assert get_element_attribute(view, form_label_selector, "value") == "[Multiple examples]"
 
-      playground_preview_view |> element("#two #set-foo") |> render_click()
+      playground_preview_view |> element(~s|[id="group:two"] #set-foo|) |> render_click()
       assert render(playground_element) =~ "template_component: foo / status: false"
       refute render(playground_element) =~ "template_component: bar / status: false"
 
       view |> form(form_selector, %{playground: %{label: "bar"}}) |> render_change()
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      playground_preview_view |> element("#one #toggle-status") |> render_click()
+      playground_preview_view |> element(~s|[id="group:one"] #toggle-status|) |> render_click()
       assert render(playground_element) =~ "template_component: bar / status: true"
       assert render(playground_element) =~ "template_component: bar / status: false"
 
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple examples]"
-      playground_preview_view |> element("#two #toggle-status") |> render_click()
+      playground_preview_view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
       assert render(playground_element) =~ "template_component: bar / status: true"
       refute render(playground_element) =~ "template_component: bar / status: false"

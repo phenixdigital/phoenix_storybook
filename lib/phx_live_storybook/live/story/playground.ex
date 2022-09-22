@@ -36,27 +36,29 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp assign_variations(socket = %{assigns: assigns}) do
     case assigns.variation do
       variation = %Variation{} ->
-        assign_variations(socket, variation.id, [variation])
+        assign_variations(socket, :single, variation.id, [variation])
 
       %VariationGroup{id: group_id, variations: variations} ->
-        assign_variations(socket, group_id, variations)
+        assign_variations(socket, :group, group_id, variations)
 
       _ ->
-        assign_variations(socket, nil, [])
+        assign(socket, variations: [], variation_id: nil)
     end
   end
 
-  defp assign_variations(socket = %{assigns: %{variation_id: id}}, id, _variations) do
-    socket
-  end
+  defp assign_variations(socket, kind, id, variations) do
+    variations =
+      for variation <- variations do
+        id =
+          case kind do
+            :group -> {id, variation.id}
+            :single -> variation.id
+          end
 
-  defp assign_variations(socket, id, variations) do
-    socket
-    |> assign(variation_id: id)
-    |> assign(
-      :variations,
-      for(s <- variations, do: Map.take(s, [:id, :attributes, :let, :block, :slots, :template]))
-    )
+        variation |> Map.take([:attributes, :let, :block, :slots, :template]) |> Map.put(:id, id)
+      end
+
+    assign(socket, variation_id: id, variations: variations)
   end
 
   # new_attributes may be passed by parent (LiveView) send_update.
@@ -67,7 +69,9 @@ defmodule PhxLiveStorybook.Story.Playground do
 
     variations =
       for variation <- socket.assigns.variations do
-        case Map.get(new_attributes, variation.id) do
+        variation_id = variation.id
+
+        case Map.get(new_attributes, variation_id) do
           nil -> variation
           new_attrs -> update_variation_attributes(variation, new_attrs)
         end

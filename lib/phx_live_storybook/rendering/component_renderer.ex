@@ -127,9 +127,15 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
       cond do
         TemplateHelpers.variation_template?(template) ->
           for variation <- variations, into: "" do
+            variation_id =
+              case variation_or_group do
+                %VariationGroup{id: group_id} -> {group_id, variation.id}
+                _ -> variation.id
+              end
+
             template_heex(
               template,
-              variation.id,
+              variation_id,
               fun_or_mod,
               variation.attributes,
               variation.let,

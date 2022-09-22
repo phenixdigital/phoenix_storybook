@@ -78,7 +78,8 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
 
     ~H"""
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
-      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)} style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
+      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)}
+           style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
         <%= ComponentRenderer.render_multiple_variations(fun_or_component(@story), @variation, @variations, template, opts) %>
       </div>
     </div>
@@ -134,7 +135,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
     variations =
       for variation <- assigns.variations do
-        {variation_id, attrs} =
+        {variation_id, attributes} =
           ExtraAssignsHelpers.handle_set_variation_assign(
             assign_params,
             variation.attributes,
@@ -142,21 +143,17 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
             :flat
           )
 
-        if variation.id == variation_id do
-          %{variation | attributes: attrs}
-        else
-          variation
-        end
+        update_variation_attributes(variation, variation_id, attributes)
       end
 
-    send_variations_attributes(assigns.topic, variations)
+    send_variations_attributes(socket, assigns.topic, variations)
     {:noreply, socket |> inc_counter() |> assign(variations: variations)}
   end
 
   def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
     variations =
       for variation <- assigns.variations do
-        {variation_id, attrs} =
+        {variation_id, attributes} =
           ExtraAssignsHelpers.handle_toggle_variation_assign(
             assign_params,
             variation.attributes,
@@ -164,25 +161,45 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
             :flat
           )
 
-        if variation.id == variation_id do
-          %{variation | attributes: attrs}
-        else
-          variation
-        end
+        update_variation_attributes(variation, variation_id, attributes)
       end
 
-    send_variations_attributes(assigns.topic, variations)
+    send_variations_attributes(socket, assigns.topic, variations)
     {:noreply, socket |> inc_counter() |> assign(variations: variations)}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}
 
-  defp send_variations_attributes(topic, variations) do
+  defp update_variation_attributes(variation, {_group_id, variation_id}, attributes) do
+    if variation.id == variation_id do
+      %{variation | attributes: attributes}
+    else
+      variation
+    end
+  end
+
+  defp update_variation_attributes(variation, variation_id, attributes) do
+    if variation.id == variation_id do
+      %{variation | attributes: attributes}
+    else
+      variation
+    end
+  end
+
+  defp send_variations_attributes(socket, topic, variations) do
     PubSub.broadcast!(
       PhxLiveStorybook.PubSub,
       topic,
-      {:new_variations_attributes, variations |> Enum.map(&{&1.id, &1.attributes}) |> Map.new()}
+      {:new_variations_attributes,
+       variations |> Enum.map(&{variation_id(socket, &1), &1.attributes}) |> Map.new()}
     )
+  end
+
+  defp variation_id(_socket = %{assigns: assigns}, %{id: id}) do
+    case assigns.variation do
+      %VariationGroup{id: group_id} -> {group_id, id}
+      _ -> id
+    end
   end
 
   # Some components outside of the liveview world needs an ID update to re-render.
