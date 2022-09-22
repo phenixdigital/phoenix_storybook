@@ -12,11 +12,17 @@ defmodule PhxLiveStorybook.Story.Playground do
   import PhxLiveStorybook.NavigationHelpers
 
   def mount(socket) do
-    {:ok, assign(socket, event_logs: [])}
+    {:ok, assign(socket, event_logs: [], event_logs_unread: 0)}
   end
 
   def update(%{new_event: event}, socket) do
-    {:ok, update(socket, :event_logs, &[event | &1])}
+    {:ok,
+     socket
+     |> update(:event_logs, &[event | &1])
+     |> update(:event_logs_unread, fn
+       _unread, %{lower_tab: :events} -> 0
+       unread, _assigns -> unread + 1
+     end)}
   end
 
   def update(assigns, socket) do
@@ -182,13 +188,13 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp render_lower_navigation_tabs(assigns) do
     ~H"""
-    <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-6">
+    <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-4">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
-        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-list"}, {:events, "Event Logs", "fad fa-book"}] do %>
+        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "fad fa-table"}, {:events, "Event logs", "fad fa-list-timeline"}] do %>
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <i class={"lsb  #{active_link(@lower_tab, tab)} #{icon} lsb-pr-1"}></i>
             <%= label %>
-            <%= event_counter(tab, Enum.count(@event_logs)) %>
+            <%= event_counter(tab, @event_logs_unread) %>
           </a>
         <% end %>
       </nav>
@@ -264,13 +270,11 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
     ~H"""
-    <div id={playground_event_logs_id(@story)} class="lsb lsb-flex lsb-flex-col lsb-mb-8">
-      <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
-        <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
-          <%= for {event_log, index} <- Enum.with_index(@event_logs) do %>
-            <.event_log id={playground_event_log_id(@story, index)} event_log={event_log} />
-          <% end %>
-        </div>
+    <div id={playground_event_logs_id(@story)} class="lsb lsb-flex lsb-flex-col lsb-grow lsb-py-2 lsb-relative">
+      <div class="lsb lsb-absolute lsb-w-full lsb-h-full lsb-max-h-full lsb-overflow-y-scroll lsb-p-2 lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md">
+        <%= for {event_log, index} <- Enum.with_index(@event_logs) do %>
+          <.event_log id={playground_event_log_id(@story, index)} event_log={event_log} />
+        <% end %>
       </div>
     </div>
     """
@@ -373,28 +377,28 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp event_log(assigns) do
     ~H"""
-    <code class="lsb" id={@id}>
-      <div class="lsb-flex lsb-items-center">
-        <span class="lsb-uncollapse lsb-mr-1" phx-click={show_event_details(@id)}>
-          <i class="fad fa-caret-right" />
+    <code class="lsb lsb-text-sm" id={@id}>
+      <div class="lsb-flex lsb-items-center lsb-group lsb-cursor-pointer" phx-click={toggle_event_details(@id)}>
+        <span class="lsb-uncollapse lsb-mr-1 lsb-text-gray-400 group-hover:lsb-font-bold">
+          <i class="fat fa-fw fa-caret-right" />
         </span>
 
-        <span class="lsb-collapse lsb-mr-1 lsb-hidden" phx-click={hide_event_details(@id)}>
-          <i class="fad fa-caret-down" />
+        <span class="lsb-collapse lsb-mr-1 lsb-hidden lsb-text-gray-400 group-hover:lsb-font-bold">
+          <i class="fat fa-fw fa-caret-down" />
         </span>
 
         <div>
-          <span class="lsb-text-gray-500"><%= @event_log.time |> Time.truncate(:second) |> Time.to_iso8601() %> </span>
-          <span class="lsb-text-indigo-600"><%= @event_log.type %> </span>
-          <span class="lsb-text-orange-400 lsb-italic">event: <span class="lsb-text-gray-400"><%= @event_log.event %> </span></span>
+          <span class="lsb-text-gray-400 group-hover:lsb-font-bold"><%= @event_log.time |> Time.truncate(:millisecond) |> Time.to_iso8601() %> </span>
+          <span class="lsb-text-indigo-500 group-hover:lsb-font-bold"><%= @event_log.type %> </span>
+          <span class="lsb-text-orange-500 group-hover:lsb-font-bold">event: <span class="lsb-text-gray-400 group-hover:lsb-font-bold"><%= @event_log.event %> </span></span>
         </div>
       </div>
 
-      <div class="lsb-details lsb-hidden lsb-pl-3">
+      <div class="lsb-details lsb-hidden lsb-pl-4">
         <%= for {key, value} <- Map.from_struct(@event_log) do %>
           <div>
-            <span class="lsb-text-indigo-600"><%= key %>:</span>
-            <span class="lsb-text-gray-500"><%= inspect(value) %></span>
+            <span class="lsb-text-indigo-500"><%= key %>:</span>
+            <span class="lsb-text-gray-400"><%= inspect(value) %></span>
           </div>
         <% end %>
       </div>
@@ -402,18 +406,11 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  defp show_event_details(id) do
+  defp toggle_event_details(id) do
     %JS{}
-    |> JS.hide()
-    |> JS.show(to: "##{id} .lsb-collapse")
-    |> JS.show(to: "##{id} .lsb-details")
-  end
-
-  defp hide_event_details(id) do
-    %JS{}
-    |> JS.hide()
-    |> JS.show(to: "##{id} .lsb-uncollapse")
-    |> JS.hide(to: "##{id} .lsb-details")
+    |> JS.toggle(to: "##{id} .lsb-collapse")
+    |> JS.toggle(to: "##{id} .lsb-uncollapse")
+    |> JS.toggle(to: "##{id} .lsb-details")
   end
 
   defp required_badge(assigns) do
@@ -645,7 +642,14 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   def handle_event("lower-tab-navigation", %{"tab" => tab}, socket) do
-    {:noreply, assign(socket, :lower_tab, String.to_atom(tab))}
+    tab = String.to_atom(tab)
+
+    {:noreply,
+     socket
+     |> assign(:lower_tab, tab)
+     |> update(:event_logs_unread, fn current ->
+       if tab == :events, do: 0, else: current
+     end)}
   end
 
   def handle_event("playground-change", %{"playground" => params}, socket = %{assigns: assigns}) do

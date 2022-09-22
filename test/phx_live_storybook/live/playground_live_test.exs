@@ -223,9 +223,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
         |> render()
 
       assert event_log =~ "<code"
-      assert event_log =~ "<span class=\"lsb-text-indigo-600\">live_view </span>"
-      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
-      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet </span>"
+      assert event_log =~ ~r|<span class=".*">live_view </span>|
+      assert event_log =~ ~r|<span class=".*">event: <span|
+      assert event_log =~ ~r|<span class=".*">greet </span>|
     end
 
     test "it shows component type event log from a live component", %{conn: conn} do
@@ -250,9 +250,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
         |> render()
 
       assert event_log =~ "<code"
-      assert event_log =~ "<span class=\"lsb-text-indigo-600\">component </span>"
-      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
-      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet_self </span>"
+      assert event_log =~ ~r|<span class=".*">component </span>|
+      assert event_log =~ ~r|<span class=".*">event: <span|
+      assert event_log =~ ~r|<span class=".*">greet_self </span>|
     end
 
     test "it shows live_view type event log from a live component", %{conn: conn} do
@@ -277,9 +277,9 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
         |> render()
 
       assert event_log =~ "<code"
-      assert event_log =~ "<span class=\"lsb-text-indigo-600\">live_view </span>"
-      assert event_log =~ "<span class=\"lsb-text-orange-400 lsb-italic\">event: <span"
-      assert event_log =~ "<span class=\"lsb-text-gray-400\">greet_parent </span>"
+      assert event_log =~ ~r|<span class=".*">live_view </span>|
+      assert event_log =~ ~r|<span class=".*">event: <span|
+      assert event_log =~ ~r|<span class=".*">greet_parent </span>|
     end
   end
 
