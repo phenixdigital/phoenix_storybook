@@ -22,6 +22,8 @@
 - feature: provide custom aliases & imports to your stories/templates
   (see this [guide](guides/components.md) for more details).
 - feature: you can provide a `let` attribute to your inner blocks.
+- improvement: stories compilation is lazy in dev environment (and eager in other envs). This
+  behavior can be tweaked with the `:compilation_mode` config key.
 - improvement: storybook playground is now responsive.
 - bugfix: fixed pre-opened folders always reopening themselves after each patch.
 - bugfix: empty inner_block are no longer passed to all components.
