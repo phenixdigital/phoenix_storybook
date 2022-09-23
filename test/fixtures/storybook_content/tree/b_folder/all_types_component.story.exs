@@ -15,9 +15,14 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
       %Attr{id: :toggle, type: :boolean, default: false},
       %Attr{id: :things, type: :list},
       %Attr{id: :struct, type: AllTypesComponent.Struct},
-      %Attr{id: :map, type: :map},
-      %Attr{id: :block, type: :block, doc: "Your inner block", required: true},
-      %Attr{id: :slot_thing, type: :slot, doc: "Some slots"}
+      %Attr{id: :map, type: :map}
+    ]
+  end
+
+  def slots do
+    [
+      %Slot{id: :inner_block, doc: "Your inner block", required: true},
+      %Slot{id: :slot_thing, doc: "Some slots"}
     ]
   end
 
@@ -29,8 +34,8 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
           label: "default label",
           toggle: false
         },
-        block: "<p>will be displayed in inner block</p>",
         slots: [
+          "<p>will be displayed in inner block</p>",
           "<:slot_thing>slot 1</:slot_thing>",
           "<:slot_thing>slot 2</:slot_thing>",
           "<:other_slot>not displayed</:other_slot>"
@@ -42,7 +47,9 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
           label: "foo",
           struct: %AllTypesComponent.Struct{name: "bar"}
         },
-        block: "<p>inner block</p>"
+        slots: [
+          "<p>inner block</p>"
+        ]
       }
     ]
   end

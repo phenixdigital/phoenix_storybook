@@ -7,7 +7,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
 
   def mount(_params, session, socket) do
     story = session["story"]
@@ -55,7 +55,6 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
           %{
             id: variation.id,
             let: variation.let,
-            block: variation.block,
             slots: variation.slots,
             attributes:
               Map.merge(

@@ -29,6 +29,7 @@ defmodule PhxLiveStorybook.Story do
     def description, do: "My component description"
 
     def attributes, do: []
+    def slots, do: []
     def variations, do: []
   end
   ```
@@ -47,6 +48,7 @@ defmodule PhxLiveStorybook.Story do
     def component, do: MyAppWeb.MyLiveComponent
     def description, do: "My live component description"
     def attributes, do: []
+    def slots, do: []
     def variations, do: []
   end
   ```
@@ -82,6 +84,8 @@ defmodule PhxLiveStorybook.Story do
   ```
   """
 
+  alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
+
   defmodule StoryBehaviour do
     @moduledoc false
 
@@ -96,8 +100,9 @@ defmodule PhxLiveStorybook.Story do
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
     @callback container() :: atom()
-    @callback attributes() :: [PhxLiveStorybook.Attr.t()]
-    @callback variations() :: [PhxLiveStorybook.Variation.t()]
+    @callback attributes() :: [Attr.t()]
+    @callback slots() :: [Slot.t()]
+    @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
   end
 
@@ -108,8 +113,9 @@ defmodule PhxLiveStorybook.Story do
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
     @callback container() :: atom()
-    @callback attributes() :: [PhxLiveStorybook.Attr.t()]
-    @callback variations() :: [PhxLiveStorybook.Variation.t()]
+    @callback attributes() :: [Attr.t()]
+    @callback slots() :: [Slot.t()]
+    @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
   end
 
@@ -131,7 +137,7 @@ defmodule PhxLiveStorybook.Story do
       @behaviour StoryBehaviour
       @behaviour unquote(component_behaviour(live?))
 
-      alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
+      alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
       @impl StoryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
@@ -152,6 +158,9 @@ defmodule PhxLiveStorybook.Story do
       def attributes, do: []
 
       @impl unquote(component_behaviour(live?))
+      def slots, do: []
+
+      @impl unquote(component_behaviour(live?))
       def variations, do: []
 
       @impl unquote(component_behaviour(live?))
@@ -161,8 +170,9 @@ defmodule PhxLiveStorybook.Story do
                      imports: 0,
                      aliases: 0,
                      container: 0,
-                     variations: 0,
                      attributes: 0,
+                     slots: 0,
+                     variations: 0,
                      template: 0
     end
   end

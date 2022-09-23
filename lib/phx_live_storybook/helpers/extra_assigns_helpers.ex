@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.ExtraAssignsHelpers do
   @moduledoc false
 
-  alias PhxLiveStorybook.Attr
+  alias PhxLiveStorybook.Stories.Attr
 
   def handle_set_variation_assign(params, extra_assigns, story, mode \\ :nested) do
     context = "assign"

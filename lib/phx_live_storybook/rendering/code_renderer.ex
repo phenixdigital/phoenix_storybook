@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
 
   @doc """
   Renders code snippet of a specific variation for a given component story.
@@ -39,7 +39,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     if TemplateHelpers.code_hidden?(template) do
       render_variation_code(fun_or_mod, s, TemplateHelpers.default_template(), assigns)
     else
-      heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
+      heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.slots, template)
       heex = TemplateHelpers.replace_template_variation(template, heex, _indent = true)
 
       ~H"""
@@ -63,16 +63,14 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         cond do
           TemplateHelpers.variation_template?(template) ->
             Enum.map_join(variations, "\n", fn s ->
-              heex =
-                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
-
+              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.slots, template)
               TemplateHelpers.replace_template_variation(template, heex, _indent = true)
             end)
 
           TemplateHelpers.variation_group_template?(template) ->
             heex =
               Enum.map_join(variations, "\n", fn s ->
-                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.slots, template)
               end)
 
             TemplateHelpers.replace_template_variation_group(template, heex, _indent = true)
@@ -105,8 +103,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         cond do
           TemplateHelpers.variation_template?(template) ->
             Enum.map_join(variations, "\n", fn s ->
-              heex =
-                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
+              heex = component_code_heex(fun_or_mod, s.attributes, s.let, s.slots, template)
 
               TemplateHelpers.replace_template_variation(template, heex, _indent = true)
             end)
@@ -114,7 +111,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
           TemplateHelpers.variation_group_template?(template) ->
             heex =
               Enum.map_join(variations, "\n", fn s ->
-                component_code_heex(fun_or_mod, s.attributes, s.let, s.block, s.slots, template)
+                component_code_heex(fun_or_mod, s.attributes, s.let, s.slots, template)
               end)
 
             TemplateHelpers.replace_template_variation_group(template, heex, _indent = true)
@@ -158,27 +155,24 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     do:
       "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
 
-  defp component_code_heex(function, attributes, let, block, slots, template)
+  defp component_code_heex(function, attributes, let, slots, template)
        when is_function(function) do
     fun = function_name(function)
-    self_closed? = is_nil(block) and Enum.empty?(slots)
+    self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
     #{"<.#{fun}"}#{let_markup(let)}#{template_attributes_markup(template)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
-    #{if block, do: indent_slot(block)}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.#{fun}>"}
     """)
   end
 
-  defp component_code_heex(module, attributes, let, block, slots, template)
-       when is_atom(module) do
+  defp component_code_heex(module, attributes, let, slots, template) when is_atom(module) do
     mod = module_name(module)
-    self_closed? = is_nil(block) and Enum.empty?(slots)
+    self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
     #{"<.live_component module={#{mod}}"}#{let_markup(let)}#{template_attributes_markup(template)}#{attributes_markup(attributes)}#{if self_closed?, do: "/>", else: ">"}
-    #{if block, do: indent_slot(block)}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.live_component>"}
     """)

@@ -5,8 +5,13 @@ defmodule TreeStorybook.AFolder.LiveComponent do
 
   def attributes do
     [
-      %Attr{id: :label, type: :string, required: true},
-      %Attr{id: :block, type: :block}
+      %Attr{id: :label, type: :string, required: true}
+    ]
+  end
+
+  def slots do
+    [
+      %Slot{id: :inner_block}
     ]
   end
 
@@ -19,9 +24,7 @@ defmodule TreeStorybook.AFolder.LiveComponent do
             id: :hello,
             description: "Hello variation",
             attributes: %{label: "hello"},
-            block: """
-            <span>inner block</span>
-            """
+            slots: ["<span>inner block</span>"]
           },
           %Variation{
             id: :world,
@@ -32,9 +35,7 @@ defmodule TreeStorybook.AFolder.LiveComponent do
       %Variation{
         id: :default,
         attributes: %{label: "hello"},
-        block: """
-        <span>inner block</span>
-        """
+        slots: ["<span>inner block</span>"]
       }
     ]
   end

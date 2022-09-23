@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.Variation do
+defmodule PhxLiveStorybook.Stories.Variation do
   @moduledoc """
   A varaiation captures the rendered state of a UI component. Developers write multiple variations
   per component that describe all the “interesting” states a component can support.
@@ -28,10 +28,10 @@ defmodule PhxLiveStorybook.Variation do
   """
 
   @enforce_keys [:id]
-  defstruct [:id, :description, :let, :block, slots: [], attributes: %{}, template: :unset]
+  defstruct [:id, :description, :let, slots: [], attributes: %{}, template: :unset]
 end
 
-defmodule PhxLiveStorybook.VariationGroup do
+defmodule PhxLiveStorybook.Stories.VariationGroup do
   @moduledoc """
   A variation group is a set of similar variations that will be rendered together in a single
   preview <pre> block.

@@ -1,8 +1,8 @@
-defmodule PhxLiveStorybook.IndexValidatorTest do
+defmodule PhxLiveStorybook.Stories.IndexValidatorTest do
   use ExUnit.Case, async: true
 
   setup do
-    [path: Path.expand("../fixtures/indexes", __DIR__)]
+    [path: Path.expand("../../fixtures/indexes", __DIR__)]
   end
 
   test "with valid index it wont raise", %{path: path} do

@@ -7,7 +7,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
 
   @doc """
   Renders a specific variation for a given component story.
@@ -49,7 +49,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
         fun_or_mod,
         Map.merge(variation.attributes, extra_assigns),
         variation.let,
-        variation.block,
         variation.slots,
         opts[:playground_topic]
       )
@@ -79,7 +78,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
               fun_or_mod,
               Map.merge(variation.attributes, extra_assigns),
               variation.let,
-              variation.block,
               variation.slots,
               opts[:playground_topic]
             )
@@ -104,7 +102,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
                 fun_or_mod,
                 Map.merge(variation.attributes, extra_assigns),
                 variation.let,
-                variation.block,
                 variation.slots,
                 extra_attributes
               )
@@ -139,7 +136,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
               fun_or_mod,
               variation.attributes,
               variation.let,
-              variation.block,
               variation.slots,
               opts[:playground_topic]
             )
@@ -159,7 +155,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
                 fun_or_mod,
                 variation.attributes,
                 variation.let,
-                variation.block,
                 variation.slots,
                 extra_attributes
               )
@@ -176,33 +171,29 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     render_component_heex(fun_or_mod, heex, opts)
   end
 
-  defp component_heex(fun, assigns, _let, nil, [], extra_attrs) when is_function(fun) do
+  defp component_heex(fun, assigns, _let, [], extra_attrs) when is_function(fun) do
     """
     <.#{function_name(fun)} #{attributes_markup(assigns)} #{extra_attrs}/>
     """
   end
 
-  defp component_heex(fun, assigns, let, block, slots, extra_attrs)
-       when is_function(fun) do
+  defp component_heex(fun, assigns, let, slots, extra_attrs) when is_function(fun) do
     """
     <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup(assigns)} #{extra_attrs}>
-      #{block}
       #{slots}
     </.#{function_name(fun)}>
     """
   end
 
-  defp component_heex(module, assigns, _let, nil, [], extra_attrs) when is_atom(module) do
+  defp component_heex(module, assigns, _let, [], extra_attrs) when is_atom(module) do
     """
     <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)} #{extra_attrs}/>
     """
   end
 
-  defp component_heex(module, assigns, let, block, slots, extra_attrs)
-       when is_atom(module) do
+  defp component_heex(module, assigns, let, slots, extra_attrs) when is_atom(module) do
     """
     <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup(assigns)} #{extra_attrs}>
-      #{block}
       #{slots}
     </.live_component>
     """
@@ -214,7 +205,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
          fun_or_mod,
          assigns,
          let,
-         block,
          slots,
          playground_topic
        ) do
@@ -223,7 +213,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     template
     |> TemplateHelpers.set_variation_id(variation_id)
     |> TemplateHelpers.replace_template_variation(
-      component_heex(fun_or_mod, assigns, let, block, slots, extra_attributes)
+      component_heex(fun_or_mod, assigns, let, slots, extra_attributes)
     )
   end
 

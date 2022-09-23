@@ -44,10 +44,12 @@ defmodule NestedComponent do
     [
       %Variation{
         id: :default,
-        block: """
-        <.nested phx-click={JSHelpers.toggle()}>hello</.nested>
-        <.nested phx-click={JSHelpers.toggle()}>world</.nested>
-        """
+        slots: [
+          """
+          <.nested phx-click={JSHelpers.toggle()}>hello</.nested>
+          <.nested phx-click={JSHelpers.toggle()}>world</.nested>
+          """
+        ]
       }
     ]
   end
@@ -57,7 +59,7 @@ end
 ## Templates
 
 You may want to render your components within some wrapping markup. For instance, when your
-component can only be used as a block or slot of another wrapping component.
+component can only be used as a slot of another enclosing component.
 
 Some components, such as _modals_, _slideovers_, and _notifications_, are not visible from the
 start: they first need user interaction. Such components can be accompanied by an outer template,
@@ -208,15 +210,12 @@ You can choose to render only the variation markup, without its surrounding temp
 
 ## Block, slots & let
 
-Liveview let you define inner blocks in your components, which are either named `slots` or the
-default `inner block`.
-
-They can be passed in your variations with the `:block` and `:slots` keys :
+Liveview let you define blocks of HEEx content in your components, referred to as as slots.
+They can be passed in your variations with the `:slots` keys :
 
 ```elixir
 %Variation{
   id: :modal,
-  block: "<p>My modal body</p>",
   slots: [
     """
     <:button>
@@ -241,7 +240,9 @@ your variation.
   id: :list,
   attributes: %{stories: ~w(apple banana cherry)},
   let: :entry,
-  block: "I like <%= entry %>"
+  slots: [
+    "I like <%= entry %>"
+  ]
 }
 ```
 

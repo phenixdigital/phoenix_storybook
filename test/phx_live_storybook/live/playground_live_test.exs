@@ -24,6 +24,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
+      wait_for_preview_lv(view)
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
 
@@ -388,7 +389,11 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       wait_for_lv(view)
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
       playground_preview_view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
+
+      wait_for_lv(view)
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
+
+      wait_for_preview_lv(view)
       assert render(playground_element) =~ "template_component: bar / status: true"
       refute render(playground_element) =~ "template_component: bar / status: false"
     end

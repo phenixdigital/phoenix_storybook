@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.EventLog do
+defmodule PhxLiveStorybook.Events.EventLog do
   @moduledoc """
   Data structure for event logs displayed in each story's playground
   """

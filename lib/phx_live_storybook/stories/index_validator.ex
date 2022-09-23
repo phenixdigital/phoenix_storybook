@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.IndexValidator do
+defmodule PhxLiveStorybook.Stories.IndexValidator do
   @moduledoc false
 
   import PhxLiveStorybook.ValidationHelpers

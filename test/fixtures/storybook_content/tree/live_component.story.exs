@@ -15,9 +15,7 @@ defmodule TreeStorybook.LiveComponent do
       %Variation{
         id: :world,
         attributes: %{label: "world"},
-        block: """
-        <span>inner block</span>
-        """
+        slots: ["<span>inner block</span>"]
       }
     ]
   end

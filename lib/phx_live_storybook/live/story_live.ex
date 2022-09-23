@@ -4,13 +4,13 @@ defmodule PhxLiveStorybook.StoryLive do
   alias Phoenix.HTML.Safe
   alias Phoenix.{LiveView.JS, PubSub}
 
-  alias PhxLiveStorybook.ExtraAssignsHelpers
-  alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
-  alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
-  alias PhxLiveStorybook.{EventLog, Variation, VariationGroup}
+  alias PhxLiveStorybook.Events.EventLog
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
+  alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
 
   import PhxLiveStorybook.NavigationHelpers
 

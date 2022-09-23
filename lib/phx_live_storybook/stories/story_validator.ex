@@ -1,7 +1,7 @@
-defmodule PhxLiveStorybook.StoryValidator do
+defmodule PhxLiveStorybook.Stories.StoryValidator do
   @moduledoc false
 
-  alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   import PhxLiveStorybook.ValidationHelpers
   require Logger
 
@@ -41,7 +41,7 @@ defmodule PhxLiveStorybook.StoryValidator do
 
   defp validate_component!(story) do
     file_path = story.__info__(:compile)[:source]
-    {attributes, variations} = {story.attributes(), story.variations()}
+    {attributes, slots, variations} = {story.attributes(), story.slots(), story.variations()}
     validate_story_description!(file_path, story)
     validate_story_component!(file_path, story)
     validate_component_function!(file_path, story)
@@ -49,15 +49,18 @@ defmodule PhxLiveStorybook.StoryValidator do
     validate_component_imports!(file_path, story)
     validate_component_container!(file_path, story)
     validate_component_template!(file_path, story)
-    validate_attribute_list_type!(file_path, story)
+    validate_attribute_list_type!(file_path, attributes)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
     validate_attribute_doc!(file_path, attributes)
     validate_attribute_default_types!(file_path, attributes)
-    validate_attribute_required_type!(file_path, attributes)
+    validate_attribute_required!(file_path, attributes)
     validate_attribute_default_or_required!(file_path, attributes)
     validate_attribute_values(file_path, attributes)
-    validate_attribute_block_unicity!(file_path, attributes)
+    validate_slot_list_type!(file_path, slots)
+    validate_slot_ids!(file_path, slots)
+    validate_slot_doc!(file_path, slots)
+    validate_slot_required!(file_path, slots)
     validate_variation_list_type!(file_path, variations)
     validate_variation_in_group_list_type!(file_path, variations)
     validate_variation_ids!(file_path, variations)
@@ -71,8 +74,7 @@ defmodule PhxLiveStorybook.StoryValidator do
     validate_variation_attribute_types!(file_path, attributes, variations)
     validate_variation_attribute_values(file_path, attributes, variations)
     validate_variation_required_attributes!(file_path, attributes, variations)
-    validate_variation_required_block!(file_path, attributes, variations)
-    validate_variation_required_slots!(file_path, attributes, variations)
+    validate_variation_required_slots!(file_path, slots, variations)
     validate_variation_template!(file_path, variations)
     validate_variation_in_group_template!(file_path, variations)
     story
@@ -149,10 +151,10 @@ defmodule PhxLiveStorybook.StoryValidator do
     validate_type!(file_path, story.template, :string, "story template must be a binary")
   end
 
-  defp validate_attribute_list_type!(file_path, story) do
+  defp validate_attribute_list_type!(file_path, attributes) do
     msg = "story attributes must be a list of %Attr{}"
-    validate_type!(file_path, story.attributes, :list, msg)
-    for attr <- story.attributes, do: validate_type!(file_path, attr, Attr, msg)
+    validate_type!(file_path, attributes, :list, msg)
+    for attr <- attributes, do: validate_type!(file_path, attr, Attr, msg)
   end
 
   defp validate_attribute_ids!(file_path, attributes) do
@@ -172,7 +174,7 @@ defmodule PhxLiveStorybook.StoryValidator do
     end)
   end
 
-  @builtin_types [:string, :atom, :boolean, :integer, :float, :list, :map, :block, :slot]
+  @builtin_types [:string, :atom, :boolean, :integer, :float, :list, :map]
   defp validate_attribute_types!(file_path, attributes) do
     for %Attr{id: attr_id, type: type} <- attributes do
       cond do
@@ -226,7 +228,7 @@ defmodule PhxLiveStorybook.StoryValidator do
     end
   end
 
-  defp validate_attribute_required_type!(file_path, attributes) do
+  defp validate_attribute_required!(file_path, attributes) do
     for %Attr{id: attr_id, required: required} <- attributes do
       validate_type!(
         file_path,
@@ -271,9 +273,48 @@ defmodule PhxLiveStorybook.StoryValidator do
     end
   end
 
-  defp validate_attribute_block_unicity!(file_path, attributes) do
-    if Enum.count(attributes, &(&1.type == :block)) > 1 do
-      compile_error!(file_path, "at most a single block attribute can be declared")
+  defp validate_slot_list_type!(file_path, slots) do
+    msg = "story slots must be a list of %Slot{}"
+    validate_type!(file_path, slots, :list, msg)
+    for slot <- slots, do: validate_type!(file_path, slot, Slot, msg)
+  end
+
+  defp validate_slot_ids!(file_path, slots) do
+    Enum.reduce(slots, MapSet.new(), fn %Slot{id: slot_id}, acc ->
+      validate_type!(
+        file_path,
+        slot_id,
+        :atom,
+        "id for slot #{inspect(slot_id)} must be an atom"
+      )
+
+      if MapSet.member?(acc, slot_id) do
+        compile_error!(file_path, "duplicate slot id: #{inspect(slot_id)}")
+      else
+        MapSet.put(acc, slot_id)
+      end
+    end)
+  end
+
+  defp validate_slot_doc!(file_path, slots) do
+    for %Slot{id: slot_id, doc: doc} <- slots do
+      validate_type!(
+        file_path,
+        doc,
+        :string,
+        "doc for slot #{inspect(slot_id)} is not a binary"
+      )
+    end
+  end
+
+  defp validate_slot_required!(file_path, slots) do
+    for %Slot{id: slot_id, required: required} <- slots do
+      validate_type!(
+        file_path,
+        required,
+        :boolean,
+        "required for slot #{inspect(slot_id)} must be of type :boolean"
+      )
     end
   end
 
@@ -388,7 +429,7 @@ defmodule PhxLiveStorybook.StoryValidator do
   defp validate_variation_attribute_types!(file_path, attributes, variations) do
     attr_types = for %Attr{id: attr_id, type: type} <- attributes, into: %{}, do: {attr_id, type}
 
-    for %Variation{id: variation_id, attributes: attributes, block: block, slots: slots} <-
+    for %Variation{id: variation_id, attributes: attributes, slots: slots} <-
           variations do
       for {attr_id, attr_value} <- attributes do
         case Map.get(attr_types, attr_id) do
@@ -408,18 +449,10 @@ defmodule PhxLiveStorybook.StoryValidator do
       msg = "slots in variation #{inspect(variation_id)} must be a list of binary"
       validate_type!(file_path, slots, :list, msg)
       for slot <- slots, do: validate_type!(file_path, slot, :string, msg)
-
-      validate_type!(
-        file_path,
-        block,
-        :block,
-        "block in variation #{inspect(variation_id)} must be a binary"
-      )
     end
 
     for %VariationGroup{id: group_id, variations: variations} <- variations,
-        %Variation{id: variation_id, attributes: attributes, block: block, slots: slots} <-
-          variations do
+        %Variation{id: variation_id, attributes: attributes, slots: slots} <- variations do
       for {attr_id, attr_value} <- attributes do
         case Map.get(attr_types, attr_id) do
           nil ->
@@ -440,13 +473,6 @@ defmodule PhxLiveStorybook.StoryValidator do
 
       validate_type!(file_path, slots, :list, msg)
       for slot <- slots, do: validate_type!(file_path, slot, :string, msg)
-
-      validate_type!(
-        file_path,
-        block,
-        :block,
-        "block in variation #{inspect(variation_id)}, group #{inspect(group_id)} must be a binary"
-      )
     end
   end
 
@@ -495,10 +521,7 @@ defmodule PhxLiveStorybook.StoryValidator do
 
   defp validate_variation_required_attributes!(file_path, attributes, variations) do
     required_attributes =
-      for %Attr{id: attr_id, type: type, required: true} <- attributes,
-          type not in [:slot, :block],
-          into: MapSet.new(),
-          do: attr_id
+      for %Attr{id: attr_id, required: true} <- attributes, into: MapSet.new(), do: attr_id
 
     for %Variation{id: variation_id, attributes: attributes} <- variations,
         attributes_keys = Map.keys(attributes) do
@@ -526,36 +549,8 @@ defmodule PhxLiveStorybook.StoryValidator do
     end
   end
 
-  defp validate_variation_required_block!(file_path, attributes, variations) do
-    has_required_block? = Enum.any?(attributes, &(&1.type == :block && &1.required))
-
-    if has_required_block? do
-      for variation = %Variation{id: variation_id} <- variations do
-        unless variation.block do
-          compile_error!(
-            file_path,
-            "required block missing from variation #{inspect(variation_id)}"
-          )
-        end
-      end
-
-      for %VariationGroup{id: group_id, variations: variations} <- variations,
-          variation = %Variation{id: variation_id} <- variations do
-        unless variation.block do
-          compile_error!(
-            file_path,
-            "required block missing from variation #{inspect(variation_id)}, group #{inspect(group_id)}"
-          )
-        end
-      end
-    end
-  end
-
-  defp validate_variation_required_slots!(file_path, attributes, variations) do
-    required_slots =
-      for %Attr{id: attr_id, type: :slot, required: true} <- attributes,
-          into: MapSet.new(),
-          do: attr_id
+  defp validate_variation_required_slots!(file_path, slots, variations) do
+    required_slots = for %Slot{id: id, required: true} <- slots, into: MapSet.new(), do: id
 
     for %Variation{id: variation_id, slots: slots} <- variations do
       for required_slot <- required_slots do
@@ -613,6 +608,10 @@ defmodule PhxLiveStorybook.StoryValidator do
         )
       end
     end
+  end
+
+  defp matching_slot?(:inner_block, slot) do
+    not Regex.match?(~r|<:\w+.*|s, slot)
   end
 
   defp matching_slot?(slot_id, slot) do

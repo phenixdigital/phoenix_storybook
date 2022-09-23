@@ -8,7 +8,7 @@ defmodule TreeStorybook.Let.LetComponent do
         id: :default,
         attributes: %{stories: ~w(foo bar qix)},
         let: :entry,
-        block: "**<%= entry %>**"
+        slots: ["**<%= entry %>**"]
       }
     ]
   end

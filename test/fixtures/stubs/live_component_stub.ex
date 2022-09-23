@@ -26,6 +26,9 @@ defmodule PhxLiveStorybook.LiveComponentStub do
   def attributes, do: []
 
   @impl LiveComponentBehaviour
+  def slots, do: []
+
+  @impl LiveComponentBehaviour
   def variations, do: []
 
   @impl LiveComponentBehaviour

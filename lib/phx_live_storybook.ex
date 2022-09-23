@@ -48,7 +48,7 @@ defmodule PhxLiveStorybook do
 
   alias PhxLiveStorybook.Entries
   alias PhxLiveStorybook.ExsCompiler
-  alias PhxLiveStorybook.StoryValidator
+  alias PhxLiveStorybook.Stories.StoryValidator
 
   require Logger
 
