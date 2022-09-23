@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.Attr
+  alias PhxLiveStorybook.Stories.Attr
   alias PhxLiveStorybook.Story.{ComponentBehaviour, StoryBehaviour}
   import PhxLiveStorybook.ExtraAssignsHelpers
 

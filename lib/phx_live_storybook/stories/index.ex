@@ -42,7 +42,7 @@ defmodule PhxLiveStorybook.Index do
     quote do
       @behaviour IndexBehaviour
 
-      @on_definition {PhxLiveStorybook.IndexValidator, :on_definition}
+      @on_definition {PhxLiveStorybook.Stories.IndexValidator, :on_definition}
 
       @impl IndexBehaviour
       def folder_name, do: nil

@@ -2,7 +2,7 @@ defmodule PhxLiveStorybook.Application do
   @moduledoc false
 
   use Application
-  alias PhxLiveStorybook.Instrumenter
+  alias PhxLiveStorybook.Events.Instrumenter
 
   @impl true
   def start(_type, _args) do

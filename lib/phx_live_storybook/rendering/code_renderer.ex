@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
 
   @doc """
   Renders code snippet of a specific variation for a given component story.

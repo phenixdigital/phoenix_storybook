@@ -1,7 +1,7 @@
-defmodule PhxLiveStorybook.StoryValidator do
+defmodule PhxLiveStorybook.Stories.StoryValidator do
   @moduledoc false
 
-  alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Attr, Variation, VariationGroup}
   import PhxLiveStorybook.ValidationHelpers
   require Logger
 

@@ -1,4 +1,4 @@
-defmodule PhxLiveStorybook.Attr do
+defmodule PhxLiveStorybook.Stories.Attr do
   @moduledoc """
   An attr is one of your component attributes. Its structure mimics the
   upcoming LiveView 0.18.0 declarative assigns.

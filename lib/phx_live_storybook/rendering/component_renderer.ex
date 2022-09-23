@@ -7,7 +7,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
 
   @doc """
   Renders a specific variation for a given component story.

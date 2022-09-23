@@ -3,11 +3,10 @@ defmodule PhxLiveStorybook.Story.Playground do
   use PhxLiveStorybook.Web, :live_component
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhxLiveStorybook.Attr
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.{Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Attr, Variation, VariationGroup}
 
   import PhxLiveStorybook.NavigationHelpers
 

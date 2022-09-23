@@ -24,6 +24,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
+      wait_for_preview_lv(view)
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
 

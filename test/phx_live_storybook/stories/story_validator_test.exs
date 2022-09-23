@@ -1,11 +1,11 @@
-defmodule PhxLiveStorybook.StoryValidatorTest do
+defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
   use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.Story.{ComponentBehaviour, LiveComponentBehaviour, PageBehaviour}
   alias PhxLiveStorybook.Story.StoryBehaviour
-  alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
   alias PhxLiveStorybook.{ComponentStub, LiveComponentStub, PageStub}
-  alias PhxLiveStorybook.StoryValidator
+  alias PhxLiveStorybook.Stories.{Attr, Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.StoryValidator
 
   defmodule MyModuleStruct, do: defstruct([])
 

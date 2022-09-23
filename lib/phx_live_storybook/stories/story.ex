@@ -131,7 +131,7 @@ defmodule PhxLiveStorybook.Story do
       @behaviour StoryBehaviour
       @behaviour unquote(component_behaviour(live?))
 
-      alias PhxLiveStorybook.{Attr, Variation, VariationGroup}
+      alias PhxLiveStorybook.Stories.{Attr, Variation, VariationGroup}
 
       @impl StoryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
