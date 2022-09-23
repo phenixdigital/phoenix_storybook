@@ -286,6 +286,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   describe "component preview crash handling" do
     test "an error message is displayed when component crashes", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
+      wait_for_lv(view)
       Process.flag(:trap_exit, true)
 
       view
@@ -294,8 +295,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       })
       |> render_change()
 
-      :sys.get_state(view.pid)
-
+      wait_for_lv(view)
       assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}, 200
     end
   end
@@ -385,6 +385,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: true"
       assert render(playground_element) =~ "template_component: bar / status: false"
 
+      wait_for_lv(view)
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
       playground_preview_view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
