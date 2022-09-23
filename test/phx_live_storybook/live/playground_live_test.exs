@@ -386,9 +386,14 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: true"
       assert render(playground_element) =~ "template_component: bar / status: false"
 
+      wait_for_lv(view)
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
       playground_preview_view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
+
+      wait_for_lv(view)
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()
+
+      wait_for_preview_lv(view)
       assert render(playground_element) =~ "template_component: bar / status: true"
       refute render(playground_element) =~ "template_component: bar / status: false"
     end
