@@ -11,10 +11,12 @@ defmodule TreeStorybook.BFolder.NestedComponent do
     [
       %Variation{
         id: :default,
-        block: """
-        <.nested>hello</.nested>
-        <.nested>world</.nested>
-        """
+        slots: [
+          """
+          <.nested>hello</.nested>
+          <.nested>world</.nested>
+          """
+        ]
       }
     ]
   end

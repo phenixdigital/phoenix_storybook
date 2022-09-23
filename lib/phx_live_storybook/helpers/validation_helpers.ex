@@ -20,7 +20,6 @@ defmodule PhxLiveStorybook.ValidationHelpers do
   def match_attr_type?(term, :list) when is_list(term), do: true
   def match_attr_type?(_min.._max, :range), do: true
   def match_attr_type?(term, :map) when is_map(term), do: true
-  def match_attr_type?(term, :block) when is_binary(term), do: true
   def match_attr_type?(term, :slot) when is_binary(term), do: true
   def match_attr_type?(term, :function) when is_function(term), do: true
   def match_attr_type?(term, struct) when is_struct(term, struct), do: true

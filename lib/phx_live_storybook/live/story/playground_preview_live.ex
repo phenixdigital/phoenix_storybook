@@ -55,7 +55,6 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
           %{
             id: variation.id,
             let: variation.let,
-            block: variation.block,
             slots: variation.slots,
             attributes:
               Map.merge(

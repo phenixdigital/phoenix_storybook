@@ -12,6 +12,8 @@
   `storybook_assets/1` to your router in a non CSRF-protected scope.
 - change (breaking!): attr `options` have been renamed to `examples`. A new `values` key is also
   available to enforce variation attribute values.
+- change (breaking!): slots & block are no longer attributes. Define instead a `slots/0` function
+  returning a list of `%Slot{}`.
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: new event log. In the playground, you can now track all events emitted by components.
 - feature: theming. You can declare different themes in the application settings. The selected

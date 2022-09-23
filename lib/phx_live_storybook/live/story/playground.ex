@@ -6,7 +6,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   alias PhxLiveStorybook.Rendering.CodeRenderer
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.Stories.{Attr, Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
   import PhxLiveStorybook.NavigationHelpers
 
@@ -32,7 +32,6 @@ defmodule PhxLiveStorybook.Story.Playground do
      |> assign_new_variations_attributes(assigns)
      |> assign_new_template_attributes(assigns)
      |> assign_playground_fields()
-     |> assign_playground_block()
      |> assign_playground_slots()
      |> assign_new(:upper_tab, fn -> :preview end)
      |> assign_new(:lower_tab, fn -> :attributes end)}
@@ -60,7 +59,7 @@ defmodule PhxLiveStorybook.Story.Playground do
             :single -> variation.id
           end
 
-        variation |> Map.take([:attributes, :let, :block, :slots, :template]) |> Map.put(:id, id)
+        variation |> Map.take([:attributes, :let, :slots, :template]) |> Map.put(:id, id)
       end
 
     assign(socket, variation_id: id, variations: variations)
@@ -102,7 +101,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp assign_playground_fields(socket = %{assigns: %{story: story, variations: variations}}) do
     fields =
-      for attr = %Attr{type: t} <- story.attributes(), t not in ~w(block slot)a, reduce: %{} do
+      for attr = %Attr{} <- story.attributes(), reduce: %{} do
         acc ->
           attr_examples = for %{attributes: attrs} <- variations, do: Map.get(attrs, attr.id)
 
@@ -119,26 +118,13 @@ defmodule PhxLiveStorybook.Story.Playground do
     assign(socket, :fields, fields)
   end
 
-  defp assign_playground_block(socket = %{assigns: %{variations: variations}}) do
-    blocks = for variation <- variations, do: variation.block
-
-    block =
-      if blocks |> Enum.uniq() |> length() == 1 do
-        hd(blocks)
-      else
-        :locked
-      end
-
-    assign(socket, :block, block)
-  end
-
   defp assign_playground_slots(socket = %{assigns: %{story: story, variations: variations}}) do
     slots =
-      for %Attr{type: :slot, id: attr_id} <- story.attributes(), reduce: %{} do
+      for %Slot{id: slot_id} <- story.slots(), reduce: %{} do
         acc ->
           slots =
             for variation <- variations do
-              for(slot <- variation.slots, String.match?(slot, ~r/^<:#{attr_id}[>\s]/), do: slot)
+              for(slot <- variation.slots, matching_slot?(slot_id, slot), do: slot)
               |> Enum.map_join("\n", &String.trim/1)
               |> String.trim()
             end
@@ -150,10 +136,18 @@ defmodule PhxLiveStorybook.Story.Playground do
               :locked
             end
 
-          Map.put(acc, attr_id, slot)
+          Map.put(acc, slot_id, slot)
       end
 
     assign(socket, :slots, slots)
+  end
+
+  defp matching_slot?(:inner_block, slot) do
+    not Regex.match?(~r|<:\w+.*|s, slot)
+  end
+
+  defp matching_slot?(slot_id, slot) do
+    Regex.match?(~r|<:#{slot_id}.*</:#{slot_id}>|s, slot)
   end
 
   def render(assigns) do
@@ -305,7 +299,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                     </td>
                   </tr>
                   <% else %>
-                    <%= for attr <- @story.attributes(), attr.type not in [:block, :slot] do %>
+                    <%= for attr <- @story.attributes() do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if attr.required do %>
@@ -331,26 +325,26 @@ defmodule PhxLiveStorybook.Story.Playground do
                         </td>
                       </tr>
                     <% end %>
-                    <%= for attr <- @story.attributes(), attr.type in [:block, :slot] do %>
+                    <%= for slot <- @story.slots() do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
-                          <%= if attr.required do %>
+                          <%= if slot.required do %>
                             <.required_badge/>
                           <% end %>
-                          <%= attr.id %>
-                          <%= if attr.required do %>
+                          <%= slot.id %>
+                          <%= if slot.required do %>
                             <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
                           <% end %>
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500">
-                          <.type_badge type={attr.type}/>
+                          <.type_badge type={:slot}/>
                         </td>
-                        <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                        <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if slot.doc, do: String.trim(slot.doc) %></td>
                       </tr>
-                      <%= if block_or_slot?(assigns, attr) do %>
+                      <%= if slot?(assigns, slot) do %>
                         <tr class="lsb !lsb-border-t-0">
                           <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
-                            <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= block_or_slot(assigns, attr) %></pre>
+                            <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= slot(assigns, slot) %></pre>
                           </td>
                         </tr>
                       <% end %>
@@ -423,15 +417,7 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  def block_or_slot?(assigns, _attr = %{type: :block}) do
-    case assigns.block do
-      nil -> false
-      "" -> false
-      _ -> true
-    end
-  end
-
-  def block_or_slot?(assigns, _attr = %{type: :slot, id: slot_id}) do
+  def slot?(assigns, _slot = %{id: slot_id}) do
     case Map.get(assigns.slots, slot_id) do
       nil -> false
       "" -> false
@@ -439,14 +425,7 @@ defmodule PhxLiveStorybook.Story.Playground do
     end
   end
 
-  def block_or_slot(assigns, _attr = %{type: :block}) do
-    case assigns.block do
-      :locked -> "[Multiple values]"
-      block -> block
-    end
-  end
-
-  def block_or_slot(assigns, _attr = %{type: :slot, id: slot_id}) do
+  def slot(assigns, _slot = %{id: slot_id}) do
     case Map.get(assigns.slots, slot_id) do
       :locked -> "[Multiple values]"
       slot -> slot
@@ -523,12 +502,6 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :list}) do
     ~H"""
     <span class={"lsb-bg-purple-100 lsb-text-purple-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
-    """
-  end
-
-  defp type_badge(assigns = %{type: :block}) do
-    ~H"""
-    <span class={"lsb-bg-pink-100 lsb-text-pink-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 

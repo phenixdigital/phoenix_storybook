@@ -4,7 +4,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
   alias PhxLiveStorybook.Story.{ComponentBehaviour, LiveComponentBehaviour, PageBehaviour}
   alias PhxLiveStorybook.Story.StoryBehaviour
   alias PhxLiveStorybook.{ComponentStub, LiveComponentStub, PageStub}
-  alias PhxLiveStorybook.Stories.{Attr, Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhxLiveStorybook.Stories.StoryValidator
 
   defmodule MyModuleStruct, do: defstruct([])
@@ -263,7 +263,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       mock = component_stub(attributes: [%Attr{id: "foo", type: :string}])
 
       e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "id for attribute \"foo\" must be an atom"
+      assert e.description =~ ~s|id for attribute "foo" must be an atom|
     end
 
     test "unique attribute ids wont raise" do
@@ -305,9 +305,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
             %Attr{id: :boolean, type: :boolean},
             %Attr{id: :integer, type: :integer},
             %Attr{id: :float, type: :float},
-            %Attr{id: :list, type: :list},
-            %Attr{id: :block, type: :block},
-            %Attr{id: :slot, type: :slot}
+            %Attr{id: :list, type: :list}
           ]
         )
 
@@ -377,12 +375,6 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       assert validate!(mock)
 
       mock = component_stub_with_attr(type: :any, default: 12.0)
-      assert validate!(mock)
-
-      mock = component_stub_with_attr(type: :block, default: "<block/>")
-      assert validate!(mock)
-
-      mock = component_stub_with_attr(type: :slot, default: "<:slot/>")
       assert validate!(mock)
 
       mock = component_stub_with_attr(type: MyModuleStruct, default: %MyModuleStruct{})
@@ -522,23 +514,92 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     end
   end
 
-  describe "attribute block unicity" do
-    test "with a single block it wont raise" do
-      mock = component_stub_with_attr(id: :block, type: :block)
+  describe "story slots are list of Slot" do
+    test "with proper slot type it wont raise" do
+      mock = component_stub(slots: [%Slot{id: :foo}])
       assert validate!(mock)
     end
 
-    test "with two blocks it will raise" do
+    test "with empty list it wont raise" do
+      mock = component_stub(slots: [])
+      assert validate!(mock)
+    end
+
+    test "with invalid type it will raise" do
+      mock = component_stub(slots: [:foo])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "story slots must be a list of %Slot{}"
+    end
+  end
+
+  describe "slot ids" do
+    test "atom id wont raise" do
+      mock = component_stub(slots: [%Slot{id: :foo}])
+      assert validate!(mock)
+    end
+
+    test "invalid id will raise" do
+      mock = component_stub(slots: [%Slot{id: "foo"}])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ ~s|id for slot "foo" must be an atom|
+    end
+
+    test "unique slot ids wont raise" do
       mock =
         component_stub(
-          attributes: [
-            %Attr{id: :block_1, type: :block},
-            %Attr{id: :block_2, type: :block}
+          slots: [
+            %Slot{id: :inner_block},
+            %Slot{id: :foo},
+            %Slot{id: :bar}
+          ]
+        )
+
+      assert validate!(mock)
+    end
+
+    test "duplicate slot ids will raise" do
+      mock =
+        component_stub(
+          slots: [
+            %Slot{id: :inner_block},
+            %Slot{id: :foo},
+            %Slot{id: :foo}
           ]
         )
 
       e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "at most a single block attribute can be declared"
+      assert e.description =~ "duplicate slot id: :foo"
+    end
+  end
+
+  describe "slot doc" do
+    test "nil doc wont raise" do
+      mock = component_stub_with_slot(id: :slot, doc: nil)
+      assert validate!(mock)
+    end
+
+    test "binary doc wont raise" do
+      mock = component_stub_with_slot(id: :slot, doc: "some documentation")
+      assert validate!(mock)
+    end
+
+    test "invalid doc will raise" do
+      mock = component_stub_with_slot(id: :foo, doc: 'wrong_doc')
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "doc for slot :foo is not a binary"
+    end
+  end
+
+  describe "slot required must be a boolean" do
+    test "with required true, it wont raise" do
+      mock = component_stub_with_slot(id: :slot, required: true)
+      assert validate!(mock)
+    end
+
+    test "with required 'true', it will raise" do
+      mock = component_stub_with_slot(id: :slot, required: 'true')
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "required for slot :slot must be of type :boolean"
     end
   end
 
@@ -874,17 +935,6 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       assert validate!(mock)
     end
 
-    test "variation with invalid block type will raise" do
-      mock =
-        component_stub(
-          attributes: [%Attr{id: :block, type: :block}],
-          variations: [%Variation{id: :variation, block: :not_a_block}]
-        )
-
-      e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "block in variation :variation must be a binary"
-    end
-
     test "variation with invalid slot type will raise" do
       mock = component_stub(variations: [%Variation{id: :variation, slots: [:not_a_slot]}])
 
@@ -935,43 +985,21 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       assert e.description =~ "required attribute :bar missing from variation :foo, group :group"
     end
 
-    test "variation with required block wont raise" do
+    test "variation with required slot wont raise" do
       mock =
         component_stub(
-          attributes: [%Attr{id: :block, type: :block, required: true}],
-          variations: [%Variation{id: :foo, block: "provided"}]
+          slots: [%Slot{id: :slot, required: true}],
+          variations: [%Variation{id: :foo, slots: ["<:slot>provided</:slot>"]}]
         )
 
       assert validate!(mock)
     end
 
-    test "variation without required block will raise" do
+    test "variation with required default slot wont raise" do
       mock =
         component_stub(
-          attributes: [%Attr{id: :block, type: :block, required: true}],
-          variations: [%Variation{id: :foo}]
-        )
-
-      e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "required block missing from variation :foo"
-    end
-
-    test "nested variation without required block will raise" do
-      mock =
-        component_stub(
-          attributes: [%Attr{id: :block, type: :block, required: true}],
-          variations: [%VariationGroup{id: :group, variations: [%Variation{id: :foo}]}]
-        )
-
-      e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "required block missing from variation :foo, group :group"
-    end
-
-    test "variation with required slot wont raise" do
-      mock =
-        component_stub(
-          attributes: [%Attr{id: :slot, type: :slot, required: true}],
-          variations: [%Variation{id: :foo, slots: ["<:slot>provided</:slot>"]}]
+          slots: [%Slot{id: :inner_block, required: true}],
+          variations: [%Variation{id: :foo, slots: ["<span>provided</span>"]}]
         )
 
       assert validate!(mock)
@@ -980,7 +1008,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     test "variation without required slot will raise" do
       mock =
         component_stub(
-          attributes: [%Attr{id: :slot, type: :slot, required: true}],
+          slots: [%Slot{id: :slot, required: true}],
           variations: [%Variation{id: :foo}]
         )
 
@@ -989,7 +1017,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
 
       mock =
         component_stub(
-          attributes: [%Attr{id: :slot, type: :slot, required: true}],
+          slots: [%Slot{id: :slot, required: true}],
           variations: [%Variation{id: :foo, slots: ["<:wrong_slot>provided</:wrong_slot>"]}]
         )
 
@@ -997,10 +1025,30 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       assert e.description =~ "required slot :slot missing from variation :foo"
     end
 
+    test "variation without required default slot will raise" do
+      mock =
+        component_stub(
+          slots: [%Slot{id: :inner_block, required: true}],
+          variations: [%Variation{id: :foo, slots: ["<:span>not provided</:span>"]}]
+        )
+
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "required slot :inner_block missing from variation :foo"
+
+      mock =
+        component_stub(
+          slots: [%Slot{id: :inner_block, required: true}],
+          variations: [%Variation{id: :foo, slots: ["<:inner_block>not provided</:inner_block>"]}]
+        )
+
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "required slot :inner_block missing from variation :foo"
+    end
+
     test "nested variation without required slot will raise" do
       mock =
         component_stub(
-          attributes: [%Attr{id: :slot, type: :slot, required: true}],
+          slots: [%Slot{id: :slot, required: true}],
           variations: [%VariationGroup{id: :group, variations: [%Variation{id: :foo}]}]
         )
 
@@ -1009,7 +1057,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
 
       mock =
         component_stub(
-          attributes: [%Attr{id: :slot, type: :slot, required: true}],
+          slots: [%Slot{id: :slot, required: true}],
           variations: [
             %VariationGroup{
               id: :group,
@@ -1020,6 +1068,24 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
 
       e = assert_raise CompileError, fn -> validate!(mock) end
       assert e.description =~ "required slot :slot missing from variation :foo, group :group"
+    end
+
+    test "nested variation without required default slot will raise" do
+      mock =
+        component_stub(
+          slots: [%Slot{id: :inner_block, required: true}],
+          variations: [
+            %VariationGroup{
+              id: :group,
+              variations: [%Variation{id: :foo, slots: ["<:inner_block>toto</:inner_block>"]}]
+            }
+          ]
+        )
+
+      e = assert_raise CompileError, fn -> validate!(mock) end
+
+      assert e.description =~
+               "required slot :inner_block missing from variation :foo, group :group"
     end
   end
 
@@ -1037,6 +1103,18 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
           required: opts[:required],
           examples: opts[:examples],
           values: opts[:values]
+        }
+      ]
+    )
+  end
+
+  defp component_stub_with_slot(opts) do
+    component_stub(
+      slots: [
+        %Slot{
+          id: opts[:id],
+          doc: opts[:doc],
+          required: opts[:required]
         }
       ]
     )

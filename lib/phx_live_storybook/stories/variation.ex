@@ -28,7 +28,7 @@ defmodule PhxLiveStorybook.Stories.Variation do
   """
 
   @enforce_keys [:id]
-  defstruct [:id, :description, :let, :block, slots: [], attributes: %{}, template: :unset]
+  defstruct [:id, :description, :let, slots: [], attributes: %{}, template: :unset]
 end
 
 defmodule PhxLiveStorybook.Stories.VariationGroup do
