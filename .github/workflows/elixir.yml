@@ -46,6 +46,8 @@ jobs:
       - name: Run tests
         run: mix coveralls.json
 
+      - name: Download codecov uploader
+        run: curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov
+
       - name: Upload test coverage
-        id: codecov
-        run: bash <(curl -s https://codecov.io/bash)
+        run: ./codecov -t ${CODECOV_TOKEN}
