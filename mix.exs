@@ -41,7 +41,7 @@ defmodule PhxLiveStorybook.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:phoenix_live_view, "~> 0.17.11"},
+      {:phoenix_live_view, "~> 0.18"},
       {:makeup_eex, "~> 0.1.0"},
       {:jason, "~> 1.3", optional: true},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

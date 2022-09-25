@@ -279,12 +279,13 @@ defmodule PhxLiveStorybook.StoryLive do
                 <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <%= live_patch to: path_to(@socket, @story_path, %{tab: :playground, variation_id: variation.id, theme: @theme}), class: "lsb lsb-hidden lsb-open-playground-link" do %>
+            <.link patch={path_to(@socket, @story_path, %{tab: :playground, variation_id: variation.id, theme: @theme})}
+              class="lsb lsb-hidden lsb-open-playground-link">
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-500 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
                 <i class="far fa-arrow-right"></i>
               </span>
-            <% end %>
+            </.link>
           </div>
 
           <!-- Variation component preview -->
@@ -443,7 +444,13 @@ defmodule PhxLiveStorybook.StoryLive do
 
   def handle_info({:playground_preview_pid, pid}, socket) do
     Process.monitor(pid)
+
     {:noreply, assign(socket, :playground_preview_pid, pid)}
+  end
+
+  def handle_info({:component_iframe_pid, pid}, socket) do
+    PubSub.subscribe(PhxLiveStorybook.PubSub, "event_logs:#{inspect(pid)}")
+    {:noreply, socket}
   end
 
   def handle_info(event_log = %EventLog{view: PlaygroundPreviewLive}, socket) do

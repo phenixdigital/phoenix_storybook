@@ -2,10 +2,10 @@
 <header class="lsb lsb-fixed lsb-top-0 lsb-w-full lsb-z-10 lsb-shadow-md lsb-shadow-slate-900/5 lsb-backdrop-blur-lg lsb-bg-white/50">
   <div class="lsb lsb-h-16 lsb-w-full">
     <div class="lsb lsb-absolute lsb-top-5 lsb-left-5 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
-      <%= live_patch to: live_storybook_path(@socket, :root), class: "lsb" do %>
+      <.link patch={live_storybook_path(@socket, :root)} class="lsb">
         <i class="lsb fa-regular fa-book-open lsb-text-indigo-600"></i>
         <span class="lsb lsb-ml-1"><%= title(@socket) %></span>
-      <% end %>
+      </.link>
     </div>
 
     <%= if themes = themes(@socket) do %>
