@@ -42,7 +42,14 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   defp render_variation_code(story, fun_or_mod, v = %Variation{}, template, opts, assigns) do
     if TemplateHelpers.code_hidden?(template) do
-      render_variation_code(fun_or_mod, v, TemplateHelpers.default_template(), opts, assigns)
+      render_variation_code(
+        story,
+        fun_or_mod,
+        v,
+        TemplateHelpers.default_template(),
+        opts,
+        assigns
+      )
     else
       heex = component_code_heex(story, fun_or_mod, v.attributes, v.let, v.slots, template)
       heex = TemplateHelpers.replace_template_variation(template, heex, _indent = true)
@@ -64,7 +71,14 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
          assigns
        ) do
     if TemplateHelpers.code_hidden?(template) do
-      render_variation_code(fun_or_mod, group, TemplateHelpers.default_template(), opts, assigns)
+      render_variation_code(
+        story,
+        fun_or_mod,
+        group,
+        TemplateHelpers.default_template(),
+        opts,
+        assigns
+      )
     else
       heex =
         cond do

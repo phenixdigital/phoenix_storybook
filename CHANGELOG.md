@@ -2,6 +2,8 @@
 
 ## v0.4.0 (not yet released)
 
+- change (breaking!): LiveView 0.18.0 is required. Attributes & slots declared in your components
+  are supported by the component Playground.
 - change (breaking!): configuration has been moved from config.exs files to your elixir backend module.
 - change (breaking!): `stories` have been re-rebranded as `variations`, `Story` became `Variation`
   and `StoryGroup` became `VariationGroup`
