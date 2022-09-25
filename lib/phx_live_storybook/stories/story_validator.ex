@@ -56,7 +56,8 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
     validate_attribute_default_types!(file_path, attributes)
     validate_attribute_required!(file_path, attributes)
     validate_attribute_default_or_required!(file_path, attributes)
-    validate_attribute_values(file_path, attributes)
+    validate_attribute_values!(file_path, attributes)
+    validate_attribute_global_options!(file_path, attributes)
     validate_slot_list_type!(file_path, slots)
     validate_slot_ids!(file_path, slots)
     validate_slot_doc!(file_path, slots)
@@ -174,7 +175,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
     end)
   end
 
-  @builtin_types [:string, :atom, :boolean, :integer, :float, :list, :map]
+  @builtin_types [:string, :atom, :boolean, :integer, :float, :list, :map, :global]
   defp validate_attribute_types!(file_path, attributes) do
     for %Attr{id: attr_id, type: type} <- attributes do
       cond do
@@ -198,7 +199,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
 
   defp bad_type!(name, type, file) do
     compile_error!(file, """
-    invalid type #{inspect(type)} for attr #{inspect(name)}. \
+    invalid type #{inspect(type)} for attr #{inspect(name)}.
     The following types are supported:
       * any Elixir struct, such as URI, MyApp.User, etc
       * one of #{Enum.map_join(@builtin_types, ", ", &inspect/1)}
@@ -250,7 +251,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
     end
   end
 
-  defp validate_attribute_values(file_path, attributes) do
+  defp validate_attribute_values!(file_path, attributes) do
     for %Attr{id: attr_id, values: values, examples: examples} <- attributes,
         !is_nil(values),
         !is_nil(examples) do
@@ -270,6 +271,14 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
       msg = "examples for attr #{inspect(attr_id)} must be a list of #{inspect(type)}"
       validate_type!(file_path, examples, [:list, :range], msg)
       for val <- examples, do: validate_type!(file_path, val, type, msg)
+    end
+  end
+
+  defp validate_attribute_global_options!(file_path, attributes) do
+    for attr = %Attr{type: :global} <- attributes, opt <- ~w(required examples values)a do
+      if Map.get(attr, opt) do
+        compile_error!(file_path, "global attributes do not support the #{inspect(opt)} option")
+      end
     end
   end
 
