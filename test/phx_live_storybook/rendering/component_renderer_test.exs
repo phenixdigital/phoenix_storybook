@@ -9,7 +9,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       component: TreeStorybook.load_story("/component") |> elem(1),
       live_component: TreeStorybook.load_story("/live_component") |> elem(1),
       afolder_component: TreeStorybook.load_story("/a_folder/component") |> elem(1),
-      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1)
+      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1),
+      all_types_component: TreeStorybook.load_story("/b_folder/all_types_component") |> elem(1)
     ]
   end
 
@@ -162,6 +163,11 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert render_variation(component, :template_attributes)
              |> rendered_to_string() ==
                "<span>template_component: from_template / status: true</span>"
+    end
+
+    test "renders a variation with a global attribute", %{all_types_component: component} do
+      assert render_variation(component, :default)
+             |> rendered_to_string() =~ ~s|<div foo="bar" data-bar="42">|
     end
   end
 

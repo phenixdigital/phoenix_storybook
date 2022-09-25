@@ -15,7 +15,8 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
       %Attr{id: :toggle, type: :boolean, default: false},
       %Attr{id: :things, type: :list},
       %Attr{id: :struct, type: AllTypesComponent.Struct},
-      %Attr{id: :map, type: :map}
+      %Attr{id: :map, type: :map},
+      %Attr{id: :rest, type: :global}
     ]
   end
 
@@ -32,7 +33,8 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
         id: :default,
         attributes: %{
           label: "default label",
-          toggle: false
+          toggle: false,
+          rest: %{:foo => "bar", "data-bar" => 42}
         },
         slots: [
           "<p>will be displayed in inner block</p>",
