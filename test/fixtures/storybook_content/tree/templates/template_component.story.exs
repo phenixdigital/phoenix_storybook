@@ -67,13 +67,22 @@ defmodule TreeStorybook.TemplateComponent do
         attributes: %{label: "variation without template"}
       },
       %Variation{
+        id: :hidden_template,
+        template: ~s|<div class="variation-template" lsb-code-hidden><.lsb-variation/></div>|,
+        attributes: %{label: "variation hidden template"}
+      },
+      %Variation{
         id: :no_placeholder,
         template: "<div></div>",
         attributes: %{label: ""}
       },
       %VariationGroup{
         id: :group_template,
-        template: ~s|<div class="group-template"><.lsb-variation/></div>|,
+        template: """
+        <div class="group-template">
+          <.lsb-variation/>
+        </div>
+        """,
         variations: [
           %Variation{
             id: :one,
@@ -87,7 +96,29 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %VariationGroup{
         id: :group_template_single,
-        template: ~s|<div class="group-template"><.lsb-variation-group/></div>|,
+        template: """
+        <div class="group-template">
+          <.lsb-variation-group/>
+        </div>
+        """,
+        variations: [
+          %Variation{
+            id: :one,
+            attributes: %{label: "one"}
+          },
+          %Variation{
+            id: :two,
+            attributes: %{label: "two"}
+          }
+        ]
+      },
+      %VariationGroup{
+        id: :group_template_hidden,
+        template: """
+        <div class="group-template" lsb-code-hidden>
+          <.lsb-variation-group/>
+        </div>
+        """,
         variations: [
           %Variation{
             id: :one,

@@ -12,7 +12,8 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       afolder_component: TreeStorybook.load_story("/a_folder/component") |> elem(1),
       afolder_live_component: TreeStorybook.load_story("/a_folder/live_component") |> elem(1),
       template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1),
-      all_types_component: TreeStorybook.load_story("/b_folder/all_types_component") |> elem(1)
+      all_types_component: TreeStorybook.load_story("/b_folder/all_types_component") |> elem(1),
+      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1)
     ]
   end
 
@@ -87,8 +88,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
              """
     end
 
-    test "it is working with a template component" do
-      {:ok, component} = TreeStorybook.load_story("/templates/template_component")
+    test "it is working with a template component", %{template_component: component} do
       code = render_variation_code(component, :hello)
 
       assert code =~ """
@@ -101,6 +101,61 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
                <.template_component label="hello"/>
              </div>
              """
+    end
+
+    test "it is working with a group template", %{template_component: component} do
+      code = render_variation_code(component, :group_template)
+
+      assert code =~
+               """
+               <div class="group-template">
+                 <.template_component label="one"/>
+               </div>
+
+               <div class="group-template">
+                 <.template_component label="two"/>
+               </div>
+               """
+    end
+
+    test "it is working with a single group template", %{template_component: component} do
+      code = render_variation_code(component, :group_template_single)
+
+      assert code =~
+               """
+               <div class="group-template">
+                 <.template_component label="one"/>
+                 <.template_component label="two"/>
+               </div>
+               """
+    end
+
+    test "it is working with a hidden group template", %{template_component: component} do
+      code = render_variation_code(component, :group_template_hidden)
+
+      assert code =~
+               """
+               <.template_component label="one"/>
+               <.template_component label="two"/>
+               """
+    end
+
+    test "it is working with a component and a disabled template", %{
+      template_component: component
+    } do
+      code = render_variation_code(component, :no_template)
+
+      assert code =~ ~s|<.template_component label="variation without template"/>|
+      refute code =~ ~s|template-div|
+    end
+
+    test "it is working with a component and a hidden template", %{
+      template_component: component
+    } do
+      code = render_variation_code(component, :hidden_template)
+
+      assert code =~ ~s|<.template_component label="variation hidden template"/>|
+      refute code =~ ~s|variation-template|
     end
 
     test "it prints aliases struct names" do
