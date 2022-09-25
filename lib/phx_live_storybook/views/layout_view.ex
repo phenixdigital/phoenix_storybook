@@ -34,8 +34,10 @@ defmodule PhxLiveStorybook.LayoutView do
   defp storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
-  defp title(socket) do
-    storybook_setting(socket, :title, "Live Storybook")
+  defp title(socket_or_conn), do: storybook_setting(socket_or_conn, :title, "Live Storybook")
+
+  defp title_prefix(socket_or_conn) do
+    title(socket_or_conn) <> " - "
   end
 
   defp storybook_setting(conn_or_socket, key, default \\ nil)

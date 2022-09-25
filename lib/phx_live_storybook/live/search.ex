@@ -74,8 +74,9 @@ defmodule PhxLiveStorybook.Search do
                 phx-baseline={JS.remove_class("lsb-bg-slate-50 lsb-text-indigo-600")}
                 class="lsb lsb-flex lsb-justify-between lsb-group lsb-select-none lsb-px-4 lsb-py-4 lsb-space-x-4 lsb-cursor-pointer"
                 tabindex="-1">
-
-                <%= live_patch(story.name, to: Path.join(@root_path, story.path), class: "lsb lsb-font-semibold lsb-whitespace-nowrap") %>
+                <.link patch={Path.join(@root_path, story.path)} class="lsb lsb-font-semibold lsb-whitespace-nowrap">
+                  <%= story.name %>
+                </.link>
                 <div class="lsb lsb-truncate">
                   <%= LayoutView.render_breadcrumb(@socket, story.path, span_class: "lsb-text-xs") %>
                 </div>

@@ -8,7 +8,9 @@
     <%= csrf_meta_tag() %>
 
     <%= render "_favicon.html", conn: @conn %>
-    <%= live_title_tag assigns[:page_title] || "Home", prefix: "#{title(@conn)} - " %>
+    <.live_title prefix={title_prefix(@conn)}>
+      <%= assigns[:page_title] %>
+    </.live_title>
 
     <script defer src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
     <%= if path = storybook_js_path(@conn) do %>
