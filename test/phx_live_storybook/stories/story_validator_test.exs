@@ -514,6 +514,31 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "global attributes" do
+    test "with valid options, it wont raise" do
+      mock = component_stub_with_attr(id: :rest, type: :global, default: %{foo: "bar"})
+      assert validate!(mock)
+    end
+
+    test "with required, it will raise" do
+      mock = component_stub_with_attr(id: :rest, type: :global, required: true)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "global attributes do not support the :required option"
+    end
+
+    test "with values, it will raise" do
+      mock = component_stub_with_attr(id: :rest, type: :global, values: [])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "global attributes do not support the :values option"
+    end
+
+    test "with examples, it will raise" do
+      mock = component_stub_with_attr(id: :rest, type: :global, examples: [])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "global attributes do not support the :examples option"
+    end
+  end
+
   describe "story slots are list of Slot" do
     test "with proper slot type it wont raise" do
       mock = component_stub(slots: [%Slot{id: :foo}])

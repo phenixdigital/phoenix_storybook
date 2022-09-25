@@ -236,7 +236,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   defp render_component_heex(fun_or_mod, heex, opts) do
-    quoted_code = EEx.compile_string(heex, engine: HTMLEngine)
+    quoted_code = EEx.compile_string(heex, engine: HTMLEngine, caller: __ENV__)
 
     {evaluated, _} =
       Code.eval_quoted(quoted_code, [assigns: []],
@@ -269,14 +269,14 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   defp eval_quoted_functions(opts, fun) when is_function(fun) do
     [
-      {Phoenix.LiveView.Helpers, [live_file_input: 2]},
+      {Phoenix.Component, [live_file_input: 2]},
       {function_module(fun), [{function_name(fun), 1}]}
     ] ++ extra_imports(opts)
   end
 
   defp eval_quoted_functions(opts, mod) when is_atom(mod) do
     [
-      {Phoenix.LiveView.Helpers, [live_component: 1, live_file_input: 2]}
+      {Phoenix.Component, [live_component: 1, live_file_input: 2]}
     ] ++ extra_imports(opts)
   end
 
