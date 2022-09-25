@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   @moduledoc false
   use Phoenix.LiveView
 
+  alias Phoenix.PubSub
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.Rendering.ComponentRenderer
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
@@ -18,6 +19,14 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   def handle_params(params = %{"story" => story_path}, _uri, socket) do
     case load_story(socket, story_path) do
       {:ok, story} ->
+        if params["topic"] do
+          PubSub.broadcast!(
+            PhxLiveStorybook.PubSub,
+            params["topic"],
+            {:component_iframe_pid, self()}
+          )
+        end
+
         {:noreply,
          assign(socket,
            playground: params["playground"],
@@ -96,4 +105,6 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
 
     {:noreply, assign(socket, extra_assigns: extra_assigns)}
   end
+
+  def handle_event(_, _, socket), do: {:noreply, socket}
 end
