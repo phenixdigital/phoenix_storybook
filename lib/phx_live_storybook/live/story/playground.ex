@@ -357,7 +357,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         </div>
       </div>
     </.form>
-    <%= unless Enum.empty?(@story.attributes()) do %>
+    <%= unless Enum.empty?(@story.merged_attributes()) do %>
       <.form let={f} for={:variation} id="variation-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
         <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
@@ -632,7 +632,7 @@ defmodule PhxLiveStorybook.Story.Playground do
           key = String.to_atom(key),
           reduce: assigns.fields do
         acc ->
-          attr_definition = Enum.find(story.attributes(), &(&1.id == key))
+          attr_definition = Enum.find(story.merged_attributes(), &(&1.id == key))
 
           if (is_nil(value) || value == "") and !attr_definition.required do
             Map.put(acc, key, nil)
