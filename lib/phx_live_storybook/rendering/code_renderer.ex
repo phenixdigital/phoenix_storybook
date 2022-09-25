@@ -18,13 +18,16 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   Renders code snippet of a specific variation for a given component story.
   Returns a rendered HEEx template.
   """
-  def render_variation_code(story, variation_id) do
+  def render_variation_code(story, variation_id, opts \\ []) do
     variation = story.variations() |> Enum.find(&(to_string(&1.id) == to_string(variation_id)))
     template = TemplateHelpers.get_template(story.template(), variation)
 
     case story.storybook_type() do
-      :component -> render_variation_code(story, story.function(), variation, template)
-      :live_component -> render_variation_code(story, story.component(), variation, template)
+      :component ->
+        render_variation_code(story, story.function(), variation, template, opts)
+
+      :live_component ->
+        render_variation_code(story, story.component(), variation, template, opts)
     end
   end
 
@@ -33,19 +36,20 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
          fun_or_mod,
          variation_or_group,
          template,
+         opts,
          assigns \\ %{}
        )
 
-  defp render_variation_code(story, fun_or_mod, v = %Variation{}, template, assigns) do
+  defp render_variation_code(story, fun_or_mod, v = %Variation{}, template, opts, assigns) do
     if TemplateHelpers.code_hidden?(template) do
-      render_variation_code(fun_or_mod, v, TemplateHelpers.default_template(), assigns)
+      render_variation_code(fun_or_mod, v, TemplateHelpers.default_template(), opts, assigns)
     else
       heex = component_code_heex(story, fun_or_mod, v.attributes, v.let, v.slots, template)
       heex = TemplateHelpers.replace_template_variation(template, heex, _indent = true)
 
       ~H"""
       <pre class={pre_class()}>
-      <%= format_heex(heex) %>
+      <%= format_heex(heex, opts) %>
       </pre>
       """
     end
@@ -56,10 +60,11 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
          fun_or_mod,
          group = %VariationGroup{variations: variations},
          template,
+         opts,
          assigns
        ) do
     if TemplateHelpers.code_hidden?(template) do
-      render_variation_code(fun_or_mod, group, TemplateHelpers.default_template(), assigns)
+      render_variation_code(fun_or_mod, group, TemplateHelpers.default_template(), opts, assigns)
     else
       heex =
         cond do
@@ -85,7 +90,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
       ~H"""
       <pre class={pre_class()}>
-      <%= format_heex(heex) %>
+      <%= format_heex(heex, opts) %>
       </pre>
       """
     end
@@ -249,7 +254,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     code |> String.split("\n") |> Enum.reject(&(&1 == "")) |> Enum.join("\n")
   end
 
-  defp format_heex(code) do
+  defp format_heex(code, opts \\ [])
+
+  defp format_heex(code, format: false) do
+    code |> String.trim() |> HTML.raw()
+  end
+
+  defp format_heex(code, _opts) do
     code
     |> String.trim()
     |> HEExLexer.lex()
