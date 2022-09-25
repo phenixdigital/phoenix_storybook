@@ -101,7 +101,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp assign_playground_fields(socket = %{assigns: %{story: story, variations: variations}}) do
     fields =
-      for attr = %Attr{} <- story.attributes(), reduce: %{} do
+      for attr = %Attr{} <- story.merged_attributes(), reduce: %{} do
         acc ->
           attr_examples = for %{attributes: attrs} <- variations, do: Map.get(attrs, attr.id)
 
@@ -256,7 +256,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp playground_code(assigns) do
     ~H"""
     <pre class={CodeRenderer.pre_class()}>
-    <%= CodeRenderer.render_multiple_variations_code(fun_or_component(@story.storybook_type(), @story), @variations, TemplateHelpers.get_template(@story.template(), @variation)) %>
+    <%= CodeRenderer.render_multiple_variations_code(@story, fun_or_component(@story.storybook_type(), @story), @variations, TemplateHelpers.get_template(@story.template(), @variation)) %>
     </pre>
     """
   end
@@ -291,15 +291,15 @@ defmodule PhxLiveStorybook.Story.Playground do
                   </tr>
                 </thead>
                 <tbody class="lsb lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
-                  <%= if Enum.empty?(@story.attributes()) do %>
+                  <%= if Enum.empty?(@story.merged_attributes()) do %>
                   <tr>
                     <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
                       <i class="lsb lsb-text-indigo-400 fad fa-xl fa-circle-question lsb-py-4 md:lsb-py-6"></i>
-                      <p>In order to use playground, you must define attributes in your story.</p>
+                      <p>In order to use playground, you must define your component attributes.</p>
                     </td>
                   </tr>
                   <% else %>
-                    <%= for attr <- @story.attributes() do %>
+                    <%= for attr <- @story.merged_attributes() do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if attr.required do %>
@@ -344,7 +344,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                       <%= if slot?(assigns, slot) do %>
                         <tr class="lsb !lsb-border-t-0">
                           <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
-                            <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= slot(assigns, slot) %></pre>
+                            <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
                           </td>
                         </tr>
                       <% end %>
@@ -425,7 +425,7 @@ defmodule PhxLiveStorybook.Story.Playground do
     end
   end
 
-  def slot(assigns, _slot = %{id: slot_id}) do
+  def do_render_slot(assigns, _slot = %{id: slot_id}) do
     case Map.get(assigns.slots, slot_id) do
       :locked -> "[Multiple values]"
       slot -> slot
@@ -698,7 +698,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp cast_value(story, attr_id, value) do
-    attr = story.attributes() |> Enum.find(&(&1.id == attr_id))
+    attr = story.merged_attributes() |> Enum.find(&(&1.id == attr_id))
 
     case attr.type do
       :atom -> String.to_atom(value)

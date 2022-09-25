@@ -166,6 +166,14 @@ defmodule PhxLiveStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
 
+      if unquote(live?) do
+        def merged_attributes, do: Attr.merge_attributes(component(), attributes())
+        # def merged_slots, do: Slot.merge_slots(component(), slots())
+      else
+        def merged_attributes, do: Attr.merge_attributes(function(), attributes())
+        # def merged_slots, do: Slot.merge_slots(function(), slots())
+      end
+
       defoverridable description: 0,
                      imports: 0,
                      aliases: 0,
@@ -180,7 +188,7 @@ defmodule PhxLiveStorybook.Story do
   @doc false
   def page do
     quote do
-      import Phoenix.LiveView.Helpers
+      import Phoenix.Component
 
       @behaviour StoryBehaviour
       @behaviour PageBehaviour
