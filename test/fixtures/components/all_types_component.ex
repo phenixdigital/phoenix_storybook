@@ -17,13 +17,14 @@ defmodule AllTypesComponent do
       |> assign_new(:things, fn -> [] end)
       |> assign_new(:slot_thing, fn -> [] end)
       |> assign_new(:map, fn -> %{} end)
+      |> assign_new(:rest, fn -> %{} end)
 
     if assigns[:label] == "raise" do
       raise "booooom!"
     end
 
     ~H"""
-    <div>
+    <div {@rest}>
       <p>all_types_component: <%= @label %></p>
       <p>option: <%= @option %></p>
       <p>index_i: <%= @index_i %></p>

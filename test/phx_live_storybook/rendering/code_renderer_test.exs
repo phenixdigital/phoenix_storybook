@@ -11,7 +11,8 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       live_component: TreeStorybook.load_story("/live_component") |> elem(1),
       afolder_component: TreeStorybook.load_story("/a_folder/component") |> elem(1),
       afolder_live_component: TreeStorybook.load_story("/a_folder/live_component") |> elem(1),
-      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1)
+      template_component: TreeStorybook.load_story("/templates/template_component") |> elem(1),
+      all_types_component: TreeStorybook.load_story("/b_folder/all_types_component") |> elem(1)
     ]
   end
 
@@ -72,6 +73,11 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       code = render_variation_code(component, :with_struct)
       assert Regex.match?(~r/<pre.*Struct.*\/pre>/s, code)
       refute Regex.match?(~r/<pre.*AllTypesComponent.*\/pre>/s, code)
+    end
+
+    test "its renders properly global attributes", %{all_types_component: component} do
+      code = render_variation_code(component, :default)
+      assert code =~ ~r|<pre.*</pre>|s
     end
   end
 
