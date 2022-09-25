@@ -120,7 +120,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp assign_playground_slots(socket = %{assigns: %{story: story, variations: variations}}) do
     slots =
-      for %Slot{id: slot_id} <- story.slots(), reduce: %{} do
+      for %Slot{id: slot_id} <- story.merged_slots(), reduce: %{} do
         acc ->
           slots =
             for variation <- variations do
@@ -325,7 +325,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                         </td>
                       </tr>
                     <% end %>
-                    <%= for slot <- @story.slots() do %>
+                    <%= for slot <- @story.merged_slots() do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if slot.required do %>

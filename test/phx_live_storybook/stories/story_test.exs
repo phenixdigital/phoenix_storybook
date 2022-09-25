@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.StoryTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.Stories.Attr
+  alias PhxLiveStorybook.Stories.{Attr, Slot}
 
   describe "component story" do
     test "component story default behaviors" do
@@ -63,6 +63,37 @@ defmodule PhxLiveStorybook.StoryTest do
                  examples: nil,
                  values: [:gray, :blue, :red]
                }
+             ]
+    end
+
+    test "slots from component & story are merged" do
+      defmodule SlotComponent do
+        use Phoenix.Component
+        slot(:foo, required: true)
+
+        slot :nested, doc: "with nested attrs" do
+          attr(:nested_attr, :string)
+        end
+
+        def slot_component(_assigns), do: nil
+      end
+
+      defmodule SlotComponentStory do
+        use PhxLiveStorybook.Story, :component
+        def function, do: &SlotComponent.slot_component/1
+
+        def slots do
+          [
+            %Slot{id: :foo, doc: "foo documentation"},
+            %Slot{id: :bar}
+          ]
+        end
+      end
+
+      assert SlotComponentStory.merged_slots() == [
+               %Slot{id: :foo, doc: "foo documentation", required: true},
+               %Slot{id: :nested, doc: "with nested attrs", required: false},
+               %Slot{id: :bar, doc: nil, required: false}
              ]
     end
   end
@@ -127,6 +158,37 @@ defmodule PhxLiveStorybook.StoryTest do
                  examples: nil,
                  values: [:gray, :blue, :red]
                }
+             ]
+    end
+
+    test "slots from component & story are merged" do
+      defmodule SlotLiveComponent do
+        use Phoenix.LiveComponent
+        slot(:foo, required: true)
+
+        slot :nested, doc: "with nested attrs" do
+          attr(:nested_attr, :string)
+        end
+
+        def render(_assigns), do: nil
+      end
+
+      defmodule SlotLiveComponentStory do
+        use PhxLiveStorybook.Story, :live_component
+        def component, do: SlotLiveComponent
+
+        def slots do
+          [
+            %Slot{id: :foo, doc: "foo documentation"},
+            %Slot{id: :bar}
+          ]
+        end
+      end
+
+      assert SlotLiveComponentStory.merged_slots() == [
+               %Slot{id: :foo, doc: "foo documentation", required: true},
+               %Slot{id: :nested, doc: "with nested attrs", required: false},
+               %Slot{id: :bar, doc: nil, required: false}
              ]
     end
   end

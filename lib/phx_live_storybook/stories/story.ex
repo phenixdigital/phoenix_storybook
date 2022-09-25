@@ -168,10 +168,10 @@ defmodule PhxLiveStorybook.Story do
 
       if unquote(live?) do
         def merged_attributes, do: Attr.merge_attributes(component(), attributes())
-        # def merged_slots, do: Slot.merge_slots(component(), slots())
+        def merged_slots, do: Slot.merge_slots(component(), slots())
       else
         def merged_attributes, do: Attr.merge_attributes(function(), attributes())
-        # def merged_slots, do: Slot.merge_slots(function(), slots())
+        def merged_slots, do: Slot.merge_slots(function(), slots())
       end
 
       defoverridable description: 0,
