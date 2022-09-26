@@ -284,23 +284,6 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     end
   end
 
-  describe "component preview crash handling" do
-    test "an error message is displayed when component crashes", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
-      wait_for_lv(view)
-      Process.flag(:trap_exit, true)
-
-      view
-      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
-        playground: %{label: "raise"}
-      })
-      |> render_change()
-
-      wait_for_lv(view)
-      assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}, 200
-    end
-  end
-
   describe "template component in playground" do
     test "component rendering is updated as template buttons are clicked", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
@@ -479,5 +462,41 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
   defp wait_for_preview_lv(view) do
     [playground_preview_view] = live_children(view)
     :sys.get_state(playground_preview_view.pid)
+  end
+end
+
+defmodule PhxLiveStorybook.PlaygroundLiveNonAsyncTest do
+  use ExUnit.Case, async: false
+
+  import Phoenix.ConnTest
+  import Phoenix.LiveViewTest
+
+  @endpoint PhxLiveStorybook.PlaygroundLiveTestEndpoint
+  @moduletag :capture_log
+
+  setup_all do
+    start_supervised!(@endpoint)
+    {:ok, conn: build_conn()}
+  end
+
+  describe "component preview crash handling" do
+    test "an error message is displayed when component crashes", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
+      wait_for_lv(view)
+      Process.flag(:trap_exit, true)
+
+      view
+      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
+        playground: %{label: "raise"}
+      })
+      |> render_change()
+
+      wait_for_lv(view)
+      assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}, 200
+    end
+  end
+
+  defp wait_for_lv(view) do
+    :sys.get_state(view.pid)
   end
 end
