@@ -1,7 +1,6 @@
 defmodule PhxLiveStorybook.Events.Instrumenter do
-  @moduledoc """
-  Event handlers for LiveView exposed telemetry events
-  """
+  @moduledoc false
+  # Event handlers for LiveView exposed telemetry events
   alias Phoenix.PubSub
   alias PhxLiveStorybook.Events.EventLog
 

@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.Events.EventLog do
-  @moduledoc """
-  Data structure for event logs displayed in each story's playground
-  """
+  @moduledoc false
+  # Data structure for event logs displayed in each story's playground
+
   @type t :: %__MODULE__{
           type: :live_view | :component,
           parent_pid: pid(),
