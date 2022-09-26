@@ -82,8 +82,7 @@ defmodule PhxLiveStorybook do
           content_path = Keyword.get(unquote(opts), :content_path)
 
           file_path =
-            story_module.__info__(:compile)[:source]
-            |> to_string()
+            story_module.__file_path__()
             |> String.replace_prefix(content_path, "")
             |> String.replace_suffix(Entries.story_file_suffix(), "")
         end

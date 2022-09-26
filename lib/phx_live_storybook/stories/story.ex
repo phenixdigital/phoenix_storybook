@@ -85,6 +85,7 @@ defmodule PhxLiveStorybook.Story do
   """
 
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
+  alias PhxLiveStorybook.Stories.StoryComponentSource
 
   defmodule StoryBehaviour do
     @moduledoc false
@@ -136,6 +137,7 @@ defmodule PhxLiveStorybook.Story do
     quote do
       @behaviour StoryBehaviour
       @behaviour unquote(component_behaviour(live?))
+      @before_compile StoryComponentSource
 
       alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
@@ -193,6 +195,8 @@ defmodule PhxLiveStorybook.Story do
       @behaviour StoryBehaviour
       @behaviour PageBehaviour
 
+      @before_compile StoryComponentSource
+
       @impl StoryBehaviour
       def storybook_type, do: :page
 
@@ -204,10 +208,6 @@ defmodule PhxLiveStorybook.Story do
 
       @impl PageBehaviour
       def render(_assigns), do: false
-
-      def file_path do
-        __MODULE__.__info__(:compile)[:source]
-      end
 
       defoverridable description: 0, navigation: 0, render: 1
     end
