@@ -1,5 +1,3 @@
-Code.require_file("../../mix_helper.exs", __DIR__)
-
 defmodule Mix.Tasks.Dev.StorybookTest do
   use ExUnit.Case
   alias Mix.Tasks.Dev.Storybook
