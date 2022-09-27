@@ -14,6 +14,7 @@ defmodule PhxLiveStorybook.Stories.Slot do
   """
 
   alias PhxLiveStorybook.Stories.Slot
+  require Logger
 
   @enforce_keys [:id]
   defstruct [:id, :doc, required: false]
@@ -37,12 +38,20 @@ defmodule PhxLiveStorybook.Stories.Slot do
   defp read_slots(module) when is_atom(module) do
     slots = get_in(module.__components__(), [:render, :slots]) || []
     Enum.sort_by(slots, & &1.line)
+  rescue
+    _ ->
+      Logger.warn("cannot load slots for component #{inspect(module)}")
+      []
   end
 
   defp read_slots(function) when is_function(function) do
     [module: module, name: name] = function |> Function.info() |> Keyword.take([:module, :name])
     slots = get_in(module.__components__(), [name, :slots]) || []
     Enum.sort_by(slots, & &1.line)
+  rescue
+    _ ->
+      Logger.warn("cannot load slots for component #{inspect(function)}")
+      []
   end
 
   defp slots_map(slots, key) do

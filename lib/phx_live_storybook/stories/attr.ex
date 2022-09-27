@@ -29,6 +29,8 @@ defmodule PhxLiveStorybook.Stories.Attr do
 
   alias PhxLiveStorybook.Stories.Attr
 
+  require Logger
+
   @enforce_keys [:id, :type]
   defstruct [:id, :type, :doc, :default, :examples, :values, required: false]
 
@@ -51,12 +53,20 @@ defmodule PhxLiveStorybook.Stories.Attr do
   defp read_attributes(module) when is_atom(module) do
     attrs = get_in(module.__components__(), [:render, :attrs]) || []
     Enum.sort_by(attrs, & &1.line)
+  rescue
+    _ ->
+      Logger.warn("cannot load attributes for component #{inspect(module)}")
+      []
   end
 
   defp read_attributes(function) when is_function(function) do
     [module: module, name: name] = function |> Function.info() |> Keyword.take([:module, :name])
     attrs = get_in(module.__components__(), [name, :attrs]) || []
     Enum.sort_by(attrs, & &1.line)
+  rescue
+    _ ->
+      Logger.warn("cannot load attributes for component #{inspect(function)}")
+      []
   end
 
   defp attributes_map(attrs, key) do
