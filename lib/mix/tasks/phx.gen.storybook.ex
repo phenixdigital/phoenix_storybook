@@ -3,7 +3,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
   @moduledoc """
   Generates a Storybook.
 
-      $ mix phx.gen.storybook
+  ```bash
+  $> mix phx.gen.storybook
+  ```
 
   The generated files will contain:
 

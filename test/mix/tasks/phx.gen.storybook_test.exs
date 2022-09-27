@@ -1,6 +1,6 @@
 Code.require_file("../../mix_helper.exs", __DIR__)
 
-defmodule Mix.Tasks.Phx.Gen.ReleaseTest do
+defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   use ExUnit.Case
   import PhxLiveStorybook.MixHelper
   alias Mix.Tasks.Phx.Gen.Storybook
@@ -10,21 +10,19 @@ defmodule Mix.Tasks.Phx.Gen.ReleaseTest do
     :ok
   end
 
-  test "generates storybook files", config do
+  @tag :capture_log
+  test "mix phx.gen.storybook generates a working storybook", config do
     in_tmp_project(config.test, fn ->
       Storybook.run([])
 
-      assert_file("lib/phx_live_storybook_web/storybook.ex", fn file ->
-        assert file =~ ~S|defmodule PhxLiveStorybookWeb.Storybook do|
-      end)
+      [{story, _}] = Code.compile_file("storybook/components/my_component.story.exs")
+      assert story.storybook_type() == :component
 
-      assert_file("storybook/components/my_component.story.exs", fn file ->
-        assert file =~ ~S|defmodule Storybook.Components.MyComponent do|
-      end)
+      [{page, _}] = Code.compile_file("storybook/my_page.story.exs")
+      assert page.storybook_type() == :page
 
-      assert_file("storybook/my_page.story.exs", fn file ->
-        assert file =~ ~S|defmodule Storybook.MyPage do|
-      end)
+      [{backend, _}] = Code.compile_file("lib/phx_live_storybook_web/storybook.ex")
+      assert backend.storybook_path(story) == "/components/my_component"
 
       assert_file("assets/js/storybook.js")
       assert_file("assets/css/storybook.css")

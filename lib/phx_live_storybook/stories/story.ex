@@ -139,6 +139,7 @@ defmodule PhxLiveStorybook.Story do
       @behaviour unquote(component_behaviour(live?))
       @before_compile StoryComponentSource
 
+      import Phoenix.Component
       alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
       @impl StoryBehaviour

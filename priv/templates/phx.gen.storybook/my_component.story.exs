@@ -1,20 +1,16 @@
 defmodule Storybook.Components.MyComponent do
+  # See https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.Story.html for full story
+  # documentation.
+  # Read https://hexdocs.pm/phx_live_storybook/components.html for more advanced options.
+
   use PhxLiveStorybook.Story, :component
-  import Phoenix.LiveView.Helpers # remove this line once you import your component
 
-  def function, do: &my_component/1
+  # This is a dummy fonction that you should replace with your own component function:
+  # def function, do: &MyButton.my_button/1
+  def function, do: fn assigns -> ~H"<span><%=@text%></span>" end
 
-  # This is a dummy fonction that you should replace with your own component.
-  def my_component(assigns) do
-    ~H"<span><%=@text%></span>"
-  end
-
-  def attributes do
-    [
-      %Attr{id: :text, doc: "Set the text to display", type: :string}
-    ]
-  end
-
+  # A variation captures the rendered state of a UI component. Developers write multiple variations
+  # per component that describe all the “interesting” states a component can support.
   def variations do
     [
       %Variation{
@@ -28,6 +24,13 @@ defmodule Storybook.Components.MyComponent do
         attributes: %{
           text: "A text variation"
         }
+      },
+      %VariationGroup{
+        id: :group,
+        variations: [
+          %Variation{id: :item_1, attributes: %{text: "item 1"}},
+          %Variation{id: :item_2, attributes: %{text: "item 2"}},
+        ]
       }
     ]
   end

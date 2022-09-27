@@ -8,9 +8,15 @@ defmodule PhxLiveStorybook.Stories.StoryComponentSource do
   # module, which are not yet compiled.
   defmacro __before_compile__(env) do
     component_source_path =
-      case component_definition(env) do
-        {fun_or_mod, _} -> load_source(fun_or_mod)
-        _ -> nil
+      try do
+        case component_definition(env) do
+          {fun_or_mod, _} -> load_source(fun_or_mod)
+          _ -> nil
+        end
+      rescue
+        _ -> fail(env)
+      catch
+        _ -> fail(env)
       end
 
     quote do
@@ -37,10 +43,6 @@ defmodule PhxLiveStorybook.Stories.StoryComponentSource do
       true ->
         nil
     end
-  rescue
-    _ ->
-      Logger.warn("cannot load source for component defined in story #{env.file}")
-      nil
   end
 
   defp load_definition(env, function_and_arity) do
@@ -65,4 +67,9 @@ defmodule PhxLiveStorybook.Stories.StoryComponentSource do
 
   defp read_source(nil), do: nil
   defp read_source(charlist_path), do: charlist_path |> to_string() |> File.read!()
+
+  defp fail(env) do
+    Logger.warn("cannot load source for component defined in story #{env.file}")
+    nil
+  end
 end

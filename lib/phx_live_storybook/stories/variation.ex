@@ -1,6 +1,6 @@
 defmodule PhxLiveStorybook.Stories.Variation do
   @moduledoc """
-  A varaiation captures the rendered state of a UI component. Developers write multiple variations
+  A variation captures the rendered state of a UI component. Developers write multiple variations
   per component that describe all the “interesting” states a component can support.
 
   Each variation will be displayed in the storybook as a code snippet alongside with the
