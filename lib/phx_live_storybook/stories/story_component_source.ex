@@ -35,6 +35,8 @@ defmodule PhxLiveStorybook.Stories.StoryComponentSource do
       true ->
         nil
     end
+  rescue
+    _ -> nil
   end
 
   defp load_definition(env, function_and_arity) do
