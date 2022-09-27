@@ -61,7 +61,8 @@ end
 Run from the root of your application:
 
 ```bash
-mix phx.gen.storybook
+$> mix deps.get
+$> mix phx.gen.storybook
 ```
 
 And you are ready to go!

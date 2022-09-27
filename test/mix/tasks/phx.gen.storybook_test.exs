@@ -1,7 +1,7 @@
 Code.require_file("../../mix_helper.exs", __DIR__)
 
 defmodule Mix.Tasks.Phx.Gen.StorybookTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import PhxLiveStorybook.MixHelper
   alias Mix.Tasks.Phx.Gen.Storybook
 

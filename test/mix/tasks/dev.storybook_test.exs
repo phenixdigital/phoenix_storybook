@@ -10,9 +10,10 @@ defmodule Mix.Tasks.Dev.StorybookTest do
   end
 
   test "mix dev.storybook" do
-    assert_raise Mix.Error, "phx_live_storybook not found in your mix dependencies", fn ->
-      Storybook.run([])
-    end
+    Storybook.run([])
+    assert_receive {:mix_shell, :info, ["* Running mix deps.get for phx_live_storybook dependency"]}
+    assert_receive {:mix_shell, :info, ["* Running npm ci for phx_live_storybook dependency"]}
+    assert_receive {:mix_shell, :info, ["* Running mix assets.build for phx_live_storybook dependency"]}
   end
 
 end
