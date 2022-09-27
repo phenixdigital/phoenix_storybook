@@ -1,6 +1,8 @@
 defmodule PhxLiveStorybook.Stories.StoryComponentSource do
   @moduledoc false
 
+  require Logger
+
   # Injecting __component_source__ & __file_path__ functions to the story module.
   # To fetch component source, we need to either call function() or component() on the story
   # module, which are not yet compiled.
@@ -36,7 +38,9 @@ defmodule PhxLiveStorybook.Stories.StoryComponentSource do
         nil
     end
   rescue
-    _ -> nil
+    _ ->
+      Logger.warn("cannot load source for component defined in story #{env.file}")
+      nil
   end
 
   defp load_definition(env, function_and_arity) do
