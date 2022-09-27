@@ -140,21 +140,16 @@ We would love your PRs!
 2. Change your mix file to point to this directory:
 
 ```elixir
-# {:phx_live_storybook, "~> 0.3.0"},
 {:phx_live_storybook, path: "../phx_live_storybook"},
 ```
 
-3. Update the assets in phx_live_storybook since this isn't a release
+3. Run dev.storybook mix task from your project
 
 ```bash
-cd ../phx_live_storybook
-mix deps.get
-npm ci --prefix assets
-mix assets.build
+$> mix dev.storybook
 ```
 
 And make sure you read the [CONTRIBUTING](CONTRIBUTING.md) guide.
-
 That should get you running against HEAD and ready to dig into the code!
 
 ## License
