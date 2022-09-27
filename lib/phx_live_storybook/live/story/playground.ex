@@ -53,13 +53,15 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp assign_variations(socket, kind, id, variations) do
     variations =
       for variation <- variations do
-        id =
+        variation_id =
           case kind do
             :group -> {id, variation.id}
             :single -> variation.id
           end
 
-        variation |> Map.take([:attributes, :let, :slots, :template]) |> Map.put(:id, id)
+        variation
+        |> Map.take([:attributes, :let, :slots, :template])
+        |> Map.put(:id, variation_id)
       end
 
     assign(socket, variation_id: id, variations: variations)
@@ -101,12 +103,19 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp assign_playground_fields(socket = %{assigns: %{story: story, variations: variations}}) do
     fields =
-      for attr = %Attr{} <- story.merged_attributes(), reduce: %{} do
+      for attr = %Attr{id: attr_id} <- story.merged_attributes(), reduce: %{} do
         acc ->
-          attr_examples = for %{attributes: attrs} <- variations, do: Map.get(attrs, attr.id)
+          attr_values =
+            for %{id: variation_id, attributes: attrs} <- variations do
+              if attr_id == :id do
+                TemplateHelpers.unique_variation_id(story, variation_id)
+              else
+                Map.get(attrs, attr_id)
+              end
+            end
 
           field =
-            case Enum.uniq(attr_examples) do
+            case Enum.uniq(attr_values) do
               [] -> nil
               [val] -> val
               _ -> :locked
@@ -319,7 +328,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                           <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
-                            fields={@fields} examples={attr.examples} values={attr.values} myself={@myself}
+                            fields={@fields} values={attr.values} myself={@myself}
                             template_attributes={Map.get(@template_attributes, @variation.id, %{})}
                           />
                         </td>
@@ -556,7 +565,7 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: type, examples: nil, values: nil})
+  defp attr_input(assigns = %{type: type, values: nil})
        when type in [:integer, :float] do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
@@ -565,23 +574,19 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: :integer, examples: min..max}) do
+  defp attr_input(assigns = %{type: :integer, values: min..max}) do
     ~H"""
     <%= number_input(@form, @attr_id, value: @value, min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: :integer, values: min..max}) do
-    attr_input(%{assigns | examples: min..max})
-  end
-
-  defp attr_input(assigns = %{type: :string, examples: nil, values: nil}) do
+  defp attr_input(assigns = %{type: :string, values: nil}) do
     ~H"""
     <%= text_input(@form, @attr_id, value: @value, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{type: _type, examples: nil, values: nil, value: value}) do
+  defp attr_input(assigns = %{type: _type, values: nil, value: value}) do
     assigns = assign(assigns, value: if(is_nil(value), do: "", else: inspect(value)))
 
     ~H"""
@@ -589,17 +594,17 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  defp attr_input(assigns = %{examples: examples}) when not is_nil(examples) do
-    assigns = assign(assigns, examples: [nil | Enum.map(examples, &to_string/1)])
+  defp attr_input(assigns = %{values: values}) when not is_nil(values) do
+    assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
 
     ~H"""
-    <%= select(@form, @attr_id, @examples, value: @value,
+    <%= select(@form, @attr_id, @values, value: @value,
       class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
     """
   end
 
-  defp attr_input(assigns = %{values: examples}) when not is_nil(examples) do
-    attr_input(%{assigns | examples: examples})
+  defp attr_input(assigns = %{values: values}) when not is_nil(values) do
+    attr_input(%{assigns | values: values})
   end
 
   defp on_toggle_click(attr_id, value) do

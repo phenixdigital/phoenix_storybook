@@ -348,7 +348,11 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
       assert render(playground_element) =~ "template_component: one"
       assert render(playground_element) =~ "template_component: two"
-      playground_preview_view |> element(~s|[id="group:one"] #set-foo|) |> render_click()
+
+      playground_preview_view
+      |> element(~s|[id="template_component-group:one"] #set-foo|)
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: foo / status: false"
       assert render(playground_element) =~ "template_component: two / status: false"
 
@@ -358,20 +362,29 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
       assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
 
-      playground_preview_view |> element(~s|[id="group:two"] #set-foo|) |> render_click()
+      playground_preview_view
+      |> element(~s|[id="template_component-group:two"] #set-foo|)
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: foo / status: false"
       refute render(playground_element) =~ "template_component: bar / status: false"
 
       view |> form(form_selector, %{playground: %{label: "bar"}}) |> render_change()
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      playground_preview_view |> element(~s|[id="group:one"] #toggle-status|) |> render_click()
+      playground_preview_view
+      |> element(~s|[id="template_component-group:one"] #toggle-status|)
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: true"
       assert render(playground_element) =~ "template_component: bar / status: false"
 
       wait_for_lv(view)
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
-      playground_preview_view |> element(~s|[id="group:two"] #toggle-status|) |> render_click()
+
+      playground_preview_view
+      |> element(~s|[id="template_component-group:two"] #toggle-status|)
+      |> render_click()
 
       wait_for_lv(view)
       view |> form(form_selector, %{playground: %{status: "true"}}) |> render_change()

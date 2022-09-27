@@ -3,20 +3,24 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
 
   import PhxLiveStorybook.TemplateHelpers
 
-  test "set_variation_id/2" do
+  test "set_variation_dom_id/2" do
+    story = Elixir.TreeStorybook.Component
+
     template =
-      set_variation_id(
+      set_variation_dom_id(
         """
         <div id=":variation_id">
           <.lsb-variation phx-click={JS.push("assign", value: %{foo: "bar"})}/>
           <.lsb-variation phx-click={JS.push("toggle", value: %{attr: :foo})}/>
         </div>
         """,
+        story,
         :hello_world
       )
+      |> set_js_push_variation_id(:hello_world)
 
     assert template == """
-           <div id="hello_world">
+           <div id="component-hello_world">
              <.lsb-variation phx-click={JS.push("assign", value: %{foo: "bar", variation_id: :hello_world})}/>
              <.lsb-variation phx-click={JS.push("toggle", value: %{attr: :foo, variation_id: :hello_world})}/>
            </div>

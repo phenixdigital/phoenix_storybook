@@ -70,7 +70,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
-      assert html |> Floki.attribute("id") |> hd() == "hello"
+      assert html |> Floki.attribute("id") |> hd() == "template_component-hello"
       assert html |> Floki.find("span") |> length() == 1
     end
 
@@ -103,8 +103,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
         |> Floki.parse_fragment!()
 
       assert html |> Floki.attribute("id") |> length() == 2
-      assert html |> Floki.attribute("id") |> Enum.at(0) == "group:one"
-      assert html |> Floki.attribute("id") |> Enum.at(1) == "group:two"
+      assert html |> Floki.attribute("id") |> Enum.at(0) == "template_component-group:one"
+      assert html |> Floki.attribute("id") |> Enum.at(1) == "template_component-group:two"
       assert html |> Floki.find("span") |> length() == 2
     end
 

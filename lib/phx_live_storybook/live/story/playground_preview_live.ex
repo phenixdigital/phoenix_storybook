@@ -28,23 +28,23 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
     {:ok,
      socket
      |> assign(story: story, topic: session["topic"], theme: session["theme"])
-     |> assign_variations(variation_or_group), layout: false}
+     |> assign_variations(story, variation_or_group), layout: false}
   end
 
-  defp assign_variations(socket, variation_or_group) do
+  defp assign_variations(socket, story, variation_or_group) do
     case variation_or_group do
       variation = %Variation{} ->
-        assign_variations(socket, variation, [variation])
+        assign_variations(socket, story, variation, [variation])
 
       group = %VariationGroup{variations: variations} ->
-        assign_variations(socket, group, variations)
+        assign_variations(socket, story, group, variations)
 
       _ ->
-        assign_variations(socket, nil, [])
+        assign_variations(socket, story, nil, [])
     end
   end
 
-  defp assign_variations(socket, variation_or_group, variations) do
+  defp assign_variations(socket, story, variation_or_group, variations) do
     assign(
       socket,
       counter: 0,
@@ -58,12 +58,23 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
             slots: variation.slots,
             attributes:
               Map.merge(
-                %{id: "playground-preview-#{variation.id}", theme: socket.assigns.theme},
+                %{
+                  id: variation_id(story, variation_or_group, variation),
+                  theme: socket.assigns.theme
+                },
                 variation.attributes
               )
           }
         end
     )
+  end
+
+  defp variation_id(story, %VariationGroup{id: group_id}, %Variation{id: id}) do
+    TemplateHelpers.unique_variation_id(story, {group_id, id})
+  end
+
+  defp variation_id(story, %Variation{}, %Variation{id: id}) do
+    TemplateHelpers.unique_variation_id(story, id)
   end
 
   def render(assigns) do
@@ -79,7 +90,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)}
            style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
-        <%= ComponentRenderer.render_multiple_variations(fun_or_component(@story), @variation, @variations, template, opts) %>
+        <%= ComponentRenderer.render_multiple_variations(@story, fun_or_component(@story), @variation, @variations, template, opts) %>
       </div>
     </div>
     """
@@ -122,11 +133,11 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
     {:noreply,
      socket
      |> assign(:theme, theme)
-     |> assign_variations(socket.assigns.variation)}
+     |> assign_variations(socket.assigns.story, socket.assigns.variation)}
   end
 
   def handle_info({:set_variation, variation}, socket) do
-    {:noreply, assign_variations(socket, variation)}
+    {:noreply, assign_variations(socket, socket.assigns.story, variation)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}

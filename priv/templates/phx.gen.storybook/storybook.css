@@ -1,1 +1,7 @@
-/* This file is for your storybook custom CSS */
+/* This file is for your storybook custom CSS 
+ * Put your component styling under .lsb-sandbox scope. 
+ * See the https://hexdocs.pm/phx_live_storybook/sandboxing.html guide for more info.
+ */
+.lsb-sandbox {
+  font-family: ui-sans-serif, system-ui;
+}

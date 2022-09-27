@@ -92,7 +92,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       code = render_variation_code(component, :hello)
 
       assert code =~ """
-             <div id=":variation_id" class="template-div">
+             <div id="template_component-hello" class="template-div">
                <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
                <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
                <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>

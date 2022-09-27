@@ -230,7 +230,7 @@ defmodule PhxLiveStorybook.StoryLive do
           <a href="#" phx-click="set-tab" phx-value-tab={tab} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}"}>
             <span class={active_span(@tab, tab)}>
               <i class={"lsb #{icon} lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}></i>
-              <span class={"lsb group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
+              <span class={"lsb lsb-whitespace-nowrap group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
                 <%= label %>
               </span>
             </span>
@@ -369,8 +369,7 @@ defmodule PhxLiveStorybook.StoryLive do
   defp variation_extra_assigns(%VariationGroup{id: group_id}, assigns) do
     for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
         into: %{} do
-      {variation_id,
-       Map.merge(extra_assigns, %{id: "#{group_id}-#{variation_id}", theme: assigns.theme})}
+      {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
     end
     |> Map.put(:theme, assigns.theme)
   end

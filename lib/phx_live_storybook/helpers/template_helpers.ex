@@ -8,26 +8,37 @@ defmodule PhxLiveStorybook.TemplateHelpers do
 
   def default_template, do: "<.lsb-variation/>"
 
-  def set_variation_id(template, variation_id) do
-    template = String.replace(template, ":variation_id", variation_id_to_s(variation_id))
+  def set_variation_dom_id(template, story, variation_id) do
+    String.replace(template, ":variation_id", unique_variation_id(story, variation_id))
+  end
 
+  def set_js_push_variation_id(template, variation_id) do
     Regex.replace(@js_push_regex, template, fn _, open, match, close ->
       match =
         match
         |> Code.eval_string()
         |> elem(0)
-        |> Map.put(:variation_id, variation_id_to_serializable(variation_id))
+        |> Map.put(:variation_id, unique_variation_iderializable(variation_id))
         |> inspect()
 
       open <> match <> close
     end)
   end
 
-  defp variation_id_to_s({group_id, variation_id}), do: "#{group_id}:#{variation_id}"
-  defp variation_id_to_s(variation_id), do: to_string(variation_id)
+  def unique_variation_id(story, {group_id, variation_id}) do
+    Macro.underscore("#{story_module_name(story)}-#{group_id}:#{variation_id}")
+  end
 
-  defp variation_id_to_serializable({group_id, variation_id}), do: [group_id, variation_id]
-  defp variation_id_to_serializable(variation_id), do: variation_id
+  def unique_variation_id(story, variation_id) do
+    Macro.underscore("#{story_module_name(story)}-#{variation_id}")
+  end
+
+  defp story_module_name(story) do
+    story |> to_string() |> String.split(".") |> Enum.at(-1)
+  end
+
+  defp unique_variation_iderializable({group_id, variation_id}), do: [group_id, variation_id]
+  defp unique_variation_iderializable(variation_id), do: variation_id
 
   def variation_template?(template) do
     Regex.match?(@variation_regex, template)
