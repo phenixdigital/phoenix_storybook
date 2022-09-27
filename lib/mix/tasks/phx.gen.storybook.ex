@@ -9,9 +9,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     * the storybook backend in `lib/my_app_web/storybook.ex`
     * a dummy component in `storybook/components/my_component.story.exs`
-    * a dummy page in `storybook/my_app_web/my_page.story.exs`
-    * your custom js in `assets/js/storybook.js`
-    * your custom css in `assets/css/storybook.css`
+    * a dummy page in `storybook/my_page.story.exs`
+    * a custom js in `assets/js/storybook.js`
+    * a custom css in `assets/css/storybook.css`
   """
 
   use Mix.Task
@@ -26,10 +26,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       )
     end
 
-    Mix.shell().info("Starting Storybook generation")
+    Mix.shell().info("Starting storybook generation")
 
     web_module = web_module()
-
     app_folder = Path.join("lib", Phoenix.Naming.underscore(web_module))
     component_folder = "storybook/components"
     page_folder = "storybook"
@@ -82,14 +81,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     base = Mix.Phoenix.base()
 
     cond do
-      Mix.Phoenix.context_app() != Mix.Phoenix.otp_app() ->
-        Module.concat([base])
-
-      String.ends_with?(base, "Web") ->
-        Module.concat([base])
-
-      true ->
-        Module.concat(["#{base}Web"])
+      Mix.Phoenix.context_app() != Mix.Phoenix.otp_app() -> Module.concat([base])
+      String.ends_with?(base, "Web") -> Module.concat([base])
+      true -> Module.concat(["#{base}Web"])
     end
   end
 end

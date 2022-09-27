@@ -67,6 +67,7 @@ defmodule PhxLiveStorybook.MixProject do
     [
       "guides/components.md",
       "guides/sandboxing.md",
+      "guides/setup.md",
       "guides/theming.md"
     ]
   end
