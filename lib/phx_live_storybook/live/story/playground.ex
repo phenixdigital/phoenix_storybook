@@ -532,6 +532,11 @@ defmodule PhxLiveStorybook.Story.Playground do
     "lsb lsb-rounded lsb-px-1 md:lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-[0.5em] md:lsb-text-xs"
   end
 
+  defp type_label({:struct, type}) do
+    type = type |> inspect() |> String.split(".") |> Enum.at(-1)
+    "%#{type}{}"
+  end
+
   defp type_label(type) do
     type |> inspect() |> String.split(".") |> Enum.at(-1)
   end
@@ -542,6 +547,10 @@ defmodule PhxLiveStorybook.Story.Playground do
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
             ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+
+          {:eval, value} ->
+            value = String.replace(value, ~s|"|, "")
+            assigns |> assign(:value, value) |> attr_input()
 
           value ->
             assigns |> assign(:value, value) |> attr_input()
@@ -589,7 +598,14 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp attr_input(assigns = %{type: _type, values: nil, value: value}) do
-    assigns = assign(assigns, value: if(is_nil(value), do: "", else: inspect(value)))
+    value =
+      case value do
+        nil -> ""
+        s when is_binary(s) -> s
+        val -> inspect(val)
+      end
+
+    assigns = assign(assigns, value: value)
 
     ~H"""
     <%= text_input(@form, @attr_id, value: @value, disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>

@@ -52,6 +52,16 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
         slots: [
           "<p>inner block</p>"
         ]
+      },
+      %Variation{
+        id: :with_eval,
+        attributes: %{
+          label: "with eval",
+          index_i: {:eval, "10 + 15"}
+        },
+        slots: [
+          "<p>inner block</p>"
+        ]
       }
     ]
   end

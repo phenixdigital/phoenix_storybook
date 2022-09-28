@@ -271,3 +271,28 @@ your variation.
   ]
 }
 ```
+
+## Late evaluation
+
+In some cases, you want to pass to your variation attributes a complex value which should be
+evaluated at runtime but not in code preview (where you rather want to see the orignal expression).
+
+For instance with the following variation of a `Modal` component.
+
+```elixir
+%Variation{
+  attributes: %{
+    :"on-open": JS.push("open"),
+    :"on-close": {:eval, ~s|JS.push("close")|}
+  }
+}
+```
+
+Both open & close events would work, but code would be rendered like this.
+
+```
+<.modal
+  on-open="%Phoenix.LiveView.JS{ops: [["push", %{event: "open"}]]}"
+  on-close={JS.push("close")}
+/>
+```

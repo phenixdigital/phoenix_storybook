@@ -169,6 +169,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
       assert render_variation(component, :default)
              |> rendered_to_string() =~ ~s|<div foo="bar" data-bar="42">|
     end
+
+    test "renders a variation with an evaluated attribute", %{all_types_component: component} do
+      assert render_variation(component, :with_eval) |> rendered_to_string() =~ ~s|index_i: 25|
+    end
   end
 
   defp render_variation(story, variation_id) do

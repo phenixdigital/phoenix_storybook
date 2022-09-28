@@ -215,6 +215,9 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
     prefix <>
       Enum.map_join(attributes, " ", fn
+        {name, {:eval, val}} ->
+          ~s|#{name}={#{val}}|
+
         {name, val} when is_binary(val) ->
           ~s|#{name}="#{val}"|
 

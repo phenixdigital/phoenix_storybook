@@ -27,6 +27,8 @@
 - feature: provide custom aliases & imports to your stories/templates
   (see this [guide](guides/components.md) for more details).
 - feature: you can provide a `let` attribute to your inner blocks.
+- feature: you can use late evaluation with `{:eval, val}` if you want to preserve the original
+  expression in code preview.
 - improvement: stories compilation is lazy in dev environment (and eager in other envs). This
   behavior can be tweaked with the `:compilation_mode` config key.
 - improvement: storybook playground is now responsive.
