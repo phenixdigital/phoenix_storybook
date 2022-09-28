@@ -11,6 +11,10 @@ defmodule TreeStorybook.Component do
         type: :string,
         doc: "component label",
         required: true
+      },
+      %Attr{
+        id: :theme,
+        type: :atom
       }
     ]
   end

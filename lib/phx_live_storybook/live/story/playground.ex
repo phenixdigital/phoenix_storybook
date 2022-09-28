@@ -62,6 +62,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         variation
         |> Map.take([:attributes, :let, :slots, :template])
         |> Map.put(:id, variation_id)
+        |> put_in([:attributes, :theme], socket.assigns[:theme])
       end
 
     assign(socket, variation_id: id, variations: variations)
@@ -309,7 +310,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                     </td>
                   </tr>
                   <% else %>
-                    <%= for attr <- @story.merged_attributes() do %>
+                    <%= for attr <- @story.merged_attributes(), !is_nil(@variation)  do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if attr.required do %>

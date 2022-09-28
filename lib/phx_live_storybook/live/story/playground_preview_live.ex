@@ -65,7 +65,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
               Map.merge(
                 %{
                   id: variation_id(story, variation_or_group, variation),
-                  theme: socket.assigns.theme
+                  theme: theme(socket.assigns.theme)
                 },
                 variation.attributes
               )
@@ -81,6 +81,9 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   defp variation_id(story, %Variation{}, %Variation{id: id}) do
     TemplateHelpers.unique_variation_id(story, id)
   end
+
+  defp theme(theme) when is_binary(theme), do: String.to_atom(theme)
+  defp theme(theme) when is_atom(theme), do: theme
 
   def render(assigns) do
     template = TemplateHelpers.get_template(assigns.story.template, assigns.variation)

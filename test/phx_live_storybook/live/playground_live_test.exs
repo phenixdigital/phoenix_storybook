@@ -205,6 +205,40 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
     end
   end
 
+  describe "theme switch in playground" do
+    test "component preview is updated as a different theme is selected", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      html = view |> element("#playground-preview-live") |> render()
+      assert html =~ "component: hello default"
+
+      view |> element("a.lsb-theme", "Colorful") |> render_click()
+      wait_for_preview_lv(view)
+      html = view |> element("#playground-preview-live") |> render()
+      assert html =~ "component: hello colorful"
+    end
+
+    test "component code is updated as a different theme is selected", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      view |> element("a", "Code") |> render_click()
+      assert view |> element("pre.highlight") |> render() =~ ":default"
+
+      view |> element("a.lsb-theme", "Colorful") |> render_click()
+      wait_for_preview_lv(view)
+      assert view |> element("pre.highlight") |> render() =~ ":colorful"
+    end
+
+    test "playground form is updated as a different theme is selected", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      form_theme_selector = "#tree_storybook_component-playground-form_theme"
+      assert view |> element(form_theme_selector) |> render() =~ ~s|value=":default"|
+
+      view |> element("a.lsb-theme", "Colorful") |> render_click()
+
+      wait_for_lv(view)
+      assert view |> element(form_theme_selector) |> render() =~ ~s|value=":colorful"|
+    end
+  end
+
   describe "playground event logs" do
     test "it shows live_view type event log", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/event/event_component?tab=playground")
