@@ -300,7 +300,7 @@ defmodule PhxLiveStorybook.StoryLive do
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class={LayoutView.sandbox_class(assigns)} style="width: 100%;">
+              <div class={LayoutView.sandbox_class(@socket, assigns)} style="width: 100%;">
                 <%= ComponentRenderer.render_variation(story, variation_id, variation_extra_assigns) %>
               </div>
             <% end %>
@@ -347,7 +347,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp render_content(:page, story, assigns) do
     ~H"""
-    <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(assigns)}"}>
+    <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(@socket, assigns)}"}>
       <%= story.render(%{tab: @tab, theme: @theme}) |> to_raw_html() %>
     </div>
     """

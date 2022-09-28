@@ -235,6 +235,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                   "variation_id" => to_string(@variation_id),
                   "theme" => to_string(@theme),
                   "topic" => "playground-#{inspect(self())}",
+                  "backend_module" => @backend_module
                 },
                 container: {:div, style: "height: 100%; width: 100%;"}
           %>

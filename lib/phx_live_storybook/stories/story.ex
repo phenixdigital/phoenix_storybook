@@ -140,6 +140,7 @@ defmodule PhxLiveStorybook.Story do
       @before_compile StoryComponentSource
 
       import Phoenix.Component
+      alias Phoenix.LiveView.JS
       alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
       @impl StoryBehaviour

@@ -34,10 +34,10 @@ defmodule PhxLiveStorybook.LayoutView do
   defp storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
-  defp title(socket_or_conn), do: storybook_setting(socket_or_conn, :title, "Live Storybook")
+  defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
 
-  defp title_prefix(socket_or_conn) do
-    title(socket_or_conn) <> " - "
+  defp title_prefix(conn_or_socket) do
+    title(conn_or_socket) <> " - "
   end
 
   defp storybook_setting(conn_or_socket, key, default \\ nil)
@@ -118,6 +118,15 @@ defmodule PhxLiveStorybook.LayoutView do
      "lsb-opacity-0 lsb-scale-95"}
   end
 
-  def sandbox_class(%{theme: nil}), do: "lsb-sandbox"
-  def sandbox_class(%{theme: theme}), do: "lsb-sandbox theme-#{theme}"
+  def sandbox_class(conn_or_socket, %{theme: nil}), do: main_sandbox_class(conn_or_socket)
+
+  def sandbox_class(conn_or_socket, %{theme: theme}) do
+    "#{main_sandbox_class(conn_or_socket)} theme-#{theme}"
+  end
+
+  defp main_sandbox_class(conn_or_socket) do
+    backend_module = backend_module(conn_or_socket)
+    custom_class = backend_module.config(:sandbox_class)
+    if custom_class, do: "lsb-sandbox " <> custom_class, else: "lsb-sandbox"
+  end
 end

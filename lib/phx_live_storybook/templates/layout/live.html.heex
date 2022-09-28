@@ -10,7 +10,7 @@
 
     <%= if themes = themes(@socket) do %>
       <div class="lsb lsb-absolute lsb-top-4 lsb-right-14 lg:lsb-right-5 lsb-inline-block ">
-        <button type="button" class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
+        <button type="button" class="lsb lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
           <i class={"lsb far fa-palette #{current_theme_dropdown_class(@socket, assigns)}"}></i>
         </button>
         
@@ -39,7 +39,7 @@
   </div>
 
   <div class="lsb lg:lsb-hidden lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
-    <button type="button" phx-click={JS.dispatch("lsb:open-search")} class="lsb lsb-sandbox lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" >
+    <button type="button" phx-click={JS.dispatch("lsb:open-search")} class="lsb lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" >
       <i class="lsb fal fa-magnifying-glass fa"></i>
     </button>
   </div>
