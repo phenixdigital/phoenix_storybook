@@ -64,7 +64,8 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
             "story" => @story,
             "variation_id" => @variation_id,
             "theme" => @theme,
-            "topic" => @topic
+            "topic" => @topic,
+            "backend_module" => @backend_module
             },
           container: {:div, style: "height: 100vh; width: 100wh;"}
         %>

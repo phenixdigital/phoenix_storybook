@@ -3,8 +3,7 @@
 In `PhxLiveStorybook` your components live within the storybook, so they share
 some context with the storybook: **styling** and **scripts**.
 
-While the original Storybook for React only [relies on iframes](https://storybook.js.org/docs/react/configure/story-rendering),
-we found them quite slow and don't want them to be the default choice.
+While the original Storybook for React only [relies on iframes](https://storybook.js.org/docs/react/configure/story-rendering), we find them quite slow and don't want them to be the default choice.
 
 This guide will explain:
 
@@ -58,24 +57,35 @@ The previous part (2.) was about storybook styles not leaking into your componen
 about the opposite: don't accidentally mess up Storybook styling with your styles.
 
 All containers rendering your components in the storybook (`stories`, `playground`, `pages` ...)
-have the `.lsb-sandbox` CSS class.
+carry the `.lsb-sandbox` CSS class and a **custom sandboxing class of your choice**.
 
-You can leverage this to scope your styles with this class. Here is how you can do it with `TailwindCSS`:
+You can leverage this to scope your styles with this class. Here is how you can do it with
+`TailwindCSS`:
+
+- configure `phx_live_storybook` with a custom `sandbox_class`:
+
+```elixir
+# lib/my_app_web/storybook.ex
+defmodule MyAppWeb.Storybook do
+  use PhxLiveStorybook,
+    ...
+    sandbox_class: "my-app-sandbox",
+```
 
 - use Tailwind [important selector strategy](https://tailwindcss.com/docs/configuration#selector-strategy)
-  with this class. It will prefix all your tailwind classes with `.lsb-sandbox` increasing their
-  specificity, hence their priority.
+  with this class. It will prefix all your tailwind classes increasing their specificity, hence
+  their priority.
 
 ```javascript
 // assets/tailwind.config.js
 module.exports = {
   // ...
-  important: ".lsb-sandbox",
+  important: ".my-app-sandbox",
 };
 ```
 
 - nest your custom styles under Tailwind `@layer utilities`. This way, your styling will also
-  benefit from `.lsb-sandbox` scoping.
+  benefit from sandboxing.
 
 ```css
 /* assets/css/components.css */
@@ -84,18 +94,18 @@ module.exports = {
 @tailwind utilities;
 
 @layer utilities {
-  /* this style will be generated as .lsb-sandbox * { ... } */
+  /* this style will be generated as .my-app-sandbox * { ... } */
   * {
     font-family: "MyComponentsFont";
     @apply text-slate-600;
   }
 
-  /* this style will be generated as .lsb-sandbox h1 { ... } */
+  /* this style will be generated as .my-app-sandbox h1 { ... } */
   h1 {
     @apply text-2xl font-bold text-slate-700 mt-2 mb-6;
   }
 
-  /* this style will be generated as .lsb-sandbox h2 { ... } */
+  /* this style will be generated as .my-app-sandbox h2 { ... } */
   h2 {
     @apply text-xl font-bold text-slate-700 mt-2 mb-4;
   }

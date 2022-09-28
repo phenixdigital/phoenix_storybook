@@ -27,7 +27,12 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
 
     {:ok,
      socket
-     |> assign(story: story, topic: session["topic"], theme: session["theme"])
+     |> assign(
+       story: story,
+       topic: session["topic"],
+       theme: session["theme"],
+       backend_module: session["backend_module"]
+     )
      |> assign_variations(story, variation_or_group), layout: false}
   end
 
@@ -88,7 +93,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
 
     ~H"""
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
-      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(assigns)}
+      <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(@socket, assigns)}
            style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
         <%= ComponentRenderer.render_multiple_variations(@story, fun_or_component(@story), @variation, @variations, template, opts) %>
       </div>

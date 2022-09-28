@@ -83,14 +83,20 @@ defmodule MyAppWeb.Storybook do
     # Path to your storybook stories (required).
     content_path: Path.expand("../storybook", __DIR__),
 
-    # Path to your components stylesheet.
-    # Remote path, not local file-system path
-    css_path: "/assets/my_components.css",
-
     # Path to your JS asset, which will be loaded just before PhxLiveStorybook's own
     # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
-    # Remote path, not local file-system path.
-    js_path: "/assets/my_components.js",
+    # Remote path (not local file-system path) which means this file should be served
+    # by your own application endpoint.
+    js_path: "/assets/storybook.js",
+
+    # Path to your components stylesheet.
+    # Remote path (not local file-system path) which means this file should be served
+    # by your own application endpoint.
+    css_path: "/assets/storybook.css",
+
+    # This CSS class will be put on storybook container elements where your own styles should
+    # prevail. See the `guides/sandboxing.md` guide for more details.
+    sandbox_class: "my-app-sandbox",
 
     # Custom storybook title. Default is "Live Storybook".
     title: "My Live Storybook",
