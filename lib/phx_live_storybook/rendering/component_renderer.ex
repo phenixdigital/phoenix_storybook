@@ -251,6 +251,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   defp attributes_markup(attributes) do
     Enum.map_join(attributes, " ", fn
+      {name, {:eval, val}} -> ~s|#{name}={#{val}}|
       {name, val} when is_binary(val) -> ~s|#{name}="#{val}"|
       {name, val} -> ~s|#{name}={#{inspect(val, structs: false)}}|
     end)
@@ -290,14 +291,16 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   defp eval_quoted_functions(opts, fun) when is_function(fun) do
     [
-      {Phoenix.Component, [live_file_input: 2]},
+      {Phoenix.Component, Phoenix.Component.__info__(:functions)},
+      {Kernel, Kernel.__info__(:functions)},
       {function_module(fun), [{function_name(fun), 1}]}
     ] ++ extra_imports(opts)
   end
 
   defp eval_quoted_functions(opts, mod) when is_atom(mod) do
     [
-      {Phoenix.Component, [live_component: 1, live_file_input: 2]}
+      {Phoenix.Component, Phoenix.Component.__info__(:functions)},
+      {Kernel, Kernel.__info__(:functions)}
     ] ++ extra_imports(opts)
   end
 

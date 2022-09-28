@@ -187,6 +187,11 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       code = render_variation_code(component, :default)
       assert code =~ ~s|<.component id="with-id-component-default"/>|
     end
+
+    test "renders a variation with an evaluated attribute", %{all_types_component: component} do
+      code = render_variation_code(component, :with_eval)
+      assert code =~ ~s|<.all_types_component index_i={10 + 15} label="with eval">|
+    end
   end
 
   describe "render_component_source/2" do

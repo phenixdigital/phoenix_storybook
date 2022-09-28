@@ -6,6 +6,12 @@ defmodule PhxLiveStorybook.Stories.Variation do
   Each variation will be displayed in the storybook as a code snippet alongside with the
   component preview.
 
+  Variations attributes type are checked against their matching attribute (if any) and will raise
+  a compilation an error in case of mismatch.
+
+  Advanced component & variation documentation is available in the
+  [components guide](guides/components.md).
+
   ## Usage
   ```elixir
     def variations do

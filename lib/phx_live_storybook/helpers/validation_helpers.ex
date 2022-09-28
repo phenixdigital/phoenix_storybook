@@ -10,6 +10,7 @@ defmodule PhxLiveStorybook.ValidationHelpers do
   end
 
   def match_attr_type?(nil, _type), do: true
+  def match_attr_type?({:eval, _term}, _type), do: true
   def match_attr_type?(_term, :any), do: true
   def match_attr_type?(term, {:tuple, s}) when is_tuple(term) and tuple_size(term) == s, do: true
   def match_attr_type?(term, :string) when is_binary(term), do: true
