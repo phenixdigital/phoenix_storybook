@@ -184,11 +184,8 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
 
         is_atom(type) ->
           case Atom.to_string(type) do
-            "Elixir." <> _ ->
-              {:struct, type}
-
-            _ ->
-              bad_type!(attr_id, type, file_path)
+            "Elixir." <> _ -> :ok
+            _ -> bad_type!(attr_id, type, file_path)
           end
 
         true ->

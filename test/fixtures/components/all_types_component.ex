@@ -1,6 +1,8 @@
 defmodule AllTypesComponent do
   use Phoenix.Component
 
+  attr :event, Phoenix.LiveView.JS
+
   defmodule Struct do
     defstruct [:name]
   end

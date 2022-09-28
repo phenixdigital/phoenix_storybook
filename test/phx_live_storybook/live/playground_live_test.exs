@@ -187,6 +187,18 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
 
       assert view |> element("pre.highlight") |> render() =~ "label"
     end
+
+    test "a late evaluated attribute is properly displayed", %{conn: conn} do
+      {:ok, view, _html} =
+        live(
+          conn,
+          "/storybook/b_folder/all_types_component?tab=playground&variation_id=with_eval"
+        )
+
+      assert view
+             |> element("#tree_storybook_b_folder_all_types_component-playground-form_index_i")
+             |> render() =~ ~s|value="10 + 15"|
+    end
   end
 
   describe "live_component playground" do
