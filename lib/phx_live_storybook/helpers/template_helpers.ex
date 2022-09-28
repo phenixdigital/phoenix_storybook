@@ -26,11 +26,15 @@ defmodule PhxLiveStorybook.TemplateHelpers do
   end
 
   def unique_variation_id(story, {group_id, variation_id}) do
-    Macro.underscore("#{story_module_name(story)}-#{group_id}:#{variation_id}")
+    "#{story_module_name(story)}-#{group_id}:#{variation_id}"
+    |> Macro.underscore()
+    |> String.replace("_", "-")
   end
 
   def unique_variation_id(story, variation_id) do
-    Macro.underscore("#{story_module_name(story)}-#{variation_id}")
+    "#{story_module_name(story)}-#{variation_id}"
+    |> Macro.underscore()
+    |> String.replace("_", "-")
   end
 
   defp story_module_name(story) do

@@ -186,17 +186,17 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     test "component variation_group with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component")
 
-      variation_one = element(view, ~s|[id="template_component-group:one"] span|)
-      variation_two = element(view, ~s|[id="template_component-group:two"] span|)
+      variation_one = element(view, ~s|[id="template-component-group:one"] span|)
+      variation_two = element(view, ~s|[id="template-component-group:two"] span|)
 
       assert render(variation_one) =~ "template_component: one / status: false"
       assert render(variation_two) =~ "template_component: two / status: false"
 
-      view |> element(~s|[id="template_component-group:one"] #set-bar|) |> render_click()
+      view |> element(~s|[id="template-component-group:one"] #set-bar|) |> render_click()
       assert render(variation_one) =~ "template_component: bar / status: false"
       assert render(variation_two) =~ "template_component: two / status: false"
 
-      view |> element(~s|[id="template_component-group:two"] #toggle-status|) |> render_click()
+      view |> element(~s|[id="template-component-group:two"] #toggle-status|) |> render_click()
       assert render(variation_one) =~ "template_component: bar / status: false"
       assert render(variation_two) =~ "template_component: two / status: true"
     end

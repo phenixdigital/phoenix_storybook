@@ -92,7 +92,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       code = render_variation_code(component, :hello)
 
       assert code =~ """
-             <div id="template_component-hello" class="template-div">
+             <div id="template-component-hello" class="template-div">
                <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
                <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
                <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
@@ -180,6 +180,12 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
                <:other_slot>not displayed</:other_slot>
              </.all_types_component>
              """
+    end
+
+    test "it renders component id only if it has a declared :id attribute" do
+      {:ok, component} = TreeStorybook.load_story("/b_folder/with_id_component")
+      code = render_variation_code(component, :default)
+      assert code =~ ~s|<.component id="with-id-component-default"/>|
     end
   end
 

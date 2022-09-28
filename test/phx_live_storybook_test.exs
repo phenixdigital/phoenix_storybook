@@ -63,7 +63,7 @@ defmodule PhxLiveStorybookTest do
       assert %FolderEntry{
                path: "/b_folder",
                name: "Config Name",
-               entries: [%StoryEntry{}, %StoryEntry{}, %StoryEntry{}]
+               entries: [%StoryEntry{}, %StoryEntry{}, %StoryEntry{}, %StoryEntry{}]
              } = Enum.at(entries, 5)
 
       assert %FolderEntry{

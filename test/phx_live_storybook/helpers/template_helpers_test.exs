@@ -20,7 +20,7 @@ defmodule PhxLiveStorybook.TemplateHelpersTest do
       |> set_js_push_variation_id(:hello_world)
 
     assert template == """
-           <div id="component-hello_world">
+           <div id="component-hello-world">
              <.lsb-variation phx-click={JS.push("assign", value: %{foo: "bar", variation_id: :hello_world})}/>
              <.lsb-variation phx-click={JS.push("toggle", value: %{attr: :foo, variation_id: :hello_world})}/>
            </div>

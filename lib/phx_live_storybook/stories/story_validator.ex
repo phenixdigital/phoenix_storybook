@@ -530,7 +530,10 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
 
   defp validate_variation_required_attributes!(file_path, attributes, variations) do
     required_attributes =
-      for %Attr{id: attr_id, required: true} <- attributes, into: MapSet.new(), do: attr_id
+      for %Attr{id: attr_id, required: true} <- attributes,
+          attr_id != :id,
+          into: MapSet.new(),
+          do: attr_id
 
     for %Variation{id: variation_id, attributes: attributes} <- variations,
         attributes_keys = Map.keys(attributes) do

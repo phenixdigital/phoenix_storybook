@@ -24,10 +24,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
                "<span data-index=\"37\">component: world</span>"
 
       # I did not manage to assert against the HTML
-      assert [%Phoenix.LiveView.Component{id: "live_component-hello"}] =
+      assert [%Phoenix.LiveView.Component{id: "live-component-hello"}] =
                render_variation(live_component, :hello).dynamic.([])
 
-      assert [%Phoenix.LiveView.Component{id: "live_component-world"}] =
+      assert [%Phoenix.LiveView.Component{id: "live-component-world"}] =
                render_variation(live_component, :world).dynamic.([])
     end
 
@@ -60,7 +60,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     test "it is working with an inner_block requiring a let attribute, in a live component" do
       {:ok, component} = TreeStorybook.load_story("/let/let_live_component")
 
-      assert [%Phoenix.LiveView.Component{id: "let_live_component-default"}] =
+      assert [%Phoenix.LiveView.Component{id: "let-live-component-default"}] =
                render_variation(component, :default).dynamic.([])
     end
 
@@ -70,7 +70,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
-      assert html |> Floki.attribute("id") |> hd() == "template_component-hello"
+      assert html |> Floki.attribute("id") |> hd() == "template-component-hello"
       assert html |> Floki.find("span") |> length() == 1
     end
 
@@ -103,8 +103,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
         |> Floki.parse_fragment!()
 
       assert html |> Floki.attribute("id") |> length() == 2
-      assert html |> Floki.attribute("id") |> Enum.at(0) == "template_component-group:one"
-      assert html |> Floki.attribute("id") |> Enum.at(1) == "template_component-group:two"
+      assert html |> Floki.attribute("id") |> Enum.at(0) == "template-component-group:one"
+      assert html |> Floki.attribute("id") |> Enum.at(1) == "template-component-group:two"
       assert html |> Floki.find("span") |> length() == 2
     end
 

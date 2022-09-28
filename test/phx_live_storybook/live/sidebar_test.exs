@@ -36,7 +36,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 0
 
       # sixth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
+      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 4
     end
 
     test "sidebar with a path contains all stories, with 2 open folders" do
@@ -54,7 +54,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       assert find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li") |> length() == 2
 
       # sixth node (which is 2nd folder) is open (by config)
-      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 3
+      assert find(document, "nav>ul>li>ul>li:nth-child(6)>ul>li") |> length() == 4
     end
 
     test "sidebar with a path has active story marked as active" do
