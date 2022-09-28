@@ -3,6 +3,7 @@ defmodule <%= inspect schema.module %>.Storybook do
     otp_app: <%= inspect schema.app %>,
     content_path: Path.expand("../../storybook", __DIR__),
     # assets path are remote path, not local file-system paths
-    css_path: "/assets/css/storybook.css",
-    js_path: "/assets/js/storybook.js"
+    css_path: "/assets/storybook.css",
+    js_path: "/assets/storybook.js",
+    sandbox_class: <%= inspect schema.sandbox_class %>
 end

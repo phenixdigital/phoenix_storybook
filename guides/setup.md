@@ -62,12 +62,12 @@ end
 Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your
 app and the storybook.
 
-In this README, we use `assets/css/my_components.css` as an example.
+In this README, we use `assets/css/storybook.css` as an example.
 
 If your components require any hooks or custom uploaders, declare them as such in a new JS bundle:
 
 ```javascript
-// assets/js/my_components.js
+// assets/js/storybook.js
 
 import * as Hooks from "./hooks";
 import * as Uploaders from "./uploaders";
@@ -76,6 +76,9 @@ import * as Uploaders from "./uploaders";
   window.storybook = { Hooks, Uploaders };
 })();
 ```
+
+These assets must be bundled and served by your own application. Our custom `mix phx.gen.storybook`
+generator may guide you through these steps.
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
 
