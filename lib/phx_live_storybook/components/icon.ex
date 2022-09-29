@@ -1,7 +1,6 @@
 defmodule PhxLiveStorybook.Components.Icon do
   @moduledoc false
   use PhxLiveStorybook.Web, :component
-  import String, only: [trim: 1]
 
   @doc """
   FontAwesome icons for internal phx_live_storybook usage.
@@ -26,14 +25,15 @@ defmodule PhxLiveStorybook.Components.Icon do
 
   attr(:name, :string, required: true, doc: "The name of the icon, without the fa- prefix.")
   attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:class_list, :list, default: [], doc: "Additional CSS classes")
   attr(:rest, :global, doc: "Any HTML attribute")
 
   def fa_icon(assigns = %{plan: :free}) do
-    ~H(<i class={["fa-solid fa-#{@name}", @class]} {@rest}></i>)
+    ~H(<i class={["fa-solid fa-#{@name}", @class | @class_list]} {@rest}></i>)
   end
 
   def fa_icon(assigns = %{plan: :pro}) do
-    ~H(<i class={["fa-#{@style} fa-#{@name}", @class]} {@rest}></i>])
+    ~H(<i class={["fa-#{@style} fa-#{@name}", @class | @class_list]} {@rest}></i>])
   end
 
   @doc """
@@ -53,6 +53,7 @@ defmodule PhxLiveStorybook.Components.Icon do
 
   attr(:name, :string, required: true, doc: "The name of the icon")
   attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:class_list, :list, default: [], doc: "Additional CSS classes")
   attr(:rest, :global, doc: "Any HTML attribute")
 
   def hero_icon(assigns) do
@@ -63,8 +64,8 @@ defmodule PhxLiveStorybook.Components.Icon do
         [
           assigns
           |> Map.take([:__changed__, :rest])
-          |> update_in([:rest, :class], &String.trim("#{&1} #{assigns[:class]}"))
           |> Map.put(assigns[:style], true)
+          |> update_in([:rest, :class], &[&1, assigns[:class] | assigns[:class_list]])
         ]
       )
     else
@@ -110,26 +111,26 @@ defmodule PhxLiveStorybook.Components.Icon do
   attr(:rest, :global, doc: "Any HTML attribute")
 
   def user_icon(assigns = %{icon: {:fa, name}}) do
-    ~H[<.fa_icon name={name} plan={@fa_plan} class={@class} {@rest}/>]
+    ~H(<.fa_icon name={name} plan={@fa_plan} class={@class} {@rest}/>)
   end
 
   def user_icon(assigns = %{icon: {:fa, name, style}}) do
-    ~H[<.fa_icon name={name} style={style} plan={@fa_plan} class={@class} {@rest}/>]
+    ~H(<.fa_icon name={name} style={style} plan={@fa_plan} class={@class} {@rest}/>)
   end
 
   def user_icon(assigns = %{icon: {:fa, name, style, class}}) do
-    ~H[<.fa_icon name={name} style={style} plan={@fa_plan} class={trim("#{class} #{@class}")} {@rest}/>]
+    ~H(<.fa_icon name={name} style={style} plan={@fa_plan} class_list={[class, @class]} {@rest}/>)
   end
 
   def user_icon(assigns = %{icon: {:hero, name}}) do
-    ~H[<.hero_icon name={name} class={@class} {@rest}/>]
+    ~H(<.hero_icon name={name} class={@class} {@rest}/>)
   end
 
   def user_icon(assigns = %{icon: {:hero, name, style}}) do
-    ~H[<.hero_icon name={name} style={style} class={@class} {@rest}/>]
+    ~H(<.hero_icon name={name} style={style} class={@class} {@rest}/>)
   end
 
   def user_icon(assigns = %{icon: {:hero, name, style, class}}) do
-    ~H[<.hero_icon name={name} style={style} class={trim("#{class} #{@class}")} {@rest}/>]
+    ~H(<.hero_icon name={name} style={style} class_list={[class, @class]} {@rest}/>)
   end
 end
