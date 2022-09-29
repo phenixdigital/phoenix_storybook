@@ -38,7 +38,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
 
   describe "page navigation" do
     test "with a valid navigation it wont raise" do
-      mock = page_stub(navigation: [{:tab, "", ""}])
+      mock = page_stub(navigation: [{:tab, "", {:fa, "icon"}}])
       assert validate!(mock) == mock
     end
 

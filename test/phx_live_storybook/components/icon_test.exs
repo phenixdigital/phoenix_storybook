@@ -9,12 +9,12 @@ defmodule PhxLiveStorybook.Components.IconTest do
 
   describe "fa_icon/1" do
     test "a solid icon will render properly", %{assigns: assigns} do
-      h = ~H(<.fa_icon name="book"/>)
+      h = ~H(<.fa_icon name="book" plan={:free}/>)
       assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book"></i>)
     end
 
     test "a free plan icon will always be solid", %{assigns: assigns} do
-      h = ~H(<.fa_icon name="book" style={:duotone}/>)
+      h = ~H(<.fa_icon name="book" style={:duotone} plan={:free}/>)
       assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book"></i>)
 
       h = ~H(<.fa_icon name="book" style={:duotone} plan={:free}/>)
@@ -27,12 +27,12 @@ defmodule PhxLiveStorybook.Components.IconTest do
     end
 
     test "icon CSS class can be extended", %{assigns: assigns} do
-      h = ~H(<.fa_icon name="book" class="fa-spin"/>)
+      h = ~H(<.fa_icon name="book" class="fa-spin" plan={:free}/>)
       assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book fa-spin"></i>)
     end
 
     test "additional HTML attributes can be passed", %{assigns: assigns} do
-      h = ~H(<.fa_icon name="book" title="A book"/>)
+      h = ~H(<.fa_icon name="book" title="A book" plan={:free}/>)
       assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book" title="A book"></i>)
     end
   end
@@ -63,12 +63,12 @@ defmodule PhxLiveStorybook.Components.IconTest do
 
   describe "user_icon/1" do
     test "fa tuple-2 form is working", %{assigns: assigns} do
-      h = ~H(<.user_icon icon={{:fa, "book"}}/>)
+      h = ~H(<.user_icon icon={{:fa, "book"}} fa_plan={:free}/>)
       assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book"></i>)
     end
 
     test "fa tuple-3 form is working", %{assigns: assigns} do
-      h = ~H(<.user_icon icon={{:fa, "book", :duotone}}/>)
+      h = ~H(<.user_icon icon={{:fa, "book", :duotone}} fa_plan={:free}/>)
       assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book"></i>)
 
       h = ~H(<.user_icon icon={{:fa, "book", :duotone}} fa_plan={:pro}/>)

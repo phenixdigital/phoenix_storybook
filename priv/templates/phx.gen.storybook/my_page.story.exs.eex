@@ -8,8 +8,8 @@ defmodule Storybook.MyPage do
   # Declare an optional tab-based navigation in your page:
   def navigation do
     [
-      {:tab_one, "Tab One", "fa fa-dice-one"},
-      {:tab_two, "Tab Two", "fa fa-dice-two"}
+      {:tab_one, "Tab One", {:fa, "dice-one", :regular}},
+      {:tab_two, "Tab Two", {:fa, "dice-two", :regular}}
     ]
   end
 

@@ -99,7 +99,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
       {tab, name, icon} = nav
       validate_type!(file_path, tab, :atom, msg)
       validate_type!(file_path, name, :string, msg)
-      validate_type!(file_path, icon, :string, msg)
+      validate_icon!(file_path, icon)
     end
   end
 

@@ -182,7 +182,7 @@ defmodule PhxLiveStorybook.StoryLive do
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @story_entry.icon do %>
-              <i class={"lsb #{icon} lsb-pr-2 lsb-text-indigo-600"}></i>
+              <.user_icon icon={icon} class="lsb lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
             <% end %>
             <%= @story_entry.name %>
           </h2>
@@ -205,9 +205,9 @@ defmodule PhxLiveStorybook.StoryLive do
     case story.storybook_type() do
       type when type in [:component, :live_component] ->
         [
-          {:variations, "Stories", "far fa-eye"},
-          {:playground, "Playground", "far fa-dice"},
-          {:source, "Source", "far fa-file-code"}
+          {:variations, "Stories", {:fa, "eye", :regular}},
+          {:playground, "Playground", {:fa, "dice", :regular}},
+          {:source, "Source", {:fa, "file-code", :regular}}
         ]
 
       :page ->
@@ -230,7 +230,9 @@ defmodule PhxLiveStorybook.StoryLive do
         <%= for {tab, label, icon} <- tabs do %>
           <a href="#" phx-click="set-tab" phx-value-tab={tab} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}"}>
             <span class={active_span(@tab, tab)}>
-              <i class={"lsb #{icon} lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}></i>
+              <%= if icon do %>
+                <.user_icon icon={icon} class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"} fa_plan={@fa_plan}/>
+              <% end %>
               <span class={"lsb lsb-whitespace-nowrap group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
                 <%= label %>
               </span>
@@ -338,6 +340,7 @@ defmodule PhxLiveStorybook.StoryLive do
       playground_error={@playground_error}
       theme={@theme}
       topic={@playground_topic}
+      fa_plan={@fa_plan}
     />
     """
   end

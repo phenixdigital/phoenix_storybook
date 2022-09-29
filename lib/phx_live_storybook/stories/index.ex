@@ -17,11 +17,11 @@ defmodule PhxLiveStorybook.Index do
     use PhxLiveStorybook.Index
 
     def folder_name, do: "My Components"
-    def folder_icon, do: "fa fa-icon"
+    def folder_icon, do: {:fa, "icon"}
     def folder_open?, do: true
 
     def entry("a_component"), do: [name: "My Component"]
-    def entry("other_component"), do: [name: "Another Component", icon: "fa fa-icon]
+    def entry("other_component"), do: [name: "Another Component", icon: {:fa, "icon", :thin}]
   end
   ```
   """

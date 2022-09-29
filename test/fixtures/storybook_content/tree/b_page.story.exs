@@ -4,7 +4,7 @@ defmodule TreeStorybook.BPage do
   def description, do: "b page"
 
   def navigation do
-    [{:tab_1, "Tab 1", ""}, {:tab_2, "Tab 2", ""}]
+    [{:tab_1, "Tab 1", nil}, {:tab_2, "Tab 2", nil}]
   end
 
   def render(assigns) do

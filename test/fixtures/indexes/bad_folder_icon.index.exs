@@ -3,6 +3,6 @@ defmodule Storybook.BadFolderIcon do
   def folder_icon, do: :icon
   def folder_name, do: "Storybook"
 
-  def entry("colors"), do: [icon: "fat fa-swatchbook"]
-  def entry("typography"), do: [icon: "fad fa-text-size"]
+  def entry("colors"), do: [icon: {:fa, "swatchbook", :thin}]
+  def entry("typography"), do: [icon: {:fa, "text-size", :duotone}]
 end

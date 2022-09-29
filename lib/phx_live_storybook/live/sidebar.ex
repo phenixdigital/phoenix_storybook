@@ -91,7 +91,7 @@ defmodule PhxLiveStorybook.Sidebar do
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
       </div>
-      <.hidden_icons content_flat_list={@content_flat_list}/>
+      <.hidden_icons fa_plan={@fa_plan} content_flat_list={@content_flat_list}/>
     </section>
     """
   end
@@ -117,7 +117,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <% end %>
 
                 <%= if folder_icon do %>
-                  <i class={"lsb #{folder_icon} fa-fw lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
+                  <.user_icon icon={folder_icon} class="fa-w lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
                 <% end %>
 
                 <span class="lsb group-hover:lsb-text-indigo-600">
@@ -133,7 +133,7 @@ defmodule PhxLiveStorybook.Sidebar do
               <% story_path = Path.join(@root_path, path) %>
               <div class={story_class(@current_path, story_path)}>
                 <%= if icon do %>
-                  <i class={"#{icon} fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600"}></i>
+                  <.user_icon icon={icon} class="fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
                 <% end %>
                 <%= patch_to(assigns, name, story_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
@@ -178,8 +178,11 @@ defmodule PhxLiveStorybook.Sidebar do
   defp hidden_icons(assigns) do
     ~H"""
     <div class="lsb lsb-hidden">
-      <%= for %{icon: icon} <- @content_flat_list do %>
-        <i class={icon}></i>
+      <%= for %{icon: icon} <- @content_flat_list, !is_nil(icon) do %>
+        <.user_icon icon={icon} fa_plan={@fa_plan}/>
+      <% end %>
+      <%= for icon <- ["caret-down", "caret-right"] do %>
+        <.fa_icon name={icon} plan={@fa_plan}/>
       <% end %>
     </div>
     """

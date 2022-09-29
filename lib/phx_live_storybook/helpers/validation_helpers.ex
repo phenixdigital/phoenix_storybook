@@ -9,6 +9,66 @@ defmodule PhxLiveStorybook.ValidationHelpers do
     unless match_attr_type?(term, type), do: compile_error!(file, message)
   end
 
+  def validate_icon!(file, term, message \\ "")
+  def validate_icon!(_file, nil, _message), do: :ok
+
+  def validate_icon!(file, term, message_prefix) do
+    cond do
+      match_attr_type?(term, {:tuple, 2}) ->
+        validate_icon_provider!(file, term)
+
+        validate_type!(
+          file,
+          elem(term, 1),
+          :string,
+          message_prefix <> "icon name must be a binary"
+        )
+
+      match_attr_type?(term, {:tuple, 3}) ->
+        validate_icon_provider!(file, term)
+
+        validate_type!(
+          file,
+          elem(term, 1),
+          :string,
+          message_prefix <> "icon name must be a binary"
+        )
+
+        validate_type!(file, elem(term, 2), :atom, message_prefix <> "icon style must be an atom")
+
+      match_attr_type?(term, {:tuple, 4}) ->
+        validate_icon_provider!(file, term)
+
+        validate_type!(
+          file,
+          elem(term, 1),
+          :string,
+          message_prefix <> "icon name must be a binary"
+        )
+
+        validate_type!(file, elem(term, 2), :atom, message_prefix <> "icon style must be an atom")
+
+        validate_type!(
+          file,
+          elem(term, 3),
+          :string,
+          message_prefix <> "icon class must be a binary"
+        )
+
+      true ->
+        compile_error!(
+          file,
+          message_prefix <>
+            "icon must be a tuple 2, 3 or 4 items ({provider, name, style, class})"
+        )
+    end
+  end
+
+  defp validate_icon_provider!(file, term) do
+    unless elem(term, 0) in [:fa, :hero],
+      do: compile_error!(file, "icon provider must be either :fa or :hero")
+  end
+
   def match_attr_type?(nil, _type), do: true
   def match_attr_type?({:eval, _term}, _type), do: true
   def match_attr_type?(_term, :any), do: true
