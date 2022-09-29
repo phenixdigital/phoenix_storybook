@@ -9,6 +9,8 @@ defmodule PhxLiveStorybook.Index do
 
   Indexes must be created as `index.exs` files.
 
+  Read the [icons](guides/icons.md) guide for more information on custom icon usage.
+
   ## Usage
 
   ```elixir
