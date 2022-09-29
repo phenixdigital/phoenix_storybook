@@ -63,7 +63,7 @@ defmodule PhxLiveStorybook.Entries do
       entries: content_tree,
       path: "",
       name: "Storybook",
-      icon: "fal fa-book-open"
+      icon: {:fa, "book-open", :light}
     }
   end
 

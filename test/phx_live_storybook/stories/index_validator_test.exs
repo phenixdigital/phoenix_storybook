@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.Stories.IndexValidatorTest do
   end
 
   test "with bad folder_icon it will raise", %{path: path} do
-    assert_raise CompileError, ~r/folder_icon must return a binary/, fn ->
+    assert_raise CompileError, ~r/icon must be a tuple 2, 3 or 4 items/, fn ->
       Code.compile_file("bad_folder_icon.index.exs", path)
     end
   end
@@ -26,10 +26,8 @@ defmodule PhxLiveStorybook.Stories.IndexValidatorTest do
   end
 
   test "with bad entry it will raise", %{path: path} do
-    assert_raise CompileError,
-                 ~r/entry\(\"typography\"\) must a return a keyword list with keys :icon and :name/,
-                 fn ->
-                   Code.compile_file("bad_entry.index.exs", path)
-                 end
+    assert_raise CompileError, ~r/entry\("colors"\) icon is invalid/, fn ->
+      Code.compile_file("bad_entry.index.exs", path)
+    end
   end
 end

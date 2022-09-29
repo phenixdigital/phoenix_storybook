@@ -24,7 +24,7 @@ defmodule PhxLiveStorybookTest do
       assert FlatListStorybook.content_tree() == [
                %FolderEntry{
                  name: "Storybook",
-                 icon: "fal fa-book-open",
+                 icon: {:fa, "book-open", :light},
                  path: "",
                  entries: [
                    %StoryEntry{
@@ -44,7 +44,7 @@ defmodule PhxLiveStorybookTest do
       [%FolderEntry{entries: entries}] = TreeStorybook.content_tree()
       assert Enum.count(entries) == 9
 
-      assert %StoryEntry{name: "A Page", path: "/a_page", icon: "fa fa-page"} =
+      assert %StoryEntry{name: "A Page", path: "/a_page", icon: {:fa, "page"}} =
                Enum.at(entries, 0)
 
       assert %StoryEntry{name: "B Page", path: "/b_page"} = Enum.at(entries, 1)
@@ -55,7 +55,7 @@ defmodule PhxLiveStorybookTest do
 
       assert %FolderEntry{
                path: "/a_folder",
-               icon: "fa fa-icon",
+               icon: {:fa, "icon"},
                name: "A Folder",
                entries: [%StoryEntry{}, %StoryEntry{}]
              } = Enum.at(entries, 4)
@@ -77,7 +77,7 @@ defmodule PhxLiveStorybookTest do
       assert EmptyFilesStorybook.content_tree() == [
                %FolderEntry{
                  entries: [],
-                 icon: "fal fa-book-open",
+                 icon: {:fa, "book-open", :light},
                  name: "Storybook",
                  path: ""
                }

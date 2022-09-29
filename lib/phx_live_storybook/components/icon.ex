@@ -18,7 +18,7 @@ defmodule PhxLiveStorybook.Components.Icon do
   )
 
   attr(:plan, :atom,
-    default: :free,
+    required: true,
     values: ~w(free pro)a,
     doc: "Free plan will make all icons render with solid style."
   )
@@ -102,7 +102,7 @@ defmodule PhxLiveStorybook.Components.Icon do
   )
 
   attr(:fa_plan, :atom,
-    default: :free,
+    required: true,
     values: ~w(free pro)a,
     doc: "Free plan will make all icons render with solid style."
   )
