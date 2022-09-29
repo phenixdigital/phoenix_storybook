@@ -29,7 +29,8 @@ defmodule PhxLiveStorybook.StoryLive do
        assets_path: session["assets_path"],
        playground_error: nil,
        playground_preview_pid: nil,
-       playground_topic: playground_topic
+       playground_topic: playground_topic,
+       fa_plan: session["backend_module"].config(:fa_plan, :pro)
      )}
   end
 
@@ -163,7 +164,7 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb lsb-my-6 md:lsb-my-12 lsb-space-y-4 md:lsb-space-y-8 lsb-flex lsb-flex-col">
       <h1 class="lsb lsb-font-medium lsb-text-red-500 lsb-text-lg md:lsb-text-xl lg:lsb-text-2xl lsb-align-middle">
-        <i class="fad fa-bomb"></i>
+        <.fa_icon style={:duotone} name="bomb" plan={@fa_plan}/>
         <%= error %>
       </h1>
 
@@ -272,7 +273,7 @@ defmodule PhxLiveStorybook.StoryLive do
           <!-- Variation description -->
           <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "lsb variation-anchor-link" do %>
-              <i class="lsb fal fa-link lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"></i>
+              <.fa_icon style={:light} name="link" class="lsb lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400" plan={@fa_plan}/>
               <%= if description do %>
                 <%= description  %>
               <% else %>
@@ -283,7 +284,7 @@ defmodule PhxLiveStorybook.StoryLive do
               class="lsb lsb-hidden lsb-open-playground-link">
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-500 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
-                <i class="far fa-arrow-right"></i>
+                <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan}/>
               </span>
             </.link>
           </div>
@@ -309,7 +310,7 @@ defmodule PhxLiveStorybook.StoryLive do
           <!-- Variation code -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm lsb-flex lsb-flex-col lsb-justify-center">
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-              <i class="lsb fa fa-copy lsb-text-inherit"></i>
+              <.fa_icon name="copy" class="lsb lsb-text-inherit" plan={@fa_plan}/>
             </div>
             <%= CodeRenderer.render_variation_code(story, variation_id) %>
           </div>

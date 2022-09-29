@@ -43,6 +43,7 @@ defmodule PhxLiveStorybook.MixProject do
     [
       {:phoenix_live_view, "~> 0.18"},
       {:makeup_eex, "~> 0.1.0"},
+      {:heroicons, "~> 0.5.0", optional: true},
       {:jason, "~> 1.3", optional: true},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
