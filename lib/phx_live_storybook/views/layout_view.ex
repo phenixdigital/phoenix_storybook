@@ -12,7 +12,7 @@ defmodule PhxLiveStorybook.LayoutView do
   def render_breadcrumb(socket, story_path, opts \\ []) do
     assigns = %{
       breadcrumbs: breadcrumb(socket, story_path),
-      fa_plan: backend_module(socket).config(:fa_plan, :pro),
+      fa_plan: backend_module(socket).config(:font_awesome_plan, :free),
       span_class: opts[:span_class]
     }
 
@@ -46,6 +46,14 @@ defmodule PhxLiveStorybook.LayoutView do
 
   defp title_prefix(conn_or_socket) do
     title(conn_or_socket) <> " - "
+  end
+
+  defp fa_kit_id(conn_or_socket) do
+    storybook_setting(conn_or_socket, :font_awesome_kit_id)
+  end
+
+  defp wait_for_icons?(conn_or_socket) do
+    if fa_kit_id(conn_or_socket), do: "lsb-wait-for-icons", else: nil
   end
 
   defp storybook_setting(conn_or_socket, key, default \\ nil)

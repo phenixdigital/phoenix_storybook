@@ -94,8 +94,10 @@ module.exports = {
 @tailwind utilities;
 
 @layer utilities {
-  /* this style will be generated as .my-app-sandbox * { ... } */
-  * {
+  /* this style will be generated as .my-app-sandbox :not(i) { ... } */
+  /* we use :not(i) instead of * because we don't want to override FontAwesome icons styles */
+  /* (some icons are indeed rendered with your own sandboxed styles) */
+  :not(i) {
     font-family: "MyComponentsFont";
     @apply text-slate-600;
   }
