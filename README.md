@@ -140,6 +140,7 @@ config :my_app, MyAppWeb.Storybook,
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
+
 ℹ️ Learn more on icons in the [icons](guides/icons.md) guide.
 
 <!-- MDOC !-->
