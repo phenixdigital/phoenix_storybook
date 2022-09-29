@@ -62,7 +62,7 @@ defmodule PhxLiveStorybook.Sidebar do
       class="lsb lsb-text-gray-600 lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-auto lsb-w-80 lg:lsb-w-60 lsb-text-base lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lg:lsb-pt-20 lsb-pb-32 lsb-px-4 lsb-overflow-y-auto"
     >
 
-      <.fa_icon style={:regular} name="times" phx-click={JS.dispatch("lsb:close-sidebar")} plan={@fa_plan}
+      <.fa_icon style={:regular} name="xmark" phx-click={JS.dispatch("lsb:close-sidebar")} plan={@fa_plan}
         class="lsb fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6"
       />
 
@@ -86,7 +86,7 @@ defmodule PhxLiveStorybook.Sidebar do
 
       <div class="lsb lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
         <%= link to: "https://github.com/phenixdigital/phx_live_storybook", target: "_blank", class: "lsb" do %>
-          <.fa_icon name="github" plan={@fa_plan}/>
+          <.fa_icon style={:brands} name="github" plan={:pro}/>
           -
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
@@ -117,7 +117,9 @@ defmodule PhxLiveStorybook.Sidebar do
                 <% end %>
 
                 <%= if folder_icon do %>
-                  <.user_icon icon={folder_icon} class="fa-w lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
+                  <span class={@sandbox_class}>
+                    <.user_icon icon={folder_icon} class="fa-fw lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
+                  </span>
                 <% end %>
 
                 <span class="lsb group-hover:lsb-text-indigo-600">
@@ -133,7 +135,9 @@ defmodule PhxLiveStorybook.Sidebar do
               <% story_path = Path.join(@root_path, path) %>
               <div class={story_class(@current_path, story_path)}>
                 <%= if icon do %>
-                  <.user_icon icon={icon} class="fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
+                  <span class={@sandbox_class}>
+                    <.user_icon icon={icon} class="fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
+                  </span>
                 <% end %>
                 <%= patch_to(assigns, name, story_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>

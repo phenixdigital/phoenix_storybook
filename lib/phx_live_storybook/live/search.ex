@@ -21,7 +21,7 @@ defmodule PhxLiveStorybook.Search do
      |> assign(:root_path, root_path)
      |> assign(:all_stories, stories)
      |> assign(:stories, stories)
-     |> assign(:fa_plan, backend_module.config(:fa_plan, :pro))}
+     |> assign(:fa_plan, backend_module.config(:font_awesome_plan, :free))}
   end
 
   def handle_event("navigate", %{"path" => path}, socket) do

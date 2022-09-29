@@ -12,7 +12,11 @@
       <%= assigns[:page_title] %>
     </.live_title>
 
-    <script defer src="https://kit.fontawesome.com/ca7a60e560.js" crossorigin="anonymous"></script>
+    <%= if fa_kit_id = fa_kit_id(@conn) do %>
+      <script defer src={"https://kit.fontawesome.com/#{fa_kit_id}.js"} crossorigin="anonymous"></script>
+    <% else %>
+      <link rel="stylesheet" href={asset_path(@conn, "css/fonts.css")}/>
+    <% end %>
     <%= if path = storybook_js_path(@conn) do %>
       <script phx-track-static type="text/javascript" src={application_static_path(@conn, path)}></script>
     <% end %>
@@ -25,7 +29,7 @@
     <style><%= raw(makeup_stylesheet(@conn)) %></style>
   </head>
 
-  <body class="lsb lsb-wait-for-icons lsb-max-w-full lsb-overflow-hidden">
+  <body class={["lsb lsb-max-w-full lsb-overflow-hidden", wait_for_icons?(@conn)]}>
     <%= @inner_content %>
   </body>
 </html>

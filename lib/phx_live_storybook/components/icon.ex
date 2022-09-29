@@ -13,7 +13,7 @@ defmodule PhxLiveStorybook.Components.Icon do
 
   attr(:style, :atom,
     default: :solid,
-    values: ~w(solid regular light thin duotone)a,
+    values: ~w(solid regular light thin duotone brands)a,
     doc: "One of the styles provided by FontAwesome."
   )
 
@@ -33,7 +33,7 @@ defmodule PhxLiveStorybook.Components.Icon do
   end
 
   def fa_icon(assigns = %{plan: :pro}) do
-    ~H(<i class={["fa-#{@style} fa-#{@name}", @class | @class_list]} {@rest}></i>])
+    ~H(<i class={["fa-#{@style} fa-#{@name}", @class | @class_list]} {@rest}></i>)
   end
 
   @doc """

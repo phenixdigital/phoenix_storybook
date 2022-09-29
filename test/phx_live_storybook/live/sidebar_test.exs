@@ -70,11 +70,14 @@ defmodule PhxLiveStorybook.SidebarTest do
     test "sidebar with an icon folder is well displayed" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
-      # test 1st folder has 2 icons
+      # 1st folder 1st icon (not wrapped)
       [
-        {"i", [{"class", first_icon_classes} | _], _},
-        {"i", [{"class", second_icon_classes} | _], _}
+        {"i", [{"class", first_icon_classes} | _], _}
       ] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>i")
+
+      # 1st folder 2nd icon (wrapped in sandbox span)
+      [{"i", [{"class", second_icon_classes} | _], _}] =
+        find(document, "nav>ul>li>ul>li:nth-child(5)>div>span>i")
 
       assert String.contains?(first_icon_classes, "fa-caret-down")
       assert String.contains?(second_icon_classes, "fa-icon")
@@ -84,7 +87,9 @@ defmodule PhxLiveStorybook.SidebarTest do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
       # test default folder name (properly humanized)
-      [{"span", [_], [html]}] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>span")
+      [{"span", [_], [html]}] =
+        find(document, "nav>ul>li>ul>li:nth-child(5)>div>span:nth-child(3)")
+
       assert String.contains?(html, "A Folder")
 
       # test config folder name
@@ -99,7 +104,8 @@ defmodule PhxLiveStorybook.SidebarTest do
         id: "sidebar",
         backend_module: backend_module,
         current_path: path,
-        fa_plan: :pro
+        fa_plan: :pro,
+        sandbox_class: "sandbox"
       )
 
     {:ok, document} = Floki.parse_document(html)

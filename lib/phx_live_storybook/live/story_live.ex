@@ -23,14 +23,17 @@ defmodule PhxLiveStorybook.StoryLive do
       PubSub.subscribe(PhxLiveStorybook.PubSub, event_logs_topic)
     end
 
+    backend_module = session["backend_module"]
+
     {:ok,
      assign(socket,
-       backend_module: session["backend_module"],
+       backend_module: backend_module,
        assets_path: session["assets_path"],
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,
-       fa_plan: session["backend_module"].config(:fa_plan, :pro)
+       fa_plan: backend_module.config(:font_awesome_plan, :free),
+       sandbox_class: backend_module.config(:sandbox_class)
      )}
   end
 
@@ -127,6 +130,7 @@ defmodule PhxLiveStorybook.StoryLive do
   defp default_tab(:page, story_module) do
     case story_module.navigation() do
       [] -> nil
+      [{tab, _} | _] -> tab
       [{tab, _, _} | _] -> tab
     end
   end
@@ -182,7 +186,9 @@ defmodule PhxLiveStorybook.StoryLive do
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @story_entry.icon do %>
-              <.user_icon icon={icon} class="lsb lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
+              <span class={@sandbox_class}>
+                <.user_icon icon={icon} class="lsb lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
+              </span>
             <% end %>
             <%= @story_entry.name %>
           </h2>
@@ -227,14 +233,18 @@ defmodule PhxLiveStorybook.StoryLive do
 
       <!-- :lg+ version of navigation tabs -->
       <nav class="lsb story-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
-        <%= for {tab, label, icon} <- tabs do %>
-          <a href="#" phx-click="set-tab" phx-value-tab={tab} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab)}"}>
-            <span class={active_span(@tab, tab)}>
+        <%= for tab <- tabs do %>
+          <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
+          <a href="#" phx-click="set-tab" phx-value-tab={tab_id} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab_id)}"}>
+            <span class={active_span(@tab, tab_id)}>
+              <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
               <%= if icon do %>
-                <.user_icon icon={icon} class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"} fa_plan={@fa_plan}/>
+                <span class={@sandbox_class}>
+                  <.user_icon icon={icon} class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"} fa_plan={@fa_plan}/>
+                </span>
               <% end %>
-              <span class={"lsb lsb-whitespace-nowrap group-hover:lsb-text-indigo-600 #{active_text(@tab, tab)}"}>
-                <%= label %>
+              <span class={"lsb lsb-whitespace-nowrap group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"}>
+                <%= tab_label %>
               </span>
             </span>
           </a>

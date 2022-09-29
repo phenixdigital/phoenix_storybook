@@ -91,15 +91,21 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
   end
 
   defp validate_page_navigation!(file_path, story) do
-    msg = "page navigation must be a list of {atom, binary, binary}"
+    msg = "page navigation must be a list of {atom, binary, binary} or {atom, binary}"
     validate_type!(file_path, story.navigation(), [:list], msg)
 
     for nav <- story.navigation() do
-      validate_type!(file_path, nav, {:tuple, 3}, msg)
-      {tab, name, icon} = nav
+      unless match_attr_type?(nav, {:tuple, 2}) do
+        validate_type!(file_path, nav, {:tuple, 3}, msg)
+      end
+
+      {tab, name} = {elem(nav, 0), elem(nav, 1)}
       validate_type!(file_path, tab, :atom, msg)
       validate_type!(file_path, name, :string, msg)
-      validate_icon!(file_path, icon)
+
+      if tuple_size(nav) == 3 do
+        validate_icon!(file_path, elem(nav, 2))
+      end
     end
   end
 
