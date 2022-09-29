@@ -16,6 +16,7 @@
   available to enforce variation attribute values.
 - change (breaking!): slots & block are no longer attributes. Define instead a `slots/0` function
   returning a list of `%Slot{}`.
+- change (breaking!): icon format has been updated, see this [guide](guides/icons.md)
 - feature: run `mix phx.gen.storybook` to get started!
 - feature: new search modal. Trigger it with `cmd-k` or `/` shortcuts.
 - feature: new event log. In the playground, you can now track all events emitted by components.
