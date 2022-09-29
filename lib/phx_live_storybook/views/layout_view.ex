@@ -10,16 +10,24 @@ defmodule PhxLiveStorybook.LayoutView do
   @env Application.compile_env(:phx_live_storybook, :env)
 
   def render_breadcrumb(socket, story_path, opts \\ []) do
-    breadcrumb(socket, story_path)
-    |> Enum.intersperse(:separator)
-    |> Enum.map_join("", fn
-      :separator ->
-        ~s|<i class="lsb fat fa-angle-right lsb-px-2 lsb-text-slate-500"></i>|
+    assigns = %{
+      breadcrumbs: breadcrumb(socket, story_path),
+      fa_plan: backend_module(socket).config(:fa_plan, :pro),
+      span_class: opts[:span_class]
+    }
 
-      story_name ->
-        ~s|<span class="lsb #{opts[:span_class]} [&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap">#{story_name}</span>|
-    end)
-    |> raw()
+    ~H"""
+    <.intersperse items={@breadcrumbs}>
+      <:separator>
+        <.fa_icon style={:thin} name="angle-right" class="lsb-px-2 lsb-text-slate-500" plan={@fa_plan}/>
+      </:separator>
+      <:item :let={item}>
+        <span class={["lsb", @span_class, "[&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap"]}>
+          <%= item %>
+        </span>
+      </:item>
+    </.intersperse>
+    """
   end
 
   defp makeup_stylesheet(conn) do

@@ -1,0 +1,135 @@
+defmodule PhxLiveStorybook.Components.Icon do
+  @moduledoc false
+  use PhxLiveStorybook.Web, :component
+  import String, only: [trim: 1]
+
+  @doc """
+  FontAwesome icons for internal phx_live_storybook usage.
+
+  ## Examples
+
+      <.fa_icon name="book" class="text-blue-400"/>
+      <.fa_icon name="book" style={:duotone} plan={:pro}/>
+  """
+
+  attr(:style, :atom,
+    default: :solid,
+    values: ~w(solid regular light thin duotone)a,
+    doc: "One of the styles provided by FontAwesome."
+  )
+
+  attr(:plan, :atom,
+    default: :free,
+    values: ~w(free pro)a,
+    doc: "Free plan will make all icons render with solid style."
+  )
+
+  attr(:name, :string, required: true, doc: "The name of the icon, without the fa- prefix.")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "Any HTML attribute")
+
+  def fa_icon(assigns = %{plan: :free}) do
+    ~H(<i class={["fa-solid fa-#{@name}", @class]} {@rest}></i>)
+  end
+
+  def fa_icon(assigns = %{plan: :pro}) do
+    ~H(<i class={["fa-#{@style} fa-#{@name}", @class]} {@rest}></i>])
+  end
+
+  @doc """
+  HeroIcons icons for internal phx_live_storybook usage.
+
+  ## Examples
+
+      <.hero_icon name="cake" class="w-2 h-2"/>
+      <.hero_icon name="cake" style={:mini}/>
+  """
+
+  attr(:style, :atom,
+    default: :outline,
+    values: ~w(outline solid mini)a,
+    doc: "One of the styles provided by HeroIcons."
+  )
+
+  attr(:name, :string, required: true, doc: "The name of the icon")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "Any HTML attribute")
+
+  def hero_icon(assigns) do
+    if Code.ensure_loaded?(Heroicons) do
+      apply(
+        Heroicons,
+        String.to_atom(assigns[:name]),
+        [
+          assigns
+          |> Map.take([:__changed__, :rest])
+          |> update_in([:rest, :class], &String.trim("#{&1} #{assigns[:class]}"))
+          |> Map.put(assigns[:style], true)
+        ]
+      )
+    else
+      raise """
+      Heroicons module is not available.
+      Please add :heroicons as a mix dependency.
+      """
+    end
+  end
+
+  @doc """
+  Icons defined by storybook users.
+  Icon can use different providers: FontAwesome (:fa) and HeroIcons (:hero) are supported.
+
+  ## Examples
+
+      <.user_icon icon={:fa, "book"}/>
+      <.user_icon icon={:fa, "book", :thin}/>
+      <.user_icon icon={:fa, "book", :duotone, "fa-fw"} class="text-indigo-400"/>
+      <.user_icon icon={:hero, "cake"}/>
+      <.user_icon icon={:hero, "cake", :mini}/>
+      <.user_icon icon={:hero, "cake", :mini, "w-2 h-2"} class="text-indigo-400"/>
+  """
+
+  attr(:icon, :any,
+    required: true,
+    doc: "Icon config, a tuple of 2 to 4 items: {provider, icon, style, classes}",
+    examples: [
+      {:fa, "book"},
+      {:fa, "book", :thin},
+      {:fa, "book", :duotone, "fa-fw"},
+      {:hero, "cake", :solid, "w-2 h-2"}
+    ]
+  )
+
+  attr(:fa_plan, :atom,
+    default: :free,
+    values: ~w(free pro)a,
+    doc: "Free plan will make all icons render with solid style."
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "Any HTML attribute")
+
+  def user_icon(assigns = %{icon: {:fa, name}}) do
+    ~H[<.fa_icon name={name} plan={@fa_plan} class={@class} {@rest}/>]
+  end
+
+  def user_icon(assigns = %{icon: {:fa, name, style}}) do
+    ~H[<.fa_icon name={name} style={style} plan={@fa_plan} class={@class} {@rest}/>]
+  end
+
+  def user_icon(assigns = %{icon: {:fa, name, style, class}}) do
+    ~H[<.fa_icon name={name} style={style} plan={@fa_plan} class={trim("#{class} #{@class}")} {@rest}/>]
+  end
+
+  def user_icon(assigns = %{icon: {:hero, name}}) do
+    ~H[<.hero_icon name={name} class={@class} {@rest}/>]
+  end
+
+  def user_icon(assigns = %{icon: {:hero, name, style}}) do
+    ~H[<.hero_icon name={name} style={style} class={@class} {@rest}/>]
+  end
+
+  def user_icon(assigns = %{icon: {:hero, name, style, class}}) do
+    ~H[<.hero_icon name={name} style={style} class={trim("#{class} #{@class}")} {@rest}/>]
+  end
+end

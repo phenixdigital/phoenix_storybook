@@ -98,7 +98,8 @@ defmodule PhxLiveStorybook.SidebarTest do
       render_component(Sidebar,
         id: "sidebar",
         backend_module: backend_module,
-        current_path: path
+        current_path: path,
+        fa_plan: :pro
       )
 
     {:ok, document} = Floki.parse_document(html)

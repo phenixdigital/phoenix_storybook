@@ -3,7 +3,7 @@
   <div class="lsb lsb-h-16 lsb-w-full">
     <div class="lsb lsb-absolute lsb-top-5 lsb-left-5 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
       <.link patch={live_storybook_path(@socket, :root)} class="lsb">
-        <i class="lsb fa-regular fa-book-open lsb-text-indigo-600"></i>
+        <.fa_icon style={:regular} name="book-open" class="lsb lsb-text-indigo-600" plan={@fa_plan}/>
         <span class="lsb lsb-ml-1"><%= title(@socket) %></span>
       </.link>
     </div>
@@ -11,7 +11,7 @@
     <%= if themes = themes(@socket) do %>
       <div class={"lsb lsb-absolute lsb-top-4 lsb-right-14 lg:lsb-right-5 lsb-inline-block #{main_sandbox_class(@socket)}"}>
         <button type="button" class="lsb lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" phx-click={JS.show(to: "#lsb-theme-dropdown", transition: show_dropdown_transition())}>
-          <i class={"lsb far fa-palette #{current_theme_dropdown_class(@socket, assigns)}"}></i>
+          <.fa_icon style={:regular} name="palette" class={current_theme_dropdown_class(@socket, assigns)} plan={@fa_plan}/>
         </button>
         
         <div id="lsb-theme-dropdown" class="lsb lsb-hidden lsb-origin-top-right lsb-absolute lsb-right-0 lsb-mt-2 lsb-w-52 lsb-rounded-md lsb-shadow-lg lsb-bg-white lsb-ring-1 lsb-ring-black lsb-ring-opacity-5 lsb-divide-y lsb-divide-gray-100 focus:lsb-outline-none" phx-click-away={JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}>
@@ -23,7 +23,7 @@
               <a phx-click={JS.push("set-theme", value: %{"theme" => theme}) |> JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}} class="lsb lsb-theme lsb-text-gray-700 hover:lsb-bg-gray-100 lsb-block lsb-px-4 lsb-py-2 lsb-text-sm lsb-cursor-pointer">
                 <%= if assigns[:theme] == theme do %>
                   <span class="lsb lsb-text-indigo-600">
-                    <i class="lsb fa fa-check lsb-pr-2"></i><%= opts[:name] %>
+                    <.fa_icon name="check" class="lsb lsb-pr-2" plan={@fa_plan}/><%= opts[:name] %>
                   </span>
                 <% else %>
                   <span class="lsb lsb-pl-5">
@@ -40,12 +40,12 @@
 
   <div class="lsb lg:lsb-hidden lsb-absolute lsb-top-4 lsb-right-5 lsb-inline-block ">
     <button type="button" phx-click={JS.dispatch("lsb:open-search")} class="lsb lsb-h-7 lsb-w-7 lsb-bg-gray-100 lsb-rounded-full lsb-flex lsb-flex-row lsb-justify-center lsb-items-center lsb-text-gray-400 hover:lsb-text-indigo-600 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-offset-gray-100 focus:lsb-ring-indigo-500" >
-      <i class="lsb fal fa-magnifying-glass fa"></i>
+      <.fa_icon name="magnifying-glass" style={:light} plan={@fa_plan}/>
     </button>
   </div>
   
   <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer lsb-pr-2">
-    <i class="lsb far fa-bars fa-lg lsb-px-4" phx-click={JS.dispatch("lsb:open-sidebar")}></i>
+    <.fa_icon name="bars" style={:regular} class="lsb fa-lg lsb-px-4" plan={@fa_plan} phx-click={JS.dispatch("lsb:open-sidebar")}/>
     <%= if assigns[:story] do %>
       <%= render_breadcrumb(@socket, @backend_module.storybook_path(@story)) %>
     <% end %>
@@ -67,6 +67,7 @@
     backend_module={@backend_module}
     current_path={assigns[:story_path]}
     theme={assigns[:theme]}
+    fa_plan={@fa_plan}
   />
 </div>
 

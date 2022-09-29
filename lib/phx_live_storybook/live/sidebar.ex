@@ -62,7 +62,9 @@ defmodule PhxLiveStorybook.Sidebar do
       class="lsb lsb-text-gray-600 lg:lsb-block lsb-fixed lsb-z-20 lg:lsb-z-auto lsb-w-80 lg:lsb-w-60 lsb-text-base lg:lsb-text-sm lsb-h-screen lsb-flex lsb-flex-col lsb-flex-grow lsb-bg-slate-50 lg:lsb-pt-20 lsb-pb-32 lsb-px-4 lsb-overflow-y-auto"
     >
 
-      <i class="lsb far fa-times fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6" phx-click={JS.dispatch("lsb:close-sidebar")}></i>
+      <.fa_icon style={:regular} name="times" phx-click={JS.dispatch("lsb:close-sidebar")} plan={@fa_plan}
+        class="lsb fa-lg lsb-block lg:lsb-hidden lsb-absolute lsb-right-6 lsb-top-6"
+      />
 
       <div class="lsb lsb-bg-white lsb-relative lsb-pointer-events-auto lsb-mb-4">
         <button
@@ -70,7 +72,9 @@ defmodule PhxLiveStorybook.Sidebar do
           phx-click={JS.dispatch("lsb:open-search")}
           class="lsb lsb-hidden lsb-w-full lg:lsb-flex lsb-items-center lsb-text-sm lsb-leading-6 lsb-text-slate-400 lsb-rounded-md lsb-border lsb-border-1 lsb-border-slate-100 hover:lsb-border-slate-200 lsb-py-1.5 lsb-pl-2 lsb-pr-3">
 
-          <i class="lsb fal fa-magnifying-glass fa-lg lsb lsb-mr-3 lsb-flex-none lsb-text-slate-400"></i>
+          <.fa_icon style={:light} name="magnifying-glass" plan={@fa_plan}
+            class="lsb fa-lg lsb lsb-mr-3 lsb-flex-none lsb-text-slate-400"
+          />
           Quick search...
           <span class="lsb lsb-ml-auto lsb-pl-3 lsb-flex-none lsb-text-xs lsb-font-semibold lsb-text-slate-400">⌘K</span>
         </button>
@@ -82,7 +86,7 @@ defmodule PhxLiveStorybook.Sidebar do
 
       <div class="lsb lsb-hidden lg:lsb-block lsb-fixed lsb-bottom-3 lsb-left-0 lsb-w-60 lsb-text-md lsb-text-center lsb-text-slate-400 hover:lsb-text-indigo-600 hover:lsb-font-bold">
         <%= link to: "https://github.com/phenixdigital/phx_live_storybook", target: "_blank", class: "lsb" do %>
-          <i class="lsb fa fa-github"></i>
+          <.fa_icon name="github" plan={@fa_plan}/>
           -
           <%= Application.spec(:phx_live_storybook, :vsn) %>
         <% end %>
@@ -106,9 +110,9 @@ defmodule PhxLiveStorybook.Sidebar do
               >
                 <%= unless @root do %>
                   <%= if open_folder? do %>
-                    <i class="lsb fas fa-caret-down lsb-pl-1 lsb-pr-2"></i>
+                    <.fa_icon name="caret-down" class="lsb lsb-pl-1 lsb-pr-2" plan={@fa_plan}/>
                   <% else %>
-                    <i class="lsb fas fa-caret-right lsb-pl-1 lsb-pr-2"></i>
+                    <.fa_icon name="caret-right" class="lsb lsb-pl-1 lsb-pr-2" plan={@fa_plan}/>
                   <% end %>
                 <% end %>
 
