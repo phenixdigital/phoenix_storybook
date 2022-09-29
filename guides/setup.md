@@ -1,4 +1,4 @@
-## Manual setup
+# Manual setup
 
 To start using `PhxLiveStorybook` in your phoenix application you will need to follow these steps:
 
@@ -8,7 +8,7 @@ To start using `PhxLiveStorybook` in your phoenix application you will need to f
 4. Make your components assets available
 5. Create some content
 
-### 1. Add the `phx_live_storybook` dependency
+## 1. Add the `phx_live_storybook` dependency
 
 Add the following to your mix.exs and run mix deps.get:
 
@@ -20,7 +20,7 @@ def deps do
 end
 ```
 
-### 2. Create your storybook backend module
+## 2. Create your storybook backend module
 
 Create a new module under your application lib folder:
 
@@ -36,7 +36,7 @@ defmodule MyAppWeb.Storybook do
 end
 ```
 
-### 3. Add storybook access to your router
+## 3. Add storybook access to your router
 
 Once installed, update your router's configuration to forward requests to a `PhxLiveStorybook`
 with a unique name of your choice:
@@ -57,7 +57,7 @@ scope "/", PhxLiveStorybookSampleWeb do
 end
 ```
 
-### 4. Make your components assets available
+## 4. Make your components assets available
 
 Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your
 app and the storybook.
@@ -82,7 +82,7 @@ generator may guide you through these steps.
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
 
-### 5. Create some content
+## 5. Create some content
 
 Then you can start creating some content for your storybook. Storybook can contain different kinds
 of _stories_:

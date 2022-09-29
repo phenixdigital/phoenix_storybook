@@ -118,6 +118,10 @@ defmodule MyAppWeb.Storybook do
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
 
+    # If you want to use custom FontAwesome icons.
+    font_awesome_plan: :pro, # default value is :free
+    font_awesome_kit_id: "foo8b41bar4625",
+
     # Story compilation mode, can be either `:eager` or `:lazy`.
     # It defaults to `:lazy` in dev environment, `:eager` in other environments.
     #   - When eager: all .story.exs & .index.exs files are compiled upfront.
@@ -136,6 +140,7 @@ config :my_app, MyAppWeb.Storybook,
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
+ℹ️ Learn more on icons in the [icons](guides/icons.md) guide.
 
 <!-- MDOC !-->
 
