@@ -1,12 +1,10 @@
-defmodule Storybook.Components.MyComponent do
+defmodule Storybook.Components.Icon do
   # See https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.Story.html for full story
   # documentation.
   # Read https://hexdocs.pm/phx_live_storybook/components.html for more advanced options.
 
   use PhxLiveStorybook.Story, :component
 
-  # This is a dummy fonction that you should replace with your own component function:
-  # def function, do: &MyButton.my_button/1
   def function, do: &PhxLiveStorybook.Components.Icon.hero_icon/1
 
   # A variation captures the rendered state of a UI component. Developers write multiple variations
@@ -17,21 +15,21 @@ defmodule Storybook.Components.MyComponent do
         id: :default,
         attributes: %{
           name: "calendar",
-          class: "lsb lsb-w-8 lsb-h-8"
+          class: "lsb-w-8 lsb-h-8"
         }
       },
       %Variation{
         id: :icon_variation,
         attributes: %{
           name: "bookmark",
-          class: "lsb lsb-w-8 lsb-h-8 lsb-text-red-500"
+          class: "lsb-w-8 lsb-h-8 lsb-text-red-500"
         }
       },
       %VariationGroup{
         id: :group,
         variations: [
-          %Variation{id: :item_1, attributes: %{name: "cake", class: "lsb lsb-w-8 lsb-h-8"}},
-          %Variation{id: :item_2, attributes: %{name: "cake", class: "lsb lsb-w-16 lsb-h-16"}},
+          %Variation{id: :item_1, attributes: %{name: "cake", class: "lsb-w-8 lsb-h-8"}},
+          %Variation{id: :item_2, attributes: %{name: "cake", class: "lsb-w-16 lsb-h-16"}},
         ]
       }
     ]
