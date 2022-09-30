@@ -91,7 +91,7 @@ defmodule PhxLiveStorybook.Story do
     @moduledoc false
 
     @callback storybook_type() :: atom()
-    @callback description() :: String.t()
+    @callback description() :: String.t() | nil
   end
 
   defmodule ComponentBehaviour do
