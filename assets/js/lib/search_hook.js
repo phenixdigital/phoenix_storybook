@@ -54,7 +54,7 @@ export const SearchHook = {
     });
 
     window.addEventListener("keydown", (e) => {
-      if ((e.metaKey && (e.key === "k" || e.key === "K")) || e.key === "/") {
+      if ((e.metaKey && (e.key === "k" || e.key === "K"))) {
         e.preventDefault();
         this.dispatchOpenSearch();
       }
