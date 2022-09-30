@@ -20,10 +20,10 @@ The two last tuple elements are optional.
 {:fa, "book"} # note that the FontAwesome icon name omits the fa- prefix
 {:fa, "book", :solid} # same than previous one, :solid is the default style
 {:fa, "skull", :duotone} # only for FontAwesome paid users
-{:fa, "skull", :duotone, "px-2"}
+{:fa, "skull", :duotone, "lsb-px-2"}
 {:hero, "cake"} # for all HeroIcons
 {:hero, "cake", :outline} # same than previous one, :outline is the default style
-{:hero, "cake", :outline, "w-2 h-2"}
+{:hero, "cake", :outline, "lsb-w-2 lsb-h-2"}
 ```
 
 ## FontAwesome icons
@@ -57,3 +57,14 @@ end
 ```
 
 You can now use whichever HeroIcon icon you want, based on the library function names.
+
+## Custom CSS
+
+The last tuple argument is an optional CSS class list you can pass to improve icon rendering.
+Since the icon is rendered within the storybook layout, and not within your components sandbox, you
+should use CSS classes supported by the storybook.
+
+- any `lsb-w-*` or `lsb-h-*` class (TailwindCSS classes for height & width prefixed by `lsb-`)
+- any `lsb-p-*` or `lsb-m-*` class (padding & margin)
+- any `lsb-text-color-###`
+- any `fa-*` (FontAwesome modifiers)
