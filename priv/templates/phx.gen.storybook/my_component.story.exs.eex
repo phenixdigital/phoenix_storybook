@@ -7,7 +7,11 @@ defmodule Storybook.Components.MyComponent do
 
   # This is a dummy fonction that you should replace with your own component function:
   # def function, do: &MyButton.my_button/1
-  def function, do: fn assigns -> ~H"<span><%=@text%></span>" end
+  def function, do: &my_component/1
+
+  def my_component(assigns) do
+    ~H"<span><%=@text%></span>"
+  end
 
   # A variation captures the rendered state of a UI component. Developers write multiple variations
   # per component that describe all the “interesting” states a component can support.
