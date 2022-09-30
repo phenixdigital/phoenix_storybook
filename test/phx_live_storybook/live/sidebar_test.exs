@@ -70,14 +70,10 @@ defmodule PhxLiveStorybook.SidebarTest do
     test "sidebar with an icon folder is well displayed" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
-      # 1st folder 1st icon (not wrapped)
       [
-        {"i", [{"class", first_icon_classes} | _], _}
+        {"i", [{"class", first_icon_classes} | _], _},
+        {"i", [{"class", second_icon_classes} | _], _}
       ] = find(document, "nav>ul>li>ul>li:nth-child(5)>div>i")
-
-      # 1st folder 2nd icon (wrapped in sandbox span)
-      [{"i", [{"class", second_icon_classes} | _], _}] =
-        find(document, "nav>ul>li>ul>li:nth-child(5)>div>span>i")
 
       assert String.contains?(first_icon_classes, "fa-caret-down")
       assert String.contains?(second_icon_classes, "fa-icon")

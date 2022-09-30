@@ -32,8 +32,7 @@ defmodule PhxLiveStorybook.StoryLive do
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,
-       fa_plan: backend_module.config(:font_awesome_plan, :free),
-       sandbox_class: backend_module.config(:sandbox_class)
+       fa_plan: backend_module.config(:font_awesome_plan, :free)
      )}
   end
 
@@ -186,9 +185,7 @@ defmodule PhxLiveStorybook.StoryLive do
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @story_entry.icon do %>
-              <span class={@sandbox_class}>
-                <.user_icon icon={icon} class="lsb lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
-              </span>
+              <.user_icon icon={icon} class="lsb lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
             <% end %>
             <%= @story_entry.name %>
           </h2>
@@ -239,9 +236,7 @@ defmodule PhxLiveStorybook.StoryLive do
             <span class={active_span(@tab, tab_id)}>
               <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
               <%= if icon do %>
-                <span class={@sandbox_class}>
-                  <.user_icon icon={icon} class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"} fa_plan={@fa_plan}/>
-                </span>
+                <.user_icon icon={icon} class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"} fa_plan={@fa_plan}/>
               <% end %>
               <span class={"lsb lsb-whitespace-nowrap group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"}>
                 <%= tab_label %>

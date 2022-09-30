@@ -117,9 +117,7 @@ defmodule PhxLiveStorybook.Sidebar do
                 <% end %>
 
                 <%= if folder_icon do %>
-                  <span class={@sandbox_class}>
-                    <.user_icon icon={folder_icon} class="fa-fw lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
-                  </span>
+                  <.user_icon icon={folder_icon} class="fa-fw lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
                 <% end %>
 
                 <span class="lsb group-hover:lsb-text-indigo-600">
@@ -135,9 +133,7 @@ defmodule PhxLiveStorybook.Sidebar do
               <% story_path = Path.join(@root_path, path) %>
               <div class={story_class(@current_path, story_path)}>
                 <%= if icon do %>
-                  <span class={@sandbox_class}>
-                    <.user_icon icon={icon} class="fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
-                  </span>
+                  <.user_icon icon={icon} class="fa-fw -lsb-ml-1 lsb-pr-1.5 group-hover:lsb-text-indigo-600" fa_plan={@fa_plan}/>
                 <% end %>
                 <%= patch_to(assigns, name, story_path, class: "lsb group-hover:lsb-text-indigo-600") %>
               </div>
