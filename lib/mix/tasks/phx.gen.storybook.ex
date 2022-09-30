@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
   The generated files will contain:
 
     * the storybook backend in `lib/my_app_web/storybook.ex`
-    * a dummy component in `storybook/components/my_component.story.exs`
+    * a dummy component in `storybook/components/icon.story.exs`
     * a dummy page in `storybook/my_page.story.exs`
     * a custom js in `assets/js/storybook.js`
     * a custom css in `assets/css/storybook.css`
@@ -53,7 +53,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     mapping = [
       {"storybook.ex.eex", Path.join(app_folder, "storybook.ex")},
-      {"my_component.story.exs.eex", Path.join(component_folder, "my_component.story.exs")},
+      {"icon.story.exs.eex", Path.join(component_folder, "icon.story.exs")},
       {"my_page.story.exs.eex", Path.join(page_folder, "my_page.story.exs")},
       {"storybook.js.eex", Path.join(js_folder, "storybook.js")}
     ]

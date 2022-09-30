@@ -16,14 +16,14 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       for _ <- 1..5, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run([])
 
-      [{story, _}] = Code.compile_file("storybook/components/my_component.story.exs")
+      [{story, _}] = Code.compile_file("storybook/components/icon.story.exs")
       assert story.storybook_type() == :component
 
       [{page, _}] = Code.compile_file("storybook/my_page.story.exs")
       assert page.storybook_type() == :page
 
       [{backend, _}] = Code.compile_file("lib/phx_live_storybook_web/storybook.ex")
-      assert backend.storybook_path(story) == "/components/my_component"
+      assert backend.storybook_path(story) == "/components/icon"
       assert backend.config(:otp_app) == :phx_live_storybook_web
       assert backend.config(:sandbox_class) == "phx-live-storybook-web"
 
@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
 
       assert_shell_receive :info, ~r|Starting storybook generation|
       assert_shell_receive :info, ~r|creating lib/phx_live_storybook_web/storybook.ex|
-      assert_shell_receive :info, ~r|creating storybook/components/my_component.story.exs|
+      assert_shell_receive :info, ~r|creating storybook/components/icon.story.exs|
       assert_shell_receive :info, ~r|creating storybook/my_page.story.exs|
       assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
@@ -52,7 +52,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       for _ <- 1..3, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run(["--no-tailwind"])
 
-      assert_file("storybook/components/my_component.story.exs")
+      assert_file("storybook/components/icon.story.exs")
       assert_file("storybook/my_page.story.exs")
       assert_file("lib/phx_live_storybook_web/storybook.ex")
 
@@ -63,7 +63,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
 
       assert_shell_receive :info, ~r|Starting storybook generation|
       assert_shell_receive :info, ~r|creating lib/phx_live_storybook_web/storybook.ex|
-      assert_shell_receive :info, ~r|creating storybook/components/my_component.story.exs|
+      assert_shell_receive :info, ~r|creating storybook/components/icon.story.exs|
       assert_shell_receive :info, ~r|creating storybook/my_page.story.exs|
       assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
