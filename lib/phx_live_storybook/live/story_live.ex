@@ -162,17 +162,17 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp close_sidebar(socket), do: push_event(socket, "lsb:close-sidebar", %{"id" => "#sidebar"})
 
-  def render(assigns = %{story_load_error: error, story_load_exception: exception})
+  def render(assigns = %{story_load_error: error})
       when not is_nil(error) do
     ~H"""
     <div class="lsb lsb-my-6 md:lsb-my-12 lsb-space-y-4 md:lsb-space-y-8 lsb-flex lsb-flex-col">
       <h1 class="lsb lsb-font-medium lsb-text-red-500 lsb-text-lg md:lsb-text-xl lg:lsb-text-2xl lsb-align-middle">
         <.fa_icon style={:duotone} name="bomb" plan={@fa_plan}/>
-        <%= error %>
+        <%= @story_load_error %>
       </h1>
 
       <div class="lsb lsb-border lsb-rounded-md lsb-border-slate-100 lsb-bg-slate-800 lsb-p-4 lsb-overflow-x-scroll">
-        <pre class="lsb lsb-text-xs md:lsb-text-sm lsb-leading-loose lsb-text-red-500"><%= exception %></pre>
+        <pre class="lsb lsb-text-xs md:lsb-text-sm lsb-leading-loose lsb-text-red-500"><%= @story_load_exception %></pre>
       </div>
     </div>
     """
@@ -221,16 +221,18 @@ defmodule PhxLiveStorybook.StoryLive do
   defp render_navigation_tabs([], assigns), do: ~H""
 
   defp render_navigation_tabs(tabs, assigns) do
+    assigns = assign(assigns, :tabs, tabs)
+
     ~H"""
     <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
       <.form let={f} for={:navigation} id={"#{Macro.underscore(@story)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
-        <%= select f, :tab, navigation_select_options(tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
+        <%= select f, :tab, navigation_select_options(@tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
       </.form>
 
       <!-- :lg+ version of navigation tabs -->
       <nav class="lsb story-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
-        <%= for tab <- tabs do %>
+        <%= for tab <- @tabs do %>
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
           <a href="#" phx-click="set-tab" phx-value-tab={tab_id} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab_id)}"}>
             <span class={active_span(@tab, tab_id)}>
@@ -271,9 +273,11 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp render_content(type, story, assigns = %{tab: :variations})
        when type in [:component, :live_component] do
+    assigns = assign(assigns, :story, story)
+
     ~H"""
-    <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(story)}"}>
-      <%= for variation = %{id: variation_id, description: description} <- story.variations(),
+    <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
+      <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               variation_extra_assigns = variation_extra_assigns(variation, assigns) do %>
         <div id={anchor_id(variation)} class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
@@ -298,7 +302,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
           <!-- Variation component preview -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
-            <%= if story.container() == :iframe do %>
+            <%= if @story.container() == :iframe do %>
               <iframe
                 phx-update="ignore"
                 id={iframe_id(@story, variation)}
@@ -309,7 +313,7 @@ defmodule PhxLiveStorybook.StoryLive do
               />
             <% else %>
               <div class={LayoutView.sandbox_class(@socket, assigns)} style="width: 100%;">
-                <%= ComponentRenderer.render_variation(story, variation_id, variation_extra_assigns) %>
+                <%= ComponentRenderer.render_variation(@story, variation_id, variation_extra_assigns) %>
               </div>
             <% end %>
           </div>
@@ -319,7 +323,7 @@ defmodule PhxLiveStorybook.StoryLive do
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
             </div>
-            <%= CodeRenderer.render_variation_code(story, variation_id) %>
+            <%= CodeRenderer.render_variation_code(@story, variation_id) %>
           </div>
         </div>
       <% end %>
@@ -329,18 +333,22 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp render_content(type, story, assigns = %{tab: :source})
        when type in [:component, :live_component] do
+    assigns = assign(assigns, :story, story)
+
     ~H"""
     <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
-      <%= story |> CodeRenderer.render_component_source() |> to_raw_html() %>
+      <%= @story |> CodeRenderer.render_component_source() |> to_raw_html() %>
     </div>
     """
   end
 
   defp render_content(type, story_module, assigns = %{tab: :playground})
        when type in [:component, :live_component] do
+    assigns = assign(assigns, :story_module, story_module)
+
     ~H"""
     <.live_component module={Playground} id="playground"
-      story={story_module} story_path={@story_path} backend_module={@backend_module}
+      story={@story_module} story_path={@story_path} backend_module={@backend_module}
       variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
@@ -355,9 +363,11 @@ defmodule PhxLiveStorybook.StoryLive do
        do: raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
 
   defp render_content(:page, story, assigns) do
+    assigns = assign(assigns, :story, story)
+
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(@socket, assigns)}"}>
-      <%= story.render(%{tab: @tab, theme: @theme}) |> to_raw_html() %>
+      <%= @story.render(%{tab: @tab, theme: @theme}) |> to_raw_html() %>
     </div>
     """
   end
