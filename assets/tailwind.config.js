@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["../lib/**/*.{ex,heex}", "./js/**/*.js"],
+  content: ["../lib/**/*.{ex,heex}", "./js/**/*.js", "../priv/templates/**/*.eex"],
   safelist: [
     { pattern: /^lsb-(w|h|m|p)-.+/ },
     {

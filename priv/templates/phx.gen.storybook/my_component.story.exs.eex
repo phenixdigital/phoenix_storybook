@@ -7,11 +7,7 @@ defmodule Storybook.Components.MyComponent do
 
   # This is a dummy fonction that you should replace with your own component function:
   # def function, do: &MyButton.my_button/1
-  def function, do: &my_component/1
-
-  def my_component(assigns) do
-    ~H"<span><%=@text%></span>"
-  end
+  def function, do: &PhxLiveStorybook.Components.Icon.hero_icon/1
 
   # A variation captures the rendered state of a UI component. Developers write multiple variations
   # per component that describe all the “interesting” states a component can support.
@@ -20,20 +16,22 @@ defmodule Storybook.Components.MyComponent do
       %Variation{
         id: :default,
         attributes: %{
-          text: "Hello World"
+          name: "calendar",
+          class: "lsb lsb-w-8 lsb-h-8"
         }
       },
       %Variation{
-        id: :text_variation,
+        id: :icon_variation,
         attributes: %{
-          text: "A text variation"
+          name: "bookmark",
+          class: "lsb lsb-w-8 lsb-h-8 lsb-text-red-500"
         }
       },
       %VariationGroup{
         id: :group,
         variations: [
-          %Variation{id: :item_1, attributes: %{text: "item 1"}},
-          %Variation{id: :item_2, attributes: %{text: "item 2"}},
+          %Variation{id: :item_1, attributes: %{name: "cake", class: "lsb lsb-w-8 lsb-h-8"}},
+          %Variation{id: :item_2, attributes: %{name: "cake", class: "lsb lsb-w-16 lsb-h-16"}},
         ]
       }
     ]
