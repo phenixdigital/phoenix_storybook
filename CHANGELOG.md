@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.4.1 (not yet released)
+
+- **bugfix**: sidebar, tabs & theme icon [rendering issues have been fixed](https://github.com/phenixdigital/phx_live_storybook/issues/111). Icons are no longer rendered within the CSS sandbox and should be
+  styles with `lsb-*` classes.
+- **bugfix**: [search panel no longer binds the `/` key](https://github.com/phenixdigital/phx_live_storybook/issues/110).
+
 ## v0.4.0 (2022-09-29)
 
 A lot of necessary changes & refactoring have been made in this release which now requires you to
