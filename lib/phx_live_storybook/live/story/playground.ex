@@ -586,8 +586,10 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp attr_input(assigns = %{type: :integer, values: min..max}) do
+    assigns = assigns |> assign(:min, min) |> assign(:max, max)
+
     ~H"""
-    <%= number_input(@form, @attr_id, value: @value, min: min, max: max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id, value: @value, min: @min, max: @max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
     """
   end
 
