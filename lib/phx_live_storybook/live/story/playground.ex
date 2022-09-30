@@ -180,7 +180,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= for {tab, label, icon} <- tabs do %>
           <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself}
             class={"lsb #{active_link(@upper_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
-            <.fa_icon style={:duotone} name={icon} class={"lsb lsb-pr-1 #{active_link(@upper_tab, tab)}"} plan={@fa_plan}/>
+            <.fa_icon style={:duotone} name={icon} class={"lsb-pr-1 #{active_link(@upper_tab, tab)}"} plan={@fa_plan}/>
             <%= label %>
           </a>
         <% end %>
@@ -195,7 +195,7 @@ defmodule PhxLiveStorybook.Story.Playground do
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:attributes, "Attributes", "table"}, {:events, "Event logs", "list-timeline"}] do %>
           <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
-            <.fa_icon style={:duotone} name={icon} class={"lsb lsb-pr-1 #{active_link(@lower_tab, tab)}"} plan={@fa_plan}/>
+            <.fa_icon style={:duotone} name={icon} class={"lsb-pr-1 #{active_link(@lower_tab, tab)}"} plan={@fa_plan}/>
             <%= label %>
             <%= event_counter(tab, @event_logs_unread) %>
           </a>
@@ -245,7 +245,7 @@ defmodule PhxLiveStorybook.Story.Playground do
       <%= if @upper_tab == :code do %>
         <div class="lsb lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm">
           <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-            <.fa_icon name="copy" class="lsb lsb-text-inherit" plan={@fa_plan}/>
+            <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
           </div>
           <.playground_code story={@story} variation={@variation} variations={@variations}/>
         </div>
@@ -253,7 +253,7 @@ defmodule PhxLiveStorybook.Story.Playground do
       <%= if @playground_error do %>
         <% error_bg = if @upper_tab == :code, do: "lsb-bg-slate/20", else: "lsb-bg-white/20" %>
         <div class={"lsb lsb-absolute lsb-inset-2 lsb-z-10 lsb-backdrop-blur-lg lsb-text-red-600 #{error_bg} lsb-rounded lsb-flex lsb-flex-col lsb-justify-center lsb-items-center lsb-space-y-2"}>
-          <.fa_icon style={:duotone} name="bomb" class="lsb fa-xl lsb-text-red-600" plan={@fa_plan}/>
+          <.fa_icon style={:duotone} name="bomb" class="fa-xl lsb-text-red-600" plan={@fa_plan}/>
           <span class="lsb lsb-drop-shadow lsb-font-medium">Ohoh, I just crashed!</span>
           <button phx-click="clear-playground-error" class="lsb lsb-inline-flex lsb-items-center lsb-px-2 lsb-py-1 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500">
             Dismiss
@@ -305,7 +305,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                   <%= if Enum.empty?(@story.merged_attributes()) do %>
                   <tr>
                     <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
-                      <.fa_icon style={:duotone} name="circle-question" class="fa-xl lsb lsb-text-indigo-400 lsb-py-4 md:lsb-py-6" plan={@fa_plan}/>
+                      <.fa_icon style={:duotone} name="circle-question" class="fa-xl lsb-text-indigo-400 lsb-py-4 md:lsb-py-6" plan={@fa_plan}/>
                       <p>In order to use playground, you must define your component attributes.</p>
                     </td>
                   </tr>
@@ -420,7 +420,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp required_badge(assigns) do
     ~H"""
     <span class="lsb lsb-hidden md:lsb-inline lsb-group lsb-relative -lsb-ml-[1.85em] lsb-pr-2">
-      <.fa_icon style={:duotone} name="circle-dot" class="lsb lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer" plan={@fa_plan}/>
+      <.fa_icon style={:duotone} name="circle-dot" class="lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer" plan={@fa_plan}/>
       <span class="lsb lsb-hidden lsb-absolute lsb-top-6 group-hover:lsb-block lsb-z-50 lsb-mx-auto lsb-text-xs lsb-text-indigo-800 lsb-bg-indigo-100 lsb-rounded lsb-px-2 lsb-py-1">
         Required
       </span>

@@ -3,7 +3,7 @@
   <div class="lsb lsb-h-16 lsb-w-full">
     <div class="lsb lsb-absolute lsb-top-5 lsb-left-5 lsb-z-20 lsb-text-indigo-600 lsb-text-lg lsb-font-bold lsb-uppercase ">
       <.link patch={live_storybook_path(@socket, :root)} class="lsb">
-        <.fa_icon style={:regular} name="book-open" class="lsb lsb-text-indigo-600" plan={@fa_plan}/>
+        <.fa_icon style={:regular} name="book-open" class="lsb-text-indigo-600" plan={@fa_plan}/>
         <span class="lsb lsb-ml-1"><%= title(@socket) %></span>
       </.link>
     </div>
@@ -23,7 +23,7 @@
               <a phx-click={JS.push("set-theme", value: %{"theme" => theme}) |> JS.hide(to: "#lsb-theme-dropdown", transition: hide_dropdown_transition())}} class="lsb lsb-theme lsb-text-gray-700 hover:lsb-bg-gray-100 lsb-block lsb-px-4 lsb-py-2 lsb-text-sm lsb-cursor-pointer">
                 <%= if assigns[:theme] == theme do %>
                   <span class="lsb lsb-text-indigo-600">
-                    <.fa_icon name="check" class="lsb lsb-pr-2" plan={@fa_plan}/><%= opts[:name] %>
+                    <.fa_icon name="check" class="lsb-pr-2" plan={@fa_plan}/><%= opts[:name] %>
                   </span>
                 <% else %>
                   <span class="lsb lsb-pl-5">
@@ -45,7 +45,7 @@
   </div>
   
   <nav class="lsb lg:lsb-hidden lsb-w-full lsb-h-12 lsb-border-slate-200 lsb-border-t lsb-flex lsb-text-gray-600 lsb-items-center lsb-cursor-pointer lsb-pr-2">
-    <.fa_icon name="bars" style={:regular} class="lsb fa-lg lsb-px-4" plan={@fa_plan} phx-click={JS.dispatch("lsb:open-sidebar")}/>
+    <.fa_icon name="bars" style={:regular} class="fa-lg lsb-px-4" plan={@fa_plan} phx-click={JS.dispatch("lsb:open-sidebar")}/>
     <%= if assigns[:story] do %>
       <%= render_breadcrumb(@socket, @backend_module.storybook_path(@story)) %>
     <% end %>

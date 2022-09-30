@@ -185,7 +185,7 @@ defmodule PhxLiveStorybook.StoryLive do
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @story_entry.icon do %>
-              <.user_icon icon={icon} class="lsb lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
+              <.user_icon icon={icon} class="lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
             <% end %>
             <%= @story_entry.name %>
           </h2>
@@ -263,7 +263,7 @@ defmodule PhxLiveStorybook.StoryLive do
   defp active_span(_tab, _current_tab), do: ""
 
   defp active_text(same, same), do: "lsb-text-indigo-600"
-  defp active_text(_tab, _current_tab), do: "lsb -lsb-ml-0.5"
+  defp active_text(_tab, _current_tab), do: "-lsb-ml-0.5"
 
   defp navigation_select_options(tabs) do
     for {tab, label, _icon} <- tabs, do: {label, tab}
@@ -280,7 +280,7 @@ defmodule PhxLiveStorybook.StoryLive do
           <!-- Variation description -->
           <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "lsb variation-anchor-link" do %>
-              <.fa_icon style={:light} name="link" class="lsb lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400" plan={@fa_plan}/>
+              <.fa_icon style={:light} name="link" class="lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400" plan={@fa_plan}/>
               <%= if description do %>
                 <%= description  %>
               <% else %>
@@ -317,7 +317,7 @@ defmodule PhxLiveStorybook.StoryLive do
           <!-- Variation code -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm lsb-flex lsb-flex-col lsb-justify-center">
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-              <.fa_icon name="copy" class="lsb lsb-text-inherit" plan={@fa_plan}/>
+              <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
             </div>
             <%= CodeRenderer.render_variation_code(story, variation_id) %>
           </div>

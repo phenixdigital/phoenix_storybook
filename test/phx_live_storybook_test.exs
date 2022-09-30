@@ -24,7 +24,7 @@ defmodule PhxLiveStorybookTest do
       assert FlatListStorybook.content_tree() == [
                %FolderEntry{
                  name: "Storybook",
-                 icon: {:fa, "book-open", :light},
+                 icon: {:fa, "book-open", :light, "lsb-mr-1"},
                  path: "",
                  entries: [
                    %StoryEntry{
@@ -77,7 +77,7 @@ defmodule PhxLiveStorybookTest do
       assert EmptyFilesStorybook.content_tree() == [
                %FolderEntry{
                  entries: [],
-                 icon: {:fa, "book-open", :light},
+                 icon: {:fa, "book-open", :light, "lsb-mr-1"},
                  name: "Storybook",
                  path: ""
                }

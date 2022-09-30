@@ -58,7 +58,7 @@ defmodule PhxLiveStorybook.Search do
 
           <.form let={f} for={:search} phx-debounce={500} id="search-form" class="lsb lsb-relative">
             <.fa_icon style={:light} name="search" plan={@fa_plan}
-              class="lsb lsb-pointer-events-none lsb-absolute lsb-top-3.5 lsb-left-4 lsb-h-5 lsb-w-5 lsb-text-gray-400"
+              class="lsb-pointer-events-none lsb-absolute lsb-top-3.5 lsb-left-4 lsb-h-5 lsb-w-5 lsb-text-gray-400"
             />
             <%= text_input f, :input, id: "search-input", "phx-change": "search", "phx-target": @myself, placeholder: "Search...", autocomplete: "off",  class: "lsb lsb-h-12 lsb-w-full lsb-border-0 lsb-bg-transparent lsb-pl-11 lsb-pr-4 lsb-text-gray-800 lsb-placeholder-gray-400 lsb-outline-none focus:lsb-ring-0 sm:lsb-text-sm"%>
           </.form>

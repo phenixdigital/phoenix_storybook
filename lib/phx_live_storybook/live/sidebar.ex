@@ -73,7 +73,7 @@ defmodule PhxLiveStorybook.Sidebar do
           class="lsb lsb-hidden lsb-w-full lg:lsb-flex lsb-items-center lsb-text-sm lsb-leading-6 lsb-text-slate-400 lsb-rounded-md lsb-border lsb-border-1 lsb-border-slate-100 hover:lsb-border-slate-200 lsb-py-1.5 lsb-pl-2 lsb-pr-3">
 
           <.fa_icon style={:light} name="magnifying-glass" plan={@fa_plan}
-            class="lsb fa-lg lsb lsb-mr-3 lsb-flex-none lsb-text-slate-400"
+            class="fa-lg lsb-mr-3 lsb-flex-none lsb-text-slate-400"
           />
           Quick search...
           <span class="lsb lsb-ml-auto lsb-pl-3 lsb-flex-none lsb-text-xs lsb-font-semibold lsb-text-slate-400">⌘K</span>
@@ -110,9 +110,9 @@ defmodule PhxLiveStorybook.Sidebar do
               >
                 <%= unless @root do %>
                   <%= if open_folder? do %>
-                    <.fa_icon name="caret-down" class="lsb lsb-pl-1 lsb-pr-2" plan={@fa_plan}/>
+                    <.fa_icon name="caret-down" class="lsb-pl-1 lsb-pr-2" plan={@fa_plan}/>
                   <% else %>
-                    <.fa_icon name="caret-right" class="lsb lsb-pl-1 lsb-pr-2" plan={@fa_plan}/>
+                    <.fa_icon name="caret-right" class="lsb-pl-1 lsb-pr-2" plan={@fa_plan}/>
                   <% end %>
                 <% end %>
 
