@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.2 (not yet released)
+
+- **improvement**: upgraded to LiveView 0.18.1
+
 ## v0.4.1 (2022-09-30)
 
 - **bugfix**: sidebar, tabs & theme icon [rendering issues have been fixed](https://github.com/phenixdigital/phx_live_storybook/issues/111). Icons are no longer rendered within the CSS sandbox and should be

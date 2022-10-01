@@ -37,7 +37,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
          variation_or_group,
          template,
          opts,
-         assigns \\ %{}
+         assigns \\ %{__changed__: %{}}
        )
 
   defp render_variation_code(story, fun_or_mod, v = %Variation{}, template, opts, assigns) do
@@ -54,14 +54,18 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
       attributes = maybe_add_id_to_attributes(story, v.id, v.attributes)
       heex = component_code_heex(story, fun_or_mod, attributes, v.let, v.slots, template)
 
-      heex =
-        template
-        |> TemplateHelpers.set_variation_dom_id(story, v.id)
-        |> TemplateHelpers.replace_template_variation(heex, _indent = true)
+      assigns =
+        assign(assigns,
+          opts: opts,
+          heex:
+            template
+            |> TemplateHelpers.set_variation_dom_id(story, v.id)
+            |> TemplateHelpers.replace_template_variation(heex, _indent = true)
+        )
 
       ~H"""
       <pre class={pre_class()}>
-      <%= format_heex(heex, opts) %>
+      <%= format_heex(@heex, @opts) %>
       </pre>
       """
     end
@@ -85,33 +89,39 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         assigns
       )
     else
-      heex =
-        cond do
-          TemplateHelpers.variation_template?(template) ->
-            Enum.map_join(variations, "\n", fn v ->
-              attributes = maybe_add_id_to_attributes(story, v.id, v.attributes)
-              heex = component_code_heex(story, fun_or_mod, attributes, v.let, v.slots, template)
+      assigns =
+        assign(assigns,
+          opts: opts,
+          heex:
+            cond do
+              TemplateHelpers.variation_template?(template) ->
+                Enum.map_join(variations, "\n", fn v ->
+                  attributes = maybe_add_id_to_attributes(story, v.id, v.attributes)
 
-              template
-              |> TemplateHelpers.set_variation_dom_id(story, v.id)
-              |> TemplateHelpers.replace_template_variation(heex, _indent = true)
-            end)
+                  heex =
+                    component_code_heex(story, fun_or_mod, attributes, v.let, v.slots, template)
 
-          TemplateHelpers.variation_group_template?(template) ->
-            heex =
-              Enum.map_join(variations, "\n", fn v ->
-                component_code_heex(story, fun_or_mod, v.attributes, v.let, v.slots, template)
-              end)
+                  template
+                  |> TemplateHelpers.set_variation_dom_id(story, v.id)
+                  |> TemplateHelpers.replace_template_variation(heex, _indent = true)
+                end)
 
-            TemplateHelpers.replace_template_variation_group(template, heex, _indent = true)
+              TemplateHelpers.variation_group_template?(template) ->
+                heex =
+                  Enum.map_join(variations, "\n", fn v ->
+                    component_code_heex(story, fun_or_mod, v.attributes, v.let, v.slots, template)
+                  end)
 
-          true ->
-            template
-        end
+                TemplateHelpers.replace_template_variation_group(template, heex, _indent = true)
+
+              true ->
+                template
+            end
+        )
 
       ~H"""
       <pre class={pre_class()}>
-      <%= format_heex(heex, opts) %>
+      <%= format_heex(@heex, @opts) %>
       </pre>
       """
     end
@@ -120,7 +130,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   @doc """
   Renders code snippet for a set of variations.
   """
-  def render_multiple_variations_code(story, fun_or_mod, variations, template, assigns \\ %{}) do
+  def render_multiple_variations_code(
+        story,
+        fun_or_mod,
+        variations,
+        template,
+        assigns \\ %{__changed__: %{}}
+      ) do
     if TemplateHelpers.code_hidden?(template) do
       render_multiple_variations_code(
         story,
@@ -130,32 +146,37 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         assigns
       )
     else
-      heex =
-        cond do
-          TemplateHelpers.variation_template?(template) ->
-            Enum.map_join(variations, "\n", fn v ->
-              attributes = maybe_add_id_to_attributes(story, v.id, v.attributes)
-              heex = component_code_heex(story, fun_or_mod, attributes, v.let, v.slots, template)
+      assigns =
+        assign(assigns,
+          heex:
+            cond do
+              TemplateHelpers.variation_template?(template) ->
+                Enum.map_join(variations, "\n", fn v ->
+                  attributes = maybe_add_id_to_attributes(story, v.id, v.attributes)
 
-              template
-              |> TemplateHelpers.set_variation_dom_id(story, v.id)
-              |> TemplateHelpers.replace_template_variation(heex, _indent = true)
-            end)
+                  heex =
+                    component_code_heex(story, fun_or_mod, attributes, v.let, v.slots, template)
 
-          TemplateHelpers.variation_group_template?(template) ->
-            heex =
-              Enum.map_join(variations, "\n", fn v ->
-                component_code_heex(story, fun_or_mod, v.attributes, v.let, v.slots, template)
-              end)
+                  template
+                  |> TemplateHelpers.set_variation_dom_id(story, v.id)
+                  |> TemplateHelpers.replace_template_variation(heex, _indent = true)
+                end)
 
-            template
-            |> TemplateHelpers.replace_template_variation_group(heex, _indent = true)
+              TemplateHelpers.variation_group_template?(template) ->
+                heex =
+                  Enum.map_join(variations, "\n", fn v ->
+                    component_code_heex(story, fun_or_mod, v.attributes, v.let, v.slots, template)
+                  end)
 
-          true ->
-            template
-        end
+                template
+                |> TemplateHelpers.replace_template_variation_group(heex, _indent = true)
 
-      ~H"<%= format_heex(heex) %>"
+              true ->
+                template
+            end
+        )
+
+      ~H"<%= format_heex(@heex) %>"
     end
   end
 
@@ -163,11 +184,13 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   Renders source of a component story.
   Returns a rendered HEEx template.
   """
-  def render_component_source(story, assigns \\ %{}) do
+  def render_component_source(story, assigns \\ %{__changed__: %{}}) do
     if source = story.__component_source__() do
+      assigns = assign(assigns, source: source)
+
       ~H"""
       <pre class={pre_class()}>
-      <%= format_elixir(source) %>
+      <%= format_elixir(@source) %>
       </pre>
       """
     end
