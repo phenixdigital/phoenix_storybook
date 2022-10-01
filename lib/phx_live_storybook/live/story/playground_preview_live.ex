@@ -86,19 +86,21 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   defp theme(theme) when is_atom(theme), do: theme
 
   def render(assigns) do
-    template = TemplateHelpers.get_template(assigns.story.template, assigns.variation)
-
-    opts = [
-      playground_topic: assigns.topic,
-      imports: [{__MODULE__, lsb_inspect: 4} | assigns.story.imports],
-      aliases: assigns.story.aliases
-    ]
+    assigns =
+      assign(assigns,
+        template: TemplateHelpers.get_template(assigns.story.template, assigns.variation),
+        opts: [
+          playground_topic: assigns.topic,
+          imports: [{__MODULE__, lsb_inspect: 4} | assigns.story.imports],
+          aliases: assigns.story.aliases
+        ]
+      )
 
     ~H"""
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div id={"sandbox-#{@counter}"} class={LayoutView.sandbox_class(@socket, assigns)}
            style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;">
-        <%= ComponentRenderer.render_multiple_variations(@story, fun_or_component(@story), @variation, @variations, template, opts) %>
+        <%= ComponentRenderer.render_multiple_variations(@story, fun_or_component(@story), @variation, @variations, @template, @opts) %>
       </div>
     </div>
     """

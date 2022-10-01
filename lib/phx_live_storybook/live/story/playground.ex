@@ -172,12 +172,12 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp render_upper_navigation_tabs(assigns) do
-    tabs = [{:preview, "Preview", "eye"}, {:code, "Code", "code"}]
+    assigns = assign(assigns, tabs: [{:preview, "Preview", "eye"}, {:code, "Code", "code"}])
 
     ~H"""
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
-        <%= for {tab, label, icon} <- tabs do %>
+        <%= for {tab, label, icon} <- @tabs do %>
           <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself}
             class={"lsb #{active_link(@upper_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
             <.fa_icon style={:duotone} name={icon} class={"lsb-pr-1 #{active_link(@upper_tab, tab)}"} plan={@fa_plan}/>
@@ -476,7 +476,8 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp type_badge(assigns = %{type: :string}) do
     ~H"""
-    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span
+      class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
     """
   end
 
@@ -557,7 +558,9 @@ defmodule PhxLiveStorybook.Story.Playground do
         end
 
       value ->
-        ~H|<%= text_input(@form, @attr_id, value: inspect(value), disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+        assigns = assign(assigns, value: value)
+
+        ~H|<%= text_input(@form, @attr_id, value: inspect(@value), disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
     end
   end
 
