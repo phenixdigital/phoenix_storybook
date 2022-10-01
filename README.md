@@ -167,4 +167,4 @@ That should get you running against HEAD and ready to dig into the code!
 
 ## License
 
-MIT License. Copyright (c) 2022 Christian Blavier
+MIT License. Copyright (c) 2022
