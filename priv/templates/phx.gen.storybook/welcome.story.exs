@@ -16,7 +16,6 @@ defmodule Storybook.MyPage do
   end
 
   # This is a dummy fonction that you should replace with your own HEEx content.
-  # Current tab is passed as an assign.
   def render(assigns = %{tab: :welcome}) do
     ~H"""
     <div class="lsb-welcome-page">
@@ -53,8 +52,8 @@ defmodule Storybook.MyPage do
     )
 
     ~H"""
-    <p class="md:lsb-text-lg lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic lsb-text-left ">
-      <a class="hover:lsb-text-indigo-700" href={"https://hexdocs.pm/phx_live_storybook/#{@guide}.html"} target="_blank">
+    <p class="md:lsb-text-lg lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic">
+      <a class="hover:text-indigo-700" href={"https://hexdocs.pm/phx_live_storybook/#{@guide}.html"} target="_blank">
         This guide is also available on Hexdocs among others.
       </a>
     </p>
@@ -67,16 +66,16 @@ defmodule Storybook.MyPage do
   defp description_list(assigns) do
     ~H"""
     <div class="lsb-w-full md:lsb-px-8">
-      <div class="md:lsb-border-t lsb-border-gray-200 lsb-px-4 lsb-py-5 sm:lsb-p-0 md:lsb-my-6 lsb-w-full ">
+      <div class="md:lsb-border-t lsb-border-gray-200 lsb-px-4 lsb-py-5 sm:lsb-p-0 md:lsb-my-6 lsb-w-full">
         <dl class="sm:lsb-divide-y sm:lsb-divide-gray-200">
-          <%= for {dt, {link_href, link_label}} <- @items do %>
-            <div class="lsb-py-4 sm:lsb-grid sm:lsb-grid-cols-3 sm:lsb-gap-4 sm:lsb-py-5 sm:lsb-px-6">
+          <%= for {dt, link} <- @items do %>
+            <div class="lsb-py-4 sm:lsb-grid sm:lsb-grid-cols-3 sm:lsb-gap-4 sm:lsb-py-5 sm:lsb-px-6 lsb-max-w-full">
               <dt class="lsb-text-base lsb-font-medium lsb-text-indigo-700">
                 <%= dt %>
               </dt>
-              <dd class="lsb-mt-1 lsb-text-base lsb-text-slate-400 sm:lsb-col-span-2 sm:lsb-mt-0 lsb-group lsb-cursor-pointer">
-                <a class="group-hover:lsb-text-indigo-700 lsb-truncate" href={link_href} target="_blank" %>
-                  <%= link_label %>
+              <dd class="lsb-mt-1 lsb-text-base lsb-text-slate-400 sm:lsb-col-span-2 sm:lsb-mt-0 lsb-group lsb-cursor-pointer lsb-max-w-full">
+                <a class="group-hover:lsb-text-indigo-700 lsb-max-w-full lsb-inline-block lsb-truncate" href={link} target="_blank" %>
+                  <%= link %>
                 </a>
               </dd>
             </div>
@@ -88,9 +87,6 @@ defmodule Storybook.MyPage do
   end
 
   defp doc_link(page) do
-    {
-      "https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.#{page}.html",
-      "hexdocs.pm/.../PhxLiveStorybook.#{page}"
-    }
+    "https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.#{page}.html"
   end
 end

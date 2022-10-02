@@ -73,7 +73,7 @@
 }
 
 .lsb-sandbox .lsb-welcome-page pre {
-  @apply lsb-bg-gray-100 lsb-rounded-lg lsb-px-4 lsb-py-2 lsb-my-4;
+  @apply lsb-bg-gray-100 lsb-rounded-lg lsb-px-4 lsb-py-2 lsb-my-4 lsb-whitespace-pre-wrap lsb-break-normal;
 }
 
 .lsb-sandbox .lsb-welcome-page pre code {
