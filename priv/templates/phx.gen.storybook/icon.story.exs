@@ -35,7 +35,7 @@ defmodule Storybook.Components.Icon do
           %Variation{
             id: :item_2,
             attributes: %{name: "cake", class: "lsb-w-16 lsb-h-16"}
-          },
+          }
         ]
       }
     ]

@@ -46,10 +46,11 @@ defmodule Storybook.MyPage do
   end
 
   def render(assigns = %{tab: guide}) when guide in ~w(components sandboxing icons)a do
-    assigns = assign(assigns,
-      guide: guide,
-      guide_content: PhxLiveStoryBook.Guides.markup("#{guide}.md")
-    )
+    assigns =
+      assign(assigns,
+        guide: guide,
+        guide_content: PhxLiveStoryBook.Guides.markup("#{guide}.md")
+      )
 
     ~H"""
     <p class="md:lsb-text-lg lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic">
