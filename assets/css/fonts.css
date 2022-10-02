@@ -48,12 +48,6 @@
 }
 
 /* insert fontawesome.css from here */
-
-.fa {
-  font-family: var(--fa-style-family, "Font Awesome 6 Pro");
-  font-weight: var(--fa-style, 900);
-}
-
 .fa,
 .fa-classic,
 .fa-sharp,
@@ -795,6 +789,14 @@
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
 readers do not read off random characters that represent icons */
+.fa-icons::before {
+  content: "\f86d";
+}
+
+.fa-heart-music-camera-bolt::before {
+  content: "\f86d";
+}
+
 .fa-caret-right::before {
   content: "\f0da";
 }
@@ -821,6 +823,10 @@ readers do not read off random characters that represent icons */
 
 .fa-angle-right::before {
   content: "\f105";
+}
+
+.fa-box-check::before {
+  content: "\f467";
 }
 
 .fa-bomb::before {
@@ -861,6 +867,14 @@ readers do not read off random characters that represent icons */
 
 .fa-caret-down::before {
   content: "\f0d7";
+}
+
+.fa-hand-wave::before {
+  content: "\e1a7";
+}
+
+.fa-toolbox::before {
+  content: "\f552";
 }
 
 .fa-link::before {

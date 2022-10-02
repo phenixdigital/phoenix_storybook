@@ -36,6 +36,50 @@
   display: block;
 }
 
+.lsb-sandbox .lsb-welcome-page {
+  @apply lsb-w-full;
+}
+
+.lsb-sandbox .lsb-welcome-page h1 {
+  @apply lsb-text-indigo-700 lsb-text-2xl lsb-pt-4 lsb-mb-2;
+}
+
+.lsb-sandbox .lsb-welcome-page h2 {
+  @apply lsb-text-indigo-700 lsb-text-xl lsb-pt-4 lsb-mb-2;
+}
+
+.lsb-sandbox .lsb-welcome-page h3 {
+  @apply lsb-text-slate-700 lsb-text-lg lsb-pt-4 lsb-mb-2 lsb-font-bold;
+}
+
+.lsb-sandbox .lsb-welcome-page p {
+  @apply md:lsb-text-lg lsb-leading-6 md:lsb-leading-8 lsb-text-slate-700 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2;
+}
+
+.lsb-sandbox .lsb-welcome-page strong {
+  @apply lsb-text-indigo-700;
+}
+
+.lsb-sandbox .lsb-welcome-page ul {
+  @apply lsb-list-disc lsb-ml-12 lsb-space-y-2;
+}
+
+.lsb-sandbox .lsb-welcome-page ul li {
+  @apply lsb-text-lg lsb-text-slate-700;
+}
+
+.lsb-sandbox .lsb-welcome-page code.inline {
+  @apply lsb-font-mono lsb-bg-gray-100 lsb-rounded-md lsb-py-1 lsb-px-1.5 lsb-text-sm;
+}
+
+.lsb-sandbox .lsb-welcome-page pre {
+  @apply lsb-bg-gray-100 lsb-rounded-lg lsb-px-4 lsb-py-2 lsb-my-4;
+}
+
+.lsb-sandbox .lsb-welcome-page pre code {
+  @apply lsb-font-mono lsb-text-sm;
+}
+
 @layer base {
   /*
   1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)

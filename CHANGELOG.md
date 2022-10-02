@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## v0.4.2 (not yet released)
+## v0.4.2 (2022-10-02)
 
 - **improvement**: upgraded to LiveView 0.18.1
+- **improvement**: improved generated storybook component & page
 
 ## v0.4.1 (2022-09-30)
 

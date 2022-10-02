@@ -28,8 +28,14 @@ defmodule Storybook.Components.Icon do
       %VariationGroup{
         id: :group,
         variations: [
-          %Variation{id: :item_1, attributes: %{name: "cake", class: "lsb-w-8 lsb-h-8"}},
-          %Variation{id: :item_2, attributes: %{name: "cake", class: "lsb-w-16 lsb-h-16"}},
+          %Variation{
+            id: :item_1,
+            attributes: %{name: "cake", class: "lsb-w-8 lsb-h-8"}
+          },
+          %Variation{
+            id: :item_2,
+            attributes: %{name: "cake", class: "lsb-w-16 lsb-h-16"}
+          },
         ]
       }
     ]

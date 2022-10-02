@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.MixProject do
   use Mix.Project
 
-  @version "0.4.1"
+  @version "0.4.2"
 
   def project do
     [
@@ -43,8 +43,9 @@ defmodule PhxLiveStorybook.MixProject do
     [
       {:phoenix_live_view, "~> 0.18"},
       {:makeup_eex, "~> 0.1.0"},
-      {:heroicons, "~> 0.5.0", optional: true},
+      {:heroicons, "~> 0.5", optional: true},
       {:jason, "~> 1.3", optional: true},
+      {:earmark, "~> 1.4", runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},

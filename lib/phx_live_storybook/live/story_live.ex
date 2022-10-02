@@ -367,7 +367,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(@socket, assigns)}"}>
-      <%= @story.render(%{tab: @tab, theme: @theme}) |> to_raw_html() %>
+      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme}) |> to_raw_html() %>
     </div>
     """
   end

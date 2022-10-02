@@ -10,8 +10,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
   The generated files will contain:
 
     * the storybook backend in `lib/my_app_web/storybook.ex`
-    * a dummy component in `storybook/components/icon.story.exs`
-    * a dummy page in `storybook/my_page.story.exs`
+    * an index file in `storybook/_root.index.exs`
+    * a welcome page in `storybook/welcome.story.exs`
+    * an icon component in `storybook/components/icon.story.exs`
     * a custom js in `assets/js/storybook.js`
     * a custom css in `assets/css/storybook.css`
 
@@ -53,26 +54,30 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     mapping = [
       {"storybook.ex.eex", Path.join(app_folder, "storybook.ex")},
-      {"icon.story.exs.eex", Path.join(component_folder, "icon.story.exs")},
-      {"my_page.story.exs.eex", Path.join(page_folder, "my_page.story.exs")},
-      {"storybook.js.eex", Path.join(js_folder, "storybook.js")}
+      {"_root.index.exs", Path.join(page_folder, "_root.index.exs")},
+      {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")},
+      {"icon.story.exs", Path.join(component_folder, "icon.story.exs")},
+      {"storybook.js", Path.join(js_folder, "storybook.js")}
     ]
 
     mapping =
       if opts[:tailwind] == false do
         mapping ++ [{"storybook.css.eex", Path.join(css_folder, "storybook.css")}]
       else
-        mapping ++ [{"storybook.tailwind.css.eex", Path.join(css_folder, "storybook.css")}]
+        mapping ++ [{"storybook.tailwind.css", Path.join(css_folder, "storybook.css")}]
       end
 
     for {source_file_path, target} <- mapping do
       templates_folder = Application.app_dir(:phx_live_storybook, @templates_folder)
       source = Path.join(templates_folder, source_file_path)
 
-      Mix.Generator.create_file(
-        target,
-        EEx.eval_file(source, schema: schema, assigns: [text: "<%=@text%>"])
-      )
+      source_content =
+        case Path.extname(source) do
+          ".eex" -> EEx.eval_file(source, schema: schema)
+          _ -> File.read!(source)
+        end
+
+      Mix.Generator.create_file(target, source_content)
     end
 
     with true <- print_router_instructions(web_module_name, app_name, opts),

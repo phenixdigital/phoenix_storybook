@@ -47,3 +47,11 @@ icons:
       - solid
   - palette:
       - solid
+  - hand-wave:
+      - solid
+  - icons:
+      - solid
+  - toolbox:
+      - solid
+  - box-check:
+      - solid
