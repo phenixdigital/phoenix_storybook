@@ -20,6 +20,22 @@ defmodule PhxLiveStorybook.RouterTest do
                "/storybook/iframe/components/button"
     end
 
+    test "generates helper for home when :as option is passed" do
+      assert Routes.admin_live_storybook_path(build_conn(), :root) == "/admin/storybook"
+    end
+
+    test "generates helper for story when :as option is passed" do
+      assert Routes.admin_live_storybook_path(build_conn(), :story, ["components", "button"]) ==
+               "/admin/storybook/components/button"
+    end
+
+    test "generates helper for story iframe when :as option is passed" do
+      assert Routes.admin_live_storybook_path(build_conn(), :story_iframe, [
+               "components",
+               "button"
+             ]) == "/admin/storybook/iframe/components/button"
+    end
+
     test "raises when backend_module is missing" do
       assert_raise(RuntimeError, fn ->
         defmodule NoBackendModuleRouter do
