@@ -32,6 +32,10 @@ defmodule PhxLiveStorybook.Router do
       books in the same router.
     * `:as` - Allows you to set the route helper name. Defaults to
       `:live_storybook`.
+    * `:pipeline` - Set to `false` if you don't want a router pipeline to be
+      created. This is useful if you want to define your own
+      `:storybook_browser` pipeline, or if you mount multiple story books, in
+      which case the pipeline only has to be defined once. Defaults to `true`.
 
   ## Usage
 
@@ -52,6 +56,7 @@ defmodule PhxLiveStorybook.Router do
       opts
       |> Keyword.put(:application_router, __CALLER__.module)
       |> Keyword.put_new(:as, :live_storybook)
+      |> Keyword.put_new(:pipeline, true)
 
     session_name_opt = Keyword.get(opts, :session_name, :live_storybook)
     session_name_iframe_opt = :"#{session_name_opt}_iframe"
@@ -60,10 +65,12 @@ defmodule PhxLiveStorybook.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipeline :storybook_browser do
-          plug(:accepts, ["html"])
-          plug(:fetch_session)
-          plug(:protect_from_forgery)
+        if Keyword.fetch!(opts, :pipeline) do
+          pipeline :storybook_browser do
+            plug(:accepts, ["html"])
+            plug(:fetch_session)
+            plug(:protect_from_forgery)
+          end
         end
 
         scope path: "/" do

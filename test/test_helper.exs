@@ -56,7 +56,8 @@ defmodule PhxLiveStorybook.TestRouter do
       otp_app: :phx_live_storybook,
       backend_module: PhxLiveStorybook.TestStorybook,
       session_name: :live_storybook_admin,
-      as: :admin_live_storybook
+      as: :admin_live_storybook,
+      pipeline: false
     )
   end
 end
