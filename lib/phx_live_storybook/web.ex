@@ -21,7 +21,6 @@ defmodule PhxLiveStorybook.Web do
         namespace: PhxLiveStorybook,
         root: "lib/phx_live_storybook/templates"
 
-      import PhxLiveStorybook.Components
       import PhxLiveStorybook.Components.Icon
 
       unquote(view_helpers())
@@ -35,7 +34,6 @@ defmodule PhxLiveStorybook.Web do
       use Phoenix.LiveView,
         layout: {PhxLiveStorybook.LayoutView, "live.html"}
 
-      import PhxLiveStorybook.Components
       import PhxLiveStorybook.Components.Icon
 
       unquote(view_helpers())
@@ -56,7 +54,6 @@ defmodule PhxLiveStorybook.Web do
     quote do
       @moduledoc false
       use Phoenix.LiveComponent
-      import PhxLiveStorybook.Components
       import PhxLiveStorybook.Components.Icon
       unquote(view_helpers())
     end

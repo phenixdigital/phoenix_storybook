@@ -17,7 +17,7 @@ defmodule PhxLiveStorybook.LayoutView do
     }
 
     ~H"""
-    <.intersperse items={@breadcrumbs}>
+    <.intersperse enum={@breadcrumbs}>
       <:separator>
         <.fa_icon style={:thin} name="angle-right" class="lsb-px-2 lsb-text-slate-500" plan={@fa_plan}/>
       </:separator>
