@@ -6,36 +6,31 @@ defmodule PhxLiveStorybook.Router do
   @doc """
   Defines a PhxLiveStorybook route.
 
-  It expects the `path` the storybook will be mounted at and a set
-  of options.
+  It expects the `path` the storybook will be mounted at and a set of options.
 
-  This will also generate a named helper called `live_storybook_path/2`
-  which you can use to link directly to the storybook, such as:
+  This will also generate a named helper called `live_storybook_path/2` which you can use to link
+  directly to the storybook, such as:
 
   ```elixir
   <%= link "Storybook", to: live_storybook_path(conn, :root) %>
   ```
 
-  Note that you should only use `link/2` to link to the storybook (and not
-  `live_redirect/live_link`), as it has to set its own session on first
-  rendering.
+  Note that you should only use `link/2` to link to the storybook (and not `live_redirect/live_link`),
+  as it has to set its own session on first rendering.
 
   ## Options
 
     * `:backend_module` - _Required_ - Name of your backend module.
-    * `:live_socket_path` - Configures the socket path. It must match
-      the `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
-    * `:assets_path` - Configures the assets path. It must match
-      the `storybook_assets` in your router.
-    * `:session_name` - Configures the live session name. Defaults to
-      `:live_storybook`. Use this option if you want to mount multiple story
-      books in the same router.
-    * `:as` - Allows you to set the route helper name. Defaults to
-      `:live_storybook`.
-    * `:pipeline` - Set to `false` if you don't want a router pipeline to be
-      created. This is useful if you want to define your own
-      `:storybook_browser` pipeline, or if you mount multiple story books, in
-      which case the pipeline only has to be defined once. Defaults to `true`.
+    * `:live_socket_path` - Configures the socket path. It must match the
+      `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
+    * `:assets_path` - Configures the assets path. It must match the `storybook_assets` in your
+       router.
+    * `:session_name` - Configures the live session name. Defaults to `:live_storybook`. Use this
+       option if you want to mount multiple storybooks in the same router.
+    * `:as` - Allows you to set the route helper name. Defaults to`:live_storybook`.
+    * `:pipeline` - Set to `false` if you don't want a router pipeline to be created. This is useful
+       if you want to define your own `:storybook_browser` pipeline, or if you mount multiple
+       storybooks, in which case the pipeline only has to be defined once. Defaults to `true`.
 
   ## Usage
 
