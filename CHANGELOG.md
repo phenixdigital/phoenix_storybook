@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.4.3 (2022-10-04)
+
+- **bugfix**: [mounting several storybooks in router is now possible](https://github.com/phenixdigital/phx_live_storybook/issues/126)
+- **bugfix**: fixed mobile layout
+
 ## v0.4.2 (2022-10-02)
 
 - **improvement**: upgraded to LiveView 0.18.1
