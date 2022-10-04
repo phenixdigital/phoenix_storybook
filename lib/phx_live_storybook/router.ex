@@ -21,11 +21,21 @@ defmodule PhxLiveStorybook.Router do
   rendering.
 
   ## Options
+
     * `:backend_module` - _Required_ - Name of your backend module.
     * `:live_socket_path` - Configures the socket path. It must match
       the `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
     * `:assets_path` - Configures the assets path. It must match
       the `storybook_assets` in your router.
+    * `:session_name` - Configures the live session name. Defaults to
+      `:live_storybook`. Use this option if you want to mount multiple story
+      books in the same router.
+    * `:as` - Allows you to set the route helper name. Defaults to
+      `:live_storybook`.
+    * `:pipeline` - Set to `false` if you don't want a router pipeline to be
+      created. This is useful if you want to define your own
+      `:storybook_browser` pipeline, or if you mount multiple story books, in
+      which case the pipeline only has to be defined once. Defaults to `true`.
 
   ## Usage
 
@@ -42,23 +52,32 @@ defmodule PhxLiveStorybook.Router do
   ```
   """
   defmacro live_storybook(path, opts) do
-    opts = Keyword.put(opts, :application_router, __CALLER__.module)
+    opts =
+      opts
+      |> Keyword.put(:application_router, __CALLER__.module)
+      |> Keyword.put_new(:as, :live_storybook)
+      |> Keyword.put_new(:pipeline, true)
+
+    session_name_opt = Keyword.get(opts, :session_name, :live_storybook)
+    session_name_iframe_opt = :"#{session_name_opt}_iframe"
 
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipeline :storybook_browser do
-          plug(:accepts, ["html"])
-          plug(:fetch_session)
-          plug(:protect_from_forgery)
+        if Keyword.fetch!(opts, :pipeline) do
+          pipeline :storybook_browser do
+            plug(:accepts, ["html"])
+            plug(:fetch_session)
+            plug(:protect_from_forgery)
+          end
         end
 
         scope path: "/" do
           pipe_through(:storybook_browser)
 
           {session_name, session_opts, route_opts} =
-            PhxLiveStorybook.Router.__options__(opts, :live_storybook_iframe, :root_iframe)
+            PhxLiveStorybook.Router.__options__(opts, session_name_iframe_opt, :root_iframe)
 
           live_session session_name, session_opts do
             live(
@@ -70,7 +89,7 @@ defmodule PhxLiveStorybook.Router do
           end
 
           {session_name, session_opts, route_opts} =
-            PhxLiveStorybook.Router.__options__(opts, :live_storybook, :root)
+            PhxLiveStorybook.Router.__options__(opts, session_name_opt, :root)
 
           live_session session_name, session_opts do
             live("/", PhxLiveStorybook.StoryLive, :root, route_opts)
@@ -109,7 +128,7 @@ defmodule PhxLiveStorybook.Router do
           application_router: Keyword.get(opts, :application_router),
           assets_path: assets_path
         },
-        as: :live_storybook
+        as: Keyword.fetch!(opts, :as)
       ]
     }
   end
