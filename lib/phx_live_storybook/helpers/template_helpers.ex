@@ -12,6 +12,10 @@ defmodule PhxLiveStorybook.TemplateHelpers do
     String.replace(template, ":variation_id", unique_variation_id(story, variation_id))
   end
 
+  def set_variation_dom_id(template, unique_variation_id) do
+    String.replace(template, ":variation_id", unique_variation_id)
+  end
+
   def set_js_push_variation_id(template, variation_id) do
     Regex.replace(@js_push_regex, template, fn _, open, match, close ->
       match =

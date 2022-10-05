@@ -6,8 +6,67 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
+  alias PhxLiveStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhxLiveStorybook.TemplateHelpers
   alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
+
+  def render(context = %RenderingContext{type: :component, function: function}) do
+    render(function, context)
+  end
+
+  def render(context = %RenderingContext{type: :live_component, component: component}) do
+    render(component, context)
+  end
+
+  def render(fun_or_mod, context = %RenderingContext{}) do
+    heex =
+      cond do
+        TemplateHelpers.variation_template?(context.template) ->
+          for variation = %RenderingVariation{} <- context.variations, into: "" do
+            template_heex(
+              context.template,
+              context.story,
+              variation.id,
+              fun_or_mod,
+              variation.attributes,
+              variation.let,
+              variation.slots,
+              context.options[:playground_topic]
+            )
+          end
+
+        TemplateHelpers.variation_group_template?(context.template) ->
+          heex =
+            for variation = %RenderingVariation{} <- context.variations, into: "" do
+              extra_attributes =
+                extract_placeholder_attributes(
+                  context.template,
+                  variation.id,
+                  context.options[:playground_topic]
+                )
+
+              component_heex(
+                fun_or_mod,
+                variation.attributes,
+                variation.let,
+                variation.slots,
+                extra_attributes
+              )
+            end
+
+          context.template
+          |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+          |> TemplateHelpers.set_js_push_variation_id(context.id)
+          |> TemplateHelpers.replace_template_variation_group(heex)
+
+        true ->
+          context.template
+          |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+          |> TemplateHelpers.set_js_push_variation_id(context.id)
+      end
+
+    render_component_heex(fun_or_mod, heex, context.options)
+  end
 
   @doc """
   Renders a specific variation for a given component story.
