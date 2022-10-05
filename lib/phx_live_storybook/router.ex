@@ -12,11 +12,12 @@ defmodule PhxLiveStorybook.Router do
   directly to the storybook, such as:
 
   ```elixir
-  <%= link "Storybook", to: live_storybook_path(conn, :root) %>
+  <.link href={live_storybook_path(conn, :root)} />
   ```
 
-  Note that you should only use `link/2` to link to the storybook (and not `live_redirect/live_link`),
-  as it has to set its own session on first rendering.
+  Note that you should only use the `href` attribute to link to the storybook,
+  as it has to set its own session on first rendering. Linking with `patch` or
+  `navigate` will not work.
 
   ## Options
 
@@ -45,6 +46,9 @@ defmodule PhxLiveStorybook.Router do
     live_storybook "/storybook", backend_module: MyAppWeb.Storybook
   end
   ```
+
+  Note that it is not possible to use this macro in a scope with a path
+  different from `/`.
   """
   defmacro live_storybook(path, opts) do
     opts =
@@ -72,7 +76,7 @@ defmodule PhxLiveStorybook.Router do
           pipe_through(:storybook_browser)
 
           {session_name, session_opts, route_opts} =
-            PhxLiveStorybook.Router.__options__(opts, session_name_iframe_opt, :root_iframe)
+            PhxLiveStorybook.Router.__options__(opts, path, session_name_iframe_opt, :root_iframe)
 
           live_session session_name, session_opts do
             live(
@@ -84,7 +88,7 @@ defmodule PhxLiveStorybook.Router do
           end
 
           {session_name, session_opts, route_opts} =
-            PhxLiveStorybook.Router.__options__(opts, session_name_opt, :root)
+            PhxLiveStorybook.Router.__options__(opts, path, session_name_opt, :root)
 
           live_session session_name, session_opts do
             live("/", PhxLiveStorybook.StoryLive, :root, route_opts)
@@ -98,7 +102,7 @@ defmodule PhxLiveStorybook.Router do
   @default_assets_path "/storybook/assets"
 
   @doc false
-  def __options__(opts, session_name, root_layout) do
+  def __options__(opts, path, session_name, root_layout) do
     live_socket_path = Keyword.get(opts, :live_socket_path, "/live")
     assets_path = Keyword.get(opts, :assets_path, @default_assets_path)
 
@@ -111,9 +115,11 @@ defmodule PhxLiveStorybook.Router do
       session_name,
       [
         root_layout: {PhxLiveStorybook.LayoutView, root_layout},
+        on_mount: PhxLiveStorybook.Mount,
         session: %{
           "backend_module" => backend_module,
-          "assets_path" => assets_path
+          "assets_path" => assets_path,
+          "root_path" => path
         }
       ],
       [

@@ -2,28 +2,41 @@ defmodule PhxLiveStorybook.NavigationHelpers do
   @moduledoc false
 
   alias Phoenix.LiveView
-  alias PhxLiveStorybook.StorybookHelpers
 
-  def patch_to(socket, story_path, params \\ %{}) do
-    path = path_to(socket, story_path, params)
+  def patch_to(socket, root_path, story_path, params \\ %{}) do
+    path = path_to(socket, root_path, story_path, params)
     LiveView.push_patch(socket, to: path)
   end
 
-  def path_to(socket = %{assigns: assigns}, story_path, params) do
-    story_path = String.replace_prefix(story_path, "/", "")
+  def path_to(%{assigns: assigns}, root_path, story_path, params) do
+    query = build_query(assigns, params)
+    build_path(root_path, story_path, query)
+  end
 
-    query =
-      assigns
-      |> Map.take([:theme, :tab, :variation_id])
-      |> Map.merge(params)
-      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+  def path_to_iframe(%{assigns: assigns}, root_path, story_path, params) do
+    query = build_query(assigns, params)
 
-    story_path = StorybookHelpers.live_storybook_path(socket, :story, Path.split(story_path))
+    root_path
+    |> Path.join("iframe")
+    |> build_path(story_path, query)
+  end
+
+  defp build_path(root_path, story_path, query) do
+    path = Path.join(root_path, story_path)
 
     if Enum.any?(query) do
-      story_path <> "?" <> URI.encode_query(query)
+      path <> "?" <> URI.encode_query(query)
     else
-      story_path
+      path
     end
+  end
+
+  defp build_query(assigns, params) do
+    params = Map.new(params)
+
+    assigns
+    |> Map.take([:theme, :tab, :variation_id])
+    |> Map.merge(params)
+    |> Enum.reject(fn {_key, value} -> is_nil(value) end)
   end
 end
