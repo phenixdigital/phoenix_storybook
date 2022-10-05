@@ -36,3 +36,4 @@ phx_live_storybook-*.tar
 
 .vscode
 .tool-versions
+.plts
