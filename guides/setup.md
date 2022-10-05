@@ -64,16 +64,17 @@ app and the storybook.
 
 In this README, we use `assets/css/storybook.css` as an example.
 
-If your components require any hooks or custom uploaders, declare them as such in a new JS bundle:
+If your components require any hooks or custom uploaders, or if your pages require connect parameters, declare them as such in a new JS bundle:
 
 ```javascript
 // assets/js/storybook.js
 
 import * as Hooks from "./hooks";
+import * as Params from "./params";
 import * as Uploaders from "./uploaders";
 
 (function () {
-  window.storybook = { Hooks, Uploaders };
+  window.storybook = { Hooks, Params, Uploaders };
 })();
 ```
 

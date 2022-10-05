@@ -16,17 +16,18 @@ This guide will explain:
 
 `PhxLiveStorybook` runs with Phoenix LiveView and therefore requires its `LiveSocket`.
 This LiveSocket is the same used by your components: you just need to inject it with your
-own `Hooks` and `Uploaders`.
+own `Hooks`, `Params` and `Uploaders`.
 
-To do so, create a JS file that will declare your `Hooks` and `Uploaders` and set them in
+To do so, create a JS file that will declare your `Hooks`, `Params` and `Uploaders` and set them in
 `window.storybook`. This script will be loaded immediately before the storybook's script.
 
 ```javascript
 // assets/js/my_components.js
 import * as Hooks from "./hooks";
+import * as Params from "./params";
 import * as Uploaders from "./uploaders";
 (function () {
-  window.storybook = { Hooks, Uploaders };
+  window.storybook = { Hooks, Params, Uploaders };
 })();
 ```
 
@@ -35,6 +36,9 @@ file.
 
 You can also use this script to inject whatever content you want into document `HEAD`, such as
 external scripts.
+
+The `Params` will be available in page stories as `connect_params` assign.
+There is currently no way to access them in component or live component stories.
 
 ## 2. How is the storybook styled?
 

@@ -15,6 +15,7 @@ defmodule PhxLiveStorybook.StoryLive do
   import PhxLiveStorybook.NavigationHelpers
 
   def mount(_params, session, socket) do
+    connect_params = get_connect_params(socket)["extra"]
     playground_topic = "playground-#{inspect(self())}"
     event_logs_topic = "event_logs:#{inspect(self())}"
 
@@ -32,7 +33,8 @@ defmodule PhxLiveStorybook.StoryLive do
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,
-       fa_plan: backend_module.config(:font_awesome_plan, :free)
+       fa_plan: backend_module.config(:font_awesome_plan, :free),
+       connect_params: connect_params
      )}
   end
 
@@ -368,7 +370,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
     ~H"""
     <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(@socket, assigns)}"}>
-      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme}) |> to_raw_html() %>
+      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme, connect_params: @connect_params}) |> to_raw_html() %>
     </div>
     """
   end
