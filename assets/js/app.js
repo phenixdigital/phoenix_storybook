@@ -26,6 +26,7 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
   params: (liveViewName) => {
     return {
       _csrf_token: csrfToken,
+      extra: window.storybook.Params,
     };
   },
 });
