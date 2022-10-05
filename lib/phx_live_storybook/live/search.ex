@@ -10,15 +10,13 @@ defmodule PhxLiveStorybook.Search do
     {:ok, socket}
   end
 
-  def update(assigns = %{backend_module: backend_module}, socket) do
-    root_path = live_storybook_path(socket, :root)
+  def update(assigns = %{root_path: _, backend_module: backend_module}, socket) do
     stories = backend_module.leaves()
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(:show, false)
-     |> assign(:root_path, root_path)
      |> assign(:all_stories, stories)
      |> assign(:stories, stories)
      |> assign(:fa_plan, backend_module.config(:font_awesome_plan, :free))}

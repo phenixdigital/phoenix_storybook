@@ -25,6 +25,7 @@ defmodule PhxLiveStorybook.SearchTest do
     html =
       render_component(Search,
         id: "search",
+        root_path: "/storybook",
         backend_module: backend_module
       )
 
