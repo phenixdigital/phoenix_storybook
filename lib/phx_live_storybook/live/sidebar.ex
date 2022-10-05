@@ -9,8 +9,14 @@ defmodule PhxLiveStorybook.Sidebar do
     {:ok, assign(socket, :opened_folders, MapSet.new())}
   end
 
-  def update(assigns = %{current_path: current_path, backend_module: backend_module}, socket) do
-    root_path = Path.join("/", live_storybook_path(socket, :root))
+  def update(
+        assigns = %{
+          root_path: root_path,
+          current_path: current_path,
+          backend_module: backend_module
+        },
+        socket
+      ) do
     current_path = if current_path, do: Path.join(root_path, current_path), else: root_path
     content_flat_list = backend_module.flat_list()
 
@@ -18,7 +24,6 @@ defmodule PhxLiveStorybook.Sidebar do
      socket
      |> assign(assigns)
      |> assign(
-       root_path: root_path,
        content_tree: backend_module.content_tree(),
        content_flat_list: content_flat_list,
        current_path: current_path

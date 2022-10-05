@@ -99,6 +99,7 @@ defmodule PhxLiveStorybook.SidebarTest do
       render_component(Sidebar,
         id: "sidebar",
         backend_module: backend_module,
+        root_path: "/storybook",
         current_path: path,
         fa_plan: :pro,
         sandbox_class: "sandbox"

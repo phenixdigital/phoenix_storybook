@@ -217,8 +217,8 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= if @story.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@story)}
-            src={live_storybook_path(@socket, :story_iframe, @story_path |> String.replace_prefix("/", "") |> Path.split(),
-                variation_id: to_string(@variation.id), theme: to_string(@theme), playground: true,
+            src={path_to_iframe(@socket, @root_path, @story_path,
+                variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
                 topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
@@ -692,7 +692,11 @@ defmodule PhxLiveStorybook.Story.Playground do
       variation -> send_new_variation(assigns.topic, variation)
     end
 
-    {:noreply, patch_to(s, assigns.story_path, %{tab: :playground, variation_id: variation_id})}
+    {:noreply,
+     patch_to(s, assigns.root_path, assigns.story_path, %{
+       tab: :playground,
+       variation_id: variation_id
+     })}
   end
 
   defp update_variations_attributes(variations, new_attrs) do

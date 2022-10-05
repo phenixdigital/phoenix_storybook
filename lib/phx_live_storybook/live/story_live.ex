@@ -39,7 +39,7 @@ defmodule PhxLiveStorybook.StoryLive do
   def handle_params(params, _uri, socket) when params == %{} do
     case first_story_path(socket) do
       nil -> {:noreply, socket}
-      path -> {:noreply, patch_to(socket, path)}
+      path -> {:noreply, patch_to(socket, socket.assigns.root_path, path)}
     end
   end
 
@@ -294,7 +294,7 @@ defmodule PhxLiveStorybook.StoryLive do
                 <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <.link patch={path_to(@socket, @story_path, %{tab: :playground, variation_id: variation.id, theme: @theme})}
+            <.link patch={path_to(@socket, @root_path, @story_path, %{tab: :playground, variation_id: variation.id, theme: @theme})}
               class="lsb lsb-hidden lsb-open-playground-link">
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-500 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
                 Open in playground
@@ -309,7 +309,7 @@ defmodule PhxLiveStorybook.StoryLive do
               <iframe
                 phx-update="ignore"
                 id={iframe_id(@story, variation)}
-                src={live_storybook_path(@socket, :story_iframe, @story_path |> String.replace_prefix("/", "") |> Path.split() , variation_id: variation.id, theme: @theme)}
+                src={path_to_iframe(@socket, @root_path, @story_path, variation_id: variation.id, theme: @theme)}
                 class="lsb-w-full lsb-border-0"
                 height="0"
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
@@ -357,6 +357,7 @@ defmodule PhxLiveStorybook.StoryLive do
       theme={@theme}
       topic={@playground_topic}
       fa_plan={@fa_plan}
+      root_path={@root_path}
     />
     """
   end
@@ -418,15 +419,17 @@ defmodule PhxLiveStorybook.StoryLive do
     )
 
     {:noreply,
-     socket |> assign(:theme, theme) |> patch_to(socket.assigns.story_path, %{theme: theme})}
+     socket
+     |> assign(:theme, theme)
+     |> patch_to(socket.assigns.root_path, socket.assigns.story_path, %{theme: theme})}
   end
 
   def handle_event("set-tab", %{"tab" => tab}, socket) do
-    {:noreply, patch_to(socket, socket.assigns.story_path, %{tab: tab})}
+    {:noreply, patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{tab: tab})}
   end
 
   def handle_event("set-tab", %{"navigation" => %{"tab" => tab}}, socket) do
-    {:noreply, patch_to(socket, socket.assigns.story_path, %{tab: tab})}
+    {:noreply, patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{tab: tab})}
   end
 
   def handle_event("clear-playground-error", _, socket) do
