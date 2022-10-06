@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.4 (not yet released)
+
+- **bugfix**: [missing playground tab icons](https://github.com/phenixdigital/phx_live_storybook/issues/134)
+
 ## v0.4.3 (2022-10-04)
 
 - **bugfix**: [mounting several storybooks in router is now possible](https://github.com/phenixdigital/phx_live_storybook/issues/126)

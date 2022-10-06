@@ -179,7 +179,7 @@ defmodule PhxLiveStorybook.Story.Playground do
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- @tabs do %>
           <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself}
-            class={"lsb #{active_link(@upper_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
+            class={[active_link(@upper_tab, tab), "lsb lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"]}>
             <.fa_icon style={:duotone} name={icon} class={"lsb-pr-1 #{active_link(@upper_tab, tab)}"} plan={@fa_plan}/>
             <%= label %>
           </a>
@@ -205,10 +205,10 @@ defmodule PhxLiveStorybook.Story.Playground do
     """
   end
 
-  defp active_link(same_tab, same_tab), do: "lsb lsb-border-indigo-500 lsb-text-indigo-600"
+  defp active_link(same_tab, same_tab), do: "lsb-border-indigo-500 lsb-text-indigo-600"
 
   defp active_link(_current_tab, _tab) do
-    "lsb lsb-border-transparent lsb-text-gray-500 hover:lsb-text-gray-700 hover:lsb-border-gray-300"
+    "lsb-border-transparent lsb-text-gray-500 hover:lsb-text-gray-700 hover:lsb-border-gray-300"
   end
 
   defp event_counter(:events, count) when count > 0, do: "(#{count})"
