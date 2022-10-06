@@ -18,13 +18,13 @@
       <link rel="stylesheet" href={asset_path(@conn, "css/fonts.css")}/>
     <% end %>
     <%= if path = storybook_js_path(@conn) do %>
-      <script phx-track-static type="text/javascript" src={application_static_path(@conn, path)}></script>
+      <script phx-track-static type="text/javascript" src={application_static_path( path)}></script>
     <% end %>
     <script type="text/javascript" src={asset_path(@conn, "js/app.js")}></script>  
 
     <link rel="stylesheet" href={asset_path(@conn, "css/app.css")}/>
     <%= if path = storybook_css_path(@conn) do %>
-      <link phx-track-static rel="stylesheet" href={application_static_path(@conn, path)}/>
+      <link phx-track-static rel="stylesheet" href={application_static_path(path)}/>
     <% end %>
     <style><%= raw(makeup_stylesheet(@conn)) %></style>
   </head>

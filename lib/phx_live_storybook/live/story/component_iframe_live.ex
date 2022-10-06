@@ -8,12 +8,8 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.StoryNotFound
 
-  def mount(_params, session, socket) do
-    {:ok,
-     assign(socket,
-       backend_module: session["backend_module"],
-       assets_path: session["assets_path"]
-     ), layout: {PhxLiveStorybook.LayoutView, "live_iframe.html"}}
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, []), layout: {PhxLiveStorybook.LayoutView, "live_iframe.html"}}
   end
 
   def handle_params(params = %{"story" => story_path}, _uri, socket) do

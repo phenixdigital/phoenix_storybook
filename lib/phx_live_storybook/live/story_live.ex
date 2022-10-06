@@ -14,7 +14,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
   import PhxLiveStorybook.NavigationHelpers
 
-  def mount(_params, session, socket) do
+  def mount(_params, _session, socket) do
     connect_params = get_connect_params(socket)["extra"]
     playground_topic = "playground-#{inspect(self())}"
     event_logs_topic = "event_logs:#{inspect(self())}"
@@ -24,12 +24,10 @@ defmodule PhxLiveStorybook.StoryLive do
       PubSub.subscribe(PhxLiveStorybook.PubSub, event_logs_topic)
     end
 
-    backend_module = session["backend_module"]
+    backend_module = socket.assigns.backend_module
 
     {:ok,
      assign(socket,
-       backend_module: backend_module,
-       assets_path: session["assets_path"],
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,

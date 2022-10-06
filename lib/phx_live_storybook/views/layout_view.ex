@@ -69,9 +69,7 @@ defmodule PhxLiveStorybook.LayoutView do
   defp assets_path(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.assets_path
   defp assets_path(conn = %Plug.Conn{}), do: conn.private.assets_path
 
-  defp application_static_path(conn, path) do
-    routes(conn).static_path(conn, path)
-  end
+  defp application_static_path(path), do: Path.join("/", path)
 
   defp asset_path(conn_or_socket, path) do
     assets_path = assets_path(conn_or_socket)
