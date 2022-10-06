@@ -2,6 +2,10 @@
 
 ## v0.4.4 (not yet released)
 
+- **improvement**: [removed routes helpers](https://github.com/phenixdigital/phx_live_storybook/pull/137)
+  (will help transition to Phoenix 1.7)
+- **improvement**: [pass connect params to story page](https://github.com/phenixdigital/phx_live_storybook/pull/130)
+- **bugfix**: [add :live_session and :as options to router](https://github.com/phenixdigital/phx_live_storybook/pull/127)
 - **bugfix**: [missing playground tab icons](https://github.com/phenixdigital/phx_live_storybook/issues/134)
 
 ## v0.4.3 (2022-10-04)
