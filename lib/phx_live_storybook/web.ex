@@ -66,7 +66,6 @@ defmodule PhxLiveStorybook.Web do
 
       # Import convenience functions for LiveView rendering
       import Phoenix.Component
-      import PhxLiveStorybook.StorybookHelpers
 
       alias PhxLiveStorybook.Router.Helpers, as: Routes
     end

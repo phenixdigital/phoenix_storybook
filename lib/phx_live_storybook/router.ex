@@ -25,7 +25,7 @@ defmodule PhxLiveStorybook.Router do
     * `:live_socket_path` - Configures the socket path. It must match the
       `socket "/live", Phoenix.LiveView.Socket` in your endpoint.
     * `:assets_path` - Configures the assets path. It must match the `storybook_assets` in your
-       router.
+       router. Defaults to `"/storybook/assets"`.
     * `:session_name` - Configures the live session name. Defaults to `:live_storybook`. Use this
        option if you want to mount multiple storybooks in the same router.
     * `:as` - Allows you to set the route helper name. Defaults to`:live_storybook`.
