@@ -227,7 +227,7 @@ defmodule PhxLiveStorybook.Story.Playground do
           <iframe
             id={playground_preview_id(@story)}
             src={path_to_iframe(@socket, @root_path, @story_path,
-                variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
+                variation_id: to_string(@variation.id), theme: to_string(@theme), playground: true,
                 topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
@@ -238,7 +238,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                 id: playground_preview_id(@story),
                 session: %{
                   "story" => @story,
-                  "variation_id" => to_string(@variation_id),
+                  "variation_id" => to_string(@variation.id),
                   "theme" => to_string(@theme),
                   "topic" => "playground-#{inspect(self())}",
                   "backend_module" => @backend_module
@@ -377,7 +377,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
             class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
-            value: @variation_id %>
+            value: @variation.id %>
       </.form>
     <% end %>
     """
