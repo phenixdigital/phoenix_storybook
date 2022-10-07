@@ -280,9 +280,8 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
-              variation_extra_assigns = variation_extra_assigns(variation, assigns),
               extra_attributes = variation_extra_attributes(variation, assigns),
-              rendering_context = RenderingContext.build(story, variation, variation_extra_assigns) do %>
+              rendering_context = RenderingContext.build(story, variation, extra_attributes) do %>
         <div id={anchor_id(variation)} class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
@@ -317,7 +316,6 @@ defmodule PhxLiveStorybook.StoryLive do
               />
             <% else %>
               <div class={LayoutView.sandbox_class(@socket, assigns)} style="width: 100%;">
-                <%!-- <%= ComponentRenderer.render_variation(@story, variation_id, variation_extra_assigns) %> --%>
                 <%= ComponentRenderer.render(rendering_context) %>
               </div>
             <% end %>
@@ -384,24 +382,10 @@ defmodule PhxLiveStorybook.StoryLive do
     |> Phoenix.HTML.raw()
   end
 
-  defp variation_extra_assigns(%Variation{id: variation_id}, assigns) do
-    extra_assigns =
-      assigns.variation_extra_assigns
-      |> Map.get(variation_id, %{})
-      |> Map.put(:theme, assigns.theme)
-  end
-
-  defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
-    for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
-        into: %{} do
-      {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
-    end
-  end
-
   defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
     extra_assigns =
       assigns.variation_extra_assigns
-      |> Map.get(variation_id, %{})
+      |> Map.get({:single, variation_id}, %{})
       |> Map.put(:theme, assigns.theme)
 
     %{variation_id => extra_assigns}

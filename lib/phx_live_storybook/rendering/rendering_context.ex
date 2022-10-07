@@ -24,8 +24,8 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
   def build(story, variation_or_group, extra_attributes, options \\ [])
 
   def build(story, variation = %Variation{}, extra_attributes, options) do
-    id = context_id(story, :single)
-    dom_id = dom_id(id)
+    group_id = :single
+    dom_id = dom_id(story, group_id)
 
     %RenderingContext{
       group_id: group_id,
@@ -38,7 +38,7 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
         %RenderingVariation{
           id: variation.id,
           dom_id: variation_dom_id(dom_id, variation.id),
-          attributes: attributes(variation, dom_id, extra_attributes),
+          attributes: attributes(variation, group_id, dom_id, extra_attributes),
           slots: variation.slots,
           let: variation.let
         }
@@ -49,8 +49,7 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
   end
 
   def build(story, group = %VariationGroup{variations: variations}, extra_attributes, options) do
-    id = context_id(story, group.id)
-    dom_id = dom_id(id)
+    dom_id = dom_id(story, group.id)
 
     %RenderingContext{
       group_id: group.id,
@@ -64,7 +63,7 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
           %RenderingVariation{
             id: variation.id,
             dom_id: variation_dom_id(dom_id, variation.id),
-            attributes: attributes(variation, dom_id, extra_attributes),
+            attributes: attributes(variation, group.id, dom_id, extra_attributes),
             slots: variation.slots,
             let: variation.let
           }
@@ -85,16 +84,15 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
     "#{story_module_name}-#{group_id}" |> Macro.underscore() |> String.replace("_", "-")
   end
 
-  defp dom_id({story_id, group_id}) do
-    "#{story_id}-#{group_id}" |> Macro.underscore() |> String.replace("_", "-")
-  end
-
   defp variation_dom_id(dom_id, variation_id) do
     "#{dom_id}-#{variation_id}" |> Macro.underscore() |> String.replace("_", "-")
   end
 
-  defp attributes(variation, dom_id, extra_attributes) do
-    extra_attributes = Map.get(extra_attributes, variation.id, %{})
+  defp attributes(variation, group_id, dom_id, extra_attributes) do
+    extra_attributes =
+      Map.get_lazy(extra_attributes, variation.id, fn ->
+        Map.get(extra_attributes, {group_id, variation.id}, %{})
+      end)
 
     variation.attributes
     |> Map.put(:id, variation_dom_id(dom_id, variation.id))
