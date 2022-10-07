@@ -8,9 +8,9 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
   alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
   alias PhxLiveStorybook.TemplateHelpers
 
-  @enforce_keys [:id, :dom_id, :type, :story]
+  @enforce_keys [:group_id, :dom_id, :type, :story]
   defstruct [
-    :id,
+    :group_id,
     :dom_id,
     :type,
     :function,
@@ -28,12 +28,12 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
     dom_id = dom_id(id)
 
     %RenderingContext{
-      id: id,
+      group_id: group_id,
       dom_id: dom_id,
       story: story,
       type: story.storybook_type(),
-      function: story.function(),
-      component: story.component(),
+      function: function(story.storybook_type(), story),
+      component: component(story.storybook_type(), story),
       variations: [
         %RenderingVariation{
           id: variation.id,
@@ -53,12 +53,12 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
     dom_id = dom_id(id)
 
     %RenderingContext{
-      id: id,
+      group_id: group.id,
       dom_id: dom_id,
       story: story,
       type: story.storybook_type(),
-      function: story.function(),
-      component: story.component(),
+      function: function(story.storybook_type(), story),
+      component: component(story.storybook_type(), story),
       variations:
         for variation <- variations do
           %RenderingVariation{
@@ -74,9 +74,15 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
     }
   end
 
-  defp context_id(story, group_id) do
+  defp component(:component, _story), do: nil
+  defp component(:live_component, story), do: story.component()
+
+  defp function(:component, story), do: story.function()
+  defp function(:live_component, _story), do: nil
+
+  defp dom_id(story, group_id) do
     story_module_name = story |> to_string() |> String.split(".") |> Enum.at(-1)
-    {story_module_name, group_id}
+    "#{story_module_name}-#{group_id}" |> Macro.underscore() |> String.replace("_", "-")
   end
 
   defp dom_id({story_id, group_id}) do
@@ -91,7 +97,7 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
     extra_attributes = Map.get(extra_attributes, variation.id, %{})
 
     variation.attributes
-    |> Map.put(:id, dom_id)
+    |> Map.put(:id, variation_dom_id(dom_id, variation.id))
     |> Map.merge(extra_attributes)
   end
 

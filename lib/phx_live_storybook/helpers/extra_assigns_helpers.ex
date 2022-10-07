@@ -3,11 +3,12 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
 
   alias PhxLiveStorybook.Stories.Attr
 
-  def handle_set_variation_assign(params, extra_assigns, story, mode \\ :nested) do
+  def handle_set_variation_assign(params, extra_assigns, story) do
     context = "assign"
     variation_id = to_variation_id(params, context)
     params = Map.delete(params, "variation_id")
-    variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id, mode)
+
+    variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id)
 
     variation_extra_assigns =
       for {attr, value} <- params, reduce: variation_extra_assigns do
@@ -20,7 +21,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
     {variation_id, variation_extra_assigns}
   end
 
-  def handle_toggle_variation_assign(params, extra_assigns, story, mode \\ :nested) do
+  def handle_toggle_variation_assign(params, extra_assigns, story) do
     context = "toggle"
 
     attr =
@@ -29,7 +30,7 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
       |> String.to_atom()
 
     variation_id = to_variation_id(params, context)
-    variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id, mode)
+    variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id)
     current_value = Map.get(variation_extra_assigns, attr)
     check_type!(current_value, :boolean, context)
 
@@ -54,15 +55,13 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
   defp to_variation_id(%{"variation_id" => [group_id, variation_id]}, _ctx),
     do: {String.to_atom(group_id), String.to_atom(variation_id)}
 
-  defp to_variation_id(%{"variation_id" => variation_id}, _ctx), do: String.to_atom(variation_id)
+  defp to_variation_id(%{"variation_id" => variation_id}, _ctx),
+    do: {:single, String.to_atom(variation_id)}
+
   defp to_variation_id(_, context), do: raise("missing variation_id in #{context}")
 
-  defp to_variation_extra_assigns(extra_assigns, variation_id, :nested) do
+  defp to_variation_extra_assigns(extra_assigns, variation_id) do
     Map.get(extra_assigns, variation_id)
-  end
-
-  defp to_variation_extra_assigns(extra_assigns, _variation_id, :flat) do
-    extra_assigns
   end
 
   defp to_value("nil", _attr_id, _attributes, _context), do: nil

@@ -13,109 +13,88 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
   describe "handle_set_variation_assign/3" do
     setup :story
 
-    test "with flat mode", %{story: story} do
-      assert handle_set_variation_assign(
-               %{"variation_id" => "variation_id", "attribute" => "foo"},
-               %{},
-               story,
-               :flat
-             ) ==
-               {:variation_id, %{attribute: "foo"}}
-    end
-
     test "with nested mode", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "attribute" => "foo"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{attribute: "foo"}}
+               {{:single, :variation_id}, %{attribute: "foo"}}
     end
 
     test "with typed attributes", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "boolean" => "true"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{boolean: true}}
+               {{:single, :variation_id}, %{boolean: true}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "integer" => "42"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{integer: 42}}
+               {{:single, :variation_id}, %{integer: 42}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "integer" => 42},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{integer: 42}}
+               {{:single, :variation_id}, %{integer: 42}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "float" => "42.2"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{float: 42.2}}
+               {{:single, :variation_id}, %{float: 42.2}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "float" => 42.2},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{float: 42.2}}
+               {{:single, :variation_id}, %{float: 42.2}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "atom" => "foo"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{atom: :foo}}
+               {{:single, :variation_id}, %{atom: :foo}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "list" => ["foo", "bar"]},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{list: ["foo", "bar"]}}
+               {{:single, :variation_id}, %{list: ["foo", "bar"]}}
     end
 
     test "with mismatching typed attributes", %{story: story} do
       assert_raise RuntimeError, ~r/type mismatch in assign/, fn ->
         handle_set_variation_assign(
           %{"variation_id" => "variation_id", "boolean" => :maybe},
-          %{variation_id: %{}},
-          story,
-          :nested
+          %{{:single, :variation_id} => %{}},
+          story
         )
       end
 
       assert_raise RuntimeError, ~r/type mismatch in assign/, fn ->
         handle_set_variation_assign(
           %{"variation_id" => "variation_id", "integer" => "forty-two"},
-          %{variation_id: %{}},
-          story,
-          :nested
+          %{{:single, :variation_id} => %{}},
+          story
         )
       end
 
       assert_raise RuntimeError, ~r/type mismatch in assign/, fn ->
         handle_set_variation_assign(
           %{"variation_id" => "variation_id", "float" => :foo},
-          %{variation_id: %{}},
-          story,
-          :nested
+          %{{:single, :variation_id} => %{}},
+          story
         )
       end
     end
@@ -123,40 +102,36 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
     test "with nil typed attributes", %{story: story} do
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "boolean" => "nil"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{boolean: nil}}
+               {{:single, :variation_id}, %{boolean: nil}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "integer" => nil},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{integer: nil}}
+               {{:single, :variation_id}, %{integer: nil}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "float" => nil},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{float: nil}}
+               {{:single, :variation_id}, %{float: nil}}
 
       assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "atom" => nil},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{atom: nil}}
+               {{:single, :variation_id}, %{atom: nil}}
     end
 
     test "with with invalid param", %{story: story} do
       assert_raise RuntimeError, ~r/missing variation_id in assign/, fn ->
-        handle_set_variation_assign(%{}, %{}, story, :flat)
+        handle_set_variation_assign(%{}, %{}, story)
       end
     end
   end
@@ -164,68 +139,25 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpersTest do
   describe "handle_toggle_variation_assign/3" do
     setup :story
 
-    test "with flat mode", %{story: story} do
-      assert handle_toggle_variation_assign(
-               %{"variation_id" => "variation_id", "attr" => "attribute"},
-               %{},
-               story,
-               :flat
-             ) ==
-               {:variation_id, %{attribute: true}}
-
-      assert handle_toggle_variation_assign(
-               %{"variation_id" => "variation_id", "attr" => "attribute"},
-               %{attribute: true},
-               story,
-               :flat
-             ) ==
-               {:variation_id, %{attribute: false}}
-    end
-
-    test "type mismatch with existing assign", %{story: story} do
-      assert_raise RuntimeError, ~r/type mismatch in toggle/, fn ->
-        assert handle_toggle_variation_assign(
-                 %{"variation_id" => "variation_id", "attr" => "attribute"},
-                 %{attribute: "false"},
-                 story,
-                 :flat
-               ) ==
-                 {:variation_id, %{attribute: true}}
-      end
-    end
-
-    test "type mismatch with declared attribute", %{story: story} do
-      assert_raise RuntimeError, ~r/type mismatch in toggle/, fn ->
-        handle_toggle_variation_assign(
-          %{"variation_id" => "variation_id", "attr" => "integer"},
-          %{},
-          story,
-          :flat
-        )
-      end
-    end
-
     test "with nested mode", %{story: story} do
       assert handle_toggle_variation_assign(
                %{"variation_id" => "variation_id", "attr" => "attribute"},
-               %{variation_id: %{}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{}},
+               story
              ) ==
-               {:variation_id, %{attribute: true}}
+               {{:single, :variation_id}, %{attribute: true}}
 
       assert handle_toggle_variation_assign(
                %{"variation_id" => "variation_id", "attr" => "attribute"},
-               %{variation_id: %{attribute: true}},
-               story,
-               :nested
+               %{{:single, :variation_id} => %{attribute: true}},
+               story
              ) ==
-               {:variation_id, %{attribute: false}}
+               {{:single, :variation_id}, %{attribute: false}}
     end
 
     test "with with invalid param", %{story: story} do
       assert_raise RuntimeError, ~r/missing attr in toggle/, fn ->
-        handle_toggle_variation_assign(%{}, %{}, story, :flat)
+        handle_toggle_variation_assign(%{}, %{}, story)
       end
     end
   end

@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   use PhxLiveStorybook.Web, :live_component
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhxLiveStorybook.Rendering.CodeRenderer
+  alias PhxLiveStorybook.Rendering.{CodeRenderer, RenderingContext}
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.TemplateHelpers
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
@@ -40,24 +40,20 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp assign_variations(socket = %{assigns: assigns}) do
     case assigns.variation do
       variation = %Variation{} ->
-        assign_variations(socket, :single, variation.id, [variation])
+        assign_variations(socket, :single, [variation])
 
       %VariationGroup{id: group_id, variations: variations} ->
-        assign_variations(socket, :group, group_id, variations)
+        assign_variations(socket, group_id, variations)
 
       _ ->
         assign(socket, variations: [], variation_id: nil)
     end
   end
 
-  defp assign_variations(socket, kind, id, variations) do
+  defp assign_variations(socket, group_id, variations) do
     variations =
       for variation <- variations do
-        variation_id =
-          case kind do
-            :group -> {id, variation.id}
-            :single -> variation.id
-          end
+        variation_id = {group_id, variation.id}
 
         variation
         |> Map.take([:attributes, :let, :slots, :template])
@@ -65,7 +61,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         |> put_in([:attributes, :theme], socket.assigns[:theme])
       end
 
-    assign(socket, variation_id: id, variations: variations)
+    assign(socket, variations: variations)
   end
 
   # new_attributes may be passed by parent (LiveView) send_update.
@@ -222,7 +218,7 @@ defmodule PhxLiveStorybook.Story.Playground do
           <iframe
             id={playground_preview_id(@story)}
             src={live_storybook_path(@socket, :story_iframe, @story_path |> String.replace_prefix("/", "") |> Path.split(),
-                variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
+                variation_id: to_string(@variation.id), theme: to_string(@theme), playground: true,
                 topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
@@ -233,7 +229,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                 id: playground_preview_id(@story),
                 session: %{
                   "story" => @story,
-                  "variation_id" => to_string(@variation_id),
+                  "variation_id" => to_string(@variation.id),
                   "theme" => to_string(@theme),
                   "topic" => "playground-#{inspect(self())}",
                   "backend_module" => @backend_module
@@ -265,11 +261,10 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp playground_code(assigns) do
-    ~H"""
-    <pre class={CodeRenderer.pre_class()}>
-    <%= CodeRenderer.render_multiple_variations_code(@story, fun_or_component(@story.storybook_type(), @story), @variations, TemplateHelpers.get_template(@story.template(), @variation)) %>
-    </pre>
-    """
+    variation_attributes = for v <- assigns.variations, into: %{}, do: {v.id, v.attributes}
+
+    RenderingContext.build(assigns.story, assigns.variation, variation_attributes)
+    |> CodeRenderer.render()
   end
 
   defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
@@ -373,7 +368,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
             class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
-            value: @variation_id %>
+            value: @variation.id %>
       </.form>
     <% end %>
     """

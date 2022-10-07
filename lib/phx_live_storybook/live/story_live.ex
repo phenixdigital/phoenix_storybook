@@ -150,7 +150,9 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp init_variation_extra_assigns(type, story) when type in [:component, :live_component] do
     extra_assigns =
-      for %Variation{id: variation_id} <- story.variations(), into: %{}, do: {variation_id, %{}}
+      for %Variation{id: variation_id} <- story.variations(),
+          into: %{},
+          do: {{:single, variation_id}, %{}}
 
     for %VariationGroup{id: group_id, variations: variations} <- story.variations(),
         %Variation{id: variation_id} <- variations,
@@ -326,7 +328,7 @@ defmodule PhxLiveStorybook.StoryLive do
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
             </div>
-            <%= CodeRenderer.render_variation_code(@story, variation_id) %>
+            <%= CodeRenderer.render(rendering_context) %>
           </div>
         </div>
       <% end %>
@@ -389,7 +391,7 @@ defmodule PhxLiveStorybook.StoryLive do
       |> Map.put(:theme, assigns.theme)
   end
 
-  defp variation_extra_assigns(%VariationGroup{id: group_id}, assigns) do
+  defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
     for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
         into: %{} do
       {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
