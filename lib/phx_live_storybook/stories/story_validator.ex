@@ -5,6 +5,8 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
   import PhxLiveStorybook.ValidationHelpers
   require Logger
 
+  @dialyzer {:no_return, bad_type!: 3}
+
   @doc """
   This validator ensures that all stories have their properties filled with proper datatypes
   and that attribute declarations are consistent accross variations.
