@@ -72,6 +72,8 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   defp theme(theme) when is_binary(theme), do: String.to_atom(theme)
   defp theme(theme) when is_atom(theme), do: theme
 
+  def render(assigns = %{variation: nil}), do: ~H""
+
   def render(assigns) do
     assigns =
       assign(

@@ -2,7 +2,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
   use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.TreeStorybook
-  alias PhxLiveStorybook.Rendering.CodeRenderer
+  alias PhxLiveStorybook.Rendering.{CodeRenderer, RenderingContext}
   import Phoenix.LiveViewTest, only: [rendered_to_string: 1]
 
   setup_all do
@@ -33,11 +33,12 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
 
       code = render_variation_code(live_component, :world)
 
-      assert code =~ """
-             <.live_component module={LiveComponent} label="world">
-               <span>inner block</span>
-             </.live_component>
-             """
+      assert code =~
+               String.trim("""
+               <.live_component module={LiveComponent} label="world">
+                 <span>inner block</span>
+               </.live_component>
+               """)
     end
 
     test "it also works for a variation group", %{
@@ -46,19 +47,21 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
     } do
       code = render_variation_code(component, :group)
 
-      assert code =~ """
-             <.component label="hello"/>
-             <.component index={37} label="world"/>
-             """
+      assert code =~
+               String.trim("""
+               <.component label="hello"/>
+               <.component index={37} label="world"/>
+               """)
 
       code = render_variation_code(live_component, :group)
 
-      assert code =~ """
-             <.live_component module={LiveComponent} label="hello">
-               <span>inner block</span>
-             </.live_component>
-             <.live_component module={LiveComponent} label="world"/>
-             """
+      assert code =~
+               String.trim("""
+               <.live_component module={LiveComponent} label="hello">
+                 <span>inner block</span>
+               </.live_component>
+               <.live_component module={LiveComponent} label="world"/>
+               """)
     end
 
     test "it is working with a variation without any attributes", %{afolder_component: component} do
@@ -70,44 +73,47 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       {:ok, component} = TreeStorybook.load_story("/let/let_component")
       code = render_variation_code(component, :default)
 
-      assert code =~ """
-             <.let_component let={entry} stories={["foo", "bar", "qix"]}>
-               **<%= entry %>**
-             </.let_component>
-             """
+      assert code =~
+               String.trim("""
+               <.let_component let={entry} stories={["foo", "bar", "qix"]}>
+                 **<%= entry %>**
+               </.let_component>
+               """)
     end
 
     test "it is working with an inner_block requiring a let attribute, in a live component" do
       {:ok, component} = TreeStorybook.load_story("/let/let_live_component")
       code = render_variation_code(component, :default)
 
-      assert code =~ """
-             <.live_component module={LetLiveComponent} let={entry} stories={["foo", "bar", "qix"]}>
-               **<%= entry %>**
-             </.live_component>
-             """
+      assert code =~
+               String.trim("""
+               <.live_component module={LetLiveComponent} let={entry} stories={["foo", "bar", "qix"]}>
+                 **<%= entry %>**
+               </.live_component>
+               """)
     end
 
     test "it is working with a template component", %{template_component: component} do
       code = render_variation_code(component, :hello)
 
-      assert code =~ """
-             <div id="template-component-hello" class="template-div">
-               <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
-               <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
-               <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
-               <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
-               <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
-               <.template_component label="hello"/>
-             </div>
-             """
+      assert code =~
+               String.trim("""
+               <div id="template-component-hello" class="template-div">
+                 <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
+                 <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
+                 <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
+                 <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
+                 <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
+                 <.template_component label="hello"/>
+               </div>
+               """)
     end
 
     test "it is working with a group template", %{template_component: component} do
       code = render_variation_code(component, :group_template)
 
       assert code =~
-               """
+               String.trim("""
                <div class="group-template">
                  <.template_component label="one"/>
                </div>
@@ -115,29 +121,29 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
                <div class="group-template">
                  <.template_component label="two"/>
                </div>
-               """
+               """)
     end
 
     test "it is working with a single group template", %{template_component: component} do
       code = render_variation_code(component, :group_template_single)
 
       assert code =~
-               """
+               String.trim("""
                <div class="group-template">
                  <.template_component label="one"/>
                  <.template_component label="two"/>
                </div>
-               """
+               """)
     end
 
     test "it is working with a hidden group template", %{template_component: component} do
       code = render_variation_code(component, :group_template_hidden)
 
       assert code =~
-               """
+               String.trim("""
                <.template_component label="one"/>
                <.template_component label="two"/>
-               """
+               """)
     end
 
     test "it is working with a component and a disabled template", %{
@@ -162,24 +168,26 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       {:ok, component} = TreeStorybook.load_story("/b_folder/all_types_component")
       code = render_variation_code(component, :with_struct)
 
-      assert code =~ """
-             <.all_types_component label="foo" struct={%Struct{name: "bar"}}>
-               <p>inner block</p>
-             </.all_types_component>
-             """
+      assert code =~
+               String.trim("""
+               <.all_types_component label="foo" struct={%Struct{name: "bar"}}>
+                 <p>inner block</p>
+               </.all_types_component>
+               """)
     end
 
     test "its renders properly global attributes", %{all_types_component: component} do
       code = render_variation_code(component, :default)
 
-      assert code =~ """
-             <.all_types_component label="default label" foo="bar" data-bar={42} toggle={false}>
-               <p>will be displayed in inner block</p>
-               <:slot_thing>slot 1</:slot_thing>
-               <:slot_thing>slot 2</:slot_thing>
-               <:other_slot>not displayed</:other_slot>
-             </.all_types_component>
-             """
+      assert code =~
+               String.trim("""
+               <.all_types_component label="default label" foo="bar" data-bar={42} toggle={false}>
+                 <p>will be displayed in inner block</p>
+                 <:slot_thing>slot 1</:slot_thing>
+                 <:slot_thing>slot 2</:slot_thing>
+                 <:other_slot>not displayed</:other_slot>
+               </.all_types_component>
+               """)
     end
 
     test "it renders component id only if it has a declared :id attribute" do
@@ -207,7 +215,11 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
   end
 
   defp render_variation_code(story, variation_id) do
-    CodeRenderer.render_variation_code(story, variation_id, format: false)
+    variation = Enum.find(story.variations(), &(&1.id == variation_id))
+
+    story
+    |> RenderingContext.build(variation, %{}, format: false)
+    |> CodeRenderer.render()
     |> rendered_to_string()
   end
 end

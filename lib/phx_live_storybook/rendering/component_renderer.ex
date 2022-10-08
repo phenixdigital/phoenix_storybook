@@ -1,13 +1,18 @@
 defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @moduledoc """
-  Responsible for rendering your function & live components, for a given
-  `PhxLiveStorybook.Variation` or `PhxLiveStorybook.VariationGroup`.
+  Responsible for rendering your function & live components.
   """
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
   alias PhxLiveStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhxLiveStorybook.TemplateHelpers
+
+  @doc """
+  Renders a component from a `RenderingContext`.
+  Returns a `Phoenix.LiveView.Rendered`.
+  """
+  def render(context)
 
   def render(context = %RenderingContext{type: :component, function: function}) do
     render(function, context)

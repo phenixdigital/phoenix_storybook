@@ -12,8 +12,14 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   alias Makeup.Lexers.{ElixirLexer, HEExLexer}
   alias Phoenix.HTML
   alias PhxLiveStorybook.Rendering.{RenderingContext, RenderingVariation}
-  alias PhxLiveStorybook.TemplateHelpers
   alias PhxLiveStorybook.Stories.Attr
+  alias PhxLiveStorybook.TemplateHelpers
+
+  @doc """
+  Renders a component code snippet from a `RenderingContext`.
+  Returns a `Phoenix.LiveView.Rendered`.
+  """
+  def render(context)
 
   def render(context = %RenderingContext{type: :component, function: function}) do
     render(function, context)
@@ -34,13 +40,11 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
         cond do
           TemplateHelpers.variation_template?(context.template) ->
             Enum.map_join(context.variations, "\n", fn v = %RenderingVariation{} ->
-              attributes = maybe_add_id_to_attributes(context.story, v.id, v.attributes)
-
               heex =
                 component_code_heex(
                   context.story,
                   fun_or_mod,
-                  attributes,
+                  strip_attributes(context.story, v),
                   v.let,
                   v.slots,
                   context.template
@@ -57,7 +61,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
                 component_code_heex(
                   context.story,
                   fun_or_mod,
-                  v.attributes,
+                  strip_attributes(context.story, v),
                   v.let,
                   v.slots,
                   context.template
@@ -74,13 +78,21 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
             context.template
         end
 
-      assigns = assign(%{__changed__: %{}}, :heex, heex)
+      assigns =
+        assign(
+          %{__changed__: %{}},
+          heex: format_heex(heex, context.options)
+        )
 
-      ~H"""
-      <pre class={pre_class()}>
-      <%= format_heex(@heex) %>
-      </pre>
-      """
+      if context.options[:format] == false do
+        ~H[<%= @heex %>]
+      else
+        ~H"""
+        <pre class={pre_class()}>
+        <%= @heex %>
+        </pre>
+        """
+      end
     end
   end
 
@@ -100,10 +112,9 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     end
   end
 
-  @doc false
-  def pre_class,
-    do:
-      "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+  defp pre_class do
+    "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+  end
 
   defp component_code_heex(story, function, attributes, let, slots, template)
        when is_function(function) do
@@ -197,18 +208,16 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
     code |> String.split("\n") |> Enum.reject(&(&1 == "")) |> Enum.join("\n")
   end
 
-  defp format_heex(code, opts \\ [])
-
-  defp format_heex(code, format: false) do
-    code |> String.trim() |> HTML.raw()
-  end
-
-  defp format_heex(code, _opts) do
-    code
-    |> String.trim()
-    |> HEExLexer.lex()
-    |> HTMLFormatter.format_inner_as_binary([])
-    |> HTML.raw()
+  defp format_heex(code, opts) do
+    if opts[:format] == false do
+      code |> String.trim() |> HTML.raw()
+    else
+      code
+      |> String.trim()
+      |> HEExLexer.lex()
+      |> HTMLFormatter.format_inner_as_binary([])
+      |> HTML.raw()
+    end
   end
 
   defp format_elixir(code) do
@@ -224,11 +233,12 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   # If :id is a declared attribute, it is important enough to be shown as component markup.
   # Otherwise, we keep it hidden.
-  defp maybe_add_id_to_attributes(story, variation_id, attributes) do
+  defp strip_attributes(story, %RenderingVariation{id: v_id, attributes: attributes}) do
     if Enum.any?(story.merged_attributes(), &(&1.id == :id)) do
-      Map.put(attributes, :id, TemplateHelpers.unique_variation_id(story, variation_id))
+      Map.put(attributes, :id, TemplateHelpers.unique_variation_id(story, v_id))
     else
-      attributes
+      Map.delete(attributes, :id)
     end
+    |> Map.delete(:theme)
   end
 end

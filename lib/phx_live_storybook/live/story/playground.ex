@@ -33,8 +33,16 @@ defmodule PhxLiveStorybook.Story.Playground do
      |> assign_new_template_attributes(assigns)
      |> assign_playground_fields()
      |> assign_playground_slots()
+     |> assign_variation_id()
      |> assign_new(:upper_tab, fn -> :preview end)
      |> assign_new(:lower_tab, fn -> :attributes end)}
+  end
+
+  defp assign_variation_id(socket) do
+    case Map.get(socket.assigns, :variation) do
+      nil -> assign(socket, :variation_id, nil)
+      v -> assign(socket, :variation_id, v.id)
+    end
   end
 
   defp assign_variations(socket = %{assigns: assigns}) do
@@ -229,7 +237,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                 id: playground_preview_id(@story),
                 session: %{
                   "story" => @story,
-                  "variation_id" => to_string(@variation.id),
+                  "variation_id" => to_string(@variation_id),
                   "theme" => to_string(@theme),
                   "topic" => "playground-#{inspect(self())}",
                   "backend_module" => @backend_module
@@ -326,7 +334,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                           <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
                             fields={@fields} values={attr.values} myself={@myself}
-                            template_attributes={Map.get(@template_attributes, @variation.id, %{})}
+                            template_attributes={Map.get(@template_attributes, @variation_id, %{})}
                           />
                         </td>
                       </tr>
@@ -368,7 +376,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
             class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
-            value: @variation.id %>
+            value: @variation_id %>
       </.form>
     <% end %>
     """
@@ -628,9 +636,6 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp on_toggle_click(attr_id, value) do
     JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
   end
-
-  defp fun_or_component(:component, story), do: story.function()
-  defp fun_or_component(:live_component, story), do: story.component()
 
   def handle_event("upper-tab-navigation", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, :upper_tab, String.to_atom(tab))}

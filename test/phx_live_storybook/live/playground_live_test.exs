@@ -396,7 +396,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: two"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:one"] #set-foo|)
+      |> element(~s|[id="template-component-group-one"] #set-foo|)
       |> render_click()
 
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -409,7 +409,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:two"] #set-foo|)
+      |> element(~s|[id="template-component-group-two"] #set-foo|)
       |> render_click()
 
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -419,7 +419,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: false"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:one"] #toggle-status|)
+      |> element(~s|[id="template-component-group-one"] #toggle-status|)
       |> render_click()
 
       assert render(playground_element) =~ "template_component: bar / status: true"
@@ -429,7 +429,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:two"] #toggle-status|)
+      |> element(~s|[id="template-component-group-two"] #toggle-status|)
       |> render_click()
 
       wait_for_lv(view)
