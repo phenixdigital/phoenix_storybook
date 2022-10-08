@@ -100,7 +100,7 @@ defmodule PhxLiveStorybook.Story do
     @callback function() :: function()
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
     @callback aliases() :: [atom()]
-    @callback container() :: atom()
+    @callback container() :: atom() | {atom(), [{atom(), String.t()}]}
     @callback attributes() :: [Attr.t()]
     @callback slots() :: [Slot.t()]
     @callback variations() :: [Variation.t() | VariationGroup.t()]
@@ -150,7 +150,7 @@ defmodule PhxLiveStorybook.Story do
       def description, do: nil
 
       @impl unquote(component_behaviour(live?))
-      def container, do: :div
+      def container, do: {:div, class: "lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px]"}
 
       @impl unquote(component_behaviour(live?))
       def imports, do: []

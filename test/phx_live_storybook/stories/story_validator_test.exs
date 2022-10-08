@@ -140,6 +140,9 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       mock = component_stub(container: :div)
       assert validate!(mock)
 
+      mock = component_stub(container: {:div, class: "foo"})
+      assert validate!(mock)
+
       mock = component_stub(container: :iframe)
       assert validate!(mock)
     end
@@ -147,11 +150,11 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     test "with invalid value it will raise" do
       mock = component_stub(container: :span)
       e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "story container must be either :div or :iframe"
+      assert e.description =~ "story container must be :div, {:div, opts} or :iframe"
 
       mock = component_stub(container: "iframe")
       e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "story container must be either :div or :iframe"
+      assert e.description =~ "story container must be :div, {:div, opts} or :iframe"
     end
   end
 

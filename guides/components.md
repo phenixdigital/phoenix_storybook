@@ -10,14 +10,22 @@ It is possible using `PhxLiveStorybook.VariationGroup`.
 ## Container
 
 By default, each `variation` is rendered within a `div` in the storybook DOM.
+You can pass additional HTML attributes or extend the class attribute.
+
+```elixir
+# storybook/my_component.story.exs
+defmodule Storybook.MyComponent do
+  use PhxLiveStorybook.Story, :component
+  def container, do: {:div, class: "block"}
+end
+```
+
 If you need further _sandboxing_ you can opt in for `iframe` rendering.
 
 ```elixir
 # storybook/my_component.story.exs
 defmodule Storybook.MyComponent do
   use PhxLiveStorybook.Story, :component
-
-  def function, do: &MyComponent.my_component/1
   def container, do: :iframe
 end
 ```

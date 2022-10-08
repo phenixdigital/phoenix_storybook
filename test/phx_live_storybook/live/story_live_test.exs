@@ -216,6 +216,32 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       assert_patched(view, "/storybook/component?tab=playground&theme=default&variation_id=world")
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
+
+    test "sandbox container is default flex div", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component")
+      html = view |> element("#hello .lsb-sandbox") |> render() |> Floki.parse_fragment!()
+
+      assert [
+               {"div",
+                [
+                  {"class",
+                   "theme-default lsb-sandbox lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px]"}
+                ], _}
+             ] = html
+    end
+
+    test "sandbox container is customized div", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/a_folder/component")
+      html = view |> element("#group .lsb-sandbox") |> render() |> Floki.parse_fragment!()
+
+      assert [
+               {"div",
+                [
+                  {"class", "theme-default lsb-sandbox block"},
+                  {"data-foo", "bar"}
+                ], _}
+             ] = html
+    end
   end
 
   describe "page rendering" do

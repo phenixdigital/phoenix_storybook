@@ -29,7 +29,7 @@
 .lsb-sandbox {
   margin: 0;
   font-family: serif, system-ui, sans-serif;
-  @apply lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px];
+  @apply lsb-w-full;
 }
 
 .lsb-variation-block:hover .lsb-open-playground-link {

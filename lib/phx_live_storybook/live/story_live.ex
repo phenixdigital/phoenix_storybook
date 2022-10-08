@@ -275,7 +275,15 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp render_content(type, story, assigns = %{tab: :variations})
        when type in [:component, :live_component] do
-    assigns = assign(assigns, :story, story)
+    assigns =
+      assign(assigns,
+        story: story,
+        sandbox_attributes:
+          case story.container() do
+            {:div, opts} -> assigns_to_attributes(opts, [:class])
+            _ -> []
+          end
+      )
 
     ~H"""
     <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
@@ -315,7 +323,7 @@ defmodule PhxLiveStorybook.StoryLive do
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class={LayoutView.sandbox_class(@socket, assigns)} style="width: 100%;">
+              <div class={LayoutView.sandbox_class(@socket, @story.container(), assigns)} {@sandbox_attributes}>
                 <%= ComponentRenderer.render(rendering_context) %>
               </div>
             <% end %>
@@ -370,7 +378,7 @@ defmodule PhxLiveStorybook.StoryLive do
     assigns = assign(assigns, :story, story)
 
     ~H"""
-    <div class={"lsb lsb-pb-12 #{LayoutView.sandbox_class(@socket, assigns)}"}>
+    <div class={LayoutView.sandbox_class(@socket, {:div, class: "lsb lsb-pb-12"}, assigns)}>
       <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme, connect_params: @connect_params}) |> to_raw_html() %>
     </div>
     """

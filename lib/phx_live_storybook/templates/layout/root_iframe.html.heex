@@ -11,7 +11,7 @@
     <% end %>
   </head>
   
-  <body class={sandbox_class(@conn, assigns)} style="margin: 0;">
+  <body class={sandbox_class(@conn, @story.container(), assigns)} style="margin: 0;">
     <%= @inner_content %>
   </body>
 </html>
