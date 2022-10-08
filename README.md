@@ -139,9 +139,8 @@ config :my_app, MyAppWeb.Storybook,
   content_path: "overridden/content/path"
 ```
 
-ℹ️ Learn more on theming components in the [theming guide](guides/theming.md).
-
-ℹ️ Learn more on icons in the [icons](guides/icons.md) guide.
+ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), on icons in the
+[icons](guides/icons.md) guide.
 
 <!-- MDOC !-->
 
