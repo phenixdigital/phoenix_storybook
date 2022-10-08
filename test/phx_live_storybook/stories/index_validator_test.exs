@@ -30,4 +30,10 @@ defmodule PhxLiveStorybook.Stories.IndexValidatorTest do
       Code.compile_file("bad_entry.index.exs", path)
     end
   end
+
+  test "with bad entry icon it will raise", %{path: path} do
+    assert_raise CompileError, ~r/icon provider must be either :fa or :hero/, fn ->
+      Code.compile_file("bad_entry_icon_provider.index.exs", path)
+    end
+  end
 end
