@@ -39,7 +39,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     web_module = web_module()
     web_module_name = Module.split(web_module) |> List.last()
-    app_name = String.to_atom(Phoenix.Naming.underscore(web_module))
+    app_name = String.to_atom(Macro.underscore(web_module))
     app_folder = Path.join("lib", to_string(app_name))
     component_folder = "storybook/components"
     page_folder = "storybook"
