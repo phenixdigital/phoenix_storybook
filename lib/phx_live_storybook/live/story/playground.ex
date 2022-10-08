@@ -227,7 +227,7 @@ defmodule PhxLiveStorybook.Story.Playground do
           <iframe
             id={playground_preview_id(@story)}
             src={path_to_iframe(@socket, @root_path, @story_path,
-                variation_id: to_string(@variation.id), theme: to_string(@theme), playground: true,
+                variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
                 topic: @topic)}
             height="128"
             class="lsb-w-full lsb-border-0"
