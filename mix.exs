@@ -23,10 +23,6 @@ defmodule PhxLiveStorybook.MixProject do
         coveralls: :test,
         "coveralls.lcov": :test,
         coverage: :test
-      ],
-      dialyzer: [
-        plt_add_apps: [:mix],
-        plt_file: {:no_warn, ".plts/dialyzer.plt"}
       ]
     ]
   end
@@ -54,8 +50,7 @@ defmodule PhxLiveStorybook.MixProject do
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:floki, "~> 0.33.0", only: :test},
-      {:mox, "~> 1.0", only: :test},
-      {:dialyxir, "~> 1.2", only: [:dev], runtime: false}
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 
