@@ -130,15 +130,21 @@ defmodule PhxLiveStorybook.LayoutView do
      "lsb-opacity-0 lsb-scale-95"}
   end
 
-  def sandbox_class(conn_or_socket, %{theme: nil}), do: main_sandbox_class(conn_or_socket)
-
-  def sandbox_class(conn_or_socket, %{theme: theme}) do
-    "#{main_sandbox_class(conn_or_socket)} theme-#{theme}"
+  def sandbox_class(conn_or_socket, container, %{theme: nil}) do
+    main_sandbox_class(conn_or_socket, container)
   end
 
-  defp main_sandbox_class(conn_or_socket) do
-    backend_module = backend_module(conn_or_socket)
-    custom_class = backend_module.config(:sandbox_class)
-    if custom_class, do: "lsb-sandbox " <> custom_class, else: "lsb-sandbox"
+  def sandbox_class(conn_or_socket, container, %{theme: theme}) do
+    ["theme-#{theme}" | main_sandbox_class(conn_or_socket, container)]
+  end
+
+  defp main_sandbox_class(conn_or_socket, container) do
+    container_class =
+      case container do
+        {_tag, opts} -> Keyword.get(opts, :class)
+        _ -> nil
+      end
+
+    ["lsb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]
   end
 end

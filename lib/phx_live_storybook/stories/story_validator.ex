@@ -149,8 +149,10 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
   end
 
   defp validate_component_container!(file_path, story) do
-    unless story.container in ~w(nil div iframe)a do
-      compile_error!(file_path, "story container must be either :div or :iframe")
+    case story.container() do
+      c when c in ~w(nil div iframe)a -> :ok
+      {:div, options} when is_list(options) -> :ok
+      _ -> compile_error!(file_path, "story container must be :div, {:div, opts} or :iframe")
     end
   end
 
