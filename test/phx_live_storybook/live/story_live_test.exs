@@ -114,7 +114,9 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       Phoenix.PubSub.subscribe(PhxLiveStorybook.PubSub, "playground-#{inspect(view.pid)}")
       view |> element("a.lsb-theme", "Default") |> render_click()
       assert_receive {:set_theme, :default}
-      assert render(view) =~ "component: hello default"
+
+      assert view |> element("#tree_storybook_component-playground-preview") |> render() =~
+               "component: hello default"
     end
 
     test "renders component story and navigate to source tab with select", %{conn: conn} do
@@ -186,17 +188,17 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     test "component variation_group with template", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component")
 
-      variation_one = element(view, ~s|[id="template-component-group:one"] span|)
-      variation_two = element(view, ~s|[id="template-component-group:two"] span|)
+      variation_one = element(view, ~s|[id="template-component-group-one"] span|)
+      variation_two = element(view, ~s|[id="template-component-group-two"] span|)
 
       assert render(variation_one) =~ "template_component: one / status: false"
       assert render(variation_two) =~ "template_component: two / status: false"
 
-      view |> element(~s|[id="template-component-group:one"] #set-bar|) |> render_click()
+      view |> element(~s|[id="template-component-group-one"] #set-bar|) |> render_click()
       assert render(variation_one) =~ "template_component: bar / status: false"
       assert render(variation_two) =~ "template_component: two / status: false"
 
-      view |> element(~s|[id="template-component-group:two"] #toggle-status|) |> render_click()
+      view |> element(~s|[id="template-component-group-two"] #toggle-status|) |> render_click()
       assert render(variation_one) =~ "template_component: bar / status: false"
       assert render(variation_two) =~ "template_component: two / status: true"
     end

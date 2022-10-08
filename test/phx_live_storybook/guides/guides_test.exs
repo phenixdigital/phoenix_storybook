@@ -1,7 +1,9 @@
 defmodule PhxLiveStorybook.Guides.GuidesTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStoryBook.Guides
+  defmodule Guides do
+    use PhxLiveStoryBook.Guides.Macros
+  end
 
   test "components guide" do
     guide = Guides.markup("components.md")

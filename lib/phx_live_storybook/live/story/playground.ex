@@ -3,7 +3,7 @@ defmodule PhxLiveStorybook.Story.Playground do
   use PhxLiveStorybook.Web, :live_component
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhxLiveStorybook.Rendering.CodeRenderer
+  alias PhxLiveStorybook.Rendering.{CodeRenderer, RenderingContext}
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.TemplateHelpers
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
@@ -33,31 +33,35 @@ defmodule PhxLiveStorybook.Story.Playground do
      |> assign_new_template_attributes(assigns)
      |> assign_playground_fields()
      |> assign_playground_slots()
+     |> assign_variation_id()
      |> assign_new(:upper_tab, fn -> :preview end)
      |> assign_new(:lower_tab, fn -> :attributes end)}
+  end
+
+  defp assign_variation_id(socket) do
+    case Map.get(socket.assigns, :variation) do
+      nil -> assign(socket, :variation_id, nil)
+      v -> assign(socket, :variation_id, v.id)
+    end
   end
 
   defp assign_variations(socket = %{assigns: assigns}) do
     case assigns.variation do
       variation = %Variation{} ->
-        assign_variations(socket, :single, variation.id, [variation])
+        assign_variations(socket, :single, [variation])
 
       %VariationGroup{id: group_id, variations: variations} ->
-        assign_variations(socket, :group, group_id, variations)
+        assign_variations(socket, group_id, variations)
 
       _ ->
         assign(socket, variations: [], variation_id: nil)
     end
   end
 
-  defp assign_variations(socket, kind, id, variations) do
+  defp assign_variations(socket, group_id, variations) do
     variations =
       for variation <- variations do
-        variation_id =
-          case kind do
-            :group -> {id, variation.id}
-            :single -> variation.id
-          end
+        variation_id = {group_id, variation.id}
 
         variation
         |> Map.take([:attributes, :let, :slots, :template])
@@ -65,7 +69,7 @@ defmodule PhxLiveStorybook.Story.Playground do
         |> put_in([:attributes, :theme], socket.assigns[:theme])
       end
 
-    assign(socket, variation_id: id, variations: variations)
+    assign(socket, variations: variations)
   end
 
   # new_attributes may be passed by parent (LiveView) send_update.
@@ -92,7 +96,8 @@ defmodule PhxLiveStorybook.Story.Playground do
     new_attributes = Map.get(assigns, :new_template_attributes, %{})
 
     template_attributes =
-      for {variation_id, new_variation_attrs} <- new_attributes, reduce: current_attributes do
+      for {{_group_id, variation_id}, new_variation_attrs} <- new_attributes,
+          reduce: current_attributes do
         acc ->
           current_attrs = Map.get(acc, variation_id, %{})
           new_variation_attrs = Map.merge(current_attrs, new_variation_attrs)
@@ -265,11 +270,10 @@ defmodule PhxLiveStorybook.Story.Playground do
   end
 
   defp playground_code(assigns) do
-    ~H"""
-    <pre class={CodeRenderer.pre_class()}>
-    <%= CodeRenderer.render_multiple_variations_code(@story, fun_or_component(@story.storybook_type(), @story), @variations, TemplateHelpers.get_template(@story.template(), @variation)) %>
-    </pre>
-    """
+    variation_attributes = for v <- assigns.variations, into: %{}, do: {v.id, v.attributes}
+
+    RenderingContext.build(assigns.story, assigns.variation, variation_attributes)
+    |> CodeRenderer.render()
   end
 
   defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
@@ -331,7 +335,7 @@ defmodule PhxLiveStorybook.Story.Playground do
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
                           <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
                             fields={@fields} values={attr.values} myself={@myself}
-                            template_attributes={Map.get(@template_attributes, @variation.id, %{})}
+                            template_attributes={Map.get(@template_attributes, @variation_id, %{})}
                           />
                         </td>
                       </tr>
@@ -633,9 +637,6 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp on_toggle_click(attr_id, value) do
     JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
   end
-
-  defp fun_or_component(:component, story), do: story.function()
-  defp fun_or_component(:live_component, story), do: story.component()
 
   def handle_event("upper-tab-navigation", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, :upper_tab, String.to_atom(tab))}

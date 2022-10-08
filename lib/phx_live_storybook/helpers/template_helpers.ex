@@ -8,8 +8,8 @@ defmodule PhxLiveStorybook.TemplateHelpers do
 
   def default_template, do: "<.lsb-variation/>"
 
-  def set_variation_dom_id(template, story, variation_id) do
-    String.replace(template, ":variation_id", unique_variation_id(story, variation_id))
+  def set_variation_dom_id(template, unique_variation_id) do
+    String.replace(template, ":variation_id", unique_variation_id)
   end
 
   def set_js_push_variation_id(template, variation_id) do
@@ -18,17 +18,11 @@ defmodule PhxLiveStorybook.TemplateHelpers do
         match
         |> Code.eval_string()
         |> elem(0)
-        |> Map.put(:variation_id, unique_variation_iderializable(variation_id))
+        |> Map.put(:variation_id, unique_variation_id_serializable(variation_id))
         |> inspect()
 
       open <> match <> close
     end)
-  end
-
-  def unique_variation_id(story, {group_id, variation_id}) do
-    "#{story_module_name(story)}-#{group_id}:#{variation_id}"
-    |> Macro.underscore()
-    |> String.replace("_", "-")
   end
 
   def unique_variation_id(story, variation_id) do
@@ -41,8 +35,7 @@ defmodule PhxLiveStorybook.TemplateHelpers do
     story |> to_string() |> String.split(".") |> Enum.at(-1)
   end
 
-  defp unique_variation_iderializable({group_id, variation_id}), do: [group_id, variation_id]
-  defp unique_variation_iderializable(variation_id), do: variation_id
+  defp unique_variation_id_serializable({group_id, variation_id}), do: [group_id, variation_id]
 
   def variation_template?(template) do
     Regex.match?(@variation_regex, template)
@@ -64,13 +57,9 @@ defmodule PhxLiveStorybook.TemplateHelpers do
     replace_in_template(template, @variation_group_regex, variation_group_markup, indent?)
   end
 
-  def get_template(template, _variation = %{template: :unset}), do: template
-
-  def get_template(_tpl, _variation = %{template: t}) when t in [nil, false],
-    do: default_template()
-
-  def get_template(template, nil), do: template
-  def get_template(_tpl, _variation = %{template: template}), do: template
+  def get_template(template, :unset), do: template
+  def get_template(_template, template) when template in [nil, false], do: default_template()
+  def get_template(_template, template), do: template
 
   def extract_placeholder_attributes(template, inspect \\ nil) do
     cond do

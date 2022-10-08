@@ -2,6 +2,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
   use ExUnit.Case, async: true
 
   alias PhxLiveStorybook.TreeStorybook
+  alias PhxLiveStorybook.Rendering.{ComponentRenderer, RenderingContext}
   import Phoenix.LiveViewTest
 
   setup_all do
@@ -24,10 +25,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
                "<span data-index=\"37\">component: world</span>"
 
       # I did not manage to assert against the HTML
-      assert [%Phoenix.LiveView.Component{id: "live-component-hello"}] =
+      assert [%Phoenix.LiveView.Component{id: "live-component-single-hello"}] =
                render_variation(live_component, :hello).dynamic.([])
 
-      assert [%Phoenix.LiveView.Component{id: "live-component-world"}] =
+      assert [%Phoenix.LiveView.Component{id: "live-component-single-world"}] =
                render_variation(live_component, :world).dynamic.([])
     end
 
@@ -60,7 +61,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     test "it is working with an inner_block requiring a let attribute, in a live component" do
       {:ok, component} = TreeStorybook.load_story("/let/let_live_component")
 
-      assert [%Phoenix.LiveView.Component{id: "let-live-component-default"}] =
+      assert [%Phoenix.LiveView.Component{id: "let-live-component-single-default"}] =
                render_variation(component, :default).dynamic.([])
     end
 
@@ -70,7 +71,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
         |> rendered_to_string()
         |> Floki.parse_fragment!()
 
-      assert html |> Floki.attribute("id") |> hd() == "template-component-hello"
+      assert html |> Floki.attribute("id") |> hd() == "template-component-single-hello"
       assert html |> Floki.find("span") |> length() == 1
     end
 
@@ -103,8 +104,8 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
         |> Floki.parse_fragment!()
 
       assert html |> Floki.attribute("id") |> length() == 2
-      assert html |> Floki.attribute("id") |> Enum.at(0) == "template-component-group:one"
-      assert html |> Floki.attribute("id") |> Enum.at(1) == "template-component-group:two"
+      assert html |> Floki.attribute("id") |> Enum.at(0) == "template-component-group-one"
+      assert html |> Floki.attribute("id") |> Enum.at(1) == "template-component-group-two"
       assert html |> Floki.find("span") |> length() == 2
     end
 
@@ -147,16 +148,6 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
              |> rendered_to_string() == "<div></div>"
     end
 
-    test "renders a variation with an invalid template placeholder will raise" do
-      {:ok, component} = TreeStorybook.load_story("/templates/invalid_template_component")
-
-      msg = "Cannot use <.lsb-variation-group/> placeholder in a variation template."
-
-      assert_raise RuntimeError, msg, fn ->
-        render_variation(component, :invalid_template_placeholder)
-      end
-    end
-
     test "renders a variation with a template passing extra attributes", %{
       template_component: component
     } do
@@ -176,6 +167,10 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
   end
 
   defp render_variation(story, variation_id) do
-    PhxLiveStorybook.Rendering.ComponentRenderer.render_variation(story, variation_id, %{})
+    variation = Enum.find(story.variations(), &(&1.id == variation_id))
+
+    story
+    |> RenderingContext.build(variation, %{})
+    |> ComponentRenderer.render()
   end
 end

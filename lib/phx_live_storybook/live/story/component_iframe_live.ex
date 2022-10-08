@@ -4,8 +4,9 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
 
   alias Phoenix.PubSub
   alias PhxLiveStorybook.ExtraAssignsHelpers
-  alias PhxLiveStorybook.Rendering.ComponentRenderer
+  alias PhxLiveStorybook.Rendering.{ComponentRenderer, RenderingContext}
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
   alias PhxLiveStorybook.StoryNotFound
 
   def mount(_params, _session, socket) do
@@ -24,15 +25,17 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
         end
 
         {:noreply,
-         assign(socket,
+         socket
+         |> assign(
            playground: params["playground"],
            story_path: story_path,
            story: story,
            variation_id: params["variation_id"],
+           variation: current_variation(story.storybook_type(), story, params),
            topic: params["topic"],
-           theme: params["theme"],
-           extra_assigns: %{}
-         )}
+           theme: params["theme"]
+         )
+         |> assign_extra_assigns()}
 
       {:error, _error, exception} ->
         raise exception
@@ -47,9 +50,34 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
     socket.assigns.backend_module.load_story(story_path)
   end
 
+  defp assign_extra_assigns(socket) do
+    case Map.get(socket.assigns, :variation) do
+      nil ->
+        assign(socket, :extra_assigns, %{})
+
+      %Variation{id: id} ->
+        assign(socket, :extra_assigns, %{{:single, id} => %{}})
+
+      %VariationGroup{id: group_id, variations: variations} ->
+        assign(
+          socket,
+          :extra_assigns,
+          for(%Variation{id: id} <- variations, into: %{}, do: {{group_id, id}, %{}})
+        )
+    end
+  end
+
   def render(assigns) do
     assigns =
-      assign(assigns, component_assigns: Map.merge(%{theme: assigns.theme}, assigns.extra_assigns))
+      assign(
+        assigns,
+        :context,
+        RenderingContext.build(
+          assigns.story,
+          assigns.variation,
+          variation_extra_attributes(assigns.variation, assigns)
+        )
+      )
 
     ~H"""
     <%= if @variation_id do %>
@@ -67,7 +95,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
         %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
-          <%= ComponentRenderer.render_variation(@story, @variation_id, @component_assigns) %>
+          <%= ComponentRenderer.render(@context) %>
         </div>
       <% end %>
     <% end %>
@@ -79,28 +107,56 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
     "#{module}-playground-preview"
   end
 
+  defp current_variation(type, story, %{"variation_id" => variation_id})
+       when type in [:component, :live_component] do
+    Enum.find(story.variations(), &(to_string(&1.id) == variation_id))
+  end
+
+  defp current_variation(type, story, _) when type in [:component, :live_component] do
+    case story.variations() do
+      [variation | _] -> variation
+      _ -> nil
+    end
+  end
+
+  defp current_variation(_type, _story, _params), do: nil
+
+  defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
+    extra_assigns =
+      assigns.extra_assigns
+      |> Map.get({:single, variation_id}, %{})
+      |> Map.put(:theme, assigns.theme)
+
+    %{variation_id => extra_assigns}
+  end
+
+  defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
+    for {{^group_id, variation_id}, extra_assigns} <- assigns.extra_assigns,
+        into: %{} do
+      {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
+    end
+  end
+
   def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
-    {_variation_id, extra_assigns} =
+    {variation_id, extra_assigns} =
       ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
         assigns.extra_assigns,
-        assigns.story,
-        :flat
+        assigns.story
       )
 
-    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+    {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
   end
 
   def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
-    {_variation_id, extra_assigns} =
+    {variation_id, extra_assigns} =
       ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
         assigns.extra_assigns,
-        assigns.story,
-        :flat
+        assigns.story
       )
 
-    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+    {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}

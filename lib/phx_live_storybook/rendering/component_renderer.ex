@@ -1,170 +1,49 @@
 defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   @moduledoc """
-  Responsible for rendering your function & live components, for a given
-  `PhxLiveStorybook.Variation` or `PhxLiveStorybook.VariationGroup`.
+  Responsible for rendering your function & live components.
   """
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
   alias Phoenix.LiveView.HTMLEngine
+  alias PhxLiveStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhxLiveStorybook.TemplateHelpers
-  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
 
   @doc """
-  Renders a specific variation for a given component story.
-  Can be a single variation or a variation group.
-  Returns a rendered HEEx template.
+  Renders a component from a `RenderingContext`.
+  Returns a `Phoenix.LiveView.Rendered`.
   """
-  def render_variation(story, variation_id, extra_assigns) do
-    variation = story.variations() |> Enum.find(&(to_string(&1.id) == to_string(variation_id)))
-    template = TemplateHelpers.get_template(story.template(), variation)
-    opts = [imports: story.imports(), aliases: story.aliases()]
+  def render(context)
 
-    case story.storybook_type() do
-      :component ->
-        render_variation(story.function(), story, variation, template, extra_assigns, opts)
-
-      :live_component ->
-        render_variation(story.component(), story, variation, template, extra_assigns, opts)
-    end
+  def render(context = %RenderingContext{type: :component, function: function}) do
+    render(function, context)
   end
 
-  @doc """
-  Renders a variation or a group of variation for a component.
-  """
-  def render_variation(fun_or_mod, story, variation = %Variation{}, template, extra_assigns, opts) do
-    if TemplateHelpers.variation_group_template?(template) do
-      raise "Cannot use <.lsb-variation-group/> placeholder in a variation template."
-    end
-
-    extra_assigns =
-      Map.put(extra_assigns, :id, TemplateHelpers.unique_variation_id(story, variation.id))
-
-    heex =
-      template_heex(
-        template,
-        story,
-        variation.id,
-        fun_or_mod,
-        Map.merge(variation.attributes, extra_assigns),
-        variation.let,
-        variation.slots,
-        opts[:playground_topic]
-      )
-
-    render_component_heex(fun_or_mod, heex, opts)
+  def render(context = %RenderingContext{type: :live_component, component: component}) do
+    render(component, context)
   end
 
-  def render_variation(
-        fun_or_mod,
-        story,
-        %VariationGroup{id: group_id, variations: variations},
-        template,
-        group_extra_assigns,
-        opts
-      ) do
+  def render(fun_or_mod, context = %RenderingContext{}) do
     heex =
       cond do
-        TemplateHelpers.variation_template?(template) ->
-          for variation = %Variation{id: variation_id} <- variations, into: "" do
-            extra_assigns =
-              group_extra_assigns
-              |> Map.get(variation_id, %{})
-              |> Map.put(
-                :id,
-                TemplateHelpers.unique_variation_id(story, {group_id, variation_id})
-              )
-
+        TemplateHelpers.variation_template?(context.template) ->
+          for variation = %RenderingVariation{} <- context.variations, into: "" do
             template_heex(
-              template,
-              story,
-              {group_id, variation_id},
               fun_or_mod,
-              Map.merge(variation.attributes, extra_assigns),
-              variation.let,
-              variation.slots,
-              opts[:playground_topic]
+              {context.group_id, variation.id},
+              context.template,
+              variation,
+              context.options[:playground_topic]
             )
           end
 
-        TemplateHelpers.variation_group_template?(template) ->
+        TemplateHelpers.variation_group_template?(context.template) ->
           heex =
-            for variation = %Variation{id: variation_id} <- variations, into: "" do
-              extra_assigns =
-                Map.put(
-                  group_extra_assigns,
-                  :id,
-                  TemplateHelpers.unique_variation_id(story, {group_id, variation_id})
-                )
-
+            for variation = %RenderingVariation{} <- context.variations, into: "" do
               extra_attributes =
                 extract_placeholder_attributes(
-                  template,
+                  context.template,
                   variation.id,
-                  opts[:playground_topic]
-                )
-
-              component_heex(
-                fun_or_mod,
-                Map.merge(variation.attributes, extra_assigns),
-                variation.let,
-                variation.slots,
-                extra_attributes
-              )
-            end
-
-          template
-          |> TemplateHelpers.set_variation_dom_id(story, group_id)
-          |> TemplateHelpers.set_js_push_variation_id(group_id)
-          |> TemplateHelpers.replace_template_variation_group(heex)
-
-        true ->
-          template
-          |> TemplateHelpers.set_variation_dom_id(story, group_id)
-          |> TemplateHelpers.set_js_push_variation_id(group_id)
-      end
-
-    render_component_heex(fun_or_mod, heex, opts)
-  end
-
-  @doc false
-  def render_multiple_variations(
-        story,
-        fun_or_mod,
-        variation_or_group,
-        variations,
-        template,
-        opts
-      ) do
-    heex =
-      cond do
-        TemplateHelpers.variation_template?(template) ->
-          for variation <- variations, into: "" do
-            variation_id =
-              case variation_or_group do
-                %VariationGroup{id: group_id} -> {group_id, variation.id}
-                _ -> variation.id
-              end
-
-            template_heex(
-              template,
-              story,
-              variation_id,
-              fun_or_mod,
-              variation.attributes,
-              variation.let,
-              variation.slots,
-              opts[:playground_topic]
-            )
-          end
-
-        TemplateHelpers.variation_group_template?(template) ->
-          heex =
-            for variation <- variations, into: "" do
-              extra_attributes =
-                extract_placeholder_attributes(
-                  template,
-                  variation.id,
-                  opts[:playground_topic]
+                  context.options[:playground_topic]
                 )
 
               component_heex(
@@ -176,18 +55,18 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
               )
             end
 
-          template
-          |> TemplateHelpers.set_variation_dom_id(story, variation_or_group.id)
-          |> TemplateHelpers.set_js_push_variation_id(variation_or_group.id)
+          context.template
+          |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+          |> TemplateHelpers.set_js_push_variation_id(context.group_id)
           |> TemplateHelpers.replace_template_variation_group(heex)
 
         true ->
-          template
-          |> TemplateHelpers.set_variation_dom_id(story, variation_or_group.id)
-          |> TemplateHelpers.set_js_push_variation_id(variation_or_group.id)
+          context.template
+          |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+          |> TemplateHelpers.set_js_push_variation_id(context.group_id)
       end
 
-    render_component_heex(fun_or_mod, heex, opts)
+    render_component_heex(fun_or_mod, heex, context.options)
   end
 
   defp component_heex(fun, assigns, _let, [], extra_attrs) when is_function(fun) do
@@ -219,22 +98,19 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   defp template_heex(
-         template,
-         story,
-         variation_id,
          fun_or_mod,
-         assigns,
-         let,
-         slots,
+         variation_id,
+         template,
+         %RenderingVariation{dom_id: dom_id, let: let, slots: slots, attributes: attributes},
          playground_topic
        ) do
     extra_attributes = extract_placeholder_attributes(template, variation_id, playground_topic)
 
     template
-    |> TemplateHelpers.set_variation_dom_id(story, variation_id)
+    |> TemplateHelpers.set_variation_dom_id(dom_id)
     |> TemplateHelpers.set_js_push_variation_id(variation_id)
     |> TemplateHelpers.replace_template_variation(
-      component_heex(fun_or_mod, assigns, let, slots, extra_attributes)
+      component_heex(fun_or_mod, attributes, let, slots, extra_attributes)
     )
   end
 

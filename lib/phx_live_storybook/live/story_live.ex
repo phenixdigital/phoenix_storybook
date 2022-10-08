@@ -7,7 +7,7 @@ defmodule PhxLiveStorybook.StoryLive do
   alias PhxLiveStorybook.Events.EventLog
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
-  alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer}
+  alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
   alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
   alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
   alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
@@ -150,7 +150,9 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp init_variation_extra_assigns(type, story) when type in [:component, :live_component] do
     extra_assigns =
-      for %Variation{id: variation_id} <- story.variations(), into: %{}, do: {variation_id, %{}}
+      for %Variation{id: variation_id} <- story.variations(),
+          into: %{},
+          do: {{:single, variation_id}, %{}}
 
     for %VariationGroup{id: group_id, variations: variations} <- story.variations(),
         %Variation{id: variation_id} <- variations,
@@ -278,7 +280,8 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
-              variation_extra_assigns = variation_extra_assigns(variation, assigns) do %>
+              extra_attributes = variation_extra_attributes(variation, assigns),
+              rendering_context = RenderingContext.build(story, variation, extra_attributes) do %>
         <div id={anchor_id(variation)} class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
@@ -313,7 +316,7 @@ defmodule PhxLiveStorybook.StoryLive do
               />
             <% else %>
               <div class={LayoutView.sandbox_class(@socket, assigns)} style="width: 100%;">
-                <%= ComponentRenderer.render_variation(@story, variation_id, variation_extra_assigns) %>
+                <%= ComponentRenderer.render(rendering_context) %>
               </div>
             <% end %>
           </div>
@@ -323,7 +326,7 @@ defmodule PhxLiveStorybook.StoryLive do
             <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
               <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
             </div>
-            <%= CodeRenderer.render_variation_code(@story, variation_id) %>
+            <%= CodeRenderer.render(rendering_context) %>
           </div>
         </div>
       <% end %>
@@ -380,18 +383,20 @@ defmodule PhxLiveStorybook.StoryLive do
     |> Phoenix.HTML.raw()
   end
 
-  defp variation_extra_assigns(%Variation{id: variation_id}, assigns) do
-    assigns.variation_extra_assigns
-    |> Map.get(variation_id, %{})
-    |> Map.put(:theme, assigns.theme)
+  defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
+    extra_assigns =
+      assigns.variation_extra_assigns
+      |> Map.get({:single, variation_id}, %{})
+      |> Map.put(:theme, assigns.theme)
+
+    %{variation_id => extra_assigns}
   end
 
-  defp variation_extra_assigns(%VariationGroup{id: group_id}, assigns) do
+  defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
     for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
         into: %{} do
       {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
     end
-    |> Map.put(:theme, assigns.theme)
   end
 
   defp iframe_id(story, variation) do

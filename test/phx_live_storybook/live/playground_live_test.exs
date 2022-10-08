@@ -229,16 +229,6 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert html =~ "component: hello colorful"
     end
 
-    test "component code is updated as a different theme is selected", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
-      view |> element("a", "Code") |> render_click()
-      assert view |> element("pre.highlight") |> render() =~ ":default"
-
-      view |> element("a.lsb-theme", "Colorful") |> render_click()
-      wait_for_preview_lv(view)
-      assert view |> element("pre.highlight") |> render() =~ ":colorful"
-    end
-
     test "playground form is updated as a different theme is selected", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       form_theme_selector = "#tree_storybook_component-playground-form_theme"
@@ -396,7 +386,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: two"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:one"] #set-foo|)
+      |> element(~s|[id="template-component-group-one"] #set-foo|)
       |> render_click()
 
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -409,7 +399,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:two"] #set-foo|)
+      |> element(~s|[id="template-component-group-two"] #set-foo|)
       |> render_click()
 
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -419,7 +409,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: false"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:one"] #toggle-status|)
+      |> element(~s|[id="template-component-group-one"] #toggle-status|)
       |> render_click()
 
       assert render(playground_element) =~ "template_component: bar / status: true"
@@ -429,7 +419,7 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group:two"] #toggle-status|)
+      |> element(~s|[id="template-component-group-two"] #toggle-status|)
       |> render_click()
 
       wait_for_lv(view)
