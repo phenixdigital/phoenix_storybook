@@ -96,7 +96,8 @@ defmodule PhxLiveStorybook.Story.Playground do
     new_attributes = Map.get(assigns, :new_template_attributes, %{})
 
     template_attributes =
-      for {variation_id, new_variation_attrs} <- new_attributes, reduce: current_attributes do
+      for {{_group_id, variation_id}, new_variation_attrs} <- new_attributes,
+          reduce: current_attributes do
         acc ->
           current_attrs = Map.get(acc, variation_id, %{})
           new_variation_attrs = Map.merge(current_attrs, new_variation_attrs)

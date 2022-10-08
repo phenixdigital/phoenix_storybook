@@ -51,7 +51,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
                 )
 
               context.template
-              |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+              |> TemplateHelpers.set_variation_dom_id(v.dom_id)
               |> TemplateHelpers.replace_template_variation(heex, _indent = true)
             end)
 

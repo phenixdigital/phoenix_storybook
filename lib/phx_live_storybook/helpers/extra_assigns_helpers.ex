@@ -60,8 +60,8 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
 
   defp to_variation_id(_, context), do: raise("missing variation_id in #{context}")
 
-  defp to_variation_extra_assigns(extra_assigns, variation_id) do
-    Map.get(extra_assigns, variation_id)
+  defp to_variation_extra_assigns(extra_assigns, id = {_group_id, _variation_id}) do
+    Map.get(extra_assigns, id)
   end
 
   defp to_value("nil", _attr_id, _attributes, _context), do: nil

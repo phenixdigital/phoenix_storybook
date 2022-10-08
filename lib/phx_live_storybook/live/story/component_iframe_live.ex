@@ -25,16 +25,17 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
         end
 
         {:noreply,
-         assign(socket,
+         socket
+         |> assign(
            playground: params["playground"],
            story_path: story_path,
            story: story,
            variation_id: params["variation_id"],
            variation: current_variation(story.storybook_type(), story, params),
            topic: params["topic"],
-           theme: params["theme"],
-           extra_assigns: %{}
-         )}
+           theme: params["theme"]
+         )
+         |> assign_extra_assigns()}
 
       {:error, _error, exception} ->
         raise exception
@@ -47,6 +48,23 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   defp load_story(socket, story_param) do
     story_path = Path.join(story_param)
     socket.assigns.backend_module.load_story(story_path)
+  end
+
+  defp assign_extra_assigns(socket) do
+    case Map.get(socket.assigns, :variation) do
+      nil ->
+        assign(socket, :extra_assigns, %{})
+
+      %Variation{id: id} ->
+        assign(socket, :extra_assigns, %{{:single, id} => %{}})
+
+      %VariationGroup{id: group_id, variations: variations} ->
+        assign(
+          socket,
+          :extra_assigns,
+          for(%Variation{id: id} <- variations, into: %{}, do: {{group_id, id}, %{}})
+        )
+    end
   end
 
   def render(assigns) do
@@ -120,25 +138,25 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   end
 
   def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
-    {_variation_id, extra_assigns} =
+    {variation_id, extra_assigns} =
       ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
         assigns.extra_assigns,
         assigns.story
       )
 
-    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+    {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
   end
 
   def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
-    {_variation_id, extra_assigns} =
+    {variation_id, extra_assigns} =
       ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
         assigns.extra_assigns,
         assigns.story
       )
 
-    {:noreply, assign(socket, extra_assigns: extra_assigns)}
+    {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}

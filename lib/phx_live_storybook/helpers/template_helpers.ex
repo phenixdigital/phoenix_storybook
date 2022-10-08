@@ -8,10 +8,6 @@ defmodule PhxLiveStorybook.TemplateHelpers do
 
   def default_template, do: "<.lsb-variation/>"
 
-  def set_variation_dom_id(template, story, variation_id) do
-    String.replace(template, ":variation_id", unique_variation_id(story, variation_id))
-  end
-
   def set_variation_dom_id(template, unique_variation_id) do
     String.replace(template, ":variation_id", unique_variation_id)
   end

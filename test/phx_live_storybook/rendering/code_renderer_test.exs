@@ -98,7 +98,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <div id="template-component-hello" class="template-div">
+               <div id="template-component-single-hello" class="template-div">
                  <button id="set-foo" phx-click={JS.push("assign", value: %{label: "foo"})}>Set label to foo</button>
                  <button id="set-bar" phx-click={JS.push("assign", value: %{label: "bar"})}>Set label to bar</button>
                  <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>

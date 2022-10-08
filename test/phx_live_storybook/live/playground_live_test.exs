@@ -229,16 +229,6 @@ defmodule PhxLiveStorybook.PlaygroundLiveTest do
       assert html =~ "component: hello colorful"
     end
 
-    test "component code is updated as a different theme is selected", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
-      view |> element("a", "Code") |> render_click()
-      assert view |> element("pre.highlight") |> render() =~ ":default"
-
-      view |> element("a.lsb-theme", "Colorful") |> render_click()
-      wait_for_preview_lv(view)
-      assert view |> element("pre.highlight") |> render() =~ ":colorful"
-    end
-
     test "playground form is updated as a different theme is selected", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       form_theme_selector = "#tree_storybook_component-playground-form_theme"

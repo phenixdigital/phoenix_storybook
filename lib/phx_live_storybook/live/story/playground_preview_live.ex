@@ -78,12 +78,11 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
     assigns =
       assign(
         assigns,
-        context:
-          RenderingContext.build(assigns.story, assigns.variation, assigns.variations_attributes,
-            playground_topic: assigns.topic,
-            imports: [{__MODULE__, lsb_inspect: 4} | assigns.story.imports],
-            aliases: assigns.story.aliases
-          )
+        :context,
+        RenderingContext.build(assigns.story, assigns.variation, assigns.variations_attributes,
+          playground_topic: assigns.topic,
+          imports: [{__MODULE__, lsb_inspect: 4}]
+        )
       )
 
     ~H"""
@@ -111,13 +110,13 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
   end
 
   def handle_info({:new_attributes_input, new_attrs}, socket) do
-    variations =
+    variation_attributes =
       for {variation_id, attributes} <- socket.assigns.variations_attributes, into: %{} do
         {variation_id,
          attributes |> Map.merge(new_attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)}
       end
 
-    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variations)}
+    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variation_attributes)}
   end
 
   def handle_info({:set_theme, theme}, socket) do
@@ -126,9 +125,7 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
         {variation_id, Map.put(attributes, :theme, theme)}
       end
 
-    send_variations_attributes(socket.assigns.topic, variation_attributes)
-
-    {:noreply, assign(socket, theme: theme, variation_attributes: variation_attributes)}
+    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variation_attributes)}
   end
 
   def handle_info({:set_variation, variation}, socket) do

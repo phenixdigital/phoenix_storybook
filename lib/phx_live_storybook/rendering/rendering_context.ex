@@ -100,6 +100,10 @@ defmodule PhxLiveStorybook.Rendering.RenderingContext do
   end
 
   defp options(story, options) do
-    Keyword.merge(options, imports: story.imports(), aliases: story.aliases())
+    Keyword.merge(options, [imports: story.imports(), aliases: story.aliases()], fn
+      _key, v1, nil -> v1
+      _key, nil, v2 -> v2
+      _key, v1, v2 -> v1 ++ v2
+    end)
   end
 end
