@@ -30,7 +30,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     if Mix.Project.umbrella?() do
       Mix.raise("""
-      umbrealla projects are not supported.
+      umbrella projects are not supported.
       mix phx.gen.storybook must be invoked from within your *_web application root directory")
       """)
     end
