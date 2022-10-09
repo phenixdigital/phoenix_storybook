@@ -56,7 +56,7 @@ defmodule PhxLiveStorybook.Stories.VariationGroup do
     def variations do
       [
         %VariationGroup{
-          id: colors,
+          id: :colors,
           description: "Different color buttons",
           variations: [
             %Variation{
