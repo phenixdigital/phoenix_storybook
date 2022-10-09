@@ -16,6 +16,12 @@ defmodule PhxLiveStorybook.Stories.Slot do
   alias PhxLiveStorybook.Stories.Slot
   require Logger
 
+  @type t :: %__MODULE__{
+          id: String.t(),
+          doc: String.t(),
+          required: boolean
+        }
+
   @enforce_keys [:id]
   defstruct [:id, :doc, required: false]
 
