@@ -78,6 +78,15 @@ defmodule PhxLiveStorybook.Stories.VariationGroup do
   ```
   """
 
+  alias PhxLiveStorybook.Stories.Variation
+
+  @type t :: %__MODULE__{
+          id: atom,
+          description: String.t() | nil,
+          variations: [Variation.t()],
+          template: :unset | String.t() | nil | false
+        }
+
   @enforce_keys [:id, :variations]
   defstruct [:id, :description, :variations, template: :unset]
 end
