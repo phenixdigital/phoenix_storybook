@@ -33,6 +33,15 @@ defmodule PhxLiveStorybook.Stories.Variation do
   ```
   """
 
+  @type t :: %__MODULE__{
+          id: atom,
+          description: String.t() | nil,
+          let: atom | nil,
+          slots: [String.t()],
+          attributes: map,
+          template: :unset | String.t() | nil | false
+        }
+
   @enforce_keys [:id]
   defstruct [:id, :description, :let, slots: [], attributes: %{}, template: :unset]
 end
