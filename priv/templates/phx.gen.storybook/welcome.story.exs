@@ -3,7 +3,7 @@ defmodule Storybook.MyPage do
   # documentation.
   use PhxLiveStorybook.Story, :page
 
-  def description, do: "Your very first steps into using Phoenix Storybook"
+  def doc, do: "Your very first steps into using Phoenix Storybook"
 
   # Declare an optional tab-based navigation in your page:
   def navigation do

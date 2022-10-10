@@ -26,7 +26,6 @@ defmodule PhxLiveStorybook.Story do
 
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
-    def description, do: "My component description"
 
     def attributes, do: []
     def slots, do: []
@@ -46,7 +45,7 @@ defmodule PhxLiveStorybook.Story do
 
     # required
     def component, do: MyAppWeb.MyLiveComponent
-    def description, do: "My live component description"
+
     def attributes, do: []
     def slots, do: []
     def variations, do: []
@@ -68,7 +67,7 @@ defmodule PhxLiveStorybook.Story do
   defmodule MyAppWeb.Storybook.MyPage do
     use PhxLiveStorybook.Story, :page
 
-    def description, do: "My page description"
+    def doc, do: "My page description"
 
     def navigation do
       [
@@ -91,7 +90,7 @@ defmodule PhxLiveStorybook.Story do
     @moduledoc false
 
     @callback storybook_type() :: atom()
-    @callback description() :: String.t() | nil
+    @callback doc() :: String.t() | [String.t()] | nil
   end
 
   defmodule ComponentBehaviour do
@@ -141,13 +140,15 @@ defmodule PhxLiveStorybook.Story do
 
       import Phoenix.Component
       alias Phoenix.LiveView.JS
-      alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
+      alias PhxLiveStorybook.Stories.{Attr, Doc, Slot, Variation, VariationGroup}
 
       @impl StoryBehaviour
       def storybook_type, do: unquote(storybook_type(live?))
 
       @impl StoryBehaviour
-      def description, do: nil
+      def doc do
+        Doc.fetch_doc_as_html(__MODULE__)
+      end
 
       @impl unquote(component_behaviour(live?))
       def container, do: {:div, class: "lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px]"}
@@ -178,8 +179,7 @@ defmodule PhxLiveStorybook.Story do
         def merged_slots, do: Slot.merge_slots(function(), slots())
       end
 
-      defoverridable description: 0,
-                     imports: 0,
+      defoverridable imports: 0,
                      aliases: 0,
                      container: 0,
                      attributes: 0,
@@ -203,7 +203,7 @@ defmodule PhxLiveStorybook.Story do
       def storybook_type, do: :page
 
       @impl StoryBehaviour
-      def description, do: nil
+      def doc, do: nil
 
       @impl PageBehaviour
       def navigation, do: []
@@ -211,7 +211,7 @@ defmodule PhxLiveStorybook.Story do
       @impl PageBehaviour
       def render(_assigns), do: false
 
-      defoverridable description: 0, navigation: 0, render: 1
+      defoverridable doc: 0, navigation: 0, render: 1
     end
   end
 

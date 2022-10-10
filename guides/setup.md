@@ -109,7 +109,6 @@ defmodule MyAppWeb.Storybook.Components.Button do
   use PhxLiveStorybook.Story, :component
 
   def function, do: &Button.button/1
-  def description, do: "A simple generic button."
 
   def variations do [
     %Variation{

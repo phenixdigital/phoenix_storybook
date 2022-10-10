@@ -11,7 +11,6 @@ defmodule PhxLiveStorybook.StoryTest do
       end
 
       assert MyComponentStory.storybook_type() == :component
-      assert MyComponentStory.description() == nil
       assert MyComponentStory.variations() == []
     end
 
@@ -106,7 +105,6 @@ defmodule PhxLiveStorybook.StoryTest do
       end
 
       assert MyLiveComponentStory.storybook_type() == :live_component
-      assert MyLiveComponentStory.description() == nil
       assert MyLiveComponentStory.variations() == []
     end
 
@@ -200,7 +198,6 @@ defmodule PhxLiveStorybook.StoryTest do
       end
 
       assert MyPageStory.storybook_type() == :page
-      assert MyPageStory.description() == nil
       assert MyPageStory.navigation() == []
       assert MyPageStory.render(%{}) == false
     end

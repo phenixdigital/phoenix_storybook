@@ -1,7 +1,6 @@
 defmodule TreeStorybook.AFolder.LiveComponent do
   use PhxLiveStorybook.Story, :live_component
   def component, do: LiveComponent
-  def description, do: "Live component description"
 
   def attributes do
     [

@@ -1,6 +1,12 @@
 defmodule Component do
   use Phoenix.Component
 
+  @doc """
+  Component first doc paragraph.
+  Still first paragraph.
+
+  Second paragraph.
+  """
   def component(assigns) do
     assigns =
       assigns

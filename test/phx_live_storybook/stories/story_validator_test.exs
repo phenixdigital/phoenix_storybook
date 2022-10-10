@@ -14,25 +14,12 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       mock = component_stub()
       assert validate(mock) == {:ok, mock}
     end
-
-    @tag :capture_log
-    test "with a invalid story it returns an :error tuple" do
-      mock = component_stub(description: :invalid)
-      {:error, message, _exception} = validate(mock)
-      assert message =~ "Could not validate"
-    end
   end
 
   describe "page story base attributes" do
     test "with a valid story it returns a :ok tuple" do
       mock = page_stub()
       assert validate(mock) == {:ok, mock}
-    end
-
-    test "with an invalid description it raises" do
-      mock = page_stub(description: :invalid)
-      e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "story description must be a binary"
     end
   end
 
@@ -59,17 +46,6 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     test "with default mock it wont raise" do
       mock = component_stub()
       assert validate!(mock)
-    end
-
-    test "with proper types it wont raise" do
-      mock = component_stub(description: "description")
-      assert validate!(mock)
-    end
-
-    test "with invalid types it will raise" do
-      mock = component_stub(description: :description)
-      e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "story description must be a binary"
     end
   end
 

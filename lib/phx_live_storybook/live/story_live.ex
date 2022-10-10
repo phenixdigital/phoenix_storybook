@@ -180,7 +180,9 @@ defmodule PhxLiveStorybook.StoryLive do
     """
   end
 
-  def render(assigns = %{story: _story}) do
+  def render(assigns = %{story: story}) do
+    assigns = assign(assigns, :doc, story.doc())
+
     ~H"""
     <div class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="story-live" phx-hook="StoryHook">
       <div class="lsb">
@@ -194,9 +196,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
           <%=  @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
-        <div class="lsb lsb-text-base md:lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-          <%= @story.description() %>
-        </div>
+        <.print_doc doc={@doc}/>
       </div>
 
       <%= render_content(@story.storybook_type(), @story, assigns) %>
@@ -204,7 +204,21 @@ defmodule PhxLiveStorybook.StoryLive do
     """
   end
 
-  def render(assigns), do: ~H""
+  def render(assigns), do: ~H[]
+
+  defp print_doc(assigns = %{doc: doc}) when is_binary(doc) do
+    ~H"""
+    <div class="lsb lsb-text-base md:lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+      <%= @doc %>
+    </div>
+    """
+  end
+
+  defp print_doc(assigns = %{doc: [_header | _]}) do
+    ~H[<.print_doc doc={hd(@doc)}/>]
+  end
+
+  defp print_doc(assigns), do: ~H""
 
   defp navigation_tabs(story) do
     case story.storybook_type() do

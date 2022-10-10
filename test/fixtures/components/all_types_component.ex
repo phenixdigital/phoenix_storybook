@@ -7,6 +7,7 @@ defmodule AllTypesComponent do
     defstruct [:name]
   end
 
+  @doc "All types component description"
   def all_types_component(assigns) do
     assigns =
       assigns
