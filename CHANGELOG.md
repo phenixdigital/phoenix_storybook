@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## v0.4.5 (not released)
+## v0.4.5 (2022-10-10)
 
-- **bugfix**: `TemplateHelpers.unique_variation_id/2` raises in playground.
+- **bugfix**: `TemplateHelpers.unique_variation_id/2` raises in playground if component has an `id` attr.
+- **bugfix**: fixed some dialyxir warnings
 
 ## v0.4.4 (2022-10-10)
 

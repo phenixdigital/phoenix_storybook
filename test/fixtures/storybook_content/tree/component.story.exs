@@ -7,6 +7,10 @@ defmodule TreeStorybook.Component do
   def attributes do
     [
       %Attr{
+        id: :id,
+        type: :string
+      },
+      %Attr{
         id: :label,
         type: :string,
         doc: "component label",

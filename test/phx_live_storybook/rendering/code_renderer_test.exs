@@ -23,10 +23,10 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       live_component: live_component
     } do
       code = render_variation_code(component, :hello)
-      assert code =~ ~s|<.component label="hello"/>|
+      assert code =~ ~s|<.component id="component-hello" label="hello"/>|
 
       code = render_variation_code(component, :world)
-      assert code =~ ~s|<.component index={37} label="world"/>|
+      assert code =~ ~s|<.component id="component-world" index={37} label="world"/>|
 
       code = render_variation_code(live_component, :hello)
       assert code =~ ~s|<.live_component module={LiveComponent} label="hello"/>|

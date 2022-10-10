@@ -44,7 +44,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
                 component_code_heex(
                   context.story,
                   fun_or_mod,
-                  strip_attributes(context.story, v),
+                  strip_attributes(context.story, context.group_id, v),
                   v.let,
                   v.slots,
                   context.template
@@ -61,7 +61,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
                 component_code_heex(
                   context.story,
                   fun_or_mod,
-                  strip_attributes(context.story, v),
+                  strip_attributes(context.story, context.group_id, v),
                   v.let,
                   v.slots,
                   context.template
@@ -233,9 +233,9 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
 
   # If :id is a declared attribute, it is important enough to be shown as component markup.
   # Otherwise, we keep it hidden.
-  defp strip_attributes(story, %RenderingVariation{id: v_id, attributes: attributes}) do
+  defp strip_attributes(story, group_id, %RenderingVariation{id: v_id, attributes: attributes}) do
     if Enum.any?(story.merged_attributes(), &(&1.id == :id)) do
-      Map.put(attributes, :id, TemplateHelpers.unique_variation_id(story, v_id))
+      Map.put(attributes, :id, TemplateHelpers.unique_variation_id(story, {group_id, v_id}))
     else
       Map.delete(attributes, :id)
     end
