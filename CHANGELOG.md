@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.4.4 (not yet released)
+## v0.4.4 (2022-10-10)
 
 - **feature**: [you can now customize your story div container](https://github.com/phenixdigital/phx_live_storybook/issues/135)
 - **improvement**: [removed routes helpers](https://github.com/phenixdigital/phx_live_storybook/pull/137)
