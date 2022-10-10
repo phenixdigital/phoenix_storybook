@@ -36,6 +36,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
 
   defp validate_page!(story) do
     file_path = story.__info__(:compile)[:source]
+    validate_page_doc!(file_path, story)
     validate_page_navigation!(file_path, story)
     story
   end
@@ -79,6 +80,18 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
     validate_variation_template!(file_path, variations)
     validate_variation_in_group_template!(file_path, variations)
     story
+  end
+
+  defp validate_page_doc!(file_path, story) do
+    msg = "page doc must be a binary or a list of binary"
+
+    unless match_attr_type?(story.doc(), :string) do
+      validate_type!(file_path, story.doc(), :list, msg)
+
+      for paragraph <- story.doc() do
+        validate_type!(file_path, paragraph, :string, msg)
+      end
+    end
   end
 
   defp validate_page_navigation!(file_path, story) do

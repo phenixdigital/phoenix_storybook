@@ -14,12 +14,25 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       mock = component_stub()
       assert validate(mock) == {:ok, mock}
     end
+
+    @tag :capture_log
+    test "with a invalid story it returns an :error tuple" do
+      mock = component_stub(function: :invalid)
+      {:error, message, _exception} = validate(mock)
+      assert message =~ "Could not validate"
+    end
   end
 
   describe "page story base attributes" do
     test "with a valid story it returns a :ok tuple" do
       mock = page_stub()
       assert validate(mock) == {:ok, mock}
+    end
+
+    test "with an invalid doc it raises" do
+      mock = page_stub(doc: :invalid)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "page doc must be a binary or a list of binary"
     end
   end
 
