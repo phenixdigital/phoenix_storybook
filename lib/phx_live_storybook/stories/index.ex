@@ -31,8 +31,13 @@ defmodule PhxLiveStorybook.Index do
   defmodule IndexBehaviour do
     @moduledoc false
 
+    @type icon_provider :: :fa | :hero
+
     @callback folder_name() :: String.t()
-    @callback folder_icon() :: String.t()
+    @callback folder_icon() ::
+                {icon_provider(), String.t()}
+                | {icon_provider(), String.t(), atom}
+                | {icon_provider(), String.t(), atom, String.t()}
     @callback folder_open?() :: boolean()
     @callback entry(String.t()) :: [{atom(), String.t()}]
   end

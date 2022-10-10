@@ -6,14 +6,14 @@ defmodule PhxLiveStorybook.AssetHelpersTest do
   describe "parse_manifest/2" do
     test "it parses a valid manifest" do
       path = manifest_path("cache_manifest.json")
-      assert is_map(parse_manifest(path, :prod))
+      assert is_map(parse_manifest(path))
     end
 
     test "it raises when path is invalid" do
       path = manifest_path("unknown.json")
 
       assert_raise RuntimeError, "cannot read manifest #{path}", fn ->
-        parse_manifest(path, :prod)
+        parse_manifest(path)
       end
     end
 
@@ -21,19 +21,14 @@ defmodule PhxLiveStorybook.AssetHelpersTest do
       path = manifest_path("corrupted_manifest.json")
 
       assert_raise RuntimeError, "cannot read manifest #{path}", fn ->
-        parse_manifest(path, :prod)
+        parse_manifest(path)
       end
-    end
-
-    test "it returns nil when not in production" do
-      path = manifest_path("cache_manifest.json")
-      assert is_nil(parse_manifest(path, :dev))
     end
   end
 
   describe "asset_file_name/3" do
     setup do
-      {:ok, manifest: manifest_path("cache_manifest.json") |> parse_manifest(:prod)}
+      {:ok, manifest: manifest_path("cache_manifest.json") |> parse_manifest()}
     end
 
     test "it returns fingerprinted asset name", %{manifest: manifest} do

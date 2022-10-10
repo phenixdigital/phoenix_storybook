@@ -154,12 +154,8 @@ defmodule PhxLiveStorybook do
       end
 
       def __mix_recompile__? do
-        if unquote(components_pattern) do
-          unquote(components_pattern) |> Path.wildcard() |> :erlang.md5() !=
-            @paths_hash
-        else
-          false
-        end
+        unquote(components_pattern) |> Path.wildcard() |> :erlang.md5() !=
+          @paths_hash
       end
     end
   end

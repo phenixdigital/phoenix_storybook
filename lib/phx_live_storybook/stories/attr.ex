@@ -5,8 +5,13 @@ defmodule PhxLiveStorybook.Stories.Attr do
 
   Attributes declaration will populate the Playground tab of your storybook, for each of your
   components.
+  """
 
-  Supported keys:
+  alias PhxLiveStorybook.Stories.Attr
+
+  require Logger
+
+  @typedoc """
   - `id`: the attribute id (required). Should match your component assign.
   - `type`: the attribute type (required). Must be one of:
     * `:any` - any term
@@ -26,10 +31,25 @@ defmodule PhxLiveStorybook.Stories.Attr do
      option enforces validation of the default value against the given list.
   - `doc`: a text documentation for this attribute.
   """
-
-  alias PhxLiveStorybook.Stories.Attr
-
-  require Logger
+  @type t :: %__MODULE__{
+          id: atom,
+          type:
+            :any
+            | :string
+            | :atom
+            | :boolean
+            | :integer
+            | :float
+            | :map
+            | :list
+            | :global
+            | module,
+          required: boolean,
+          default: any,
+          examples: [any] | nil,
+          values: [any] | nil,
+          doc: String.t() | nil
+        }
 
   @enforce_keys [:id, :type]
   defstruct [:id, :type, :doc, :default, :examples, :values, required: false]

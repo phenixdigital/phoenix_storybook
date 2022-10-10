@@ -7,8 +7,6 @@ defmodule PhxLiveStorybook.LayoutView do
   alias PhxLiveStorybook.AssetHelpers
   alias PhxLiveStorybook.{FolderEntry, StoryEntry}
 
-  @env Application.compile_env(:phx_live_storybook, :env)
-
   def render_breadcrumb(socket, story_path, opts \\ []) do
     assigns = %{
       breadcrumbs: breadcrumb(socket, story_path),
@@ -71,21 +69,25 @@ defmodule PhxLiveStorybook.LayoutView do
 
   defp asset_path(conn_or_socket, path) do
     assets_path = assets_path(conn_or_socket)
-    Path.join(assets_path, asset_file_name(path, @env))
+    Path.join(assets_path, asset_file_name(path))
   end
 
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phx_live_storybook))
   @external_resource @manifest_path
-  @manifest AssetHelpers.parse_manifest(@manifest_path, @env)
-  defp asset_file_name(asset, :prod) do
-    if String.ends_with?(asset, [".js", ".css"]) do
-      @manifest |> AssetHelpers.asset_file_name(asset, :prod)
-    else
-      asset
-    end
-  end
 
-  defp asset_file_name(path, _env), do: path
+  if Application.compile_env(:phx_live_storybook, :env) == :prod do
+    @manifest AssetHelpers.parse_manifest(@manifest_path)
+
+    defp asset_file_name(asset) do
+      if String.ends_with?(asset, [".js", ".css"]) do
+        @manifest |> AssetHelpers.asset_file_name(asset, :prod)
+      else
+        asset
+      end
+    end
+  else
+    defp asset_file_name(path), do: path
+  end
 
   defp breadcrumb(socket, story_path) do
     backend_module = backend_module(socket)

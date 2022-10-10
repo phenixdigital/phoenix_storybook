@@ -33,6 +33,15 @@ defmodule PhxLiveStorybook.Stories.Variation do
   ```
   """
 
+  @type t :: %__MODULE__{
+          id: atom,
+          description: String.t() | nil,
+          let: atom | nil,
+          slots: [String.t()],
+          attributes: map,
+          template: :unset | String.t() | nil | false
+        }
+
   @enforce_keys [:id]
   defstruct [:id, :description, :let, slots: [], attributes: %{}, template: :unset]
 end
@@ -47,7 +56,7 @@ defmodule PhxLiveStorybook.Stories.VariationGroup do
     def variations do
       [
         %VariationGroup{
-          id: colors,
+          id: :colors,
           description: "Different color buttons",
           variations: [
             %Variation{
@@ -68,6 +77,15 @@ defmodule PhxLiveStorybook.Stories.VariationGroup do
     end
   ```
   """
+
+  alias PhxLiveStorybook.Stories.Variation
+
+  @type t :: %__MODULE__{
+          id: atom,
+          description: String.t() | nil,
+          variations: [Variation.t()],
+          template: :unset | String.t() | nil | false
+        }
 
   @enforce_keys [:id, :variations]
   defstruct [:id, :description, :variations, template: :unset]
