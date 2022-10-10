@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.5 (not released)
+
+- **bugfix**: `TemplateHelpers.unique_variation_id/2` raises in playground.
+
 ## v0.4.4 (2022-10-10)
 
 - **feature**: [you can now customize your story div container](https://github.com/phenixdigital/phx_live_storybook/issues/135)
