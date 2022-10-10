@@ -32,14 +32,15 @@ defmodule PhxLiveStorybook.Index do
     @moduledoc false
 
     @type icon_provider :: :fa | :hero
+    @type icon ::
+            {icon_provider(), String.t()}
+            | {icon_provider(), String.t(), atom}
+            | {icon_provider(), String.t(), atom, String.t()}
 
-    @callback folder_name() :: String.t()
-    @callback folder_icon() ::
-                {icon_provider(), String.t()}
-                | {icon_provider(), String.t(), atom}
-                | {icon_provider(), String.t(), atom, String.t()}
+    @callback folder_name() :: nil | String.t()
+    @callback folder_icon() :: nil | icon()
     @callback folder_open?() :: boolean()
-    @callback entry(String.t()) :: [{atom(), String.t()}]
+    @callback entry(String.t()) :: [key: String.t() | icon()]
   end
 
   @doc """
