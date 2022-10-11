@@ -196,7 +196,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
           <%=  @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
-        <.print_doc doc={@doc}/>
+        <.print_doc doc={@doc} fa_plan={@fa_plan}/>
       </div>
 
       <%= render_content(@story.storybook_type(), @story, assigns) %>
@@ -207,15 +207,38 @@ defmodule PhxLiveStorybook.StoryLive do
   def render(assigns), do: ~H[]
 
   defp print_doc(assigns = %{doc: doc}) when is_binary(doc) do
-    ~H"""
-    <div class="lsb lsb-text-base md:lsb-text-lg lsb-leading-7 lsb-text-slate-700">
-      <%= @doc %>
-    </div>
-    """
+    ~H"<.print_doc doc={[@doc]}/>"
   end
 
   defp print_doc(assigns = %{doc: [_header | _]}) do
-    ~H[<.print_doc doc={hd(@doc)}/>]
+    ~H"""
+    <div class="lsb lsb-text-base md:lsb-text-lg lsb-leading-7 lsb-text-slate-700">
+      <%= @doc |> Enum.at(0) |> raw() %>
+    </div>
+    <%= if Enum.count(@doc) > 1 do %>
+      <a phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
+        id="read-more"
+        class="lsb lsb-py-2 lsb-inline-block lsb-text-slate-400 hover:lsb-text-indigo-700 lsb-cursor-pointer"
+      >
+        Read more
+        <.fa_icon name="caret-right" style={:thin} plan={@fa_plan} class="lsb-relative lsb-top-1px"/>
+      </a>
+      <a phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
+        id="read-less"
+        class="lsb lsb-pt-2 lsb-pb-4 lsb-hidden lsb-inline-block lsb-text-slate-400 hover:lsb-text-indigo-700 lsb-cursor-pointer"
+      >
+        Read less
+        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="lsb-relative lsb-top-1px"/>
+      </a>
+      <div id="doc-next" class="lsb-hidden lsb-space-y-4 ">
+        <%= for paragraph <- Enum.slice(@doc, 1..-1) do %>
+          <div class="lsb lsb-text-sm md:lsb-text-base lsb-leading-7 lsb-text-slate-700">
+            <%= raw(paragraph) %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    """
   end
 
   defp print_doc(assigns), do: ~H""

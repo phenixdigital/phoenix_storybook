@@ -79,7 +79,7 @@ defmodule PhxLiveStorybook.Stories.Doc do
   defp split_paragraphs(nil), do: []
 
   defp split_paragraphs(doc) do
-    String.split(doc, "\n\n")
+    doc |> String.split("\n\n") |> Enum.reject(&(String.trim(&1) == ""))
   end
 
   defp format(doc) do
