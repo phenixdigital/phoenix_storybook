@@ -220,15 +220,15 @@ defmodule PhxLiveStorybook.StoryLive do
         id="read-more"
         class="lsb lsb-py-2 lsb-inline-block lsb-text-slate-400 hover:lsb-text-indigo-700 lsb-cursor-pointer"
       >
+        <.fa_icon name="caret-right" style={:thin} plan={@fa_plan} class="lsb-relative lsb-top-px lsb-mr-1"/>
         Read more
-        <.fa_icon name="caret-right" style={:thin} plan={@fa_plan} class="lsb-relative lsb-top-1px"/>
       </a>
       <a phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
         id="read-less"
         class="lsb lsb-pt-2 lsb-pb-4 lsb-hidden lsb-inline-block lsb-text-slate-400 hover:lsb-text-indigo-700 lsb-cursor-pointer"
       >
+        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="lsb-mr-1"/>
         Read less
-        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="lsb-relative lsb-top-1px"/>
       </a>
       <div id="doc-next" class="lsb-hidden lsb-space-y-4 ">
         <%= for paragraph <- Enum.slice(@doc, 1..-1) do %>
