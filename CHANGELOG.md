@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.5.0 (not yet released)
+
+- **change (breaking!)**: [component description is no longer a function defined](https://github.com/phenixdigital/phx_live_storybook/issues/138)
+  in your story file but is fetched from your component `@doc` or your live_component `@moduledoc`
+  comments.
+
 ## v0.4.5 (2022-10-10)
 
 - **bugfix**: `TemplateHelpers.unique_variation_id/2` raises in playground if component has an `id` attr.

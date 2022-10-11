@@ -55,6 +55,29 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "page doc" do
+    test "with a valid doc it won't raise" do
+      mock = page_stub(doc: "documentation")
+      assert validate!(mock) == mock
+
+      mock = page_stub(doc: [])
+      assert validate!(mock) == mock
+
+      mock = page_stub(doc: ["paragraph", "paragraph"])
+      assert validate!(mock) == mock
+    end
+
+    test "with an invalid documentation it will raise" do
+      mock = page_stub(doc: :invalid)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "page doc must be a binary or a list of binary"
+
+      mock = page_stub(doc: [:invalid])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "page doc must be a binary or a list of binary"
+    end
+  end
+
   describe "component story base attributes" do
     test "with default mock it wont raise" do
       mock = component_stub()

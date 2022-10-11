@@ -2,6 +2,26 @@
 
 Basic component documentation is in `PhxLiveStorybook.Story`.
 
+## Documentation
+
+Component documentation is fetched from your component doc tags:
+
+- For a live_component, fetches `@moduledoc` content.
+- For a function component, fetches `@doc` content from the matching function.
+
+If you are deploying `phx_live_storybook` in production with an Elixir release, make sure your
+doc chunks are not [stripped out from the release.](https://hexdocs.pm/mix/Mix.Tasks.Release.html#module-customization)
+
+```elixir
+releases: [
+  my_app_web: [
+    strip_beams: [
+      keep: ["Docs"]
+    ]
+  ]
+]
+```
+
 ## Variation groups
 
 You may want to present different variations of a component in a single variation block.
