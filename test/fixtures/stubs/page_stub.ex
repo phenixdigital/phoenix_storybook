@@ -9,7 +9,7 @@ defmodule PhxLiveStorybook.PageStub do
   def storybook_type, do: :page
 
   @impl StoryBehaviour
-  def description, do: "description"
+  def doc, do: "description"
 
   @impl PageBehaviour
   def navigation, do: []

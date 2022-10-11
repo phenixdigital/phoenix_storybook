@@ -1,4 +1,10 @@
 defmodule LiveComponent do
+  @moduledoc """
+  LiveComponent first doc paragraph.
+  Still first paragraph.
+
+  Second paragraph.
+  """
   use Phoenix.LiveComponent
 
   def render(assigns) do

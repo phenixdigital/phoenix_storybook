@@ -30,7 +30,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
-               "live component description"
+               "LiveComponent first doc paragraph."
 
       # A folder is open
       refute has_element?(view, "#sidebar a", "Component (a_folder)")
@@ -62,7 +62,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     test "renders component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/component")
       assert html =~ "Component"
-      assert html =~ "component description"
+      assert html =~ "Component first doc paragraph."
       assert html =~ "Hello variation"
       assert html =~ "World variation"
     end
@@ -70,7 +70,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     test "renders live component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/live_component")
       assert html =~ "Live Component"
-      assert html =~ "live component description"
+      assert html =~ "LiveComponent first doc paragraph."
       assert html =~ "Hello variation"
       assert html =~ "World"
     end
@@ -78,7 +78,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     test "renders nested component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/a_folder/component")
       assert html =~ "Component"
-      assert html =~ "component description"
+      assert html =~ "Component first doc paragraph."
     end
 
     test "renders component story and navigate to source tab", %{conn: conn} do

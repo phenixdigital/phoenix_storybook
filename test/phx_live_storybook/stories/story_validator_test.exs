@@ -17,7 +17,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
 
     @tag :capture_log
     test "with a invalid story it returns an :error tuple" do
-      mock = component_stub(description: :invalid)
+      mock = component_stub(function: :invalid)
       {:error, message, _exception} = validate(mock)
       assert message =~ "Could not validate"
     end
@@ -29,10 +29,10 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       assert validate(mock) == {:ok, mock}
     end
 
-    test "with an invalid description it raises" do
-      mock = page_stub(description: :invalid)
+    test "with an invalid doc it raises" do
+      mock = page_stub(doc: :invalid)
       e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "story description must be a binary"
+      assert e.description =~ "page doc must be a binary or a list of binary"
     end
   end
 
@@ -55,21 +55,33 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "page doc" do
+    test "with a valid doc it won't raise" do
+      mock = page_stub(doc: "documentation")
+      assert validate!(mock) == mock
+
+      mock = page_stub(doc: [])
+      assert validate!(mock) == mock
+
+      mock = page_stub(doc: ["paragraph", "paragraph"])
+      assert validate!(mock) == mock
+    end
+
+    test "with an invalid documentation it will raise" do
+      mock = page_stub(doc: :invalid)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "page doc must be a binary or a list of binary"
+
+      mock = page_stub(doc: [:invalid])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "page doc must be a binary or a list of binary"
+    end
+  end
+
   describe "component story base attributes" do
     test "with default mock it wont raise" do
       mock = component_stub()
       assert validate!(mock)
-    end
-
-    test "with proper types it wont raise" do
-      mock = component_stub(description: "description")
-      assert validate!(mock)
-    end
-
-    test "with invalid types it will raise" do
-      mock = component_stub(description: :description)
-      e = assert_raise CompileError, fn -> validate!(mock) end
-      assert e.description =~ "story description must be a binary"
     end
   end
 

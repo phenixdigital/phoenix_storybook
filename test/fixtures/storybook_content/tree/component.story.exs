@@ -2,8 +2,6 @@ defmodule TreeStorybook.Component do
   use PhxLiveStorybook.Story, :component
   def function, do: &Component.component/1
 
-  def description, do: "component description"
-
   def attributes do
     [
       %Attr{
