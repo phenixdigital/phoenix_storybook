@@ -17,7 +17,7 @@ defmodule PhxLiveStorybook.Stories.Slot do
   require Logger
 
   @type t :: %__MODULE__{
-          id: String.t(),
+          id: atom(),
           doc: String.t(),
           required: boolean
         }
