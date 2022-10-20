@@ -222,7 +222,11 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
     <div class={"lsb lsb-relative"}>
-      <div class={"lsb lsb-min-h-32 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-px-2 lsb-bg-white lsb-shadow-sm #{if @upper_tab != :preview, do: "lsb-hidden"}"}>
+      <div class={[
+        "lsb lsb-min-h-32 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-bg-white lsb-shadow-sm",
+        if(@upper_tab != :preview, do: "lsb-hidden"),
+        if(@story.container() != :iframe, do: "lsb-px-2")
+      ]}>
         <%= if @story.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@story)}
