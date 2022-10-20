@@ -120,9 +120,11 @@ module.exports = {
 
 ## 4. Enabling iframe rendering
 
-As a last resort, if for whatever reason you cannot make your component live within the storybook
-(an example would be that your component needs to bind listeners on `document`), it is possible to
-enable iframe rendering, component per component.
+As a last resort, if for whatever reason you cannot make your component live within the storybook, 
+it is possible to enable iframe rendering, component per component.
+
+This could be required e.g. if you need to bind listeners on `document` or when 
+you want to make sure responsive css works as expected.
 
 Just add the `iframe` option to it.
 
