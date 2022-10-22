@@ -164,6 +164,28 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
     test "renders a variation with an evaluated attribute", %{all_types_component: component} do
       assert render_variation(component, :with_eval) |> rendered_to_string() =~ ~s|index_i: 25|
     end
+
+    test "it should not crash with a very large binary in a map" do
+      defmodule LargeBinaryStory do
+        use PhxLiveStorybook.Story, :component
+        def function, do: &Component.component/1
+
+        def variations do
+          [
+            %Variation{
+              id: :default,
+              attributes: %{
+                map: %{
+                  binary: :binary.copy(".", 10_000)
+                }
+              }
+            }
+          ]
+        end
+      end
+
+      render_variation(LargeBinaryStory, :default)
+    end
   end
 
   defp render_variation(story, variation_id) do
