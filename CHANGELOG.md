@@ -6,6 +6,7 @@
   in your story file but is fetched from your component `@doc` or your live_component `@moduledoc`
   comments.
 - **improvement**: [mix phx.gen.storybook now prints formatter instructions](https://github.com/phenixdigital/phx_live_storybook/issues/153)
+- **bugfix**: [a project without heroicons will no longer raise on the generated icon story](https://github.com/phenixdigital/phx_live_storybook/issues/152)
 
 ## v0.4.5 (2022-10-10)
 
