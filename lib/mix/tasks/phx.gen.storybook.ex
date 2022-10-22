@@ -84,7 +84,8 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
          true <- print_esbuild_instructions(web_module_name, app_name, opts),
          true <- print_tailwind_instructions(web_module_name, app_name, opts),
          true <- print_watchers_instructions(web_module_name, app_name, opts),
-         true <- print_live_reload_instructions(web_module_name, app_name, opts) do
+         true <- print_live_reload_instructions(web_module_name, app_name, opts),
+         true <- print_formatter_instructions(web_module_name, app_name, opts) do
       Mix.shell().info("You are all set! 🚀")
       Mix.shell().info("You can run mix phx.server and visit http://localhost:4000/storybook")
     else
@@ -199,6 +200,20 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
               #{IO.ANSI.bright()}~r"storybook/.*(exs)$"#{IO.ANSI.reset()}
             ]
           ]
+    """)
+  end
+
+  defp print_formatter_instructions(_web_module, _app_name, _opts) do
+    print_instructions("""
+      Add your storybook content to #{IO.ANSI.bright()}.formatter.exs#{IO.ANSI.reset()}
+
+        [
+          import_deps: [...],
+          inputs: [
+            ...
+            #{IO.ANSI.bright()}"storybook/**/*.exs"#{IO.ANSI.reset()}
+          ]
+        ]
     """)
   end
 

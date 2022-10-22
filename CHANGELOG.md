@@ -5,6 +5,7 @@
 - **change (breaking!)**: [component description is no longer a function defined](https://github.com/phenixdigital/phx_live_storybook/issues/138)
   in your story file but is fetched from your component `@doc` or your live_component `@moduledoc`
   comments.
+- **improvement**: [mix phx.gen.storybook now prints formatter instructions](https://github.com/phenixdigital/phx_live_storybook/issues/153)
 
 ## v0.4.5 (2022-10-10)
 
