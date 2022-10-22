@@ -176,7 +176,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
               id: :default,
               attributes: %{
                 map: %{
-                  binary: for(_ <- 0..10_000, do: ".", into: "")
+                  binary: :binary.copy(".", 10_000)
                 }
               }
             }
