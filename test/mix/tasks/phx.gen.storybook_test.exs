@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   @tag :capture_log
   test "mix phx.gen.storybook generates a working storybook", config do
     in_tmp_project(config.test, fn ->
-      for _ <- 1..5, do: send(self(), {:mix_shell_input, :yes?, true})
+      for _ <- 1..6, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run([])
 
       [{index, _}] = Code.compile_file("storybook/_root.index.exs")
@@ -48,13 +48,14 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :yes?, ~r|Add a new Tailwind build profile for.*css/storybook.css.*in.*config/config.exs.*|
       assert_shell_receive :yes?, ~r|Add a new.*endpoint watcher.*for your new Tailwind build profile in.*config/dev.exs.*|
       assert_shell_receive :yes?, ~r|Add a new.*live_reload pattern.*to your endpoint in.*config/dev.exs.*|
+      assert_shell_receive :yes?, ~r|Add your storybook content to.*\.formatter.exs.*|
     end)
   end
 
   @tag :capture_log
   test "mix phx.gen.storybook --no-tailwind generates a working storybook without tailwind", config do
     in_tmp_project(config.test, fn ->
-      for _ <- 1..3, do: send(self(), {:mix_shell_input, :yes?, true})
+      for _ <- 1..4, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run(["--no-tailwind"])
 
       assert_file("storybook/_root.index.exs")
@@ -77,6 +78,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
       assert_shell_receive :yes?, ~r|Add.*js/storybook.js.*as a new entry point to your esbuild args in .*config/config.exs.*|
       assert_shell_receive :yes?, ~r|Add a new.*live_reload pattern.*to your endpoint in.*config/dev.exs.*|
+      assert_shell_receive :yes?, ~r|Add your storybook content to.*\.formatter.exs.*|
     end)
   end
 
