@@ -37,7 +37,7 @@ defmodule PhxLiveStorybook.Components.Icon do
   end
 
   @doc """
-  HeroIcons icons for internal phx_live_storybook usage.
+  HeroIcons icons for internal phx_live_storybook usage. Requires :heroicons as a mix dependency.
 
   ## Examples
 
