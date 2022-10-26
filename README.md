@@ -9,6 +9,8 @@
 🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
 &nbsp; - &nbsp;
 🎓 [Sample repository](https://github.com/phenixdigital/phx_live_storybook_sample)
+&nbsp; - &nbsp;
+🍿 [Getting started video](https://www.youtube.com/watch?v=MTE7dLhkQ8Q)
 
 <!-- MDOC !-->
 
