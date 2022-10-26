@@ -1,7 +1,7 @@
 defmodule PhxLiveStorybook.Story do
   @moduledoc """
   A story designates any kind of content in your storybook. For now only following kinds of stories
-  are supported: `component`, `:live_component`, and `:page`.
+  are supported `:component`, `:live_component`, and `:page`.
 
   In order to populate your storybook, just create _story_ scripts under your content path, and
   implement their required behaviour.
