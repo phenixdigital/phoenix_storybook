@@ -46,6 +46,7 @@ defmodule PhxLiveStorybook.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 0.18"},
+      {:phoenix_view, "~> 2.0"},
       {:makeup_eex, "~> 0.1.0"},
       {:heroicons, "~> 0.5", optional: true},
       {:jason, "~> 1.3", optional: true},
