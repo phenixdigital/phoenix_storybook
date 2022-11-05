@@ -32,7 +32,7 @@ defmodule PhxLiveStorybook.Web do
     quote do
       @moduledoc false
       use Phoenix.LiveView,
-        layout: {PhxLiveStorybook.LayoutView, "live.html"}
+        layout: {PhxLiveStorybook.LayoutView, :live}
 
       import PhxLiveStorybook.Components.Icon
 
