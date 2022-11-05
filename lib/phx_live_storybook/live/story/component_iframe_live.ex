@@ -10,7 +10,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   alias PhxLiveStorybook.StoryNotFound
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, []), layout: {PhxLiveStorybook.LayoutView, "live_iframe.html"}}
+    {:ok, assign(socket, []), layout: {PhxLiveStorybook.LayoutView, :live_iframe}}
   end
 
   def handle_params(params = %{"story" => story_path}, _uri, socket) do
