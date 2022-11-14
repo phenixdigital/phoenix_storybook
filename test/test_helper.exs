@@ -37,6 +37,10 @@ defmodule PhxLiveStorybook.TestStorybook do
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+    ],
+    themes_strategies: [
+      sandbox_class: "theme-prefix",
+      assign: :theme
     ]
 end
 

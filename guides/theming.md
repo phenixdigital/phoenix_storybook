@@ -1,17 +1,53 @@
 # Theming components
 
-## 1. The problem
+## Theming Strategies
 
-The storybook allows you to apply different themes to your components. The selected theme is merged
-into the components assigns, which can then use it to apply matching styling rules.
+The storybook gives you different possibilities to apply a theme to your components. These
+possibilities are named _strategies_.
 
-While this is working great in the storybook, **you probably don't want to pass
-in your application code the same theme assign to all your components.**
+The following strategies are available:
 
-## 2. Store the theme in a Registry
+1. _sandbox class_: set your theme as a CSS class, on the sandbox container, with a custom prefix
+2. _assign_: pass the theme as an assign to your components, with a custom key.
+3. _function_: call a custom module/function along with the current theme.
+
+Here is how you can use these strategies. In your `storybook.ex`:
+
+```elixir
+use PhxLiveStorybook,
+  themes_strategies: [
+    sandbox_class: "prefix", # will set a class prefixed by `prefix-` on the sandbox container
+    assign: :theme,
+    function: {MyApp.ThemeHelper, :register_theme}
+  ]
+```
+
+If the `theme_strategies` key is undefined, the default `sandbox_class: "theme"` strategy is applied.
+
+## CSS theming
+
+By default, the storybook is applying a `theme-*` CSS class to your components/page containers and
+you should do as well to your application HTML body element.
+
+It will allow you to style raw HTML elements
+
+```css
+body.theme-colorful {
+  font-family: // ...
+}
+
+.theme-colorful h1 {
+  font-family: // ...
+  font-size: // ...
+}
+```
+
+## Using a Registry
+
+This chapter explain how you can leverage on a `Registry` with the _function_ theming strategy.
 
 An effective way to store the current theme setting so that it can be available to all your
-components, but still have different examples for different (concurrent) users is to associate it to
+components, but still have different values for different (concurrent) users is to associate it to
 the current LiveView pid.
 
 `Registry` is a native Elixir module that handles decentralized storage, linked to specific
@@ -55,8 +91,6 @@ defmodule Router do
 end
 ```
 
-## 3. Fetch the theme from the Registry
-
 Write a helper module, to be used from your components to fetch the current theme from the
 `Registry` and merge it in the component's assigns.
 
@@ -75,22 +109,4 @@ defmodule ThemeHelpers do
     Enum.find(pid_and_themes, fn {pid, _} -> pid == current_pid end)
   end
 end
-```
-
-## 4. CSS theming
-
-The storybook is applying a `theme-*` CSS class to your components/page containers and you should do
-as well to your application HTML body element.
-
-It will allow you to style raw HTML elements
-
-```css
-body.theme-colorful {
-  font-family: // ...
-}
-
-.theme-colorful h1 {
-  font-family: // ...
-  font-size: // ...
-}
 ```
