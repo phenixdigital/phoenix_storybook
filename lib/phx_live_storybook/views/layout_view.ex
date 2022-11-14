@@ -6,6 +6,7 @@ defmodule PhxLiveStorybook.LayoutView do
   alias Phoenix.LiveView.JS
   alias PhxLiveStorybook.AssetHelpers
   alias PhxLiveStorybook.{FolderEntry, StoryEntry}
+  alias PhxLiveStorybook.ThemeHelpers
 
   def render_breadcrumb(socket, story_path, opts \\ []) do
     assigns = %{
@@ -137,7 +138,12 @@ defmodule PhxLiveStorybook.LayoutView do
   end
 
   def sandbox_class(conn_or_socket, container, %{theme: theme}) do
-    ["theme-#{theme}" | main_sandbox_class(conn_or_socket, container)]
+    backend_module = backend_module(conn_or_socket)
+
+    [
+      ThemeHelpers.theme_sandbox_class(backend_module, theme)
+      | main_sandbox_class(conn_or_socket, container)
+    ]
   end
 
   defp main_sandbox_class(conn_or_socket, container) do

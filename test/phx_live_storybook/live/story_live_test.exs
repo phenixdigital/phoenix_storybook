@@ -225,7 +225,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
                {"div",
                 [
                   {"class",
-                   "theme-default lsb-sandbox lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px]"}
+                   "theme-prefix-default lsb-sandbox lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px]"}
                 ], _}
              ] = html
     end
@@ -237,7 +237,7 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       assert [
                {"div",
                 [
-                  {"class", "theme-default lsb-sandbox block"},
+                  {"class", "theme-prefix-default lsb-sandbox block"},
                   {"data-foo", "bar"}
                 ], _}
              ] = html
@@ -303,6 +303,16 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       |> render_change("navigate", %{"path" => "/storybook/component"})
 
       assert_patch(view, "/storybook/component", 200)
+    end
+  end
+
+  describe "theme strategies" do
+    test "theme is set on the sandbox with the default strategy", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component")
+      html = view |> element("#hello .lsb-sandbox") |> render() |> Floki.parse_fragment!()
+
+      assert [{"div", [{"class", classes}], _}] = html
+      assert classes =~ "theme-prefix-default"
     end
   end
 end

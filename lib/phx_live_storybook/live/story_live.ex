@@ -11,6 +11,7 @@ defmodule PhxLiveStorybook.StoryLive do
   alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
   alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
   alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
+  alias PhxLiveStorybook.ThemeHelpers
 
   import PhxLiveStorybook.NavigationHelpers
 
@@ -43,11 +44,14 @@ defmodule PhxLiveStorybook.StoryLive do
     end
   end
 
-  def handle_params(params = %{"story" => story_path}, _uri, socket) do
+  def handle_params(params = %{"story" => story_path}, _uri, socket = %{assigns: assigns}) do
     case load_story(socket, story_path) do
       {:ok, story} ->
         variation = current_variation(story.storybook_type(), story, params)
         story_entry = story_entry(socket, story_path)
+        theme = current_theme(params, socket)
+
+        ThemeHelpers.call_theme_function(assigns.backend_module, theme)
 
         {:noreply,
          assign(socket,
@@ -55,12 +59,12 @@ defmodule PhxLiveStorybook.StoryLive do
            story_load_exception: nil,
            story: story,
            story_entry: story_entry,
-           story_path: socket.assigns.backend_module.storybook_path(story),
+           story_path: assigns.backend_module.storybook_path(story),
            variation: variation,
            variation_id: if(variation, do: variation.id, else: nil),
            page_title: story_entry.name,
            tab: current_tab(params, story),
-           theme: current_theme(params, socket),
+           theme: theme,
            variation_extra_assigns: init_variation_extra_assigns(story.storybook_type(), story),
            playground_error: nil
          )
@@ -429,18 +433,26 @@ defmodule PhxLiveStorybook.StoryLive do
   end
 
   defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
+    extra_assigns = Map.get(assigns.variation_extra_assigns, {:single, variation_id}, %{})
+
     extra_assigns =
-      assigns.variation_extra_assigns
-      |> Map.get({:single, variation_id}, %{})
-      |> Map.put(:theme, assigns.theme)
+      case ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme) do
+        {assign_key, theme} -> Map.put(extra_assigns, assign_key, theme)
+        nil -> extra_assigns
+      end
 
     %{variation_id => extra_assigns}
   end
 
   defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
+    maybe_theme_assign = ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme)
+
     for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
         into: %{} do
-      {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
+      case maybe_theme_assign do
+        {assign_key, theme} -> {variation_id, Map.put(extra_assigns, assign_key, theme)}
+        _ -> {variation_id, extra_assigns}
+      end
     end
   end
 
@@ -462,6 +474,8 @@ defmodule PhxLiveStorybook.StoryLive do
       socket.assigns.playground_topic,
       {:set_theme, String.to_atom(theme)}
     )
+
+    ThemeHelpers.call_theme_function(socket.assigns.backend_module, theme)
 
     {:noreply,
      socket
