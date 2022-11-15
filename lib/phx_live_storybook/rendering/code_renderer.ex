@@ -148,11 +148,12 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   defp attributes_markup(_story, attributes) when map_size(attributes) == 0, do: ""
 
   defp attributes_markup(story, attributes) do
-    attributes_definition = if story, do: story.merged_attributes(), else: []
+    attributes_definitions = if story, do: story.merged_attributes(), else: []
     prefix = if story, do: " ", else: ""
 
-    prefix <>
-      Enum.map_join(attributes, " ", fn
+    attributes_markup =
+      attributes
+      |> Enum.map(fn
         {name, {:eval, val}} ->
           ~s|#{name}={#{val}}|
 
@@ -160,20 +161,21 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
           ~s|#{name}="#{val}"|
 
         {name, val} ->
-          if global_attribute?(attributes_definition, name) do
-            attributes_markup(val)
-          else
-            ~s|#{name}={#{inspect_val(val)}}|
+          case find_attribute_definitition(attributes_definitions, name) do
+            %Attr{type: :global} -> attributes_markup(val)
+            %Attr{type: :boolean} when val -> name
+            %Attr{type: :boolean} -> nil
+            _ -> ~s|#{name}={#{inspect_val(val)}}|
           end
       end)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.join(" ")
+
+    prefix <> attributes_markup
   end
 
-  defp global_attribute?(attributes_definition, attr_id) do
-    case Enum.find(attributes_definition, fn %Attr{id: id} -> id == attr_id end) do
-      nil -> false
-      %Attr{type: :global} -> true
-      %Attr{type: _} -> false
-    end
+  defp find_attribute_definitition(attributes_definitions, attr_id) do
+    Enum.find(attributes_definitions, fn %Attr{id: id} -> id == attr_id end)
   end
 
   defp template_attributes_markup(template) do

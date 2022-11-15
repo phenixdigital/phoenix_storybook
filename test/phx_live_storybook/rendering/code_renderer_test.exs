@@ -181,7 +181,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <.all_types_component label="default label" foo="bar" data-bar={42} toggle={false}>
+               <.all_types_component label="default label" foo="bar" data-bar={42}>
                  <p>will be displayed in inner block</p>
                  <:slot_thing>slot 1</:slot_thing>
                  <:slot_thing>slot 2</:slot_thing>
@@ -211,6 +211,19 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
     test "it renders a live component source", %{live_component: component} do
       source = CodeRenderer.render_component_source(component) |> rendered_to_string()
       assert source =~ ~r/<pre.*lsb highlight.*\/pre>/s
+    end
+  end
+
+  describe "render booleans with their shorthand notation" do
+    test "when true, the attribute is rendered, shorthand", %{all_types_component: component} do
+      code = render_variation_code(component, :toggle_true)
+      assert code =~ "toggle"
+      refute code =~ "toggle={true}"
+    end
+
+    test "when false, the attribute is not rendered", %{all_types_component: component} do
+      code = render_variation_code(component, :default)
+      refute code =~ "toggle"
     end
   end
 

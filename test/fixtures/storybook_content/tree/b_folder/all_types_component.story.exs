@@ -61,7 +61,17 @@ defmodule TreeStorybook.BFolder.AllTypesComponent do
         slots: [
           "<p>inner block</p>"
         ]
-      }
+      },
+      %Variation{
+        id: :toggle_true,
+        attributes: %{
+          label: "toggle true",
+          toggle: true
+        },
+        slots: [
+          "<p>inner block</p>"
+        ]
+      },
     ]
   end
 end
