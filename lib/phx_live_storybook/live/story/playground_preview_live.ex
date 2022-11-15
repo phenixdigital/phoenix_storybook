@@ -125,7 +125,11 @@ defmodule PhxLiveStorybook.Story.PlaygroundPreviewLive do
         {variation_id, Map.put(attributes, :theme, theme)}
       end
 
-    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variation_attributes)}
+    {:noreply,
+     socket
+     |> inc_counter()
+     |> assign(theme: theme)
+     |> assign(variations_attributes: variation_attributes)}
   end
 
   def handle_info({:set_variation, variation}, socket) do

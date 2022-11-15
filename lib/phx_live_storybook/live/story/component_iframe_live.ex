@@ -8,6 +8,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   alias PhxLiveStorybook.Story.PlaygroundPreviewLive
   alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
   alias PhxLiveStorybook.StoryNotFound
+  alias PhxLiveStorybook.ThemeHelpers
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, []), layout: {PhxLiveStorybook.LayoutView, :live_iframe}}
@@ -23,6 +24,8 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
             {:component_iframe_pid, self()}
           )
         end
+
+        ThemeHelpers.call_theme_function(socket.assigns.backend_module, params["theme"])
 
         {:noreply,
          socket
@@ -122,18 +125,26 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
   defp current_variation(_type, _story, _params), do: nil
 
   defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
+    extra_assigns = Map.get(assigns.extra_assigns, {:single, variation_id}, %{})
+
     extra_assigns =
-      assigns.extra_assigns
-      |> Map.get({:single, variation_id}, %{})
-      |> Map.put(:theme, assigns.theme)
+      case ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme) do
+        {assign_key, theme} -> Map.put(extra_assigns, assign_key, theme)
+        nil -> extra_assigns
+      end
 
     %{variation_id => extra_assigns}
   end
 
   defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
+    maybe_theme_assign = ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme)
+
     for {{^group_id, variation_id}, extra_assigns} <- assigns.extra_assigns,
         into: %{} do
-      {variation_id, Map.merge(extra_assigns, %{theme: assigns.theme})}
+      case maybe_theme_assign do
+        {assign_key, theme} -> {variation_id, Map.put(extra_assigns, assign_key, theme)}
+        _ -> {variation_id, extra_assigns}
+      end
     end
   end
 
