@@ -7,6 +7,7 @@
   comments.
 - **improvement**: [mix phx.gen.storybook now prints formatter instructions](https://github.com/phenixdigital/phx_live_storybook/issues/153)
 - **improvement**: [new theme strategies](https://github.com/phenixdigital/phx_live_storybook/issues/177). Theming guide has been updated.
+- **improvement**: [boolean attributes are rendered with their shorthand notation ](https://github.com/phenixdigital/phx_live_storybook/issues/169)
 - **bugfix**: [a project without heroicons will no longer raise on the generated icon story](https://github.com/phenixdigital/phx_live_storybook/issues/152)
 - **bugfix**: [fixed variation crash with a large binary in a map](https://github.com/phenixdigital/phx_live_storybook/pull/161)
 
