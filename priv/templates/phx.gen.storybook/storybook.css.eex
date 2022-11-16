@@ -4,6 +4,6 @@
  * See the https://hexdocs.pm/phx_live_storybook/sandboxing.html guide for more info.
  */
 
-.<%= schema.sandbox_class %> {
+.lsb-sandbox, .<%= schema.sandbox_class %> {
   font-family: ui-sans-serif, system-ui;
 }
