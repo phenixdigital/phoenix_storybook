@@ -26,6 +26,8 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   @doc false
   def run(argv) do
+    Mix.Task.run("app.start")
+
     opts = parse_opts(argv)
 
     if Mix.Project.umbrella?() do
@@ -39,9 +41,11 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     web_module = web_module()
     web_module_name = Module.split(web_module) |> List.last()
+    core_components_module = Module.concat([web_module, :CoreComponents])
     app_name = String.to_atom(Macro.underscore(web_module))
     app_folder = Path.join("lib", to_string(app_name))
     component_folder = "storybook/components"
+    core_components_folder = "storybook/core_components"
     page_folder = "storybook"
     js_folder = "assets/js"
     css_folder = "assets/css"
@@ -49,16 +53,20 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     schema = %{
       app: app_name,
       sandbox_class: String.replace(to_string(app_name), "_", "-"),
-      module: web_module
+      module: web_module,
+      core_components_module: core_components_module
     }
 
-    mapping = [
-      {"storybook.ex.eex", Path.join(app_folder, "storybook.ex")},
-      {"_root.index.exs", Path.join(page_folder, "_root.index.exs")},
-      {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")},
-      {"icon.story.exs", Path.join(component_folder, "icon.story.exs")},
-      {"storybook.js", Path.join(js_folder, "storybook.js")}
-    ]
+    mapping =
+      [
+        {"storybook.ex.eex", Path.join(app_folder, "storybook.ex")},
+        {"_root.index.exs", Path.join(page_folder, "_root.index.exs")},
+        {"_core_components.index.exs", Path.join(page_folder, "_core_components.index.exs")},
+        {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")},
+        {"icon.story.exs", Path.join(component_folder, "icon.story.exs")},
+        {"storybook.js", Path.join(js_folder, "storybook.js")}
+      ]
+      |> with_core_components(core_components_module, core_components_folder)
 
     mapping =
       if opts[:tailwind] == false do
@@ -91,6 +99,30 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     else
       _ -> Mix.shell().info("storybook setup aborted 🙁")
     end
+  end
+
+  defp with_core_components(mapping, module, folder) do
+    dir = Application.app_dir(:phx_live_storybook, @templates_folder)
+    stories = dir |> Path.join("/core_components/*.story.*") |> Path.wildcard()
+
+    for story_path <- stories,
+        component_defined?(story_path, module),
+        basename = Path.basename(story_path),
+        story_name = String.trim_trailing(basename, ".eex") do
+      {Path.join("core_components", basename), Path.join(folder, story_name)}
+    end ++
+      mapping
+  end
+
+  def component_defined?(story_path, module) do
+    function =
+      story_path
+      |> Path.basename()
+      |> String.split(".")
+      |> hd()
+      |> String.to_atom()
+
+    Code.ensure_loaded?(module) && function_exported?(module, function, 1)
   end
 
   defp web_module do

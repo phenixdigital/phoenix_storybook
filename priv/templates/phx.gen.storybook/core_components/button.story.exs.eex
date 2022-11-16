@@ -1,0 +1,14 @@
+defmodule Storybook.CoreComponents.Button do
+  use PhxLiveStorybook.Story, :component
+
+  def function, do: &<%= schema.core_components_module %>.button/1
+
+  def variations do
+    [
+      %Variation{
+        id: :default,
+        slots: ["Button"]
+      }
+    ]
+  end
+end
