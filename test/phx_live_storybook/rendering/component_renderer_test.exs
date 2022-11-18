@@ -186,6 +186,26 @@ defmodule PhxLiveStorybook.Rendering.ComponentRendererTest do
 
       render_variation(LargeBinaryStory, :default)
     end
+
+    test "it should not crash with a very long list" do
+      defmodule LongListStory do
+        use PhxLiveStorybook.Story, :component
+        def function, do: &Component.component/1
+
+        def variations do
+          [
+            %Variation{
+              id: :default,
+              attributes: %{
+                long_list: Enum.to_list(1..1_000)
+              }
+            }
+          ]
+        end
+      end
+
+      render_variation(LongListStory, :default)
+    end
   end
 
   defp render_variation(story, variation_id) do
