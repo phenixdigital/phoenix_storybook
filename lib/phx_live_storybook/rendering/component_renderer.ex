@@ -127,9 +127,14 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
 
   defp attributes_markup(attributes) do
     Enum.map_join(attributes, " ", fn
-      {name, {:eval, val}} -> ~s|#{name}={#{val}}|
-      {name, val} when is_binary(val) -> ~s|#{name}="#{val}"|
-      {name, val} -> ~s|#{name}={#{inspect(val, structs: false, limit: :infinity, printable_limit: :infinity)}}|
+      {name, {:eval, val}} ->
+        ~s|#{name}={#{val}}|
+
+      {name, val} when is_binary(val) ->
+        ~s|#{name}="#{val}"|
+
+      {name, val} ->
+        ~s|#{name}={#{inspect(val, structs: false, limit: :infinity, printable_limit: :infinity)}}|
     end)
   end
 
