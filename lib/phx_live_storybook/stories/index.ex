@@ -40,7 +40,7 @@ defmodule PhxLiveStorybook.Index do
     @callback folder_name() :: nil | String.t()
     @callback folder_icon() :: nil | icon()
     @callback folder_open?() :: boolean()
-    @callback entry(String.t()) :: [key: String.t() | icon()]
+    @callback entry(String.t()) :: keyword(String.t() | icon())
   end
 
   @doc """
