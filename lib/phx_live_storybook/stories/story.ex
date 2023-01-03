@@ -83,9 +83,9 @@ defmodule PhxLiveStorybook.Story do
   ```
   """
 
+  alias PhxLiveStorybook.Icon
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhxLiveStorybook.Stories.StoryComponentSource
-  alias PhxLiveStorybook.Icon
 
   defmodule StoryBehaviour do
     @moduledoc false
