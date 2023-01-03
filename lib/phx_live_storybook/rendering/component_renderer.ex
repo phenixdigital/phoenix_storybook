@@ -142,7 +142,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
     quoted_code = EEx.compile_string(heex, engine: HTMLEngine, caller: __ENV__)
 
     {evaluated, _} =
-      Code.eval_quoted(quoted_code, [assigns: []],
+      Code.eval_quoted(quoted_code, [assigns: %{}],
         requires: [Kernel],
         aliases: eval_quoted_aliases(opts, fun_or_mod),
         functions: eval_quoted_functions(opts, fun_or_mod)
