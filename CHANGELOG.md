@@ -10,6 +10,7 @@
 - **improvement**: [boolean attributes are rendered with their shorthand notation ](https://github.com/phenixdigital/phx_live_storybook/issues/169)
 - **bugfix**: [a project without heroicons will no longer raise on the generated icon story](https://github.com/phenixdigital/phx_live_storybook/issues/152)
 - **bugfix**: [fixed variation crash with a large binary in a map](https://github.com/phenixdigital/phx_live_storybook/pull/161)
+- **bugfix**: [fixed slots crash if rendered more than once ](https://github.com/phenixdigital/phx_live_storybook/issues/206)
 
 ## v0.4.5 (2022-10-10)
 
