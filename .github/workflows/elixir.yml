@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           mix deps.get
-          mix dialyzer —-plt
+          mix dialyzer —-plt --ignore-exit-status
 
       - name: Compilation
         run: mix compile --warnings-as-errors
