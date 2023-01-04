@@ -30,7 +30,7 @@ defmodule PhxLiveStorybook.Index do
 
   defmodule IndexBehaviour do
     @moduledoc false
-    alias PhxLiveStoryBook.Icon
+    alias PhxLiveStorybook.Components.Icon
 
     @callback folder_name() :: nil | String.t()
     @callback folder_icon() :: nil | Icon.t()
