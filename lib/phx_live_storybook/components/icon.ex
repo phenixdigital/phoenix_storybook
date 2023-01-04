@@ -2,13 +2,6 @@ defmodule PhxLiveStorybook.Components.Icon do
   @moduledoc false
   use PhxLiveStorybook.Web, :component
 
-  @type icon_provider :: :fa | :hero
-
-  @type t ::
-          {icon_provider(), String.t()}
-          | {icon_provider(), String.t(), atom}
-          | {icon_provider(), String.t(), atom, String.t()}
-
   @doc """
   FontAwesome icons for internal phx_live_storybook usage.
 
