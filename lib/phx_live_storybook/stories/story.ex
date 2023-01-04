@@ -71,8 +71,8 @@ defmodule PhxLiveStorybook.Story do
 
     def navigation do
       [
-        {:tab_one, "Tab One", "tab-icon"},
-        {:tab_two, "Tab Two", "tab-icon"}
+        {:tab_one, "Tab One", {:fa, "book"}},
+        {:tab_two, "Tab Two", {:fa, "cake", :solid}}
       ]
     end
 
@@ -83,6 +83,7 @@ defmodule PhxLiveStorybook.Story do
   ```
   """
 
+  alias PhxLiveStorybook.Icon
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhxLiveStorybook.Stories.StoryComponentSource
 
@@ -122,7 +123,7 @@ defmodule PhxLiveStorybook.Story do
   defmodule PageBehaviour do
     @moduledoc false
 
-    @callback navigation() :: [{atom(), String.t(), String.t()}]
+    @callback navigation() :: [{atom(), String.t(), Icon.t()}]
     @callback render(map()) :: %Phoenix.LiveView.Rendered{}
   end
 
