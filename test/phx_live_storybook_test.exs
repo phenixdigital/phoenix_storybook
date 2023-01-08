@@ -42,7 +42,7 @@ defmodule PhxLiveStorybookTest do
 
     test "with a tree hierarchy of contents it should return a hierarchy of components, correctly sorted" do
       [%FolderEntry{entries: entries}] = TreeStorybook.content_tree()
-      assert Enum.count(entries) == 9
+      assert Enum.count(entries) == 10
 
       assert %StoryEntry{name: "A Page", path: "/a_page", icon: {:fa, "page"}} =
                Enum.at(entries, 0)

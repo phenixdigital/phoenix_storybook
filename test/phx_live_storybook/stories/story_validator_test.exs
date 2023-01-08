@@ -1,9 +1,15 @@
 defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
   use ExUnit.Case, async: true
 
-  alias PhxLiveStorybook.Story.{ComponentBehaviour, LiveComponentBehaviour, PageBehaviour}
+  alias PhxLiveStorybook.Story.{
+    ComponentBehaviour,
+    LiveComponentBehaviour,
+    ExampleBehaviour,
+    PageBehaviour
+  }
+
   alias PhxLiveStorybook.Story.StoryBehaviour
-  alias PhxLiveStorybook.{ComponentStub, LiveComponentStub, PageStub}
+  alias PhxLiveStorybook.{ComponentStub, LiveComponentStub, ExampleStub, PageStub}
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhxLiveStorybook.Stories.StoryValidator
 
@@ -75,6 +81,26 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
       mock = page_stub(doc: [:invalid])
       e = assert_raise CompileError, fn -> validate!(mock) end
       assert e.description =~ "page doc must be a binary or a list of binary"
+    end
+  end
+
+  describe "example extra_sources" do
+    test "with valid extra_sources it wont raise" do
+      mock = example_stub(extra_sources: [])
+      assert validate!(mock) == mock
+
+      mock = example_stub(extra_sources: ["foo", "bar"])
+      assert validate!(mock) == mock
+    end
+
+    test "with an invalid navigation it will raise" do
+      mock = example_stub(extra_sources: "foo")
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "example extra_sources must be a list of binary"
+
+      mock = example_stub(extra_sources: [:foo, :bar])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "example extra_sources must be a list of binary"
     end
   end
 
@@ -1207,6 +1233,10 @@ defmodule PhxLiveStorybook.Stories.StoryValidatorTest do
 
   defp page_stub(stubs \\ []) do
     create_stub([StoryBehaviour, PageBehaviour], PageStub, stubs)
+  end
+
+  defp example_stub(stubs) do
+    create_stub([StoryBehaviour, ExampleBehaviour], ExampleStub, stubs)
   end
 
   defp create_stub(behaviours, stub, stubs) do
