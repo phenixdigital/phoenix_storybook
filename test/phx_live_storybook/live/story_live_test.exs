@@ -262,6 +262,26 @@ defmodule PhxLiveStorybook.StoryLiveTest do
     end
   end
 
+  describe "example rendering" do
+    test "renders an example story", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/storybook/examples/example")
+      assert html =~ "Example story"
+      assert html =~ "Example template"
+    end
+
+    test "renders an example story main source tab", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/examples/example")
+      html = view |> element("a", "example.story.ex") |> render_click()
+      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
+    end
+
+    test "renders an example story extra source tab", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/examples/example")
+      html = view |> element("a", "example.html.heex") |> render_click()
+      assert html =~ ~r/Example.*template/
+    end
+  end
+
   describe "search modal" do
     test "filters the search list based on user input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_page")

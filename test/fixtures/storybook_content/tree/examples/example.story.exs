@@ -1,6 +1,8 @@
 defmodule TreeStorybook.Examples.Example do
   use PhxLiveStorybook.Story, :example
 
+  def doc, do: "Example story"
+
   def extra_sources do
     [
       "./example_html.ex",
