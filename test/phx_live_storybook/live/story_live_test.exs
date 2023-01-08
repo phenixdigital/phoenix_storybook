@@ -273,6 +273,9 @@ defmodule PhxLiveStorybook.StoryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/examples/example")
       html = view |> element("a", "example.story.ex") |> render_click()
       assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
+      refute html =~ ~r/extra_sources/
+      refute html =~ ~r/doc/
+      refute html =~ ~r/PhxLiveStorybook/
     end
 
     test "renders an example story extra source tab", %{conn: conn} do

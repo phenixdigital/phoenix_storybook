@@ -450,7 +450,7 @@ defmodule PhxLiveStorybook.StoryLive do
   defp render_content(:example, assigns = %{tab: :source}) do
     ~H"""
     <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
-      <%= @story.__source__() |> CodeRenderer.render_source() |> to_raw_html() %>
+      <%= @story.__source__() |> remove_example_code() |> CodeRenderer.render_source() |> to_raw_html() %>
     </div>
     """
   end
@@ -469,6 +469,17 @@ defmodule PhxLiveStorybook.StoryLive do
         </div>
         """
     end
+  end
+
+  # removing Storybook's specific not useful while reading example's source code.
+  defp remove_example_code(code) do
+    code
+    # removing specifc storybook use
+    |> String.replace(~r|use\s+PhxLiveStorybook\.Story\s*,\s*:example|, "use Phoenix.LiveView")
+    # removing multiline doc and extra_sources definition
+    |> String.replace(~r/def\s+(doc|extra_sources)\s*,\s*do:((?!end).)*end\s*/s, "")
+    # removing inline doc and extra_sources definition
+    |> String.replace(~r/def\s+(doc|extra_sources)\s+do:((?!end|def).)*/s, "")
   end
 
   defp to_raw_html(heex) do
