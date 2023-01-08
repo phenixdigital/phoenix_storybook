@@ -100,16 +100,21 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   Renders source of a component story.
   Returns a rendered HEEx template.
   """
-  def render_component_source(story, assigns \\ %{__changed__: %{}}) do
-    if source = story.__component_source__() do
-      assigns = assign(assigns, source: source)
+  def render_component_source(story) do
+    render_source(story.__component_source__())
+  end
 
-      ~H"""
-      <pre class={pre_class()}>
-      <%= format_elixir(@source) %>
-      </pre>
-      """
-    end
+  def render_source(source, assigns \\ %{__changed__: %{}})
+  def render_source(nil, _assigns), do: nil
+
+  def render_source(source, assigns) do
+    assigns = assign(assigns, source: source)
+
+    ~H"""
+    <pre class={pre_class()}>
+    <%= format_elixir(@source) %>
+    </pre>
+    """
   end
 
   defp pre_class do

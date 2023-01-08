@@ -31,6 +31,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
       :component -> validate_component!(story)
       :live_component -> validate_component!(story)
       :page -> validate_page!(story)
+      :example -> validate_example!(story)
     end
   end
 
@@ -38,6 +39,13 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
     file_path = story.__info__(:compile)[:source]
     validate_page_doc!(file_path, story)
     validate_page_navigation!(file_path, story)
+    story
+  end
+
+  defp validate_example!(story) do
+    file_path = story.__info__(:compile)[:source]
+    validate_page_doc!(file_path, story)
+    validate_example_extra_sources!(file_path, story)
     story
   end
 
@@ -96,7 +104,7 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
 
   defp validate_page_navigation!(file_path, story) do
     msg = "page navigation must be a list of {atom, binary, binary} or {atom, binary}"
-    validate_type!(file_path, story.navigation(), [:list], msg)
+    validate_type!(file_path, story.navigation(), :list, msg)
 
     for nav <- story.navigation() do
       unless match_attr_type?(nav, {:tuple, 2}) do
@@ -110,6 +118,15 @@ defmodule PhxLiveStorybook.Stories.StoryValidator do
       if tuple_size(nav) == 3 do
         validate_icon!(file_path, elem(nav, 2))
       end
+    end
+  end
+
+  defp validate_example_extra_sources!(file_path, story) do
+    msg = "example extra_sources must be a list of binary"
+    validate_type!(file_path, story.extra_sources(), :list, msg)
+
+    for source <- story.extra_sources() do
+      validate_type!(file_path, source, :string, msg)
     end
   end
 

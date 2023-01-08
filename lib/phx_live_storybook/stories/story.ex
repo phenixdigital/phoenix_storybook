@@ -85,7 +85,7 @@ defmodule PhxLiveStorybook.Story do
 
   alias PhxLiveStorybook.Components.Icon
   alias PhxLiveStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
-  alias PhxLiveStorybook.Stories.StoryComponentSource
+  alias PhxLiveStorybook.Stories.StorySource
 
   defmodule StoryBehaviour do
     @moduledoc false
@@ -127,6 +127,12 @@ defmodule PhxLiveStorybook.Story do
     @callback render(map()) :: %Phoenix.LiveView.Rendered{}
   end
 
+  defmodule ExampleBehaviour do
+    @moduledoc false
+
+    @callback extra_sources() :: [String.t()]
+  end
+
   @doc false
   def live_component, do: component_quote(true)
 
@@ -137,7 +143,7 @@ defmodule PhxLiveStorybook.Story do
     quote do
       @behaviour StoryBehaviour
       @behaviour unquote(component_behaviour(live?))
-      @before_compile StoryComponentSource
+      @before_compile StorySource
 
       import Phoenix.Component
       alias Phoenix.LiveView.JS
@@ -197,8 +203,7 @@ defmodule PhxLiveStorybook.Story do
 
       @behaviour StoryBehaviour
       @behaviour PageBehaviour
-
-      @before_compile StoryComponentSource
+      @before_compile StorySource
 
       @impl StoryBehaviour
       def storybook_type, do: :page
@@ -213,6 +218,30 @@ defmodule PhxLiveStorybook.Story do
       def render(_assigns), do: false
 
       defoverridable doc: 0, navigation: 0, render: 1
+    end
+  end
+
+  @doc false
+  def example do
+    quote do
+      use Phoenix.LiveView
+
+      import Phoenix.Component
+
+      @behaviour StoryBehaviour
+      @behaviour ExampleBehaviour
+      @before_compile StorySource
+
+      @impl StoryBehaviour
+      def storybook_type, do: :example
+
+      @impl StoryBehaviour
+      def doc, do: nil
+
+      @impl ExampleBehaviour
+      def extra_sources, do: []
+
+      defoverridable doc: 0, extra_sources: 0
     end
   end
 

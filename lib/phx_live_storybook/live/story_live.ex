@@ -129,6 +129,7 @@ defmodule PhxLiveStorybook.StoryLive do
 
   defp default_tab(:component, _story_module), do: :variations
   defp default_tab(:live_component, _story_module), do: :variations
+  defp default_tab(:example, _story_module), do: :example
 
   defp default_tab(:page, story_module) do
     case story_module.navigation() do
@@ -185,7 +186,7 @@ defmodule PhxLiveStorybook.StoryLive do
   end
 
   def render(assigns = %{story: story}) do
-    assigns = assign(assigns, :doc, story.doc())
+    assigns = assign(assigns, story: story, doc: story.doc())
 
     ~H"""
     <div class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="story-live" phx-hook="StoryHook">
@@ -203,7 +204,7 @@ defmodule PhxLiveStorybook.StoryLive do
         <.print_doc doc={@doc} fa_plan={@fa_plan}/>
       </div>
 
-      <%= render_content(@story.storybook_type(), @story, assigns) %>
+      <%= render_content(@story.storybook_type(), assigns) %>
     </div>
     """
   end
@@ -253,13 +254,29 @@ defmodule PhxLiveStorybook.StoryLive do
         [
           {:variations, "Stories", {:fa, "eye", :regular}},
           {:playground, "Playground", {:fa, "dice", :regular}},
-          {:source, "Source", {:fa, "file-code", :regular}}
+          {:source, "Source", source_icon()}
         ]
+
+      :example ->
+        navigation = [
+          {:example, "Example", {:fa, "lightbulb", :regular}},
+          {:source, Path.basename(story.__file_path__()), source_icon()}
+        ]
+
+        source_tabs =
+          for source <- story.extra_sources() do
+            name = source |> Path.basename()
+            {String.to_atom(source), name, source_icon()}
+          end
+
+        navigation ++ source_tabs
 
       :page ->
         story.navigation()
     end
   end
+
+  defp source_icon, do: {:fa, "file-code", :regular}
 
   defp render_navigation_tabs([], assigns), do: ~H""
 
@@ -314,13 +331,12 @@ defmodule PhxLiveStorybook.StoryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp render_content(type, story, assigns = %{tab: :variations})
+  defp render_content(type, assigns = %{tab: :variations})
        when type in [:component, :live_component] do
     assigns =
       assign(assigns,
-        story: story,
         sandbox_attributes:
-          case story.container() do
+          case assigns.story.container() do
             {:div, opts} -> assigns_to_attributes(opts, [:class])
             _ -> []
           end
@@ -330,7 +346,7 @@ defmodule PhxLiveStorybook.StoryLive do
     <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               extra_attributes = variation_extra_attributes(variation, assigns),
-              rendering_context = RenderingContext.build(story, variation, extra_attributes) do %>
+              rendering_context = RenderingContext.build(assigns.story, variation, extra_attributes) do %>
         <div id={anchor_id(variation)} class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
           <!-- Variation description -->
@@ -383,10 +399,8 @@ defmodule PhxLiveStorybook.StoryLive do
     """
   end
 
-  defp render_content(type, story, assigns = %{tab: :source})
+  defp render_content(type, assigns = %{tab: :source})
        when type in [:component, :live_component] do
-    assigns = assign(assigns, :story, story)
-
     ~H"""
     <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
       <%= @story |> CodeRenderer.render_component_source() |> to_raw_html() %>
@@ -394,13 +408,11 @@ defmodule PhxLiveStorybook.StoryLive do
     """
   end
 
-  defp render_content(type, story_module, assigns = %{tab: :playground})
+  defp render_content(type, assigns = %{tab: :playground})
        when type in [:component, :live_component] do
-    assigns = assign(assigns, :story_module, story_module)
-
     ~H"""
     <.live_component module={Playground} id="playground"
-      story={@story_module} story_path={@story_path} backend_module={@backend_module}
+      story={@story} story_path={@story_path} backend_module={@backend_module}
       variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
@@ -411,18 +423,52 @@ defmodule PhxLiveStorybook.StoryLive do
     """
   end
 
-  defp render_content(type, _story, _assigns = %{tab: tab})
+  defp render_content(type, _assigns = %{tab: tab})
        when type in [:component, :live_component],
        do: raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
 
-  defp render_content(:page, story, assigns) do
-    assigns = assign(assigns, :story, story)
-
+  defp render_content(:page, assigns) do
     ~H"""
     <div class={LayoutView.sandbox_class(@socket, {:div, class: "lsb lsb-pb-12"}, assigns)}>
       <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme, connect_params: @connect_params}) |> to_raw_html() %>
     </div>
     """
+  end
+
+  defp render_content(:example, assigns = %{tab: :example}) do
+    theme = Map.get(assigns, :theme)
+
+    live_render(assigns.socket, assigns.story,
+      id: "example-#{theme}",
+      session: %{"theme" => theme},
+      container:
+        {:div,
+         class: LayoutView.sandbox_class(assigns.socket, {:div, class: "lsb lsb-pb-12"}, assigns)}
+    )
+  end
+
+  defp render_content(:example, assigns = %{tab: :source}) do
+    ~H"""
+    <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
+      <%= @story.__source__() |> CodeRenderer.render_source() |> to_raw_html() %>
+    </div>
+    """
+  end
+
+  defp render_content(:example, assigns = %{story: story, tab: source_path}) do
+    case Map.get(story.__extra_sources__(), to_string(source_path)) do
+      nil ->
+        ~H[]
+
+      source ->
+        assigns = assign(assigns, :source, source)
+
+        ~H"""
+        <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
+          <%= @source |> CodeRenderer.render_source() |> to_raw_html() %>
+        </div>
+        """
+    end
   end
 
   defp to_raw_html(heex) do
