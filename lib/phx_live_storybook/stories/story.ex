@@ -81,6 +81,40 @@ defmodule PhxLiveStorybook.Story do
     end
   end
   ```
+
+  ### Example
+
+  An example is a real-world UI showcasing how your components can be used and mixed in complex UI
+  interfaces.
+
+  Examples ares rendered as a child LiveView, so you can implement `mount/3`, `render/1` or any
+  `handle_event/3` callback. Unfortunately `handle_params/3` cannot be defined in a child LiveView.
+
+  By default, your example story's source code will be shown in a dedicated tab. But you can show
+  additional files source code by implementing the `extra_sources/0` function which should return a
+  list of relative paths to your example related files.
+
+  ```elixir
+  # storybook/my_example.exs
+  defmodule MyAppWeb.Storybook.MyPage do
+    use PhxLiveStorybook.Story, :example
+
+    def doc, do: "My page description"
+
+    def extra_sources do
+      [
+        "./template.html.heex",
+        "./my_page_html.ex"
+      ]
+    end
+
+    def mount(_, _, socket), do: {:ok, socket}
+
+    def render(assigns) do
+      ~H"<div>Your HEEX template</div>"
+    end
+  end
+  ```
   """
 
   alias PhxLiveStorybook.Components.Icon

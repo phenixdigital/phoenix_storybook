@@ -92,8 +92,6 @@ of _stories_:
 - **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
 - **examples**: to show how your components can be used and mixed in real UI pages.
 
-_As of `0.4.0`, only component and page stories are available._
-
 Stories are described as Elixir scripts (`.story.exs`) created under your `:content_path` folder.
 Feel free to organize them in sub-folders, as the hierarchy will be respected in your storybook
 sidebar.
