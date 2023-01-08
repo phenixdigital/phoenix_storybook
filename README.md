@@ -37,7 +37,7 @@ Three kinds of stories are supported:
 
 - `component` to describe your stateless function components or your live_components.
 - `page` to write & document UI guidelines, or whatever content you want.
-- `example` to show how your components can be used and mixed in real UI pages. (not available now)
+- `example` to show how your components can be used and mixed in real UI pages.
 
 ## Installation
 

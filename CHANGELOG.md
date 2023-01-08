@@ -5,6 +5,7 @@
 - **change (breaking!)**: [component description is no longer a function defined](https://github.com/phenixdigital/phx_live_storybook/issues/138)
   in your story file but is fetched from your component `@doc` or your live_component `@moduledoc`
   comments.
+- **feature**: [support for Example stories](https://github.com/phenixdigital/phx_live_storybook/issues/213)
 - **improvement**: [mix phx.gen.storybook now prints formatter instructions](https://github.com/phenixdigital/phx_live_storybook/issues/153)
 - **improvement**: [new theme strategies](https://github.com/phenixdigital/phx_live_storybook/issues/177). Theming guide has been updated.
 - **improvement**: [boolean attributes are rendered with their shorthand notation ](https://github.com/phenixdigital/phx_live_storybook/issues/169)
