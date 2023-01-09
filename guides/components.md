@@ -146,7 +146,7 @@ In template, you can pass some extra attributes to your variation. Just add them
 
 ```elixir
 """
-<.form_for for={:user} let={f}>
+<.form :let={f} for={:user}>
   <.lsb-variation form={f}/>
 </.form>
 """
@@ -287,12 +287,12 @@ your variation.
   },
   slots: [
     """
-    <:col let={user} label="First name">
+    <:col :let={user} label="First name">
       <%= user.first_name %>
     </:col>
     """,
     """
-    <:col let={user} label="Last name">
+    <:col :let={user} label="Last name">
       <%= user.last_name %>
     </:col>
     """

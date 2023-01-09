@@ -294,7 +294,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do
     ~H"""
-    <.form for={:playground} let={f} id={form_id(@story)} phx-change={"playground-change"} phx-target={@myself} class="lsb-text-gray-600 ">
+    <.form :let={f} for={:playground} id={form_id(@story)} phx-change={"playground-change"} phx-target={@myself} class="lsb-text-gray-600 ">
       <div class="lsb lsb-flex lsb-flex-col lsb-mb-2">
         <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
           <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
@@ -377,7 +377,7 @@ defmodule PhxLiveStorybook.Story.Playground do
       </div>
     </.form>
     <%= unless Enum.empty?(@story.merged_attributes()) do %>
-      <.form let={f} for={:variation} id="variation-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
+      <.form :let={f} for={:variation} id="variation-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
         <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
         <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
             class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",

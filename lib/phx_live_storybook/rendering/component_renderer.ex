@@ -123,7 +123,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   defp let_markup(nil), do: ""
-  defp let_markup(let), do: "let={#{to_string(let)}}"
+  defp let_markup(let), do: ":let={#{to_string(let)}}"
 
   defp attributes_markup(attributes) do
     Enum.map_join(attributes, " ", fn
@@ -139,7 +139,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   defp render_component_heex(fun_or_mod, heex, opts) do
-    quoted_code = EEx.compile_string(heex, engine: HTMLEngine, caller: __ENV__)
+    quoted_code = EEx.compile_string(heex, engine: HTMLEngine, caller: __ENV__, source: heex)
 
     {evaluated, _} =
       Code.eval_quoted(quoted_code, [assigns: %{}],

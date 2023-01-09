@@ -21,13 +21,12 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   use Mix.Task
 
+  @requirements ["app.config"]
   @templates_folder "priv/templates/phx.gen.storybook"
   @switches [tailwind: :boolean]
 
   @doc false
   def run(argv) do
-    Mix.Task.run("app.start")
-
     opts = parse_opts(argv)
 
     if Mix.Project.umbrella?() do
