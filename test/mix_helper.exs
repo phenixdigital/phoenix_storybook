@@ -5,7 +5,7 @@ defmodule PhxLiveStorybook.MixHelper do
   import ExUnit.Assertions
 
   def tmp_path do
-    Path.expand("../../tmp", __DIR__)
+    Path.expand("../tmp", __DIR__)
   end
 
   defp random_string(len) do
@@ -13,20 +13,22 @@ defmodule PhxLiveStorybook.MixHelper do
   end
 
   def in_tmp(which, function) do
-    path = Path.join([tmp_path(), random_string(10), to_string(which)])
+    tmp_dir = Path.join([tmp_path(), random_string(10)])
+    path = Path.join([tmp_dir, to_string(which)])
 
     try do
       File.rm_rf!(path)
       File.mkdir_p!(path)
       File.cd!(path, function)
     after
-      File.rm_rf!(path)
+      File.rm_rf!(tmp_dir)
     end
   end
 
   def in_tmp_project(which, function) do
     conf_before = Application.get_env(:phoenix, :generators) || []
-    path = Path.join([tmp_path(), random_string(10), to_string(which)])
+    tmp_dir = Path.join([tmp_path(), random_string(10)])
+    path = Path.join([tmp_dir, to_string(which)])
 
     try do
       File.rm_rf!(path)
@@ -37,7 +39,7 @@ defmodule PhxLiveStorybook.MixHelper do
         function.()
       end)
     after
-      File.rm_rf!(path)
+      File.rm_rf!(tmp_dir)
       Application.put_env(:phoenix, :generators, conf_before)
     end
   end
