@@ -22,11 +22,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       [{page, _}] = Code.compile_file("storybook/welcome.story.exs")
       assert page.storybook_type() == :page
 
-      [{story, _}] = Code.compile_file("storybook/components/icon.story.exs")
-      assert story.storybook_type() == :component
-
       [{backend, _}] = Code.compile_file("lib/phx_live_storybook_web/storybook.ex")
-      assert backend.storybook_path(story) == "/components/icon"
       assert backend.config(:otp_app) == :phx_live_storybook_web
       assert backend.config(:sandbox_class) == "phx-live-storybook-web"
 
@@ -40,7 +36,6 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
       assert_shell_receive :info, ~r|creating storybook/_core_components.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
-      assert_shell_receive :info, ~r|creating storybook/components/icon.story.exs|
       assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
@@ -61,7 +56,6 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_file("storybook/_root.index.exs")
       assert_file("storybook/_core_components.index.exs")
       assert_file("storybook/welcome.story.exs")
-      assert_file("storybook/components/icon.story.exs")
       assert_file("lib/phx_live_storybook_web/storybook.ex")
 
       assert_file("assets/js/storybook.js")
@@ -74,7 +68,6 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
       assert_shell_receive :info, ~r|creating storybook/_core_components.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
-      assert_shell_receive :info, ~r|creating storybook/components/icon.story.exs|
       assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
