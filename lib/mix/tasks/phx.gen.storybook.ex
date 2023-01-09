@@ -9,12 +9,10 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   The generated files will contain:
 
-    * the storybook backend in `lib/my_app_web/storybook.ex`
-    * an index file in `storybook/_root.index.exs`
-    * a welcome page in `storybook/welcome.story.exs`
-    * an icon component in `storybook/components/icon.story.exs`
-    * a custom js in `assets/js/storybook.js`
-    * a custom css in `assets/css/storybook.css`
+    * a storybook backend in `lib/my_app_web/storybook.ex`
+    * a custom js file in `assets/js/storybook.js`
+    * a custom css file in `assets/css/storybook.css`
+    * scaffolding including example stories for your own storybook in `storybook/`
 
   The generator supports the `--no-tailwind` flag if you want to skip the TailwindCSS specific bit.
   """
@@ -43,7 +41,6 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     core_components_module = Module.concat([web_module, :CoreComponents])
     app_name = String.to_atom(Macro.underscore(web_module))
     app_folder = Path.join("lib", to_string(app_name))
-    component_folder = "storybook/components"
     core_components_folder = "storybook/core_components"
     page_folder = "storybook"
     js_folder = "assets/js"
@@ -62,7 +59,6 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
         {"_root.index.exs", Path.join(page_folder, "_root.index.exs")},
         {"_core_components.index.exs", Path.join(page_folder, "_core_components.index.exs")},
         {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")},
-        {"icon.story.exs", Path.join(component_folder, "icon.story.exs")},
         {"storybook.js", Path.join(js_folder, "storybook.js")}
       ]
       |> with_core_components(core_components_module, core_components_folder)
