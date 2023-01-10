@@ -272,7 +272,7 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
-      <.form let={f} for={:navigation} id={"#{Macro.underscore(@story)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
+      <.form :let={f} for={:navigation} id={"#{Macro.underscore(@story)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
         <%= select f, :tab, navigation_select_options(@tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
       </.form>
 

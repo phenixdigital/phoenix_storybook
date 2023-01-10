@@ -75,7 +75,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <.let_component let={entry} stories={["foo", "bar", "qix"]}>
+               <.let_component :let={entry} stories={["foo", "bar", "qix"]}>
                  **<%= entry %>**
                </.let_component>
                """)
@@ -87,7 +87,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <.live_component module={LetLiveComponent} let={entry} stories={["foo", "bar", "qix"]}>
+               <.live_component module={LetLiveComponent} :let={entry} stories={["foo", "bar", "qix"]}>
                  **<%= entry %>**
                </.live_component>
                """)

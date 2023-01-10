@@ -146,7 +146,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRenderer do
   end
 
   defp let_markup(nil), do: ""
-  defp let_markup(let), do: " let={#{to_string(let)}}"
+  defp let_markup(let), do: " :let={#{to_string(let)}}"
 
   defp attributes_markup(story \\ nil, attributes)
 

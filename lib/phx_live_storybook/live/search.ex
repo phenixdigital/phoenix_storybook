@@ -54,7 +54,7 @@ defmodule PhxLiveStorybook.Search do
           phx-click-away={JS.dispatch("lsb:close-search")}
           class="lsb lsb-opacity-0 lsb-scale-90 lsb-mx-auto lsb-max-w-xl lsb-mt-16 lsb-transform lsb-divide-y lsb-divide-gray-100 lsb-overflow-hidden lsb-rounded-xl lsb-bg-white lsb-shadow-2xl lsb-transition-all">
 
-          <.form let={f} for={:search} phx-debounce={500} id="search-form" class="lsb lsb-relative">
+          <.form :let={f} for={:search} phx-debounce={500} id="search-form" class="lsb lsb-relative">
             <.fa_icon style={:light} name="search" plan={@fa_plan}
               class="lsb-pointer-events-none lsb-absolute lsb-top-3.5 lsb-left-4 lsb-h-5 lsb-w-5 lsb-text-gray-400"
             />
