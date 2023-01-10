@@ -79,6 +79,9 @@ defmodule PhxLiveStorybook.Router do
             PhxLiveStorybook.Router.__options__(opts, path, session_name_iframe_opt, :root_iframe)
 
           live_session session_name, session_opts do
+            live("/visual_tests", PhxLiveStorybook.VisualTestLive, :range, route_opts)
+            live("/visual_tests/*story", PhxLiveStorybook.VisualTestLive, :show, route_opts)
+
             live(
               "/iframe/*story",
               PhxLiveStorybook.Story.ComponentIframeLive,

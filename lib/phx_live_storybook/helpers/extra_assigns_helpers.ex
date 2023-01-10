@@ -2,6 +2,46 @@ defmodule PhxLiveStorybook.ExtraAssignsHelpers do
   @moduledoc false
 
   alias PhxLiveStorybook.Stories.Attr
+  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
+  alias PhxLiveStorybook.ThemeHelpers
+
+  def init_variation_extra_assigns(type, story) when type in [:component, :live_component] do
+    extra_assigns =
+      for %Variation{id: variation_id} <- story.variations(),
+          into: %{},
+          do: {{:single, variation_id}, %{}}
+
+    for %VariationGroup{id: group_id, variations: variations} <- story.variations(),
+        %Variation{id: variation_id} <- variations,
+        into: extra_assigns,
+        do: {{group_id, variation_id}, %{}}
+  end
+
+  def init_variation_extra_assigns(_type, _story), do: nil
+
+  def variation_extra_attributes(%Variation{id: variation_id}, assigns) do
+    extra_assigns = Map.get(assigns.variation_extra_assigns, {:single, variation_id}, %{})
+
+    extra_assigns =
+      case ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme) do
+        {assign_key, theme} -> Map.put(extra_assigns, assign_key, theme)
+        nil -> extra_assigns
+      end
+
+    %{variation_id => extra_assigns}
+  end
+
+  def variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
+    maybe_theme_assign = ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme)
+
+    for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
+        into: %{} do
+      case maybe_theme_assign do
+        {assign_key, theme} -> {variation_id, Map.put(extra_assigns, assign_key, theme)}
+        _ -> {variation_id, extra_assigns}
+      end
+    end
+  end
 
   def handle_set_variation_assign(params, extra_assigns, story) do
     context = "assign"

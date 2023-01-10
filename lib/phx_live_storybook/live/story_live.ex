@@ -8,7 +8,6 @@ defmodule PhxLiveStorybook.StoryLive do
   alias PhxLiveStorybook.ExtraAssignsHelpers
   alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
-  alias PhxLiveStorybook.Stories.{Variation, VariationGroup}
   alias PhxLiveStorybook.Story.{Playground, PlaygroundPreviewLive}
   alias PhxLiveStorybook.{StoryNotFound, StoryTabNotFound}
   alias PhxLiveStorybook.ThemeHelpers
@@ -65,7 +64,8 @@ defmodule PhxLiveStorybook.StoryLive do
            page_title: story_entry.name,
            tab: current_tab(params, story),
            theme: theme,
-           variation_extra_assigns: init_variation_extra_assigns(story.storybook_type(), story),
+           variation_extra_assigns:
+             ExtraAssignsHelpers.init_variation_extra_assigns(story.storybook_type(), story),
            playground_error: nil
          )
          |> close_sidebar()}
@@ -152,20 +152,6 @@ defmodule PhxLiveStorybook.StoryLive do
       [{theme, _} | _] -> theme
     end
   end
-
-  defp init_variation_extra_assigns(type, story) when type in [:component, :live_component] do
-    extra_assigns =
-      for %Variation{id: variation_id} <- story.variations(),
-          into: %{},
-          do: {{:single, variation_id}, %{}}
-
-    for %VariationGroup{id: group_id, variations: variations} <- story.variations(),
-        %Variation{id: variation_id} <- variations,
-        into: extra_assigns,
-        do: {{group_id, variation_id}, %{}}
-  end
-
-  defp init_variation_extra_assigns(_type, _story), do: nil
 
   defp close_sidebar(socket), do: push_event(socket, "lsb:close-sidebar", %{"id" => "#sidebar"})
 
@@ -345,7 +331,7 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
-              extra_attributes = variation_extra_attributes(variation, assigns),
+              extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(assigns.story, variation, extra_attributes) do %>
         <div id={anchor_id(variation)} class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
 
@@ -487,30 +473,6 @@ defmodule PhxLiveStorybook.StoryLive do
     |> Safe.to_iodata()
     |> IO.iodata_to_binary()
     |> Phoenix.HTML.raw()
-  end
-
-  defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
-    extra_assigns = Map.get(assigns.variation_extra_assigns, {:single, variation_id}, %{})
-
-    extra_assigns =
-      case ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme) do
-        {assign_key, theme} -> Map.put(extra_assigns, assign_key, theme)
-        nil -> extra_assigns
-      end
-
-    %{variation_id => extra_assigns}
-  end
-
-  defp variation_extra_attributes(%VariationGroup{id: group_id}, assigns) do
-    maybe_theme_assign = ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme)
-
-    for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
-        into: %{} do
-      case maybe_theme_assign do
-        {assign_key, theme} -> {variation_id, Map.put(extra_assigns, assign_key, theme)}
-        _ -> {variation_id, extra_assigns}
-      end
-    end
   end
 
   defp iframe_id(story, variation) do
