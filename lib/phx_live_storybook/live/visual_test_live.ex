@@ -43,6 +43,9 @@ defmodule PhxLiveStorybook.VisualTestLive do
 
       {:error, :not_found} ->
         raise StoryNotFound, "unknown story #{inspect(story_path)}"
+
+      {:error, _error, _exception} ->
+        raise StoryNotFound, "cant load story #{inspect(story_path)}"
     end
   end
 
@@ -110,8 +113,13 @@ defmodule PhxLiveStorybook.VisualTestLive do
     <div
       id={"story-variations-#{story_id(story.story)}"}
       style="width: 650px; margin: 0 auto; margin-top: 40px;"
-      :for={story <- @stories}>
-      <h1 style="color: #6366f1; padding-bottom: 5px; border-bottom: 1px solid #d1d5db;"><%= story.entry.name %></h1>
+      :for={story <- @stories}
+    >
+
+      <h1 style="color: #6366f1; padding-bottom: 5px; border-bottom: 1px solid #d1d5db;">
+        <%= story.entry.name %>
+      </h1>
+
       <%= for variation <- story.story.variations(),
               assigns = assign(assigns, variation_extra_assigns: story.variation_extra_assigns, story: story.story),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),

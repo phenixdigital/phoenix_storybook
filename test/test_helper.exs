@@ -70,7 +70,8 @@ for endpoint <- [
       PhxLiveStorybook.AssetNotFoundControllerEndpoint,
       PhxLiveStorybook.ComponentIframeLiveEndpoint,
       PhxLiveStorybook.StoryLiveTestEndpoint,
-      PhxLiveStorybook.PlaygroundLiveTestEndpoint
+      PhxLiveStorybook.PlaygroundLiveTestEndpoint,
+      PhxLiveStorybook.VisualTestLiveEndpoint
     ] do
   defmodule endpoint do
     use Phoenix.Endpoint, otp_app: :phx_live_storybook
