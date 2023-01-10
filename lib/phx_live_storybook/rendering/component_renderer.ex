@@ -123,7 +123,7 @@ defmodule PhxLiveStorybook.Rendering.ComponentRenderer do
   end
 
   defp let_markup(nil), do: ""
-  defp let_markup(let), do: "let={#{to_string(let)}}"
+  defp let_markup(let), do: ":let={#{to_string(let)}}"
 
   defp attributes_markup(attributes) do
     Enum.map_join(attributes, " ", fn
