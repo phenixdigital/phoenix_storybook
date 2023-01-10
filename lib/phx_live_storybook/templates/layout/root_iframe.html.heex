@@ -11,7 +11,8 @@
     <% end %>
   </head>
   
-  <body class={sandbox_class(@conn, @story.container(), assigns)} style="margin: 0;">
+  <% container = if assigns[:story], do: assigns[:story].container(), else: :div %>
+  <body class={sandbox_class(@conn, container, assigns)} style="margin: 0;">
     <%= @inner_content %>
   </body>
 </html>
