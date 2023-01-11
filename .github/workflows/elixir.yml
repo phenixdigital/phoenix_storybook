@@ -13,7 +13,6 @@ jobs:
 
     env:
       MIX_ENV: test
-      CODECOV_TOKEN: 75c316c8-72ed-4eb3-90fc-482c0669401c
 
     steps:
       - uses: actions/checkout@v2
@@ -58,4 +57,4 @@ jobs:
         run: curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov
 
       - name: Upload test coverage
-        run: ./codecov -t ${CODECOV_TOKEN}
+        run: ./codecov
