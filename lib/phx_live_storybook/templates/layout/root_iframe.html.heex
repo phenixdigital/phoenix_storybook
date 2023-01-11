@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
   <head>
+    <%= csrf_meta_tag() %>
     <%= if path = storybook_js_path(@conn) do %>
       <script phx-track-static type="text/javascript" src={application_static_path(path)}></script>
     <% end %>
     <script type="text/javascript" src={asset_path(@conn, "js/iframe.js")}></script>  
 
+    <%= if fa_kit_id = fa_kit_id(@conn) do %>
+      <script defer src={"https://kit.fontawesome.com/#{fa_kit_id}.js"} crossorigin="anonymous"></script>
+    <% else %>
+      <link rel="stylesheet" href={asset_path(@conn, "css/fonts.css")}/>
+    <% end %>
+
+    <link rel="stylesheet" href={asset_path(@conn, "css/app.css")}/>
     <%= if path = storybook_css_path(@conn) do %>
       <link phx-track-static rel="stylesheet" href={application_static_path(path)}/>
     <% end %>

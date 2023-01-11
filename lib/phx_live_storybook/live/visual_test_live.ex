@@ -3,28 +3,36 @@ defmodule PhxLiveStorybook.VisualTestLive do
   use PhxLiveStorybook.Web, :live_view
 
   alias PhxLiveStorybook.ExtraAssignsHelpers
+  alias PhxLiveStorybook.LayoutView
   alias PhxLiveStorybook.Rendering.{ComponentRenderer, RenderingContext}
   alias PhxLiveStorybook.StoryEntry
   alias PhxLiveStorybook.StoryNotFound
+  alias PhxLiveStorybook.ThemeHelpers
 
   import PhxLiveStorybook.NavigationHelpers
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     backend_module = socket.assigns.backend_module
 
     {:ok,
      assign(socket,
-       theme: default_theme(socket),
+       theme: current_theme(params, socket),
        fa_plan: backend_module.config(:font_awesome_plan, :free)
      ), layout: {PhxLiveStorybook.LayoutView, :live_iframe}}
   end
 
-  def handle_params(%{"story" => story_path}, _, socket = %{assigns: %{live_action: :show}}) do
+  def handle_params(
+        params = %{"story" => story_path},
+        _,
+        socket = %{assigns: %{live_action: :show}}
+      ) do
     assigns = socket.assigns
 
     case load_story(assigns, story_path) do
       {:ok, story} ->
         if Enum.member?([:component, :live_component], story.storybook_type()) do
+          ThemeHelpers.call_theme_function(assigns.backend_module, params["theme"])
+
           {:noreply,
            assign(socket,
              stories: [
@@ -33,7 +41,8 @@ defmodule PhxLiveStorybook.VisualTestLive do
                  entry: story_entry(socket, story_path),
                  path: assigns.backend_module.storybook_path(story),
                  variation_extra_assigns:
-                   ExtraAssignsHelpers.init_variation_extra_assigns(story.storybook_type(), story)
+                   ExtraAssignsHelpers.init_variation_extra_assigns(story.storybook_type(), story),
+                 sandbox_attributes: sandbox_attributes(story)
                }
              ]
            )}
@@ -50,11 +59,12 @@ defmodule PhxLiveStorybook.VisualTestLive do
   end
 
   def handle_params(
-        %{"start" => start_param, "end" => end_param},
+        params = %{"start" => start_param, "end" => end_param},
         _,
         socket = %{assigns: %{live_action: :range}}
       ) do
     assigns = socket.assigns
+    ThemeHelpers.call_theme_function(assigns.backend_module, params["theme"])
     stories = load_story_range(assigns, [start_param, end_param])
     {:noreply, assign(socket, stories: stories)}
   end
@@ -89,16 +99,31 @@ defmodule PhxLiveStorybook.VisualTestLive do
         story: story,
         entry: entry,
         path: assigns.backend_module.storybook_path(story),
+        sandbox_attributes: sandbox_attributes(story),
         variation_extra_assigns:
           ExtraAssignsHelpers.init_variation_extra_assigns(story.storybook_type(), story)
       }
     end)
   end
 
+  defp current_theme(params, socket) do
+    case Map.get(params, "theme") do
+      nil -> default_theme(socket)
+      theme -> String.to_atom(theme)
+    end
+  end
+
   defp default_theme(socket) do
     case socket.assigns.backend_module.config(:themes) do
       nil -> nil
       [{theme, _} | _] -> theme
+    end
+  end
+
+  defp sandbox_attributes(story) do
+    case story.container() do
+      {:div, opts} -> assigns_to_attributes(opts, [:class])
+      _ -> []
     end
   end
 
@@ -109,7 +134,6 @@ defmodule PhxLiveStorybook.VisualTestLive do
 
   def render(assigns) do
     ~H"""
-
     <div
       id={"story-variations-#{story_id(story.story)}"}
       style="width: 650px; margin: 0 auto; margin-top: 40px;"
@@ -125,7 +149,7 @@ defmodule PhxLiveStorybook.VisualTestLive do
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(story.story, variation, extra_attributes) do %>
 
-        <div style="padding-bottom: 20px;">
+        <div class="lsb" style="padding-bottom: 20px;">
           <%= if story.story.container() == :iframe do %>
             <iframe
               phx-update="ignore"
@@ -135,7 +159,7 @@ defmodule PhxLiveStorybook.VisualTestLive do
               onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
             />
           <% else %>
-            <div style="display: flex; gap: 5px;">
+            <div class={LayoutView.sandbox_class(@socket, @story.container(), assigns)} {story.sandbox_attributes}>
               <%= ComponentRenderer.render(rendering_context) %>
             </div>
           <% end %>
