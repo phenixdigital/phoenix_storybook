@@ -65,7 +65,7 @@ defmodule PhxLiveStorybook.VisualTestLive do
       ) do
     assigns = socket.assigns
     ThemeHelpers.call_theme_function(assigns.backend_module, params["theme"])
-    stories = load_story_range(assigns, [start_param, end_param])
+    stories = assigns |> load_story_range([start_param, end_param]) |> handle_exclusion(params)
     {:noreply, assign(socket, stories: stories)}
   end
 
@@ -105,6 +105,16 @@ defmodule PhxLiveStorybook.VisualTestLive do
       }
     end)
   end
+
+  defp handle_exclusion(stories, %{"excludes" => exclusions}) do
+    exclusions = String.split(exclusions, ",")
+
+    Enum.reject(stories, fn %{entry: entry} ->
+      Enum.member?(exclusions, entry.name)
+    end)
+  end
+
+  defp handle_exclusion(stories, _params), do: stories
 
   defp current_theme(params, socket) do
     case Map.get(params, "theme") do

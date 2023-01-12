@@ -28,6 +28,24 @@ defmodule PhxLiveStorybook.VisualTestLiveTest do
     assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 5
   end
 
+  test "renders another component range", %{conn: conn} do
+    {:ok, _view, html} = conn |> get("/storybook/visual_tests", start: "a", end: "z") |> live()
+    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 16
+  end
+
+  test "exclude components from the range", %{conn: conn} do
+    {:ok, _view, html} =
+      conn
+      |> get("/storybook/visual_tests",
+        start: "a",
+        end: "z",
+        excludes: "Nested Component,With Id Component"
+      )
+      |> live()
+
+    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 14
+  end
+
   @tag :capture_log
   test "404 on unknown story path", %{conn: conn} do
     assert_raise PhxLiveStorybook.StoryNotFound, fn ->
