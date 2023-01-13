@@ -425,7 +425,7 @@ defmodule PhxLiveStorybook.StoryLive do
     theme = Map.get(assigns, :theme)
 
     live_render(assigns.socket, assigns.story,
-      id: "example-#{theme}",
+      id: "example-#{story_id(assigns.story)}-#{theme}",
       session: %{"theme" => theme},
       container:
         {:div,
