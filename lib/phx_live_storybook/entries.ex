@@ -39,9 +39,15 @@ defmodule PhxLiveStorybook.Entries do
       acc ->
         cond do
           File.dir?(file_path) ->
-            storybook_path = Path.join(["/", storybook_path, file_name])
-            sub_entries = recursive_scan(root_path, file_path, folders_config, storybook_path)
-            [folder_entry(file_name, storybook_path, sub_entries) |> maybe_apply_index() | acc]
+            nested_stories = Path.wildcard("#{file_path}/**/*#{story_file_suffix()}")
+
+            if Enum.any?(nested_stories) do
+              storybook_path = Path.join(["/", storybook_path, file_name])
+              sub_entries = recursive_scan(root_path, file_path, folders_config, storybook_path)
+              [folder_entry(file_name, storybook_path, sub_entries) |> maybe_apply_index() | acc]
+            else
+              acc
+            end
 
           String.ends_with?(file_path, story_file_suffix()) ->
             [story_entry(file_path, storybook_path) | acc]

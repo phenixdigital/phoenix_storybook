@@ -84,21 +84,8 @@ defmodule PhxLiveStorybookTest do
              ]
     end
 
-    test "with empty sub-folders, it should return a flat list of 2 folders" do
-      [%FolderEntry{entries: entries}] = EmptyFoldersStorybook.content_tree()
-
-      assert entries == [
-               %FolderEntry{
-                 name: "Empty a",
-                 entries: [],
-                 path: "/empty_a"
-               },
-               %FolderEntry{
-                 name: "Empty b",
-                 entries: [],
-                 path: "/empty_b"
-               }
-             ]
+    test "it should not return empty sub-folders" do
+      assert [%FolderEntry{entries: []}] = EmptyFoldersStorybook.content_tree()
     end
   end
 
