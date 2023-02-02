@@ -119,32 +119,32 @@ defmodule PhxLiveStorybook.Components.Icon do
 
   def user_icon(assigns = %{icon: {:fa, name}}) do
     assigns = assign(assigns, name: name)
-    ~H(<.fa_icon name={@name} plan={@fa_plan} class={@class} {@rest}/>)
+    ~H(<.fa_icon name={@name} plan={@fa_plan} class={@class} {@rest} />)
   end
 
   def user_icon(assigns = %{icon: {:fa, name, style}}) do
     assigns = assign(assigns, name: name, style: style)
-    ~H(<.fa_icon name={@name} style={@style} plan={@fa_plan} class={@class} {@rest}/>)
+    ~H(<.fa_icon name={@name} style={@style} plan={@fa_plan} class={@class} {@rest} />)
   end
 
   def user_icon(assigns = %{icon: {:fa, name, style, class}}) do
     assigns = assign(assigns, name: name, style: style, icon_class: class)
 
-    ~H(<.fa_icon name={@name} style={@style} plan={@fa_plan} class_list={[@icon_class, @class]} {@rest}/>)
+    ~H(<.fa_icon name={@name} style={@style} plan={@fa_plan} class_list={[@icon_class, @class]} {@rest} />)
   end
 
   def user_icon(assigns = %{icon: {:hero, name}}) do
     assigns = assign(assigns, name: name)
-    ~H(<.hero_icon name={@name} class={@class} {@rest}/>)
+    ~H(<.hero_icon name={@name} class={@class} {@rest} />)
   end
 
   def user_icon(assigns = %{icon: {:hero, name, style}}) do
     assigns = assign(assigns, name: name, style: style)
-    ~H(<.hero_icon name={@name} style={@style} class={@class} {@rest}/>)
+    ~H(<.hero_icon name={@name} style={@style} class={@class} {@rest} />)
   end
 
   def user_icon(assigns = %{icon: {:hero, name, style, class}}) do
     assigns = assign(assigns, name: name, style: style, icon_class: class)
-    ~H(<.hero_icon name={@name} style={@style} class_list={[@icon_class, @class]} {@rest}/>)
+    ~H(<.hero_icon name={@name} style={@style} class_list={[@icon_class, @class]} {@rest} />)
   end
 end

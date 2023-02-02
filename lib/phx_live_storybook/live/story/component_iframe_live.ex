@@ -85,7 +85,7 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
     ~H"""
     <%= if @variation_id do %>
       <%= if @playground do %>
-        <%= live_render @socket, PlaygroundPreviewLive,
+        <%= live_render(@socket, PlaygroundPreviewLive,
           id: playground_preview_id(@story),
           session: %{
             "story" => @story,
@@ -93,9 +93,9 @@ defmodule PhxLiveStorybook.Story.ComponentIframeLive do
             "theme" => @theme,
             "topic" => @topic,
             "backend_module" => @backend_module
-            },
+          },
           container: {:div, style: "height: 100vh; width: 100wh;"}
-        %>
+        ) %>
       <% else %>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;">
           <%= ComponentRenderer.render(@context) %>
