@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Root do
-  use PhxLiveStorybook.Index
+  use PhoenixStorybook.Index
 
   def folder_name, do: "Root"
 

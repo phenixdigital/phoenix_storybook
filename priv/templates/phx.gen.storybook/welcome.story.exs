@@ -1,7 +1,7 @@
 defmodule Storybook.MyPage do
-  # See https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.Story.html for full story
+  # See https://hexdocs.pm/phoenix_storybook/PhoenixStorybook.Story.html for full story
   # documentation.
-  use PhxLiveStorybook.Story, :page
+  use PhoenixStorybook.Story, :page
 
   def doc, do: "Your very first steps into using Phoenix Storybook"
 
@@ -49,12 +49,12 @@ defmodule Storybook.MyPage do
     assigns =
       assign(assigns,
         guide: guide,
-        guide_content: PhxLiveStoryBook.Guides.markup("#{guide}.md")
+        guide_content: PhoenixStorybook.Guides.markup("#{guide}.md")
       )
 
     ~H"""
     <p class="md:lsb-text-lg lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic">
-      <a class="hover:text-indigo-700" href={"https://hexdocs.pm/phx_live_storybook/#{@guide}.html"} target="_blank">
+      <a class="hover:text-indigo-700" href={"https://hexdocs.pm/phoenix_storybook/#{@guide}.html"} target="_blank">
         This guide is also available on Hexdocs among others.
       </a>
     </p>
@@ -88,6 +88,6 @@ defmodule Storybook.MyPage do
   end
 
   defp doc_link(page) do
-    "https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.#{page}.html"
+    "https://hexdocs.pm/phoenix_storybook/PhoenixStorybook.#{page}.html"
   end
 end

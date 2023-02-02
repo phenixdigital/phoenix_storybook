@@ -2,7 +2,7 @@ Code.require_file("../../mix_helper.exs", __DIR__)
 
 defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   use ExUnit.Case
-  import PhxLiveStorybook.MixHelper
+  import PhoenixStorybook.MixHelper
   alias Mix.Tasks.Phx.Gen.Storybook
 
   setup do
@@ -26,10 +26,10 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert story.storybook_type() == :component
 
 
-      [{backend, _}] = Code.compile_file("lib/phx_live_storybook_web/storybook.ex")
+      [{backend, _}] = Code.compile_file("lib/phoenix_storybook_web/storybook.ex")
       assert backend.storybook_path(story) == "/components/icon"
-      assert backend.config(:otp_app) == :phx_live_storybook_web
-      assert backend.config(:sandbox_class) == "phx-live-storybook-web"
+      assert backend.config(:otp_app) == :phoenix_storybook_web
+      assert backend.config(:sandbox_class) == "phoenix-storybook-web"
 
       assert_file("assets/js/storybook.js")
       assert_file("assets/css/storybook.css", fn file ->
@@ -37,7 +37,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       end)
 
       assert_shell_receive :info, ~r|Starting storybook generation|
-      assert_shell_receive :info, ~r|creating lib/phx_live_storybook_web/storybook.ex|
+      assert_shell_receive :info, ~r|creating lib/phoenix_storybook_web/storybook.ex|
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
       assert_shell_receive :info, ~r|creating storybook/components/icon.story.exs|
@@ -61,7 +61,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_file("storybook/_root.index.exs")
       assert_file("storybook/welcome.story.exs")
       assert_file("storybook/components/icon.story.exs")
-      assert_file("lib/phx_live_storybook_web/storybook.ex")
+      assert_file("lib/phoenix_storybook_web/storybook.ex")
 
       assert_file("assets/js/storybook.js")
       assert_file("assets/css/storybook.css", fn file ->
@@ -69,7 +69,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       end)
 
       assert_shell_receive :info, ~r|Starting storybook generation|
-      assert_shell_receive :info, ~r|creating lib/phx_live_storybook_web/storybook.ex|
+      assert_shell_receive :info, ~r|creating lib/phoenix_storybook_web/storybook.ex|
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
       assert_shell_receive :info, ~r|creating storybook/components/icon.story.exs|

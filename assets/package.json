@@ -1,8 +1,8 @@
 {
-  "name": "phx_live_storybook",
+  "name": "phoenix_storybook",
   "version": "1.0.0",
-  "description": "PhxLiveStorybook assets",
-  "main": "./assets/js/phx_live_storybook.js",
+  "description": "PhoenixStorybook assets",
+  "main": "./assets/js/phoenix_storybook.js",
   "scripts": {
     "build:css": "tailwindcss --minify -i css/app.css -o ../priv/static/css/app.css",
     "build:fonts_css": "tailwindcss --minify -i css/fonts.css -o ../priv/static/css/fonts.css",

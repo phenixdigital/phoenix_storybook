@@ -1,6 +1,6 @@
-defmodule PhxLiveStorybook.PageStub do
+defmodule PhoenixStorybook.PageStub do
   import Phoenix.Component
-  alias PhxLiveStorybook.Story.{PageBehaviour, StoryBehaviour}
+  alias PhoenixStorybook.Story.{PageBehaviour, StoryBehaviour}
 
   @behaviour StoryBehaviour
   @behaviour PageBehaviour

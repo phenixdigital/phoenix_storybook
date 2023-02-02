@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BFolder.AllTypesComponent do
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
   def function, do: &AllTypesComponent.all_types_component/1
 
   def attributes do

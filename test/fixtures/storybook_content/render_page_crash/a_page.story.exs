@@ -1,5 +1,5 @@
 defmodule RenderPageCrashStorybook.APage do
-  use PhxLiveStorybook.Story, :page
+  use PhoenixStorybook.Story, :page
 
   def render(_assigns) do
     raise "crash"

@@ -1,19 +1,19 @@
-defmodule PhxLiveStorybook.MixProject do
+defmodule PhoenixStorybook.MixProject do
   use Mix.Project
 
   @version "0.5.0"
 
   def project do
     [
-      app: :phx_live_storybook,
+      app: :phoenix_storybook,
       version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       config_path: "./config/config.exs",
       elixirc_paths: elixirc_paths(Mix.env()),
-      name: "phx_live_storybook",
+      name: "phoenix_storybook",
       description: "A pluggable storybook for your LiveView components.",
-      source_url: "https://github.com/phenixdigital/phx_live_storybook",
+      source_url: "https://github.com/phenixdigital/phoenix_storybook",
       aliases: aliases(),
       deps: deps(),
       package: package(),
@@ -34,7 +34,7 @@ defmodule PhxLiveStorybook.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {PhxLiveStorybook.Application, []},
+      mod: {PhoenixStorybook.Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -62,12 +62,12 @@ defmodule PhxLiveStorybook.MixProject do
 
   defp docs do
     [
-      main: "PhxLiveStorybook",
+      main: "PhoenixStorybook",
       source_ref: "v#{@version}",
-      source_url: "https://github.com/phenixdigital/phx_live_storybook",
+      source_url: "https://github.com/phenixdigital/phoenix_storybook",
       extra_section: "GUIDES",
       extras: extras(),
-      nest_modules_by_prefix: [PhxLiveStorybook]
+      nest_modules_by_prefix: [PhoenixStorybook]
     ]
   end
 
@@ -86,7 +86,7 @@ defmodule PhxLiveStorybook.MixProject do
       maintainers: ["Christian Blavier"],
       files: ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md CONTRIBUTING.md),
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/phenixdigital/phx_live_storybook"}
+      links: %{"GitHub" => "https://github.com/phenixdigital/phoenix_storybook"}
     ]
   end
 

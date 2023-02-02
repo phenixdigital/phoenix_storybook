@@ -1,5 +1,5 @@
 defmodule TreeStorybook.TemplateIframeComponent do
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
   def function, do: &TemplateComponent.template_component/1
   def container, do: :iframe
 

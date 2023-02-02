@@ -9,9 +9,9 @@ defmodule Mix.Tasks.Dev.StorybookTest do
 
   test "mix dev.storybook" do
     Storybook.run([])
-    assert_receive {:mix_shell, :info, ["* Running mix deps.get for phx_live_storybook dependency"]}
-    assert_receive {:mix_shell, :info, ["* Running npm ci for phx_live_storybook dependency"]}
-    assert_receive {:mix_shell, :info, ["* Running mix assets.build for phx_live_storybook dependency"]}
+    assert_receive {:mix_shell, :info, ["* Running mix deps.get for phoenix_storybook dependency"]}
+    assert_receive {:mix_shell, :info, ["* Running npm ci for phoenix_storybook dependency"]}
+    assert_receive {:mix_shell, :info, ["* Running mix assets.build for phoenix_storybook dependency"]}
   end
 
 end

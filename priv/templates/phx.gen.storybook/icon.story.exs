@@ -1,11 +1,11 @@
 defmodule Storybook.Components.Icon do
-  # See https://hexdocs.pm/phx_live_storybook/PhxLiveStorybook.Story.html for full story
+  # See https://hexdocs.pm/phoenix_storybook/PhoenixStorybook.Story.html for full story
   # documentation.
-  # Read https://hexdocs.pm/phx_live_storybook/components.html for more advanced options.
+  # Read https://hexdocs.pm/phoenix_storybook/components.html for more advanced options.
 
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
 
-  def function, do: &PhxLiveStorybook.Components.Icon.hero_icon/1
+  def function, do: &PhoenixStorybook.Components.Icon.hero_icon/1
 
   # A variation captures the rendered state of a UI component. Developers write multiple variations
   # per component that describe all the “interesting” states a component can support.
