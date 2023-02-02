@@ -145,11 +145,10 @@ defmodule PhxLiveStorybook.VisualTestLive do
   def render(assigns) do
     ~H"""
     <div
+      :for={story <- @stories}
       id={"story-variations-#{story_id(story.story)}"}
       style="width: 650px; margin: 0 auto; margin-top: 40px;"
-      :for={story <- @stories}
     >
-
       <h1 style="color: #6366f1; padding-bottom: 5px; border-bottom: 1px solid #d1d5db;">
         <%= story.entry.name %>
       </h1>
@@ -158,18 +157,25 @@ defmodule PhxLiveStorybook.VisualTestLive do
               assigns = assign(assigns, variation_extra_assigns: story.variation_extra_assigns, story: story.story),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(story.story, variation, extra_attributes) do %>
-
         <div class="lsb" style="padding-bottom: 20px;">
           <%= if story.story.container() == :iframe do %>
             <iframe
               phx-update="ignore"
               id={iframe_id(story.story, variation)}
-              src={path_to_iframe(@socket, @root_path, story.path, variation_id: variation.id, theme: @theme)}
+              src={
+                path_to_iframe(@socket, @root_path, story.path,
+                  variation_id: variation.id,
+                  theme: @theme
+                )
+              }
               height="0"
               onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
             />
           <% else %>
-            <div class={LayoutView.sandbox_class(@socket, @story.container(), assigns)} {story.sandbox_attributes}>
+            <div
+              class={LayoutView.sandbox_class(@socket, @story.container(), assigns)}
+              {story.sandbox_attributes}
+            >
               <%= ComponentRenderer.render(rendering_context) %>
             </div>
           <% end %>

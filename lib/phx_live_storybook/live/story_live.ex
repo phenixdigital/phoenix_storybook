@@ -160,7 +160,7 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb lsb-my-6 md:lsb-my-12 lsb-space-y-4 md:lsb-space-y-8 lsb-flex lsb-flex-col">
       <h1 class="lsb lsb-font-medium lsb-text-red-500 lsb-text-lg md:lsb-text-xl lg:lsb-text-2xl lsb-align-middle">
-        <.fa_icon style={:duotone} name="bomb" plan={@fa_plan}/>
+        <.fa_icon style={:duotone} name="bomb" plan={@fa_plan} />
         <%= @story_load_error %>
       </h1>
 
@@ -175,19 +175,23 @@ defmodule PhxLiveStorybook.StoryLive do
     assigns = assign(assigns, story: story, doc: story.doc())
 
     ~H"""
-    <div class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]" id="story-live" phx-hook="StoryHook">
+    <div
+      class="lsb lsb-space-y-6 lsb-pb-12 lsb-flex lsb-flex-col lsb-h-[calc(100vh_-_7rem)] lg:lsb-h-[calc(100vh_-_4rem)]"
+      id="story-live"
+      phx-hook="StoryHook"
+    >
       <div class="lsb">
         <div class="lsb lsb-flex lsb-my-6 lsb-items-center">
           <h2 class="lsb lsb-flex-1 lsb-flex-nowrap lsb-whitespace-nowrap lsb-text-xl md:lsb-text-2xl lg:lsb-text-3xl lsb-m-0 lsb-font-extrabold lsb-tracking-tight lsb-text-indigo-600">
             <%= if icon = @story_entry.icon do %>
-              <.user_icon icon={icon} class="lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan}/>
+              <.user_icon icon={icon} class="lsb-pr-2 lsb-text-indigo-600" fa_plan={@fa_plan} />
             <% end %>
             <%= @story_entry.name %>
           </h2>
 
-          <%=  @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
+          <%= @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
-        <.print_doc doc={@doc} fa_plan={@fa_plan}/>
+        <.print_doc doc={@doc} fa_plan={@fa_plan} />
       </div>
 
       <%= render_content(@story.storybook_type(), assigns) %>
@@ -198,7 +202,7 @@ defmodule PhxLiveStorybook.StoryLive do
   def render(assigns), do: ~H[]
 
   defp print_doc(assigns = %{doc: doc}) when is_binary(doc) do
-    ~H"<.print_doc doc={[@doc]}/>"
+    ~H"<.print_doc doc={[@doc]} />"
   end
 
   defp print_doc(assigns = %{doc: [_header | _]}) do
@@ -207,19 +211,24 @@ defmodule PhxLiveStorybook.StoryLive do
       <%= @doc |> Enum.at(0) |> raw() %>
     </div>
     <%= if Enum.count(@doc) > 1 do %>
-      <a phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
+      <a
+        phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
         id="read-more"
         class="lsb lsb-py-2 lsb-inline-block lsb-text-slate-400 hover:lsb-text-indigo-700 lsb-cursor-pointer"
       >
-        <.fa_icon name="caret-right" style={:thin} plan={@fa_plan} class="lsb-relative lsb-top-px lsb-mr-1"/>
-        Read more
+        <.fa_icon
+          name="caret-right"
+          style={:thin}
+          plan={@fa_plan}
+          class="lsb-relative lsb-top-px lsb-mr-1"
+        /> Read more
       </a>
-      <a phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
+      <a
+        phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
         id="read-less"
         class="lsb lsb-pt-2 lsb-pb-4 lsb-hidden lsb-inline-block lsb-text-slate-400 hover:lsb-text-indigo-700 lsb-cursor-pointer"
       >
-        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="lsb-mr-1"/>
-        Read less
+        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="lsb-mr-1" /> Read less
       </a>
       <div id="doc-next" class="lsb-hidden lsb-space-y-4 ">
         <%= for paragraph <- Enum.slice(@doc, 1..-1) do %>
@@ -272,19 +281,37 @@ defmodule PhxLiveStorybook.StoryLive do
     ~H"""
     <div class="lsb lsb-flex lsb-flex-items-center">
       <!-- mobile version of navigation tabs -->
-      <.form :let={f} for={:navigation} id={"#{Macro.underscore(@story)}-navigation-form"} class="lsb story-nav-form lg:lsb-hidden">
-        <%= select f, :tab, navigation_select_options(@tabs), "phx-change": "set-tab", class: "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md", value: @tab %>
+      <.form
+        :let={f}
+        for={:navigation}
+        id={"#{Macro.underscore(@story)}-navigation-form"}
+        class="lsb story-nav-form lg:lsb-hidden"
+      >
+        <%= select(f, :tab, navigation_select_options(@tabs),
+          "phx-change": "set-tab",
+          class:
+            "lsb lsb-form-select lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-1 lsb-text-base lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 sm:lsb-text-sm lsb-rounded-md",
+          value: @tab
+        ) %>
       </.form>
-
       <!-- :lg+ version of navigation tabs -->
       <nav class="lsb story-tabs lsb-hidden lg:lsb-flex lsb-rounded-lg lsb-border lsb-bg-slate-100 lsb-hover:lsb-bg-slate-200 lsb-h-10 lsb-text-sm lsb-font-medium">
         <%= for tab <- @tabs do %>
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
-          <a href="#" phx-click="set-tab" phx-value-tab={tab_id} class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab_id)}"}>
+          <a
+            href="#"
+            phx-click="set-tab"
+            phx-value-tab={tab_id}
+            class={"lsb lsb-group focus:lsb-outline-none lsb-flex lsb-rounded-md #{active_link(@tab, tab_id)}"}
+          >
             <span class={active_span(@tab, tab_id)}>
               <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
               <%= if icon do %>
-                <.user_icon icon={icon} class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"} fa_plan={@fa_plan}/>
+                <.user_icon
+                  icon={icon}
+                  class={"lg:lsb-mr-2 group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"}
+                  fa_plan={@fa_plan}
+                />
               <% end %>
               <span class={"lsb lsb-whitespace-nowrap group-hover:lsb-text-indigo-600 #{active_text(@tab, tab_id)}"}>
                 <%= tab_label %>
@@ -333,49 +360,72 @@ defmodule PhxLiveStorybook.StoryLive do
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(assigns.story, variation, extra_attributes) do %>
-        <div id={anchor_id(variation)} class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5">
-
+        <div
+          id={anchor_id(variation)}
+          class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5"
+        >
           <!-- Variation description -->
           <div class="lsb lsb-col-span-5 lsb-font-medium hover:lsb-font-semibold lsb-mb-6 lsb-border-b lsb-border-slate-100 md:lsb-text-lg lsb-leading-7 lsb-text-slate-700 lsb-flex lsb-justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "lsb variation-anchor-link" do %>
-              <.fa_icon style={:light} name="link" class="lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400" plan={@fa_plan}/>
+              <.fa_icon
+                style={:light}
+                name="link"
+                class="lsb-hidden -lsb-ml-8 lsb-pr-1 lsb-text-slate-400"
+                plan={@fa_plan}
+              />
               <%= if description do %>
-                <%= description  %>
+                <%= description %>
               <% else %>
                 <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
               <% end %>
             <% end %>
-            <.link patch={path_to(@socket, @root_path, @story_path, %{tab: :playground, variation_id: variation.id, theme: @theme})}
-              class="lsb lsb-hidden lsb-open-playground-link">
+            <.link
+              patch={
+                path_to(@socket, @root_path, @story_path, %{
+                  tab: :playground,
+                  variation_id: variation.id,
+                  theme: @theme
+                })
+              }
+              class="lsb lsb-hidden lsb-open-playground-link"
+            >
               <span class="lsb lsb-text-base lsb-font-light lsb-text-gray-500 hover:lsb-text-indigo-600 hover:lsb-font-medium ">
-                Open in playground
-                <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan}/>
+                Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
               </span>
             </.link>
           </div>
-
           <!-- Variation component preview -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lsb-mb-4 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-p-2 lsb-bg-white lsb-shadow-sm">
             <%= if @story.container() == :iframe do %>
               <iframe
                 phx-update="ignore"
                 id={iframe_id(@story, variation)}
-                src={path_to_iframe(@socket, @root_path, @story_path, variation_id: variation.id, theme: @theme)}
+                src={
+                  path_to_iframe(@socket, @root_path, @story_path,
+                    variation_id: variation.id,
+                    theme: @theme
+                  )
+                }
                 class="lsb-w-full lsb-border-0"
                 height="0"
                 onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
               />
             <% else %>
-              <div class={LayoutView.sandbox_class(@socket, @story.container(), assigns)} {@sandbox_attributes}>
+              <div
+                class={LayoutView.sandbox_class(@socket, @story.container(), assigns)}
+                {@sandbox_attributes}
+              >
                 <%= ComponentRenderer.render(rendering_context) %>
               </div>
             <% end %>
           </div>
-
           <!-- Variation code -->
           <div class="lsb lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-3 lsb-group lsb-relative lsb-shadow-sm lsb-flex lsb-flex-col lsb-justify-center">
-            <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-              <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
+            <div
+              phx-click={JS.dispatch("lsb:copy-code")}
+              class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer"
+            >
+              <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan} />
             </div>
             <%= CodeRenderer.render(rendering_context) %>
           </div>
@@ -397,8 +447,12 @@ defmodule PhxLiveStorybook.StoryLive do
   defp render_content(type, assigns = %{tab: :playground})
        when type in [:component, :live_component] do
     ~H"""
-    <.live_component module={Playground} id="playground"
-      story={@story} story_path={@story_path} backend_module={@backend_module}
+    <.live_component
+      module={Playground}
+      id="playground"
+      story={@story}
+      story_path={@story_path}
+      backend_module={@backend_module}
       variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
@@ -416,7 +470,8 @@ defmodule PhxLiveStorybook.StoryLive do
   defp render_content(:page, assigns) do
     ~H"""
     <div class={LayoutView.sandbox_class(@socket, {:div, class: "lsb lsb-pb-12"}, assigns)}>
-      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme, connect_params: @connect_params}) |> to_raw_html() %>
+      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme, connect_params: @connect_params})
+      |> to_raw_html() %>
     </div>
     """
   end
@@ -436,7 +491,10 @@ defmodule PhxLiveStorybook.StoryLive do
   defp render_content(:example, assigns = %{tab: :source}) do
     ~H"""
     <div class="lsb lsb-flex-1 lsb-flex lsb-flex-col lsb-overflow-auto lsb-max-h-full">
-      <%= @story.__source__() |> remove_example_code() |> CodeRenderer.render_source() |> to_raw_html() %>
+      <%= @story.__source__()
+      |> remove_example_code()
+      |> CodeRenderer.render_source()
+      |> to_raw_html() %>
     </div>
     """
   end

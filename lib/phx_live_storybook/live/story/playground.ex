@@ -183,9 +183,22 @@ defmodule PhxLiveStorybook.Story.Playground do
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mb-6">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- @tabs do %>
-          <a href="#" phx-click="upper-tab-navigation" phx-value-tab={tab} phx-target={@myself}
-            class={[active_link(@upper_tab, tab), "lsb lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"]}>
-            <.fa_icon style={:duotone} name={icon} class={"lsb-pr-1 #{active_link(@upper_tab, tab)}"} plan={@fa_plan}/>
+          <a
+            href="#"
+            phx-click="upper-tab-navigation"
+            phx-value-tab={tab}
+            phx-target={@myself}
+            class={[
+              active_link(@upper_tab, tab),
+              "lsb lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"
+            ]}
+          >
+            <.fa_icon
+              style={:duotone}
+              name={icon}
+              class={"lsb-pr-1 #{active_link(@upper_tab, tab)}"}
+              plan={@fa_plan}
+            />
             <%= label %>
           </a>
         <% end %>
@@ -199,8 +212,19 @@ defmodule PhxLiveStorybook.Story.Playground do
     <div class="lsb lsb-border-b lsb-border-gray-200 lsb-mt-6 md:lsb-mt-12 lsb-mb-4">
       <nav class="lsb -lsb-mb-px lsb-flex lsb-space-x-8">
         <%= for {tab, label, icon} <- [{:attributes, "Attributes", "table"}, {:events, "Event logs", "list-timeline"}] do %>
-          <a href="#" phx-click="lower-tab-navigation" phx-value-tab={tab} phx-target={@myself} class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}>
-            <.fa_icon style={:duotone} name={icon} class={"lsb-pr-1 #{active_link(@lower_tab, tab)}"} plan={@fa_plan}/>
+          <a
+            href="#"
+            phx-click="lower-tab-navigation"
+            phx-value-tab={tab}
+            phx-target={@myself}
+            class={"lsb #{active_link(@lower_tab, tab)} lsb-whitespace-nowrap lsb-py-4 lsb-px-1 lsb-border-b-2 lsb-font-medium lsb-text-sm"}
+          >
+            <.fa_icon
+              style={:duotone}
+              name={icon}
+              class={"lsb-pr-1 #{active_link(@lower_tab, tab)}"}
+              plan={@fa_plan}
+            />
             <%= label %>
             <%= event_counter(tab, @event_logs_unread) %>
           </a>
@@ -221,7 +245,7 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp render_upper_tab_content(assigns = %{upper_tab: _tab}) do
     ~H"""
-    <div class={"lsb lsb-relative"}>
+    <div class="lsb lsb-relative">
       <div class={[
         "lsb lsb-min-h-32 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-justify-center lsb-bg-white lsb-shadow-sm",
         if(@upper_tab != :preview, do: "lsb-hidden"),
@@ -230,41 +254,52 @@ defmodule PhxLiveStorybook.Story.Playground do
         <%= if @story.container() == :iframe do %>
           <iframe
             id={playground_preview_id(@story)}
-            src={path_to_iframe(@socket, @root_path, @story_path,
-                variation_id: to_string(@variation_id), theme: to_string(@theme), playground: true,
-                topic: @topic)}
+            src={
+              path_to_iframe(@socket, @root_path, @story_path,
+                variation_id: to_string(@variation_id),
+                theme: to_string(@theme),
+                playground: true,
+                topic: @topic
+              )
+            }
             height="128"
             class="lsb-w-full lsb-border-0"
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
           />
         <% else %>
-          <%= live_render @socket, PlaygroundPreviewLive,
-                id: playground_preview_id(@story),
-                session: %{
-                  "story" => @story,
-                  "variation_id" => to_string(@variation_id),
-                  "theme" => to_string(@theme),
-                  "topic" => "playground-#{inspect(self())}",
-                  "backend_module" => @backend_module
-                },
-                container: {:div, style: "height: 100%; width: 100%;"}
-          %>
+          <%= live_render(@socket, PlaygroundPreviewLive,
+            id: playground_preview_id(@story),
+            session: %{
+              "story" => @story,
+              "variation_id" => to_string(@variation_id),
+              "theme" => to_string(@theme),
+              "topic" => "playground-#{inspect(self())}",
+              "backend_module" => @backend_module
+            },
+            container: {:div, style: "height: 100%; width: 100%;"}
+          ) %>
         <% end %>
       </div>
       <%= if @upper_tab == :code do %>
         <div class="lsb lsb-relative lsb-group lsb-border lsb-border-slate-100 lsb-rounded-md lsb-col-span-5 lg:lsb-col-span-2 lg:lsb-mb-0 lsb-flex lsb-items-center lsb-px-2 lsb-min-h-32 lsb-bg-slate-800 lsb-shadow-sm">
-          <div phx-click={JS.dispatch("lsb:copy-code")} class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer">
-            <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan}/>
+          <div
+            phx-click={JS.dispatch("lsb:copy-code")}
+            class="lsb lsb-hidden group-hover:lsb-block lsb-bg-slate-700 lsb-text-slate-500 hover:lsb-text-slate-100 lsb-z-10 lsb-absolute lsb-top-2 lsb-right-2 lsb-px-2 lsb-py-1 lsb-rounded-md lsb-cursor-pointer"
+          >
+            <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan} />
           </div>
-          <.playground_code story={@story} variation={@variation} variations={@variations}/>
+          <.playground_code story={@story} variation={@variation} variations={@variations} />
         </div>
       <% end %>
       <%= if @playground_error do %>
         <% error_bg = if @upper_tab == :code, do: "lsb-bg-slate/20", else: "lsb-bg-white/20" %>
         <div class={"lsb lsb-absolute lsb-inset-2 lsb-z-10 lsb-backdrop-blur-lg lsb-text-red-600 #{error_bg} lsb-rounded lsb-flex lsb-flex-col lsb-justify-center lsb-items-center lsb-space-y-2"}>
-          <.fa_icon style={:duotone} name="bomb" class="fa-xl lsb-text-red-600" plan={@fa_plan}/>
+          <.fa_icon style={:duotone} name="bomb" class="fa-xl lsb-text-red-600" plan={@fa_plan} />
           <span class="lsb lsb-drop-shadow lsb-font-medium">Ohoh, I just crashed!</span>
-          <button phx-click="clear-playground-error" class="lsb lsb-inline-flex lsb-items-center lsb-px-2 lsb-py-1 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500">
+          <button
+            phx-click="clear-playground-error"
+            class="lsb lsb-inline-flex lsb-items-center lsb-px-2 lsb-py-1 lsb-border lsb-border-transparent lsb-text-xs lsb-font-medium lsb-rounded lsb-shadow-sm lsb-text-white lsb-bg-red-600 hover:lsb-bg-red-700 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-red-500"
+          >
             Dismiss
           </button>
         </div>
@@ -282,10 +317,17 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
     ~H"""
-    <div id={playground_event_logs_id(@story)} class="lsb lsb-flex lsb-flex-col lsb-grow lsb-py-2 lsb-relative">
+    <div
+      id={playground_event_logs_id(@story)}
+      class="lsb lsb-flex lsb-flex-col lsb-grow lsb-py-2 lsb-relative"
+    >
       <div class="lsb lsb-absolute lsb-w-full lsb-h-full lsb-max-h-full lsb-overflow-y-scroll lsb-p-2 lsb-border lsb-border-slate-100 lsb-bg-slate-800 lsb-rounded-md">
         <%= for {event_log, index} <- Enum.with_index(@event_logs) do %>
-          <.event_log id={playground_event_log_id(@story, index)} event_log={event_log} fa_plan={@fa_plan}/>
+          <.event_log
+            id={playground_event_log_id(@story, index)}
+            event_log={event_log}
+            fa_plan={@fa_plan}
+          />
         <% end %>
       </div>
     </div>
@@ -294,7 +336,14 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do
     ~H"""
-    <.form for={:playground} :let={f} id={form_id(@story)} phx-change={"playground-change"} phx-target={@myself} class="lsb-text-gray-600 ">
+    <.form
+      :let={f}
+      for={:playground}
+      id={form_id(@story)}
+      phx-change="playground-change"
+      phx-target={@myself}
+      class="lsb-text-gray-600 "
+    >
       <div class="lsb lsb-flex lsb-flex-col lsb-mb-2">
         <div class="lsb lsb-overflow-x-auto md:-lsb-mx-8">
           <div class="lsb lsb-inline-block lsb-min-w-full lsb-py-2 lsb-align-middle md:lsb-px-8">
@@ -303,42 +352,66 @@ defmodule PhxLiveStorybook.Story.Playground do
                 <thead class="lsb lsb-bg-gray-50">
                   <tr>
                     <%= for {header, th_style, span_style} <- [{"Attribute", "lsb-pl-3 md:lsb-pl-9", "lsb-w-8 md:lsb-w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "lsb-hidden md:lsb-table-cell", ""}, {"Value", "", ""}] do %>
-                      <th scope="col" class={"lsb #{th_style} lsb-py-3.5 lsb-text-left lsb-text-xs md:lsb-text-sm lsb-font-semibold lsb-text-gray-900"}>
-                        <span class={"lsb #{span_style} lsb-truncate lsb-inline-block"}><%= header %></span>
+                      <th
+                        scope="col"
+                        class={"lsb #{th_style} lsb-py-3.5 lsb-text-left lsb-text-xs md:lsb-text-sm lsb-font-semibold lsb-text-gray-900"}
+                      >
+                        <span class={"lsb #{span_style} lsb-truncate lsb-inline-block"}>
+                          <%= header %>
+                        </span>
                       </th>
                     <% end %>
                   </tr>
                 </thead>
                 <tbody class="lsb lsb-divide-y lsb-divide-gray-200 lsb-bg-white">
                   <%= if Enum.empty?(@story.merged_attributes()) do %>
-                  <tr>
-                    <td colspan="5" class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center">
-                      <.fa_icon style={:duotone} name="circle-question" class="fa-xl lsb-text-indigo-400 lsb-py-4 md:lsb-py-6" plan={@fa_plan}/>
-                      <p>In order to use playground, you must define your component attributes.</p>
-                    </td>
-                  </tr>
+                    <tr>
+                      <td
+                        colspan="5"
+                        class="lsb md:lsb-px-3 md:lsb-px-6 lsb-py-4 lsb-text-md md:lsb-text-lg lsb-font-medium lsb-text-gray-500 sm:lsb-pl-6 lsb-pt-2 md:lsb-pb-6 md:lsb-pt-4 md:lsb-pb-12 lsb-text-center"
+                      >
+                        <.fa_icon
+                          style={:duotone}
+                          name="circle-question"
+                          class="fa-xl lsb-text-indigo-400 lsb-py-4 md:lsb-py-6"
+                          plan={@fa_plan}
+                        />
+                        <p>In order to use playground, you must define your component attributes.</p>
+                      </td>
+                    </tr>
                   <% else %>
                     <%= for attr <- @story.merged_attributes(), !is_nil(@variation)  do %>
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if attr.required do %>
-                            <.required_badge fa_plan={@fa_plan}/>
+                            <.required_badge fa_plan={@fa_plan} />
                           <% end %>
                           <%= attr.id %>
                           <%= if attr.required do %>
-                            <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
+                            <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">
+                              *
+                            </span>
                           <% end %>
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500">
-                          <.type_badge type={attr.type}/>
+                          <.type_badge type={attr.type} />
                         </td>
-                        <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500 lsb-max-w-[16rem]"><%= if attr.doc, do: String.trim(attr.doc) %></td>
+                        <td class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm lsb-text-gray-500 lsb-max-w-[16rem]">
+                          <%= if attr.doc, do: String.trim(attr.doc) %>
+                        </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-sm lsb-text-gray-500 lsb-hidden md:lsb-table-cell">
-                          <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm"><%= unless is_nil(attr.default), do: inspect(attr.default) %></span>
+                          <span class="lsb lsb-rounded lsb-px-2 lsb-py-1 lsb-font-mono lsb-text-xs md:lsb-text-sm">
+                            <%= unless is_nil(attr.default), do: inspect(attr.default) %>
+                          </span>
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-pr-3 lsb-lsb-py-4 lsb-text-sm lsb-font-medium">
-                          <.maybe_locked_attr_input form={f} attr_id={attr.id} type={attr.type}
-                            fields={@fields} values={attr.values} myself={@myself}
+                          <.maybe_locked_attr_input
+                            form={f}
+                            attr_id={attr.id}
+                            type={attr.type}
+                            fields={@fields}
+                            values={attr.values}
+                            myself={@myself}
                             template_attributes={Map.get(@template_attributes, @variation_id, %{})}
                           />
                         </td>
@@ -348,21 +421,31 @@ defmodule PhxLiveStorybook.Story.Playground do
                       <tr>
                         <td class="lsb lsb-whitespace-nowrap md:lsb-pr-3 md:lsb-pr-6 lsb-pl-3 md:lsb-pl-9 lsb-py-4 lsb-text-sm lsb-font-medium lsb-text-gray-900 sm:lsb-pl-6">
                           <%= if slot.required do %>
-                            <.required_badge fa_plan={@fa_plan}/>
+                            <.required_badge fa_plan={@fa_plan} />
                           <% end %>
                           <%= slot.id %>
                           <%= if slot.required do %>
-                            <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">*</span>
+                            <span class="lsb lsb-inline md:lsb-hidden lsb-text-indigo-600 lsb-text-sm lsb-font-bold -lsb-ml-0.5">
+                              *
+                            </span>
                           <% end %>
                         </td>
                         <td class="lsb lsb-whitespace-nowrap lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500">
-                          <.type_badge type={:slot}/>
+                          <.type_badge type={:slot} />
                         </td>
-                        <td colspan="3" class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"><%= if slot.doc, do: String.trim(slot.doc) %></td>
+                        <td
+                          colspan="3"
+                          class="lsb lsb-whitespace-pre-line lsb-py-4 md:lsb-pr-3 lsb-text-xs md:lsb-text-sm  lsb-text-gray-500"
+                        >
+                          <%= if slot.doc, do: String.trim(slot.doc) %>
+                        </td>
                       </tr>
                       <%= if slot?(assigns, slot) do %>
                         <tr class="lsb !lsb-border-t-0">
-                          <td colspan="5" class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900">
+                          <td
+                            colspan="5"
+                            class="lsb lsb-whitespace-nowrap lsb-pl-3 md:lsb-pl-9 lsb-pr-3 lsb-pb-3 lsb-text-xs md:lsb-text-sm lsb-font-medium lsb-text-gray-900"
+                          >
                             <pre class="lsb lsb-text-gray-600 lsb-p-2 lsb-border lsb-border-slate-100 lsb-rounded-md lsb-bg-slate-100 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal lsb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
                           </td>
                         </tr>
@@ -377,11 +460,22 @@ defmodule PhxLiveStorybook.Story.Playground do
       </div>
     </.form>
     <%= unless Enum.empty?(@story.merged_attributes()) do %>
-      <.form :let={f} for={:variation} id="variation-selection-form" class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6">
-        <%= label f, :variation_id, "Open a variation", class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center" %>
-        <%= select f, :variation_id, variation_options(@story), "phx-change": "set-variation", "phx-target": @myself,
-            class: "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
-            value: @variation_id %>
+      <.form
+        :let={f}
+        for={:variation}
+        id="variation-selection-form"
+        class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6"
+      >
+        <%= label(f, :variation_id, "Open a variation",
+          class: "lsb lsb-text-gray-400 lsb-text-xs md:lsb-text-sm lsb-self-end md:lsb-self-center"
+        ) %>
+        <%= select(f, :variation_id, variation_options(@story),
+          "phx-change": "set-variation",
+          "phx-target": @myself,
+          class:
+            "lsb lsb-form-select lsb-text-gray-600 lsb-pr-10 lsb-py-1 lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-600 focus:lsb-border-indigo-600 lsb-text-xs md:lsb-text-sm lsb-rounded-md",
+          value: @variation_id
+        ) %>
       </.form>
     <% end %>
     """
@@ -390,19 +484,27 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp event_log(assigns) do
     ~H"""
     <code class="lsb lsb-text-sm" id={@id}>
-      <div class="lsb-flex lsb-items-center lsb-group lsb-cursor-pointer" phx-click={toggle_event_details(@id)}>
+      <div
+        class="lsb-flex lsb-items-center lsb-group lsb-cursor-pointer"
+        phx-click={toggle_event_details(@id)}
+      >
         <span class="lsb-uncollapse lsb-mr-1 lsb-text-gray-400 group-hover:lsb-font-bold">
-          <.fa_icon style={:thin} name="caret-right" class="fa-fw" plan={@fa_plan}/>
+          <.fa_icon style={:thin} name="caret-right" class="fa-fw" plan={@fa_plan} />
         </span>
 
         <span class="lsb-collapse lsb-mr-1 lsb-hidden lsb-text-gray-400 group-hover:lsb-font-bold">
-          <.fa_icon style={:thin} name="caret-down" class="fa-fw" plan={@fa_plan}/>
+          <.fa_icon style={:thin} name="caret-down" class="fa-fw" plan={@fa_plan} />
         </span>
 
         <div>
-          <span class="lsb-text-gray-400 group-hover:lsb-font-bold"><%= @event_log.time |> Time.truncate(:millisecond) |> Time.to_iso8601() %> </span>
-          <span class="lsb-text-indigo-500 group-hover:lsb-font-bold"><%= @event_log.type %> </span>
-          <span class="lsb-text-orange-500 group-hover:lsb-font-bold">event: <span class="lsb-text-gray-400 group-hover:lsb-font-bold"><%= @event_log.event %> </span></span>
+          <span class="lsb-text-gray-400 group-hover:lsb-font-bold">
+            <%= @event_log.time |> Time.truncate(:millisecond) |> Time.to_iso8601() %>
+          </span>
+          <span class="lsb-text-indigo-500 group-hover:lsb-font-bold"><%= @event_log.type %></span>
+          <span class="lsb-text-orange-500 group-hover:lsb-font-bold">
+            event:
+            <span class="lsb-text-gray-400 group-hover:lsb-font-bold"><%= @event_log.event %></span>
+          </span>
         </div>
       </div>
 
@@ -428,7 +530,12 @@ defmodule PhxLiveStorybook.Story.Playground do
   defp required_badge(assigns) do
     ~H"""
     <span class="lsb lsb-hidden md:lsb-inline lsb-group lsb-relative -lsb-ml-[1.85em] lsb-pr-2">
-      <.fa_icon style={:duotone} name="circle-dot" class="lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer" plan={@fa_plan}/>
+      <.fa_icon
+        style={:duotone}
+        name="circle-dot"
+        class="lsb-text-indigo-400 hover:lsb-text-indigo-600 lsb-cursor-pointer"
+        plan={@fa_plan}
+      />
       <span class="lsb lsb-hidden lsb-absolute lsb-top-6 group-hover:lsb-block lsb-z-50 lsb-mx-auto lsb-text-xs lsb-text-indigo-800 lsb-bg-indigo-100 lsb-rounded lsb-px-2 lsb-py-1">
         Required
       </span>
@@ -484,56 +591,73 @@ defmodule PhxLiveStorybook.Story.Playground do
 
   defp type_badge(assigns = %{type: :string}) do
     ~H"""
-    <span
-      class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-slate-100 lsb-text-slate-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :atom}) do
     ~H"""
-    <span class={"lsb-bg-blue-100 lsb-text-blue-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-blue-100 lsb-text-blue-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :boolean}) do
     ~H"""
-    <span class={"lsb-bg-slate-500 lsb-text-white #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-slate-500 lsb-text-white #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :integer}) do
     ~H"""
-    <span class={"lsb-bg-green-100 lsb-text-green-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-green-100 lsb-text-green-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :float}) do
     ~H"""
-    <span class={"lsb-bg-teal-100 lsb-text-teal-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-teal-100 lsb-text-teal-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :map}) do
     ~H"""
-    <span class={"lsb-bg-fuchsia-100 lsb-text-fuchsia-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-fuchsia-100 lsb-text-fuchsia-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :list}) do
     ~H"""
-    <span class={"lsb-bg-purple-100 lsb-text-purple-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-purple-100 lsb-text-purple-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: :slot}) do
     ~H"""
-    <span class={"lsb-bg-rose-100 lsb-text-rose-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-rose-100 lsb-text-rose-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
   defp type_badge(assigns = %{type: _type}) do
     ~H"""
-    <span class={"lsb-bg-amber-100 lsb-text-amber-800 #{type_badge_class()}"}><%= type_label(@type) %></span>
+    <span class={"lsb-bg-amber-100 lsb-text-amber-800 #{type_badge_class()}"}>
+      <%= type_label(@type) %>
+    </span>
     """
   end
 
@@ -555,7 +679,12 @@ defmodule PhxLiveStorybook.Story.Playground do
       nil ->
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
-            ~H|<%= text_input(@form, @attr_id, value: "[Multiple values]", disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+            ~H|<%= text_input(@form, @attr_id,
+  value: "[Multiple values]",
+  disabled: true,
+  class:
+    "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md"
+) %>|
 
           {:eval, value} ->
             value = String.replace(value, ~s|"|, "")
@@ -568,7 +697,12 @@ defmodule PhxLiveStorybook.Story.Playground do
       value ->
         assigns = assign(assigns, value: value)
 
-        ~H|<%= text_input(@form, @attr_id, value: inspect(@value), disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md")%>|
+        ~H|<%= text_input(@form, @attr_id,
+  value: inspect(@value),
+  disabled: true,
+  class:
+    "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md"
+) %>|
     end
   end
 
@@ -580,9 +714,16 @@ defmodule PhxLiveStorybook.Story.Playground do
       )
 
     ~H"""
-    <button type="button" phx-click={on_toggle_click(@attr_id, @value)} class={"lsb #{@bg_class} lsb-relative lsb-inline-flex lsb-flex-shrink-0 lsb-p-0 lsb-h-6 lsb-w-11 lsb-border-2 lsb-border-transparent lsb-rounded-full lsb-cursor-pointer lsb-transition-colors lsb-ease-in-out lsb-duration-200 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-indigo-500"} phx-target={@myself} role="switch">
+    <button
+      type="button"
+      phx-click={on_toggle_click(@attr_id, @value)}
+      class={"lsb #{@bg_class} lsb-relative lsb-inline-flex lsb-flex-shrink-0 lsb-p-0 lsb-h-6 lsb-w-11 lsb-border-2 lsb-border-transparent lsb-rounded-full lsb-cursor-pointer lsb-transition-colors lsb-ease-in-out lsb-duration-200 focus:lsb-outline-none focus:lsb-ring-2 focus:lsb-ring-offset-2 focus:lsb-ring-indigo-500"}
+      phx-target={@myself}
+      role="switch"
+    >
       <%= hidden_input(@form, @attr_id, value: "#{@value}") %>
-      <span class={"lsb #{@translate_class} lsb-form-input lsb-p-0 lsb-border-0 lsb-pointer-events-none lsb-inline-block lsb-h-5 lsb-w-5 lsb-rounded-full lsb-bg-white lsb-shadow lsb-transform lsb-ring-0 lsb-transition lsb-ease-in-out lsb-duration-200"}></span>
+      <span class={"lsb #{@translate_class} lsb-form-input lsb-p-0 lsb-border-0 lsb-pointer-events-none lsb-inline-block lsb-h-5 lsb-w-5 lsb-rounded-full lsb-bg-white lsb-shadow lsb-transform lsb-ring-0 lsb-transition lsb-ease-in-out lsb-duration-200"}>
+      </span>
     </button>
     """
   end
@@ -592,7 +733,12 @@ defmodule PhxLiveStorybook.Story.Playground do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
-    <%= number_input(@form, @attr_id, value: @value, step: @step, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id,
+      value: @value,
+      step: @step,
+      class:
+        "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md"
+    ) %>
     """
   end
 
@@ -600,13 +746,23 @@ defmodule PhxLiveStorybook.Story.Playground do
     assigns = assigns |> assign(:min, min) |> assign(:max, max)
 
     ~H"""
-    <%= number_input(@form, @attr_id, value: @value, min: @min, max: @max, class: "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md") %>
+    <%= number_input(@form, @attr_id,
+      value: @value,
+      min: @min,
+      max: @max,
+      class:
+        "lsb lsb-form-input lsb-text-xs md:lsb-text-sm lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-border-gray-300 lsb-rounded-md"
+    ) %>
     """
   end
 
   defp attr_input(assigns = %{type: :string, values: nil}) do
     ~H"""
-    <%= text_input(@form, @attr_id, value: @value, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(@form, @attr_id,
+      value: @value,
+      class:
+        "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md"
+    ) %>
     """
   end
 
@@ -621,7 +777,12 @@ defmodule PhxLiveStorybook.Story.Playground do
     assigns = assign(assigns, value: value)
 
     ~H"""
-    <%= text_input(@form, @attr_id, value: @value, disabled: true, class: "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md") %>
+    <%= text_input(@form, @attr_id,
+      value: @value,
+      disabled: true,
+      class:
+        "lsb lsb-form-input lsb-block lsb-w-full lsb-shadow-sm focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-text-xs md:lsb-text-sm lsb-border-gray-300 lsb-rounded-md"
+    ) %>
     """
   end
 
@@ -629,8 +790,11 @@ defmodule PhxLiveStorybook.Story.Playground do
     assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
 
     ~H"""
-    <%= select(@form, @attr_id, @values, value: @value,
-      class: "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md") %>
+    <%= select(@form, @attr_id, @values,
+      value: @value,
+      class:
+        "lsb lsb-form-select lsb-mt-1 lsb-block lsb-w-full lsb-pl-3 lsb-pr-10 lsb-py-2 lsb-text-xs md:lsb-text-sm  lsb-border-gray-300 focus:lsb-outline-none focus:lsb-ring-indigo-500 focus:lsb-border-indigo-500 lsb-rounded-md"
+    ) %>
     """
   end
 

@@ -18,9 +18,18 @@ defmodule PhxLiveStorybook.LayoutView do
     ~H"""
     <.intersperse :let={item} enum={@breadcrumbs}>
       <:separator>
-        <.fa_icon style={:thin} name="angle-right" class="lsb-px-2 lsb-text-slate-500" plan={@fa_plan}/>
+        <.fa_icon
+          style={:thin}
+          name="angle-right"
+          class="lsb-px-2 lsb-text-slate-500"
+          plan={@fa_plan}
+        />
       </:separator>
-      <span class={["lsb", @span_class, "[&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap"]}>
+      <span class={[
+        "lsb",
+        @span_class,
+        "[&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap"
+      ]}>
         <%= item %>
       </span>
     </.intersperse>
