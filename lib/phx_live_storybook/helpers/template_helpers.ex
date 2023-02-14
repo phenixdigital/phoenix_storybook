@@ -105,11 +105,7 @@ defmodule PhxLiveStorybook.TemplateHelpers do
   end
 
   defp inspect_val(var) do
-    if Regex.match?(~r/{.*}/, var) do
-      String.replace(var, ["{", "}"], "")
-    else
-      var
-    end
+    Regex.replace(~r|{(.*)}|, var, "\\1")
   end
 
   defp replace_in_template(template, regex, markup, _indent? = true) do
