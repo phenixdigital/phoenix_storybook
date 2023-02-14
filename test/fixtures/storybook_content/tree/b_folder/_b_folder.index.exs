@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BFolder do
-  use PhxLiveStorybook.Index
+  use PhoenixStorybook.Index
 
   def folder_name, do: "Config Name"
   def folder_open?, do: true

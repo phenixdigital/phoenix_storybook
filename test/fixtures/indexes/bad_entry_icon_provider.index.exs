@@ -1,5 +1,5 @@
 defmodule Storybook.BadEntryIconProvider do
-  use PhxLiveStorybook.Index
+  use PhoenixStorybook.Index
   def folder_icon, do: {:fa, "book-open"}
   def folder_name, do: "Storybook"
 

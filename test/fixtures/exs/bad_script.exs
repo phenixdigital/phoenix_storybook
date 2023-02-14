@@ -1,1 +1,1 @@
-defmodule PhxLiveStorybook.BadScript do
+defmodule PhoenixStorybook.BadScript do

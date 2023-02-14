@@ -1,5 +1,5 @@
 defmodule Storybook.Valid do
-  use PhxLiveStorybook.Index
+  use PhoenixStorybook.Index
   def folder_icon, do: {:fa, "book-open", :light}
   def folder_name, do: "Storybook"
 

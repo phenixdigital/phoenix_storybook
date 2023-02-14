@@ -1,4 +1,4 @@
-# PhxLiveStorybook contributing guide
+# PhoenixStorybook contributing guide
 
 Please take a moment to review this document in order to make the contribution process easy and
 effective for everyone involved!
@@ -50,7 +50,7 @@ For modules, protocols and types say what it is. For example write
 something like:
 
 ```elixir
-defmodule PhxLiveStorybook.Foo do
+defmodule PhoenixStorybook.Foo do
   @moduledoc """
   Conveniences for working on Foo.
   ...
@@ -96,11 +96,11 @@ in order to craft an excellent pull request
 
 ```bash
 # Clone your fork of the repo into the current directory
-git clone https://github.com/<your-username>/phx_live_storybook
+git clone https://github.com/<your-username>/phoenix_storybook
 # Navigate to the newly cloned directory
-cd phx_live_storybook
+cd phoenix_storybook
 # Assign the original repo to a remote called "upstream"
-git remote add upstream https://github.com/phenixdigital/phx_live_storybook
+git remote add upstream https://github.com/phenixdigital/phoenix_storybook
 ```
 
 2. If you cloned a while ago, get the latest changes from upstream, and update your fork:
@@ -111,14 +111,14 @@ git pull upstream main
 git push
 ```
 
-3. Clone phx_live_storybook_sample alongside this repository.
+3. Clone phoenix_storybook_sample alongside this repository.
 
 ```bash
 cd ..
-git clone git@github.com:phenixdigital/phx_live_storybook_sample.git
+git clone git@github.com:phenixdigital/phoenix_storybook_sample.git
 ```
 
-And follow [phx_live_storybook_sample README.md](https://github.com/phenixdigital/phx_live_storybook_sample) instructions.
+And follow [phoenix_storybook_sample README.md](https://github.com/phenixdigital/phoenix_storybook_sample) instructions.
 
 4. Create a new feature branch (off of `main`) to contain your feature, change, or fix.
 

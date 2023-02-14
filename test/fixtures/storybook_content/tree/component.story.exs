@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Component do
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
   def function, do: &Component.component/1
 
   def attributes do

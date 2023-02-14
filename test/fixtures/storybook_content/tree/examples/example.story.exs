@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Examples.Example do
-  use PhxLiveStorybook.Story, :example
+  use PhoenixStorybook.Story, :example
 
   def doc, do: "Example story"
 

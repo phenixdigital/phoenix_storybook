@@ -1,7 +1,7 @@
 /* 
  * This is your custom storybook stylesheet.
  * Put your component styling under .<%= inspect schema.sandbox_class %> scope. 
- * See the https://hexdocs.pm/phx_live_storybook/sandboxing.html guide for more info.
+ * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
  */
 
 .lsb-sandbox, .<%= schema.sandbox_class %> {

@@ -1,2 +1,2 @@
-defmodule PhxLiveStorybook.Script do
+defmodule PhoenixStorybook.Script do
 end

@@ -1,5 +1,5 @@
 defmodule Storybook.BadFolderIcon do
-  use PhxLiveStorybook.Index
+  use PhoenixStorybook.Index
   def folder_icon, do: :icon
   def folder_name, do: "Storybook"
 

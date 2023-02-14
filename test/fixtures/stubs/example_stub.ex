@@ -1,5 +1,5 @@
-defmodule PhxLiveStorybook.ExampleStub do
-  alias PhxLiveStorybook.Story.{ExampleBehaviour, StoryBehaviour}
+defmodule PhoenixStorybook.ExampleStub do
+  alias PhoenixStorybook.Story.{ExampleBehaviour, StoryBehaviour}
 
   @behaviour StoryBehaviour
   @behaviour ExampleBehaviour

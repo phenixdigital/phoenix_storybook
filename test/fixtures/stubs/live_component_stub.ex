@@ -1,5 +1,5 @@
-defmodule PhxLiveStorybook.LiveComponentStub do
-  alias PhxLiveStorybook.Story.{LiveComponentBehaviour, StoryBehaviour}
+defmodule PhoenixStorybook.LiveComponentStub do
+  alias PhoenixStorybook.Story.{LiveComponentBehaviour, StoryBehaviour}
 
   @behaviour StoryBehaviour
   @behaviour LiveComponentBehaviour
@@ -32,5 +32,5 @@ defmodule PhxLiveStorybook.LiveComponentStub do
   def variations, do: []
 
   @impl LiveComponentBehaviour
-  def template, do: PhxLiveStorybook.TemplateHelpers.default_template()
+  def template, do: PhoenixStorybook.TemplateHelpers.default_template()
 end

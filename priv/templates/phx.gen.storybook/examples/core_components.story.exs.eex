@@ -1,5 +1,5 @@
 defmodule Storybook.Examples.CoreComponents do
-  use PhxLiveStorybook.Story, :example
+  use PhoenixStorybook.Story, :example
   import <%= schema.core_components_module %>
 
   alias Phoenix.LiveView.JS

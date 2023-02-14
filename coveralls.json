@@ -3,5 +3,5 @@
     "output_dir": "coverage/",
     "treat_no_relevant_lines_as_covered": true
   },
-  "skip_files": ["test/fixtures", "lib/phx_live_storybook/web.ex"]
+  "skip_files": ["test/fixtures", "lib/phoenix_storybook/web.ex"]
 }

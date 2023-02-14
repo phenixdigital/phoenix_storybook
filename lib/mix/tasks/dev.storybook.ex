@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Dev.Storybook do
   @doc false
   def run(_args) do
     Mix.shell().info("Setting up storybook for local development.")
-    storybook_app = :phx_live_storybook
+    storybook_app = :phoenix_storybook
     current_app = Mix.Project.config()[:app]
 
     if storybook_app == current_app do

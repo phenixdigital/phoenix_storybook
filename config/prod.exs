@@ -1,2 +1,2 @@
 import Config
-config :phx_live_storybook, :gzip_assets, true
+config :phoenix_storybook, :gzip_assets, true
