@@ -37,7 +37,9 @@ export const StoryHook = {
 
     window.addEventListener("lsb:copy-code", (e) => {
       let button = e.target;
-      let icon = button.querySelector(".svg-inline--fa");
+      let icon =
+        button.querySelector(".svg-inline--fa") ||
+        button.querySelector(".fa-copy");
       button.classList.add(...buttonActiveClasses);
       button.classList.remove(...buttonClasses);
       icon.classList.add(iconActiveClass);
@@ -46,7 +48,9 @@ export const StoryHook = {
       this.copyToClipboard(button.nextElementSibling.textContent);
 
       setTimeout(() => {
-        let icon = button.querySelector(".svg-inline--fa");
+        let icon =
+          button.querySelector(".svg-inline--fa") ||
+          button.querySelector(".fa-copy");
         icon.classList.add(iconClass);
         icon.classList.remove(iconActiveClass);
         button.classList.add(...buttonClasses);
