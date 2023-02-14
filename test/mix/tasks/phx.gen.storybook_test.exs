@@ -36,6 +36,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
       assert_shell_receive :info, ~r|creating storybook/core_components/button.story.exs|
+      assert_shell_receive :info, ~r|creating storybook/core_components/table.story.exs|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
       assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
@@ -67,6 +68,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
       assert_shell_receive :info, ~r|creating storybook/core_components/button.story.exs|
+      assert_shell_receive :info, ~r|creating storybook/core_components/table.story.exs|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
       assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
@@ -94,4 +96,5 @@ end
 defmodule PhxLiveStorybookWeb.CoreComponents do
   use Phoenix.Component
   def button(assigns), do: ~H[]
+  def table(assigns), do: ~H[]
 end

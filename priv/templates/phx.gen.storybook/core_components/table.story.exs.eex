@@ -22,12 +22,12 @@ defmodule Storybook.CoreComponents.Table do
         slots: [
           """
           <:col :let={user} label="Id">
-            <%= user.id %>
+            <%%= user.id %>
           </:col>
           """,
           """
           <:col :let={user} label="User name">
-            <%= user.username %>
+            <%%= user.username %>
           </:col>
           """
         ]
