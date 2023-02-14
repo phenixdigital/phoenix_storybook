@@ -338,7 +338,8 @@ defmodule PhxLiveStorybook.Story.Playground do
     ~H"""
     <.form
       :let={f}
-      for={:playground}
+      for={%{}}
+      as={:playground}
       id={form_id(@story)}
       phx-change="playground-change"
       phx-target={@myself}
@@ -462,7 +463,8 @@ defmodule PhxLiveStorybook.Story.Playground do
     <%= unless Enum.empty?(@story.merged_attributes()) do %>
       <.form
         :let={f}
-        for={:variation}
+        for={%{}}
+        as={:variation}
         id="variation-selection-form"
         class="lsb lsb-flex lsb-flex-col md:lsb-flex-row lsb-space-y-1 md:lsb-space-x-2 lsb-justify-end lsb-w-full lsb-mb-6"
       >

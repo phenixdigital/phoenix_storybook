@@ -146,7 +146,7 @@ In template, you can pass some extra attributes to your variation. Just add them
 
 ```elixir
 """
-<.form_for for={:user} :let={f}>
+<.form_for :let={f} for={%{}} as={:user}>
   <.lsb-variation form={f}/>
 </.form>
 """

@@ -283,7 +283,8 @@ defmodule PhxLiveStorybook.StoryLive do
       <!-- mobile version of navigation tabs -->
       <.form
         :let={f}
-        for={:navigation}
+        for={%{}}
+        as={:navigation}
         id={"#{Macro.underscore(@story)}-navigation-form"}
         class="lsb story-nav-form lg:lsb-hidden"
       >

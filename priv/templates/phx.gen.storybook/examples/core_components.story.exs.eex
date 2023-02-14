@@ -52,7 +52,8 @@ defmodule Storybook.Examples.CoreComponents do
       <:subtitle>This won't be persisted into DB, memory only</:subtitle>
       <.simple_form
         :let={f}
-        for={:user}
+        for={%{}}
+        as={:user}
         phx-submit={JS.push("save_user") |> hide_modal("new-user-modal")}
       >
         <.input field={{f, :first_name}} label="First name" />
