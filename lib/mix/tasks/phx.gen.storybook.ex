@@ -57,18 +57,12 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       [
         {"storybook.ex.eex", Path.join(app_folder, "storybook.ex")},
         {"_root.index.exs", Path.join(page_folder, "_root.index.exs")},
-        {"_core_components.index.exs", Path.join(page_folder, "_core_components.index.exs")},
-        {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")},
-        {"storybook.js", Path.join(js_folder, "storybook.js")}
-      ]
-      |> with_core_components(core_components_module, core_components_folder)
-
-    mapping =
-      if opts[:tailwind] == false do
-        mapping ++ [{"storybook.css.eex", Path.join(css_folder, "storybook.css")}]
-      else
-        mapping ++ [{"storybook.tailwind.css", Path.join(css_folder, "storybook.css")}]
-      end
+        {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")}
+      ] ++
+        maybe_core_components(core_components_module, core_components_folder) ++
+        maybe_core_components_example(core_components_module) ++
+        stylesheet(css_folder, opts[:tailwind]) ++
+        [{"storybook.js", Path.join(js_folder, "storybook.js")}]
 
     for {source_file_path, target} <- mapping do
       templates_folder = Application.app_dir(:phx_live_storybook, @templates_folder)
@@ -96,20 +90,19 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     end
   end
 
-  defp with_core_components(mapping, module, folder) do
+  defp maybe_core_components(core_components_module, folder) do
     dir = Application.app_dir(:phx_live_storybook, @templates_folder)
     stories = dir |> Path.join("/core_components/*.story.*") |> Path.wildcard()
 
     for story_path <- stories,
-        component_defined?(story_path, module),
+        component_defined?(story_path, core_components_module),
         basename = Path.basename(story_path),
         story_name = String.trim_trailing(basename, ".eex") do
       {Path.join("core_components", basename), Path.join(folder, story_name)}
-    end ++
-      mapping
+    end
   end
 
-  def component_defined?(story_path, module) do
+  defp component_defined?(story_path, module) do
     function =
       story_path
       |> Path.basename()
@@ -119,6 +112,25 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     Code.ensure_loaded?(module) && function_exported?(module, function, 1)
   end
+
+  defp maybe_core_components_example(core_components_module) do
+    if Code.ensure_loaded?(core_components_module) &&
+         Enum.all?(~w(button header table modal input simple_form)a, fn function ->
+           function_exported?(core_components_module, function, 1)
+         end) do
+      [
+        {"examples/core_components.story.exs.eex", "storybook/examples/core_components.story.exs"}
+      ]
+    else
+      []
+    end
+  end
+
+  defp stylesheet(css_folder, _tailwind = false),
+    do: [{"storybook.css.eex", Path.join(css_folder, "storybook.css")}]
+
+  defp stylesheet(css_folder, _tailwind),
+    do: [{"storybook.tailwind.css", Path.join(css_folder, "storybook.css")}]
 
   defp web_module do
     base = Mix.Phoenix.base()

@@ -34,10 +34,10 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :info, ~r|Starting storybook generation|
       assert_shell_receive :info, ~r|creating lib/phx_live_storybook_web/storybook.ex|
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
-      assert_shell_receive :info, ~r|creating storybook/_core_components.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
-      assert_shell_receive :info, ~r|creating assets/js/storybook.js|
+      assert_shell_receive :info, ~r|creating storybook/core_components/button.story.exs|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
+      assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
       assert_shell_receive :yes?, ~r|Add.*js/storybook.js.*as a new entry point to your esbuild args in .*config/config.exs.*|
       assert_shell_receive :yes?, ~r|Add a new Tailwind build profile for.*css/storybook.css.*in.*config/config.exs.*|
@@ -54,7 +54,6 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       Storybook.run(["--no-tailwind"])
 
       assert_file("storybook/_root.index.exs")
-      assert_file("storybook/_core_components.index.exs")
       assert_file("storybook/welcome.story.exs")
       assert_file("lib/phx_live_storybook_web/storybook.ex")
 
@@ -66,10 +65,10 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive :info, ~r|Starting storybook generation|
       assert_shell_receive :info, ~r|creating lib/phx_live_storybook_web/storybook.ex|
       assert_shell_receive :info, ~r|creating storybook/_root.index.exs|
-      assert_shell_receive :info, ~r|creating storybook/_core_components.index.exs|
       assert_shell_receive :info, ~r|creating storybook/welcome.story.exs|
-      assert_shell_receive :info, ~r|creating assets/js/storybook.js|
+      assert_shell_receive :info, ~r|creating storybook/core_components/button.story.exs|
       assert_shell_receive :info, ~r|creating assets/css/storybook.css|
+      assert_shell_receive :info, ~r|creating assets/js/storybook.js|
       assert_shell_receive :yes?, ~r|Add the following to your.*router.ex.*:|
       assert_shell_receive :yes?, ~r|Add.*js/storybook.js.*as a new entry point to your esbuild args in .*config/config.exs.*|
       assert_shell_receive :yes?, ~r|Add a new.*live_reload pattern.*to your endpoint in.*config/dev.exs.*|
@@ -90,4 +89,9 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
     assert msg =~ pattern
   end
 
+end
+
+defmodule PhxLiveStorybookWeb.CoreComponents do
+  use Phoenix.Component
+  def button(assigns), do: ~H[]
 end
