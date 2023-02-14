@@ -25,10 +25,6 @@ defmodule PhxLiveStorybook.TemplateHelpers do
     end)
   end
 
-  def unique_variation_id(story, {:single, variation_id}) do
-    unique_variation_id(story, variation_id)
-  end
-
   def unique_variation_id(story, {group_id, variation_id}) do
     unique_variation_id(story, "#{group_id}-#{variation_id}")
   end
