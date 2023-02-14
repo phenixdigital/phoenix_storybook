@@ -14,7 +14,7 @@ The following strategies are available:
 Here is how you can use these strategies. In your `storybook.ex`:
 
 ```elixir
-use PhxLiveStorybook,
+use PhoenixStorybook,
   themes_strategies: [
     sandbox_class: "prefix", # will set a class prefixed by `prefix-` on the sandbox container
     assign: :theme,

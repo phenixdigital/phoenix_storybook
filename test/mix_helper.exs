@@ -1,7 +1,7 @@
 # https://github.com/phoenixframework/phoenix/blob/master/installer/test/mix_helper.exs
 Mix.shell(Mix.Shell.Process)
 
-defmodule PhxLiveStorybook.MixHelper do
+defmodule PhoenixStorybook.MixHelper do
   import ExUnit.Assertions
 
   def tmp_path, do: Path.expand("../tmp", __DIR__)

@@ -1,5 +1,5 @@
 defmodule TreeStorybook.Let.LetComponent do
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
   def function, do: &LetComponent.let_component/1
 
   def variations do

@@ -1,5 +1,5 @@
 defmodule TreeStorybook.BPage do
-  use PhxLiveStorybook.Story, :page
+  use PhoenixStorybook.Story, :page
 
   def navigation do
     [{:tab_1, "Tab 1", nil}, {:tab_2, "Tab 2", nil}]

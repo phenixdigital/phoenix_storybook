@@ -1,5 +1,5 @@
 defmodule TreeStorybook.AFolder do
-  use PhxLiveStorybook.Index
+  use PhoenixStorybook.Index
 
   def folder_name, do: "A Folder"
   def folder_icon, do: {:fa, "icon"}

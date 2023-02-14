@@ -1,6 +1,6 @@
 # Sandboxing components
 
-In `PhxLiveStorybook` your components live within the storybook, so they share some context with
+In `PhoenixStorybook` your components live within the storybook, so they share some context with
 the storybook: **styling** and **scripts**.
 
 While the original Storybook for React only [relies on iframes](https://storybook.js.org/docs/react/configure/story-rendering),
@@ -15,7 +15,7 @@ This guide will explain:
 
 ## 1. What JS context do your components share with the storybook?
 
-`PhxLiveStorybook` runs with Phoenix LiveView and therefore requires its `LiveSocket`. This
+`PhoenixStorybook` runs with Phoenix LiveView and therefore requires its `LiveSocket`. This
 LiveSocket is the same used by your components: you just need to inject it with your own `Hooks`,
 `Params` and `Uploaders`.
 
@@ -46,7 +46,7 @@ There is currently no way to access them in component or live component stories.
 
 ## 2. How is the storybook styled?
 
-`PhxLiveStorybook` is using [TailwindCSS](https://tailwindcss.com) with
+`PhoenixStorybook` is using [TailwindCSS](https://tailwindcss.com) with
 [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your
 browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix):
 `lsb-` (which means that instead of using `bg-blue-400` the storybook uses `lsb-bg-blue-400`).
@@ -72,12 +72,12 @@ carry the `.lsb-sandbox` CSS class and a **custom sandboxing class of your choic
 You can leverage this to scope your styles with this class. Here is how you can do it with
 `TailwindCSS`:
 
-- configure `phx_live_storybook` with a custom `sandbox_class`:
+- configure `phoenix_storybook` with a custom `sandbox_class`:
 
 ```elixir
 # lib/my_app_web/storybook.ex
 defmodule MyAppWeb.Storybook do
-  use PhxLiveStorybook,
+  use PhoenixStorybook,
     ...
     sandbox_class: "my-app-sandbox",
 ```
@@ -136,7 +136,7 @@ Just add the `iframe` option to it.
 # storybook/components/button.exs
 defmodule MyAppWeb.Storybook.Components.Button do
  alias MyAppWeb.Components.Button
- use PhxLiveStorybook.Story, :component
+ use PhoenixStorybook.Story, :component
 
  def function, do: &Button.button/1
  def container, do: :iframe

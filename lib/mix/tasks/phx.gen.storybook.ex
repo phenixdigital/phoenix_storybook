@@ -65,7 +65,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
         [{"storybook.js", Path.join(js_folder, "storybook.js")}]
 
     for {source_file_path, target} <- mapping do
-      templates_folder = Application.app_dir(:phx_live_storybook, @templates_folder)
+      templates_folder = Application.app_dir(:phoenix_storybook, @templates_folder)
       source = Path.join(templates_folder, source_file_path)
 
       source_content =
@@ -91,7 +91,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
   end
 
   defp maybe_core_components(core_components_module, folder) do
-    dir = Application.app_dir(:phx_live_storybook, @templates_folder)
+    dir = Application.app_dir(:phoenix_storybook, @templates_folder)
     stories = dir |> Path.join("/core_components/*.story.*") |> Path.wildcard()
 
     for story_path <- stories,
@@ -163,7 +163,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       Add the following to your #{IO.ANSI.bright()}router.ex#{IO.ANSI.reset()}:
 
         use #{web_module}, :router
-        import PhxLiveStorybook.Router
+        import PhoenixStorybook.Router
 
         scope "/" do
           storybook_assets()

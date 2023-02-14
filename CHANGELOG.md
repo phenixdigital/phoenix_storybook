@@ -2,20 +2,21 @@
 
 ## v0.5.0 (not yet released)
 
-- **change (breaking!)**: [component description is no longer a function defined](https://github.com/phenixdigital/phx_live_storybook/issues/138)
+- **change (breaking!)**: project has been renamed from `phx_live_storybook` to `phoenix_storybook`!
+- **change (breaking!)**: [component description is no longer a function defined](https://github.com/phenixdigital/phoenix_storybook/issues/138)
   in your story file but is fetched from your component `@doc` or your live_component `@moduledoc`
   comments.
-- **feature**: [support for Example stories](https://github.com/phenixdigital/phx_live_storybook/issues/213)
-- **feature**: [visual regression endpoints](https://github.com/phenixdigital/phx_live_storybook/issues/215).
+- **feature**: [support for Example stories](https://github.com/phenixdigital/phoenix_storybook/issues/213)
+- **feature**: [visual regression endpoints](https://github.com/phenixdigital/phoenix_storybook/issues/215).
   This endpoint can output bare components without the storybook's UI so that you can automate
   visual tests screenshots.
-- **improvement**: [mix phx.gen.storybook now prints formatter instructions](https://github.com/phenixdigital/phx_live_storybook/issues/153)
-- **improvement**: [new theme strategies](https://github.com/phenixdigital/phx_live_storybook/issues/177). Theming guide has been updated.
-- **improvement**: [boolean attributes are rendered with their shorthand notation](https://github.com/phenixdigital/phx_live_storybook/issues/169)
-- **improvement**: [generating stories for Phoenix 1.7 core components](https://github.com/phenixdigital/phx_live_storybook/issues/187)
-- **bugfix**: [a project without heroicons will no longer raise on the generated icon story](https://github.com/phenixdigital/phx_live_storybook/issues/152)
-- **bugfix**: [fixed variation crash with a large binary in a map](https://github.com/phenixdigital/phx_live_storybook/pull/161)
-- **bugfix**: [fixed slots crash if rendered more than once ](https://github.com/phenixdigital/phx_live_storybook/issues/206)
+- **improvement**: [mix phx.gen.storybook now prints formatter instructions](https://github.com/phenixdigital/phoenix_storybook/issues/153)
+- **improvement**: [new theme strategies](https://github.com/phenixdigital/phoenix_storybook/issues/177). Theming guide has been updated.
+- **improvement**: [boolean attributes are rendered with their shorthand notation](https://github.com/phenixdigital/phoenix_storybook/issues/169)
+- **improvement**: [generating stories for Phoenix 1.7 core components](https://github.com/phenixdigital/phoenix_storybook/issues/187)
+- **bugfix**: [a project without heroicons will no longer raise on the generated icon story](https://github.com/phenixdigital/phoenix_storybook/issues/152)
+- **bugfix**: [fixed variation crash with a large binary in a map](https://github.com/phenixdigital/phoenix_storybook/pull/161)
+- **bugfix**: [fixed slots crash if rendered more than once ](https://github.com/phenixdigital/phoenix_storybook/issues/206)
 
 ## v0.4.5 (2022-10-10)
 
@@ -24,16 +25,16 @@
 
 ## v0.4.4 (2022-10-10)
 
-- **feature**: [you can now customize your story div container](https://github.com/phenixdigital/phx_live_storybook/issues/135)
-- **improvement**: [removed routes helpers](https://github.com/phenixdigital/phx_live_storybook/pull/137)
+- **feature**: [you can now customize your story div container](https://github.com/phenixdigital/phoenix_storybook/issues/135)
+- **improvement**: [removed routes helpers](https://github.com/phenixdigital/phoenix_storybook/pull/137)
   (will help transition to Phoenix 1.7)
-- **improvement**: [pass connect params to story page](https://github.com/phenixdigital/phx_live_storybook/pull/130)
-- **bugfix**: [add :live_session and :as options to router](https://github.com/phenixdigital/phx_live_storybook/pull/127)
-- **bugfix**: [missing playground tab icons](https://github.com/phenixdigital/phx_live_storybook/issues/134)
+- **improvement**: [pass connect params to story page](https://github.com/phenixdigital/phoenix_storybook/pull/130)
+- **bugfix**: [add :live_session and :as options to router](https://github.com/phenixdigital/phoenix_storybook/pull/127)
+- **bugfix**: [missing playground tab icons](https://github.com/phenixdigital/phoenix_storybook/issues/134)
 
 ## v0.4.3 (2022-10-04)
 
-- **bugfix**: [mounting several storybooks in router is now possible](https://github.com/phenixdigital/phx_live_storybook/issues/126)
+- **bugfix**: [mounting several storybooks in router is now possible](https://github.com/phenixdigital/phoenix_storybook/issues/126)
 - **bugfix**: fixed mobile layout
 
 ## v0.4.2 (2022-10-02)
@@ -43,10 +44,10 @@
 
 ## v0.4.1 (2022-09-30)
 
-- **bugfix**: sidebar, tabs & theme icon [rendering issues have been fixed](https://github.com/phenixdigital/phx_live_storybook/issues/111). Icons are no longer rendered within the CSS sandbox and should be
+- **bugfix**: sidebar, tabs & theme icon [rendering issues have been fixed](https://github.com/phenixdigital/phoenix_storybook/issues/111). Icons are no longer rendered within the CSS sandbox and should be
   styles with `lsb-*` classes.
-- **bugfix**: [search panel no longer binds the `/` key](https://github.com/phenixdigital/phx_live_storybook/issues/110).
-- **bugfix**: [component generated by the `mix phx.gen.storybook` is no longer crashing.](https://github.com/phenixdigital/phx_live_storybook/pull/116)
+- **bugfix**: [search panel no longer binds the `/` key](https://github.com/phenixdigital/phoenix_storybook/issues/110).
+- **bugfix**: [component generated by the `mix phx.gen.storybook` is no longer crashing.](https://github.com/phenixdigital/phoenix_storybook/pull/116)
 
 ## v0.4.0 (2022-09-29)
 

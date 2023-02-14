@@ -1,5 +1,5 @@
 defmodule Storybook.CoreComponents.Table do
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
   alias <%= schema.core_components_module %>
 
   def function, do: &CoreComponents.table/1

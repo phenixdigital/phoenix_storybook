@@ -3,7 +3,7 @@
 You can provide custom sidebar & header icons for your stories.
 Page stories can also provide iconized navigation tabs.
 
-PhxLiveStorybook gives you the ability to render icons with 2 different providers:
+PhoenixStorybook gives you the ability to render icons with 2 different providers:
 
 - [FontAwesome](https://fontawesome.com) which offers a decent set of free icons and a lot of
   additional styles with paid plans
@@ -28,7 +28,7 @@ The two last tuple elements are optional.
 
 ## FontAwesome icons
 
-PhxLiveStorybook is built with a very small subset of FontAwesome free icons. If you want to use
+PhoenixStorybook is built with a very small subset of FontAwesome free icons. If you want to use
 other FontAwesome icons you need to provide a valid **FontAwesome kit id**.
 
 It can be either free or paid, so you also need to configure your FontAwesome plan.
@@ -36,7 +36,7 @@ It can be either free or paid, so you also need to configure your FontAwesome pl
 ```elixir
 # lib/my_app_web/storybook.ex
 defmodule MyAppWeb.Storybook do
-  use PhxLiveStorybook,
+  use PhoenixStorybook,
     otp_app: :my_app,
     font_awesome_plan: :pro, # default value is :free
     font_awesome_kit_id: "foo8b41bar4625",
@@ -45,7 +45,7 @@ end
 
 ## HeroIcons
 
-PhxLiveStorybook delegates icon rendering to [heroicons_elixir](https://github.com/mveytsman/heroicons_elixir).
+PhoenixStorybook delegates icon rendering to [heroicons_elixir](https://github.com/mveytsman/heroicons_elixir).
 Make sure to add their dependency in your `mix.exs` file.
 
 ```elixir

@@ -1,4 +1,4 @@
 defmodule FlatListStorybook.AComponent do
-  use PhxLiveStorybook.Story, :component
+  use PhoenixStorybook.Story, :component
   def function, do: nil
 end

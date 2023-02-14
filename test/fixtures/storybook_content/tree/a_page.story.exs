@@ -1,5 +1,5 @@
 defmodule TreeStorybook.APage do
-  use PhxLiveStorybook.Story, :page
+  use PhoenixStorybook.Story, :page
 
   def doc, do: "a page"
 
