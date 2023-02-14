@@ -23,10 +23,10 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
       live_component: live_component
     } do
       code = render_variation_code(component, :hello)
-      assert code =~ ~s|<.component id="component-hello" label="hello"/>|
+      assert code =~ ~s|<.component id="component-single-hello" label="hello"/>|
 
       code = render_variation_code(component, :world)
-      assert code =~ ~s|<.component id="component-world" index={37} label="world"/>|
+      assert code =~ ~s|<.component id="component-single-world" index={37} label="world"/>|
 
       code = render_variation_code(live_component, :hello)
       assert code =~ ~s|<.live_component module={LiveComponent} label="hello"/>|
@@ -193,7 +193,7 @@ defmodule PhxLiveStorybook.Rendering.CodeRendererTest do
     test "it renders component id only if it has a declared :id attribute" do
       {:ok, component} = TreeStorybook.load_story("/b_folder/with_id_component")
       code = render_variation_code(component, :default)
-      assert code =~ ~s|<.component id="with-id-component-default"/>|
+      assert code =~ ~s|<.component id="with-id-component-single-default"/>|
     end
 
     test "renders a variation with an evaluated attribute", %{all_types_component: component} do
