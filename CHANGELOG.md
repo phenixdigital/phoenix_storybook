@@ -5,6 +5,7 @@
 - **change (breaking!)**: project has been renamed from `phx_live_storybook` to `phoenix_storybook`. In your project:
   - rename all references of `phx_live_storybook` to `phoenix_storybook`
   - rename all references from `PhxLiveStorybook` to `PhoenixStorybook`
+- **change (breaking!)**: depends on `phoenix 1.7+`
 - **change (breaking!)**: [component description is no longer a function defined](https://github.com/phenixdigital/phoenix_storybook/issues/138)
   in your story file but is fetched from your component `@doc` or your live_component `@moduledoc`
   comments.
