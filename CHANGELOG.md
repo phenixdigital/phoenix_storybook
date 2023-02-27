@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.5.0 (not yet released)
+## v0.5.0 (2023-02-27)
 
 - **change (breaking!)**: project has been renamed from `phx_live_storybook` to `phoenix_storybook`. In your project:
   - rename all references of `phx_live_storybook` to `phoenix_storybook`

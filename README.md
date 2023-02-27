@@ -50,14 +50,6 @@ To start using `PhoenixStorybook` in your phoenix application you will need to f
 
 Add the following to your mix.exs and run mix deps.get:
 
-> **Warning**
-> `phoenix_storybook 0.5.0` can't be released as-is until `phoenix 1.7.0` is released!
->
-> In the meantime, either use: `{:phx_live_storybook, "~> 0.4.5"}` or `{:phoenix_storybook, github: "phenixdigital/phoenix_storybook"}`
-> If you pick the github one, remember to run `mix dev.storybook` to get the storybook's assets compiled.
->
-> See issue https://github.com/phenixdigital/phoenix_storybook/issues/241 for more details 
-
 ```elixir
 def deps do
   [
@@ -69,7 +61,7 @@ end
 > **Note**
 > When picking a github version of the library (instead of an official hex.pm release) you
 > need the get the storybook's assets compiled.
-> 
+>
 > To do so, please run `mix dev.storybook`.
 
 ### 2. Run the generator
