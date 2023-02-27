@@ -12,7 +12,7 @@ defmodule PhoenixStorybook.MixProject do
       config_path: "./config/config.exs",
       elixirc_paths: elixirc_paths(Mix.env()),
       name: "phoenix_storybook",
-      description: "A pluggable storybook for your LiveView components.",
+      description: "A pluggable storybook for your Phoenix components.",
       source_url: "https://github.com/phenixdigital/phoenix_storybook",
       aliases: aliases(),
       deps: deps(),

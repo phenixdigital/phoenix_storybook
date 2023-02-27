@@ -15,7 +15,7 @@
 <!-- MDOC !-->
 
 PhoenixStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your
-Phoenix LiveView components.
+Phoenix components.
 
 - Explore all your components, and showcase them with different variations.
 - Browse your component's documentation, with their supported attributes.
