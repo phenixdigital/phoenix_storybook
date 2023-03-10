@@ -95,7 +95,7 @@ defmodule PhoenixStorybook.Story do
   list of relative paths to your example related files.
 
   ```elixir
-  # storybook/my_example.exs
+  # storybook/my_example.story.exs
   defmodule MyAppWeb.Storybook.MyPage do
     use PhoenixStorybook.Story, :example
 
