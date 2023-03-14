@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.5.1 (not released)
+
+- **bugfix**: fixed `HTMLEngine` [issue](https://github.com/phenixdigital/phoenix_storybook/issues/262) introduced by liveview 0.18.7.
+
 ## v0.5.0 (2023-02-27)
 
 - **change (breaking!)**: project has been renamed from `phx_live_storybook` to `phoenix_storybook`. In your project:
