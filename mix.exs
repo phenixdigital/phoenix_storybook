@@ -46,7 +46,7 @@ defmodule PhoenixStorybook.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.7.0"},
-      {:phoenix_live_view, "~> 0.18"},
+      {:phoenix_live_view, "> 0.18.7"},
       {:phoenix_view, "~> 2.0"},
       {:makeup_eex, "~> 0.1.0"},
       {:heroicons, "~> 0.5", optional: true},
