@@ -4,7 +4,7 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
   """
 
   alias Phoenix.LiveView.Engine, as: LiveViewEngine
-  alias Phoenix.LiveView.HTMLEngine
+  alias Phoenix.LiveView.TagEngine
   alias PhoenixStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhoenixStorybook.TemplateHelpers
 
@@ -139,7 +139,13 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
   end
 
   defp render_component_heex(fun_or_mod, heex, opts) do
-    quoted_code = EEx.compile_string(heex, engine: HTMLEngine, caller: __ENV__, source: heex)
+    quoted_code =
+      EEx.compile_string(heex,
+        engine: TagEngine,
+        caller: __ENV__,
+        source: heex,
+        tag_handler: Phoenix.LiveView.HTMLEngine
+      )
 
     {evaluated, _} =
       Code.eval_quoted(quoted_code, [assigns: %{}],
