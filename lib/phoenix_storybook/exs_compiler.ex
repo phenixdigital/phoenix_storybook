@@ -26,8 +26,13 @@ defmodule PhoenixStorybook.ExsCompiler do
   defp do_compile_exs!(path, relative_to) do
     Logger.debug("compiling storybook file: #{path}")
     Code.put_compiler_option(:ignore_module_conflict, true)
-    [{module, _} | _] = Code.compile_file(path, relative_to)
-    module
+    modules = Code.compile_file(path, relative_to) |> Enum.map(&elem(&1, 0))
+
+    Enum.find(
+      modules,
+      Enum.at(modules, 0),
+      &function_exported?(&1, :storybook_type, 0)
+    )
   after
     Code.put_compiler_option(:ignore_module_conflict, false)
   end

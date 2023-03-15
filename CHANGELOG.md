@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.5.2 (not released)
+
+- **bugfix**: [fixed issue with nested story modules](https://github.com/phenixdigital/phoenix_storybook/issues/260).
+
 ## v0.5.1 (2022-03-15)
 
 - **change (breaking!)**: LiveView `0.18.7+` is required
