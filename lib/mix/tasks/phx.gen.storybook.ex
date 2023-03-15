@@ -82,7 +82,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
          true <- print_tailwind_instructions(web_module_name, app_name, opts),
          true <- print_watchers_instructions(web_module_name, app_name, opts),
          true <- print_live_reload_instructions(web_module_name, app_name, opts),
-         true <- print_formatter_instructions(web_module_name, app_name, opts) do
+         true <- print_formatter_instructions(web_module_name, app_name, opts),
+         true <- print_mixexs_instructions(web_module_name, app_name, opts),
+         true <- print_docker_instructions(web_module_name, app_name, opts) do
       Mix.shell().info("You are all set! 🚀")
       Mix.shell().info("You can run mix phx.server and visit http://localhost:4000/storybook")
     else
@@ -176,8 +178,6 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  # prompt user to add ~r"storybook/.*(exs)$" in config/dev.exs live_reload patterns
-
   defp print_esbuild_instructions(_web_module, _app_name, _opts) do
     print_instructions("""
       Add #{IO.ANSI.bright()}js/storybook.js#{IO.ANSI.reset()} as a new entry point to your esbuild args in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
@@ -253,6 +253,36 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
             #{IO.ANSI.bright()}"storybook/**/*.exs"#{IO.ANSI.reset()}
           ]
         ]
+    """)
+  end
+
+  defp print_mixexs_instructions(_web_module, _app_name, _opts = [tailwind: false]), do: true
+
+  defp print_mixexs_instructions(_web_module, _app_name, _opts) do
+    print_instructions("""
+      Add an alias to #{IO.ANSI.bright()}mix.exs#{IO.ANSI.reset()}
+
+      defp aliases do
+        [
+          ...,
+          "assets.deploy": [
+            ...
+            #{IO.ANSI.bright()}"tailwind default --minify",#{IO.ANSI.reset()}
+            "phx.digest"
+          ]
+        ]
+      end
+    """)
+  end
+
+  defp print_docker_instructions(_web_module, _app_name, _opts) do
+    print_instructions("""
+      Add a COPY directive in #{IO.ANSI.bright()}Dockerfile#{IO.ANSI.reset()}
+
+      COPY priv priv
+      COPY lib lib
+      COPY assets assets
+      #{IO.ANSI.bright()}COPY storybook storybook#{IO.ANSI.reset()}
     """)
   end
 
