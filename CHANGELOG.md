@@ -1,11 +1,14 @@
 # CHANGELOG
 
+## v0.5.3 (not released)
+
+- **bugfix**: [fixed hooks not being initialized](https://github.com/phenixdigital/phoenix_storybook/issues/268).
+
 ## v0.5.2 (2022-03-16)
 
 - **improvement**: [improved mix phx.gen.storybook instructions](https://github.com/phenixdigital/phoenix_storybook/issues/252)
 - **bugfix**: [fixed issue with nested story modules](https://github.com/phenixdigital/phoenix_storybook/issues/260).
 - **bugfix**: [fixed broken generated stories](https://github.com/phenixdigital/phoenix_storybook/issues/251).
-- **bugfix**: [fixed hooks not being initialized](https://github.com/phenixdigital/phoenix_storybook/issues/268).
 - **bugfix**: fixed theme strategy function not being called from Playground process.
 
 ## v0.5.1 (2022-03-15)
