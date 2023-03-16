@@ -56,8 +56,8 @@ defmodule Storybook.Examples.CoreComponents do
         as={:user}
         phx-submit={JS.push("save_user") |> hide_modal("new-user-modal")}
       >
-        <.input field={{f, :first_name}} label="First name" />
-        <.input field={{f, :last_name}} label="Last name" />
+        <.input field={f[:first_name]} label="First name" />
+        <.input field={f[:last_name]} label="Last name" />
         <:actions>
           <.button>Save user</.button>
         </:actions>
