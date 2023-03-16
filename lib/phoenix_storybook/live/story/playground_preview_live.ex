@@ -7,6 +7,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.{ComponentRenderer, RenderingContext}
   alias PhoenixStorybook.Stories.{Variation, VariationGroup}
+  alias PhoenixStorybook.ThemeHelpers
 
   def mount(_params, session, socket) do
     story = session["story"]
@@ -23,6 +24,8 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
 
     variation_or_group =
       Enum.find(story.variations(), &(to_string(&1.id) == session["variation_id"]))
+
+    ThemeHelpers.call_theme_function(session["backend_module"], session["theme"])
 
     {:ok,
      socket

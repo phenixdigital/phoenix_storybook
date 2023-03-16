@@ -2,8 +2,9 @@
 
 ## v0.5.2 (not released)
 
+- **improvement**: [improved mix phx.gen.storybook instructions](https://github.com/phenixdigital/phoenix_storybook/i
 - **bugfix**: [fixed issue with nested story modules](https://github.com/phenixdigital/phoenix_storybook/issues/260).
-- **improvement**: [improved mix phx.gen.storybook instructions](https://github.com/phenixdigital/phoenix_storybook/issues/252).
+- **bugfix**: fixed theme strategy function not being called from Playground process.
 
 ## v0.5.1 (2022-03-15)
 
