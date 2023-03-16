@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.5.2 (not released)
+## v0.5.2 (2022-03-16)
 
 - **improvement**: [improved mix phx.gen.storybook instructions](https://github.com/phenixdigital/phoenix_storybook/i
 - **bugfix**: [fixed issue with nested story modules](https://github.com/phenixdigital/phoenix_storybook/issues/260).
