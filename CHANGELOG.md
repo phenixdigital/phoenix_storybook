@@ -1,17 +1,17 @@
 # CHANGELOG
 
-## v0.5.3 (not released)
+## v0.5.3 (2023-05-15)
 
 - **bugfix**: [fixed hooks not being initialized](https://github.com/phenixdigital/phoenix_storybook/issues/268).
 
-## v0.5.2 (2022-03-16)
+## v0.5.2 (2023-03-16)
 
 - **improvement**: [improved mix phx.gen.storybook instructions](https://github.com/phenixdigital/phoenix_storybook/issues/252)
 - **bugfix**: [fixed issue with nested story modules](https://github.com/phenixdigital/phoenix_storybook/issues/260).
 - **bugfix**: [fixed broken generated stories](https://github.com/phenixdigital/phoenix_storybook/issues/251).
 - **bugfix**: fixed theme strategy function not being called from Playground process.
 
-## v0.5.1 (2022-03-15)
+## v0.5.1 (2023-03-15)
 
 - **change (breaking!)**: LiveView `0.18.7+` is required
 - **bugfix**: fixed `HTMLEngine` [issue](https://github.com/phenixdigital/phoenix_storybook/issues/262) introduced by LiveView 0.18.7.
