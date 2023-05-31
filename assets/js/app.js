@@ -29,6 +29,7 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
       extra: window.storybook.Params,
     };
   },
+  ...window.storybook.LiveSocketOptions
 });
 
 liveSocket.connect();
