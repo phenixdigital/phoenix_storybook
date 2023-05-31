@@ -25,6 +25,7 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
       _csrf_token: csrfToken,
     };
   },
+  ...window.storybook.LiveSocketOptions
 });
 
 liveSocket.connect();
