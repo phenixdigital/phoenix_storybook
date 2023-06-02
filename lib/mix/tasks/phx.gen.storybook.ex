@@ -267,7 +267,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
           ...,
           "assets.deploy": [
             ...
-            #{IO.ANSI.bright()}"tailwind default --minify",#{IO.ANSI.reset()}
+            #{IO.ANSI.bright()}"tailwind storybook --minify",#{IO.ANSI.reset()}
             "phx.digest"
           ]
         ]
