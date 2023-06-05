@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.5.4 (2023-06-05)
+
+- **bugfix**: [phx.gen.storybook alias to match storybook tailwind profile](https://github.com/phenixdigital/phoenix_storybook/pull/297).
+- **bugfix**: [add LiveSocketOptions to support alpine.js](https://github.com/phenixdigital/phoenix_storybook/pull/295).
+
 ## v0.5.3 (2023-05-15)
 
 - **bugfix**: [fixed hooks not being initialized](https://github.com/phenixdigital/phoenix_storybook/issues/268).
