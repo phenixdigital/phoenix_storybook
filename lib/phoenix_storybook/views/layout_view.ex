@@ -48,6 +48,9 @@ defmodule PhoenixStorybook.LayoutView do
   defp storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
+  defp storybook_js_url(conn), do: storybook_setting(conn, :js_url)
+  defp storybook_css_url(conn), do: storybook_setting(conn, :css_url)
+
   defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
 
   defp title_prefix(conn_or_socket) do
