@@ -102,6 +102,9 @@ defmodule MyAppWeb.Storybook do
     # by your own application endpoint.
     css_path: "/assets/storybook.css",
 
+    # js_url: "localhost:4000/assets/storybook.js",
+    # css_url: "localhost:4000/assets/storybook.css",
+
     # This CSS class will be put on storybook container elements where your own styles should
     # prevail. See the `guides/sandboxing.md` guide for more details.
     sandbox_class: "my-app-sandbox",
