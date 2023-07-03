@@ -198,7 +198,8 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
 
     test "renders a variation with an evaluated attribute", %{all_types_component: component} do
       code = render_variation_code(component, :with_eval)
-      assert code =~ ~s|<.all_types_component index_i={10 + 15} label="with eval">|
+      assert code =~ ~r|<.all_types_component.*index_i={10 \+ 15}.*>|
+      assert code =~ ~r|<.all_types_component.*label="with eval".*>|
     end
   end
 
