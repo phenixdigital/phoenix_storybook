@@ -147,11 +147,15 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
         tag_handler: Phoenix.LiveView.HTMLEngine
       )
 
-    {evaluated, _} =
-      Code.eval_quoted(quoted_code, [assigns: %{}],
-        requires: [Kernel],
-        aliases: eval_quoted_aliases(opts, fun_or_mod),
-        functions: eval_quoted_functions(opts, fun_or_mod)
+    {evaluated, _, _} =
+      Code.eval_quoted_with_env(
+        quoted_code,
+        [assigns: %{}],
+        %Macro.Env{
+          requires: [Kernel],
+          aliases: eval_quoted_aliases(opts, fun_or_mod),
+          functions: eval_quoted_functions(opts, fun_or_mod)
+        }
       )
 
     LiveViewEngine.live_to_iodata(evaluated)
