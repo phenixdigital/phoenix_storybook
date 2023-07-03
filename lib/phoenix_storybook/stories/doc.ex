@@ -37,7 +37,7 @@ defmodule PhoenixStorybook.Stories.Doc do
         end
 
       _ ->
-        Logger.warn("could not fetch function docs from #{inspect(module)}")
+        Logger.warning("could not fetch function docs from #{inspect(module)}")
         :error
     end
   end
@@ -65,7 +65,7 @@ defmodule PhoenixStorybook.Stories.Doc do
         end
 
       _ ->
-        Logger.warn("could not fetch module doc from #{inspect(module)}")
+        Logger.warning("could not fetch module doc from #{inspect(module)}")
         :error
     end
   end

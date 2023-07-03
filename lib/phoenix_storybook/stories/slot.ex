@@ -46,7 +46,7 @@ defmodule PhoenixStorybook.Stories.Slot do
     Enum.sort_by(slots, & &1.line)
   rescue
     _ ->
-      Logger.warn("cannot load slots for component #{inspect(module)}")
+      Logger.warning("cannot load slots for component #{inspect(module)}")
       []
   end
 
@@ -56,7 +56,7 @@ defmodule PhoenixStorybook.Stories.Slot do
     Enum.sort_by(slots, & &1.line)
   rescue
     _ ->
-      Logger.warn("cannot load slots for component #{inspect(function)}")
+      Logger.warning("cannot load slots for component #{inspect(function)}")
       []
   end
 
