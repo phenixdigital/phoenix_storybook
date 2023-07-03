@@ -98,7 +98,8 @@ defmodule PhoenixStorybook.Components.IconTest do
       assert rendered_to_string(h) =~ ~r{<svg.*class="w-2 h-2".*</svg>}s
 
       h = ~H(<.user_icon icon={{:hero, "cake", :mini, "w-2 h-2"}} title="Cake" />)
-      assert rendered_to_string(h) =~ ~r{<svg.*class="w-2 h-2".*title="Cake".*</svg>}s
+      assert rendered_to_string(h) =~ ~r{<svg.*title="Cake".*</svg>}s
+      assert rendered_to_string(h) =~ ~r{<svg.*class="w-2 h-2".*</svg>}s
     end
   end
 end
