@@ -47,7 +47,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   end
 
   defp component_source_fail(env) do
-    Logger.warn("cannot load source for component defined in story #{env.file}")
+    Logger.warning("cannot load source for component defined in story #{env.file}")
     nil
   end
 
@@ -69,7 +69,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   end
 
   defp extra_sources_fail(env) do
-    Logger.warn("cannot load extra sources for story #{env.file}")
+    Logger.warning("cannot load extra sources for story #{env.file}")
     []
   end
 

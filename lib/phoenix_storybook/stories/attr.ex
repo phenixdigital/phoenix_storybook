@@ -75,7 +75,7 @@ defmodule PhoenixStorybook.Stories.Attr do
     Enum.sort_by(attrs, & &1.line)
   rescue
     _ ->
-      Logger.warn("cannot load attributes for component #{inspect(module)}")
+      Logger.warning("cannot load attributes for component #{inspect(module)}")
       []
   end
 
@@ -85,7 +85,7 @@ defmodule PhoenixStorybook.Stories.Attr do
     Enum.sort_by(attrs, & &1.line)
   rescue
     _ ->
-      Logger.warn("cannot load attributes for component #{inspect(function)}")
+      Logger.warning("cannot load attributes for component #{inspect(function)}")
       []
   end
 
