@@ -389,7 +389,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
 
     test "invalid doc will raise" do
-      mock = component_stub_with_attr(id: :foo, type: :string, doc: 'wrong_doc')
+      mock = component_stub_with_attr(id: :foo, type: :string, doc: ~c"wrong_doc")
       e = assert_raise CompileError, fn -> validate!(mock) end
       assert e.description =~ "doc for attr :foo is not a binary"
     end
@@ -464,7 +464,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
 
     test "with required 'true', it will raise" do
-      mock = component_stub_with_attr(id: :attr, type: :atom, required: 'true')
+      mock = component_stub_with_attr(id: :attr, type: :atom, required: ~c"true")
       e = assert_raise CompileError, fn -> validate!(mock) end
       assert e.description =~ "required for attr :attr must be of type :boolean"
     end
@@ -656,7 +656,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
 
     test "invalid doc will raise" do
-      mock = component_stub_with_slot(id: :foo, doc: 'wrong_doc')
+      mock = component_stub_with_slot(id: :foo, doc: ~c"wrong_doc")
       e = assert_raise CompileError, fn -> validate!(mock) end
       assert e.description =~ "doc for slot :foo is not a binary"
     end
@@ -669,7 +669,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
 
     test "with required 'true', it will raise" do
-      mock = component_stub_with_slot(id: :slot, required: 'true')
+      mock = component_stub_with_slot(id: :slot, required: ~c"true")
       e = assert_raise CompileError, fn -> validate!(mock) end
       assert e.description =~ "required for slot :slot must be of type :boolean"
     end
