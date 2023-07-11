@@ -37,9 +37,12 @@ defmodule PhoenixStorybook.MixProject do
   def application do
     [
       mod: {PhoenixStorybook.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger] ++ extra_applications(Mix.env())
     ]
   end
+
+  defp extra_applications(env) when env in [:dev, :test], do: [:hex]
+  defp extra_applications(_), do: []
 
   defp elixirc_paths(:test), do: ["lib", "test/fixtures"]
   defp elixirc_paths(_), do: ["lib"]
