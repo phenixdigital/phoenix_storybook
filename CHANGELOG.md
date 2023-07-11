@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.5.5 (2023-07-11)
+
+- **improvement**: [make it work with FontAwesome webfont](https://github.com/phenixdigital/phoenix_storybook/issues/306). You need to set the `font_awesome_rendering` to `:webfont` if you are not using fontawesome with
+  svg icons.
+- **improvement**: [fixed Elixir 1.15 deprecations](https://github.com/phenixdigital/phoenix_storybook/issues/308)
+
 ## v0.5.4 (2023-06-05)
 
 - **bugfix**: [phx.gen.storybook alias to match storybook tailwind profile](https://github.com/phenixdigital/phoenix_storybook/pull/297).
