@@ -88,7 +88,12 @@ defmodule PhoenixStorybook.StoryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html = view |> element("a", "Source") |> render_click()
-      assert_patched(view, ~p"/storybook/component?#{%{tab: :source, theme: :default, variation_id: :hello}}")
+
+      assert_patched(
+        view,
+        ~p"/storybook/component?#{%{tab: :source, theme: :default, variation_id: :hello}}"
+      )
+
       assert html =~ "defmodule"
     end
 
@@ -103,7 +108,11 @@ defmodule PhoenixStorybook.StoryLiveTest do
       )
 
       view |> element("a", "Source") |> render_click()
-      assert_patched(view, ~p"/storybook/component?#{%{tab: :source, theme: :colorful, variation_id: :hello}}")
+
+      assert_patched(
+        view,
+        ~p"/storybook/component?#{%{tab: :source, theme: :colorful, variation_id: :hello}}"
+      )
 
       html = view |> element("a", "Playground") |> render_click()
 
@@ -130,7 +139,11 @@ defmodule PhoenixStorybook.StoryLiveTest do
         |> element(".story-nav-form select")
         |> render_change(%{navigation: %{tab: "source"}})
 
-      assert_patched(view, ~p"/storybook/component?#{%{tab: :source, theme: :default, variation_id: :hello}}")
+      assert_patched(
+        view,
+        ~p"/storybook/component?#{%{tab: :source, theme: :default, variation_id: :hello}}"
+      )
+
       assert html =~ "defmodule"
     end
 
