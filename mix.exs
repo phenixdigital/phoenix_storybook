@@ -26,6 +26,8 @@ defmodule PhoenixStorybook.MixProject do
       ],
       dialyzer: [
         plt_add_apps: [:mix, :jason, :earmark],
+        plt_local_path: ".plts",
+        plt_core_path: ".plts",
         plt_file: {:no_warn, ".plts/storybook.plt"}
       ]
     ]
