@@ -29,7 +29,8 @@ defmodule PhoenixStorybook.MixProject do
         plt_local_path: ".plts",
         plt_core_path: ".plts",
         plt_file: {:no_warn, ".plts/storybook.plt"}
-      ]
+      ],
+      prune_code_paths: false
     ]
   end
 
