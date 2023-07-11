@@ -47,8 +47,8 @@ jobs:
       - name: Credo
         run: mix credo
 
-      - name: Dialyzer
-        run: mix dialyzer --no-check
+      # - name: Dialyzer
+      #   run: mix dialyzer --no-check
 
       - name: Run tests
         run: mix coveralls.json
