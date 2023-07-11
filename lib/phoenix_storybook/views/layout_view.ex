@@ -58,8 +58,16 @@ defmodule PhoenixStorybook.LayoutView do
     storybook_setting(conn_or_socket, :font_awesome_kit_id)
   end
 
+  defp fa_rendering(conn_or_socket) do
+    storybook_setting(conn_or_socket, :font_awesome_rendering, :svg)
+  end
+
   defp wait_for_icons?(conn_or_socket) do
-    if fa_kit_id(conn_or_socket), do: "lsb-wait-for-icons", else: nil
+    if fa_kit_id(conn_or_socket) && fa_rendering(conn_or_socket) == :svg do
+      "lsb-wait-for-icons"
+    else
+      nil
+    end
   end
 
   defp storybook_setting(conn_or_socket, key, default \\ nil)
