@@ -19,7 +19,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
         |> Code.eval_string()
         |> elem(0)
         |> Map.put(:variation_id, unique_variation_id_serializable(variation_id))
-        |> inspect()
+        |> inspect(custom_options: [sort_maps: true])
 
       open <> match <> close
     end)
