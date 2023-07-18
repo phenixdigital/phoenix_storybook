@@ -154,7 +154,8 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
         %Macro.Env{
           requires: [Kernel],
           aliases: eval_quoted_aliases(opts, fun_or_mod),
-          functions: eval_quoted_functions(opts, fun_or_mod)
+          functions: eval_quoted_functions(opts, fun_or_mod),
+          macros: [{Kernel, Kernel.__info__(:macros)}]
         }
       )
 

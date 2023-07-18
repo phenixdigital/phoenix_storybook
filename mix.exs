@@ -1,7 +1,7 @@
 defmodule PhoenixStorybook.MixProject do
   use Mix.Project
 
-  @version "0.5.5"
+  @version "0.5.6"
 
   def project do
     [

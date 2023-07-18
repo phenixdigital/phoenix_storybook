@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.5.6 (2023-07-18)
+
+- **bugfix**: fix missing Kernel macros (such as `../0`) when evaluating stories.
+
 ## v0.5.5 (2023-07-11)
 
 - **improvement**: [make it work with FontAwesome webfont](https://github.com/phenixdigital/phoenix_storybook/issues/306). You need to set the `font_awesome_rendering` to `:webfont` if you are not using fontawesome with
