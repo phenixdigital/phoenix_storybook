@@ -8,7 +8,8 @@ defmodule PhoenixStorybook.Mount do
       assign(socket,
         backend_module: Map.fetch!(session, "backend_module"),
         root_path: Map.fetch!(session, "root_path"),
-        assets_path: Map.fetch!(session, "assets_path")
+        assets_path: Map.fetch!(session, "assets_path"),
+        csp_nonces: Map.fetch!(session, "csp_nonces")
       )
 
     {:cont, socket}

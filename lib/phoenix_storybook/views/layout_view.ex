@@ -172,4 +172,15 @@ defmodule PhoenixStorybook.LayoutView do
 
     ["lsb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]
   end
+
+  # for conn
+  def csp_nonce(%Plug.Conn{} = conn, type) when type in [:script, :style, :img] do
+    csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
+    conn.assigns[csp_nonce_assign_key]
+  end
+
+  # for liveview
+  def csp_nonce(csp_nonces, type) when type in [:script, :style, :img] do
+    csp_nonces[type]
+  end
 end

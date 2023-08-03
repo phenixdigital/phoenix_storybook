@@ -55,7 +55,7 @@
 
 <div class="lsb lsb-absolute lsb-opacity-20 lsb-top-0 lsb-inset-x-0 lsb-flex lsb-justify-center lsb-overflow-hidden lsb-pointer-events-none">
   <div class="lsb lsb-w-[108rem] lsb-flex-none lsb-flex lsb-justify-end">
-    <img src={asset_path(@socket, "images/background.png")} class="lsb lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none"/>
+    <img nonce={csp_nonce(@csp_nonces, :img)} src={asset_path(@socket, "images/background.png")} class="lsb lsb-w-[71.75rem] lsb-flex-none lsb-max-w-none"/>
   </div>
 </div>
 
