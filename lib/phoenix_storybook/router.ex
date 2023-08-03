@@ -112,26 +112,56 @@ defmodule PhoenixStorybook.Router do
         raise "Missing mandatory :backend_module option."
       end)
 
+    csp_nonce_assign_key =
+      case opts[:csp_nonce_assign_key] do
+        nil -> nil
+        key when is_atom(key) -> %{img: key, style: key, script: key}
+        %{} = keys -> Map.take(keys, [:img, :style, :script])
+      end
+
+    session_args = [
+      backend_module,
+      assets_path,
+      path,
+      csp_nonce_assign_key
+    ]
+
     {
       session_name,
       [
         root_layout: {PhoenixStorybook.LayoutView, root_layout},
         on_mount: PhoenixStorybook.Mount,
-        session: %{
-          "backend_module" => backend_module,
-          "assets_path" => assets_path,
-          "root_path" => path
-        }
+        session: {__MODULE__, :__session__, session_args}
       ],
       [
         private: %{
           live_socket_path: live_socket_path,
           backend_module: backend_module,
           application_router: Keyword.get(opts, :application_router),
-          assets_path: assets_path
+          assets_path: assets_path,
+          csp_nonce_assign_key: csp_nonce_assign_key
         },
         as: Keyword.fetch!(opts, :as)
       ]
+    }
+  end
+
+  def __session__(
+        conn,
+        backend_module,
+        assets_path,
+        path,
+        csp_nonce_assign_key
+      ) do
+    %{
+      "backend_module" => backend_module,
+      "assets_path" => assets_path,
+      "root_path" => path,
+      "csp_nonces" => %{
+        img: conn.assigns[csp_nonce_assign_key[:img]],
+        style: conn.assigns[csp_nonce_assign_key[:style]],
+        script: conn.assigns[csp_nonce_assign_key[:script]]
+      }
     }
   end
 

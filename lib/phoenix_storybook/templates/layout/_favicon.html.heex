@@ -1,7 +1,10 @@
-<link rel="apple-touch-icon" sizes="180x180" href={asset_path(@conn, "favicon/apple-touch-icon.png")}>
-<link rel="icon" type="image/png" sizes="32x32" href={asset_path(@conn, "favicon/favicon-32x32.png")}>
-<link rel="icon" type="image/png" sizes="16x16" href={asset_path(@conn, "favicon/favicon-16x16.png")}>
+<!-- All the nonces here are giving me issues, as they still return errors similar to:
+"Refused to load the image 'http://localhost:4000/storybook/assets/favicon/apple-touch-icon.png'
+because it violates the following Content Security Policy directive:" -->
+<link nonce={csp_nonce(@conn, :img)} rel="apple-touch-icon" sizes="180x180" href={asset_path(@conn, "favicon/apple-touch-icon.png")}>
+<link nonce={csp_nonce(@conn, :img)} rel="icon" type="image/png" sizes="32x32" href={asset_path(@conn, "favicon/favicon-32x32.png")}>
+<link nonce={csp_nonce(@conn, :img)} rel="icon" type="image/png" sizes="16x16" href={asset_path(@conn, "favicon/favicon-16x16.png")}>
 <link rel="manifest" href={asset_path(@conn, "favicon/site.webmanifest")}>
-<link rel="mask-icon" href={asset_path(@conn, "favicon/safari-pinned-tab.svg")} color="#4F46E5">
+<link nonce={csp_nonce(@conn, :img)} rel="mask-icon" href={asset_path(@conn, "favicon/safari-pinned-tab.svg")} color="#4F46E5">
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="theme-color" content="#ffffff">
