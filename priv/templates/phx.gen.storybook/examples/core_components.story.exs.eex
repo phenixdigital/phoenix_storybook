@@ -48,8 +48,10 @@ defmodule Storybook.Examples.CoreComponents do
       </:col>
     </.table>
     <.modal id="new-user-modal">
-      <:title>Create new user</:title>
-      <:subtitle>This won't be persisted into DB, memory only</:subtitle>
+      <.header>
+        Create new user
+        <:subtitle>This won't be persisted into DB, memory only</:subtitle>
+      </.header>
       <.simple_form
         :let={f}
         for={%{}}
