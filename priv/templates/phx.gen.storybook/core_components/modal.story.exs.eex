@@ -19,27 +19,6 @@ defmodule Storybook.CoreComponents.Modal do
       %Variation{
         id: :default,
         slots: ["Modal body"]
-      },
-      %Variation{
-        id: :with_title_and_subtitle,
-        slots: [
-          "<:title>Title</:title>",
-          "<:subtitle>Subtitle</:subtitle>",
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-        ]
-      },
-      %Variation{
-        id: :with_actions,
-        attributes: %{
-          :on_confirm => {:eval, ~s|hide_modal("modal-single-with-actions")|}
-        },
-        slots: [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-          "<:title>Are you sure?</:title>",
-          "<:subtitle>Subtitle</:subtitle>",
-          "<:confirm>OK</:confirm>",
-          "<:cancel>Cancel</:cancel>"
-        ]
       }
     ]
   end
