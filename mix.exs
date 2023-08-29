@@ -9,7 +9,6 @@ defmodule PhoenixStorybook.MixProject do
       version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
-      config_path: "./config/config.exs",
       elixirc_paths: elixirc_paths(Mix.env()),
       name: "phoenix_storybook",
       description: "A pluggable storybook for your Phoenix components.",
