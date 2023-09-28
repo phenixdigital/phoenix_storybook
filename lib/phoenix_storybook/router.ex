@@ -66,9 +66,9 @@ defmodule PhoenixStorybook.Router do
 
         if Keyword.fetch!(opts, :pipeline) do
           pipeline :storybook_browser do
-            plug(:accepts, ["html"])
-            plug(:fetch_session)
-            plug(:protect_from_forgery)
+            plug :accepts, ["html"]
+            plug :fetch_session
+            plug :protect_from_forgery
           end
         end
 
@@ -79,23 +79,21 @@ defmodule PhoenixStorybook.Router do
             PhoenixStorybook.Router.__options__(opts, path, session_name_iframe_opt, :root_iframe)
 
           live_session session_name, session_opts do
-            live("/visual_tests", PhoenixStorybook.VisualTestLive, :range, route_opts)
-            live("/visual_tests/*story", PhoenixStorybook.VisualTestLive, :show, route_opts)
+            live "/visual_tests", PhoenixStorybook.VisualTestLive, :range, route_opts
+            live "/visual_tests/*story", PhoenixStorybook.VisualTestLive, :show, route_opts
 
-            live(
-              "/iframe/*story",
-              PhoenixStorybook.Story.ComponentIframeLive,
-              :story_iframe,
-              route_opts
-            )
+            live "/iframe/*story",
+                 PhoenixStorybook.Story.ComponentIframeLive,
+                 :story_iframe,
+                 route_opts
           end
 
           {session_name, session_opts, route_opts} =
             PhoenixStorybook.Router.__options__(opts, path, session_name_opt, :root)
 
           live_session session_name, session_opts do
-            live("/", PhoenixStorybook.StoryLive, :root, route_opts)
-            live("/*story", PhoenixStorybook.StoryLive, :story, route_opts)
+            live "/", PhoenixStorybook.StoryLive, :root, route_opts
+            live "/*story", PhoenixStorybook.StoryLive, :story, route_opts
           end
         end
       end
@@ -167,16 +165,15 @@ defmodule PhoenixStorybook.Router do
     quote bind_quoted: binding() do
       scope "/", PhoenixStorybook do
         pipeline :storybook_assets do
-          plug(Plug.Static,
+          plug Plug.Static,
             at: path,
             from: :phoenix_storybook,
             only: ~w(css js images fonts favicon),
             gzip: gzip_assets?
-          )
         end
 
-        pipe_through(:storybook_assets)
-        get("#{path}/*asset", AssetNotFoundController, :asset, as: :storybook_asset)
+        pipe_through :storybook_assets
+        get "#{path}/*asset", AssetNotFoundController, :asset, as: :storybook_asset
       end
     end
   end
