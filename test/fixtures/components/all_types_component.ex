@@ -36,7 +36,7 @@ defmodule AllTypesComponent do
       <p>toggle: <%= @toggle %></p>
       <p>things: <%= inspect(@things) %></p>
       <p>map: <%= inspect(@map) %></p>
-      <%= render_block(@inner_block) %>
+      <%= render_slot(@inner_block) %>
       <ul>
       <%= for thing <- @slot_thing do %>
         <li><%= render_slot(thing) %></li>

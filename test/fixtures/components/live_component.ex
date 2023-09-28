@@ -12,7 +12,7 @@ defmodule LiveComponent do
     <span>
       b component: <%= @label %>
       <%= if assigns[:inner_block] do %>
-        <%= render_block(@inner_block) %>
+        <%= render_slot(@inner_block) %>
       <% end %>
     </span>
     """

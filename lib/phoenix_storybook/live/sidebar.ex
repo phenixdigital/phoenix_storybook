@@ -166,7 +166,12 @@ defmodule PhoenixStorybook.Sidebar do
                     fa_plan={@fa_plan}
                   />
                 <% end %>
-                <%= patch_to(assigns, name, story_path, class: "lsb group-hover:lsb-text-indigo-600") %>
+                <.link
+                  patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
+                  class="lsb group-hover:lsb-text-indigo-600"
+                >
+                  <%= name %>
+                </.link>
               </div>
             <% _ -> %>
           <% end %>
@@ -189,16 +194,6 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp click_action(_open? = false), do: "open-folder"
   defp click_action(_open? = true), do: "close-folder"
-
-  defp patch_to(assigns, label, path, opts) do
-    path =
-      case Map.get(assigns, :theme) do
-        nil -> path
-        theme -> "#{path}?theme=#{theme}"
-      end
-
-    live_patch(label, [{:to, path} | opts])
-  end
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
     MapSet.member?(opened_folders, path)
