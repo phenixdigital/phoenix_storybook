@@ -14,6 +14,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   alias PhoenixStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhoenixStorybook.Stories.Attr
   alias PhoenixStorybook.TemplateHelpers
+  alias PhoenixStorybook.ThemeHelpers
 
   @doc """
   Renders a component code snippet from a `RenderingContext`.
@@ -44,7 +45,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
                 component_code_heex(
                   context.story,
                   fun_or_mod,
-                  strip_attributes(context.story, context.group_id, v),
+                  strip_attributes(context, v),
                   v.let,
                   v.slots,
                   context.template
@@ -61,7 +62,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
                 component_code_heex(
                   context.story,
                   fun_or_mod,
-                  strip_attributes(context.story, context.group_id, v),
+                  strip_attributes(context, v),
                   v.let,
                   v.slots,
                   context.template
@@ -238,14 +239,26 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   defp function_name(fun), do: Function.info(fun)[:name]
   defp module_name(mod), do: mod |> to_string() |> String.split(".") |> Enum.at(-1)
 
-  # If :id is a declared attribute, it is important enough to be shown as component markup.
-  # Otherwise, we keep it hidden.
-  defp strip_attributes(story, group_id, %RenderingVariation{id: v_id, attributes: attributes}) do
+  # If :id is a declared attribute, it is important enough to be shown as component markup,
+  # otherwise, we keep it hidden.
+  # Theme attributes are also stripped from code when set by the storybook's theme selector.
+  defp strip_attributes(
+         %RenderingContext{story: story, group_id: group_id, backend_module: backend_module},
+         %RenderingVariation{
+           id: v_id,
+           attributes: attributes
+         }
+       ) do
     if Enum.any?(story.merged_attributes(), &(&1.id == :id)) do
       Map.put(attributes, :id, TemplateHelpers.unique_variation_id(story, {group_id, v_id}))
     else
       Map.delete(attributes, :id)
     end
-    |> Map.delete(:theme)
+    |> then(fn attributes ->
+      case ThemeHelpers.theme_strategy(backend_module, :assign) do
+        nil -> attributes
+        theme_assign -> Map.delete(attributes, theme_assign)
+      end
+    end)
   end
 end

@@ -24,7 +24,7 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
 
     extra_assigns =
       case ThemeHelpers.theme_assign(assigns.backend_module, assigns.theme) do
-        {assign_key, theme} -> Map.put(extra_assigns, assign_key, theme)
+        {assign_key, theme} -> Map.put_new(extra_assigns, assign_key, theme)
         nil -> extra_assigns
       end
 
@@ -37,8 +37,11 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     for {{^group_id, variation_id}, extra_assigns} <- assigns.variation_extra_assigns,
         into: %{} do
       case maybe_theme_assign do
-        {assign_key, theme} -> {variation_id, Map.put(extra_assigns, assign_key, theme)}
-        _ -> {variation_id, extra_assigns}
+        {assign_key, theme} ->
+          {variation_id, Map.put_new(extra_assigns, assign_key, theme)}
+
+        _ ->
+          {variation_id, extra_assigns}
       end
     end
   end

@@ -18,12 +18,13 @@ defmodule PhoenixStorybook.Rendering.RenderingContext do
     :story,
     :variations,
     :template,
+    :backend_module,
     options: []
   ]
 
-  def build(story, variation_or_group, extra_attributes, options \\ [])
+  def build(backend_module, story, variation_or_group, extra_attributes, options \\ [])
 
-  def build(story, variation = %Variation{}, extra_attributes, options) do
+  def build(backend_module, story, variation = %Variation{}, extra_attributes, options) do
     group_id = :single
     dom_id = dom_id(story, group_id)
 
@@ -44,11 +45,18 @@ defmodule PhoenixStorybook.Rendering.RenderingContext do
         }
       ],
       template: TemplateHelpers.get_template(story.template(), variation.template),
-      options: options(story, options)
+      options: options(story, options),
+      backend_module: backend_module
     }
   end
 
-  def build(story, group = %VariationGroup{variations: variations}, extra_attributes, options) do
+  def build(
+        backend_module,
+        story,
+        group = %VariationGroup{variations: variations},
+        extra_attributes,
+        options
+      ) do
     dom_id = dom_id(story, group.id)
 
     %RenderingContext{
@@ -69,7 +77,8 @@ defmodule PhoenixStorybook.Rendering.RenderingContext do
           }
         end,
       template: TemplateHelpers.get_template(story.template(), group.template),
-      options: options(story, options)
+      options: options(story, options),
+      backend_module: backend_module
     }
   end
 

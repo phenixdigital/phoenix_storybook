@@ -11,6 +11,7 @@ defmodule PhoenixStorybook.ThemeHelpers do
   def theme_assign(backend_module, theme) do
     case theme_strategy(backend_module, :assign) do
       nil -> nil
+      assign_key when is_binary(assign_key) -> {String.to_atom(assign_key), theme}
       assign_key -> {assign_key, theme}
     end
   end
@@ -22,10 +23,8 @@ defmodule PhoenixStorybook.ThemeHelpers do
     end
   end
 
-  defp theme_strategy(backend_module, strategy) do
-    backend_module.config(:themes_strategies,
-      sandbox_class: "theme"
-    )
+  def theme_strategy(backend_module, strategy) do
+    backend_module.config(:themes_strategies, sandbox_class: "theme")
     |> Keyword.get(strategy)
   end
 end

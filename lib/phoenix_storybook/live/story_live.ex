@@ -360,7 +360,7 @@ defmodule PhoenixStorybook.StoryLive do
     <div class="lsb  lsb-space-y-12 lsb-pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
-              rendering_context = RenderingContext.build(assigns.story, variation, extra_attributes) do %>
+              rendering_context = RenderingContext.build(assigns.backend_module, assigns.story, variation, extra_attributes) do %>
         <div
           id={anchor_id(variation)}
           class="lsb lsb-variation-block lsb-gap-x-4 lsb-grid lsb-grid-cols-5"
