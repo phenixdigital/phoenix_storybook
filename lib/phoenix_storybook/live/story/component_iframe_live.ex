@@ -76,6 +76,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         assigns,
         :context,
         RenderingContext.build(
+          assigns.backend_module,
           assigns.story,
           assigns.variation,
           variation_extra_attributes(assigns.variation, assigns)

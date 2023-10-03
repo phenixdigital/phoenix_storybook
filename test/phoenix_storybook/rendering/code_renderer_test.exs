@@ -1,7 +1,7 @@
 defmodule PhoenixStorybook.Rendering.CodeRendererTest do
   use ExUnit.Case, async: true
 
-  alias PhoenixStorybook.TreeStorybook
+  alias PhoenixStorybook.{TestStorybook, TreeStorybook}
   alias PhoenixStorybook.Rendering.{CodeRenderer, RenderingContext}
   import Phoenix.LiveViewTest, only: [rendered_to_string: 1]
 
@@ -228,11 +228,25 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
     end
   end
 
-  defp render_variation_code(story, variation_id) do
+  describe "theme attribute may be stripped from the code" do
+    test "with default theme strategy, not stripped", %{component: component} do
+      code = render_variation_code(component, :themed)
+      assert code =~ "theme={:blue}"
+    end
+
+    test "with assign theme strategy, the given assign is stripped from code", %{
+      component: component
+    } do
+      code = render_variation_code(TestStorybook, component, :themed)
+      refute code =~ "theme={:blue}"
+    end
+  end
+
+  defp render_variation_code(backend_module \\ TreeStorybook, story, variation_id) do
     variation = Enum.find(story.variations(), &(&1.id == variation_id))
 
-    story
-    |> RenderingContext.build(variation, %{}, format: false)
+    backend_module
+    |> RenderingContext.build(story, variation, %{}, format: false)
     |> CodeRenderer.render()
     |> rendered_to_string()
   end

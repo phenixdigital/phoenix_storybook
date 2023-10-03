@@ -288,7 +288,12 @@ defmodule PhoenixStorybook.Story.Playground do
           >
             <.fa_icon name="copy" class="lsb-text-inherit" plan={@fa_plan} />
           </div>
-          <.playground_code story={@story} variation={@variation} variations={@variations} />
+          <.playground_code
+            story={@story}
+            variation={@variation}
+            variations={@variations}
+            backend_module={@backend_module}
+          />
         </div>
       <% end %>
       <%= if @playground_error do %>
@@ -311,7 +316,12 @@ defmodule PhoenixStorybook.Story.Playground do
   defp playground_code(assigns) do
     variation_attributes = for v <- assigns.variations, into: %{}, do: {v.id, v.attributes}
 
-    RenderingContext.build(assigns.story, assigns.variation, variation_attributes)
+    RenderingContext.build(
+      assigns.backend_module,
+      assigns.story,
+      assigns.variation,
+      variation_attributes
+    )
     |> CodeRenderer.render()
   end
 

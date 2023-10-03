@@ -156,7 +156,7 @@ defmodule PhoenixStorybook.VisualTestLive do
       <%= for variation <- story.story.variations(),
               assigns = assign(assigns, variation_extra_assigns: story.variation_extra_assigns, story: story.story),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
-              rendering_context = RenderingContext.build(story.story, variation, extra_attributes) do %>
+              rendering_context = RenderingContext.build(assigns.backend_module, story.story, variation, extra_attributes) do %>
         <div class="lsb" style="padding-bottom: 20px;">
           <%= if story.story.container() == :iframe do %>
             <iframe

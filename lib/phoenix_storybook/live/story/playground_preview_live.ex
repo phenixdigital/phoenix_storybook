@@ -82,7 +82,11 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       assign(
         assigns,
         :context,
-        RenderingContext.build(assigns.story, assigns.variation, assigns.variations_attributes,
+        RenderingContext.build(
+          assigns.backend_module,
+          assigns.story,
+          assigns.variation,
+          assigns.variations_attributes,
           playground_topic: assigns.topic,
           imports: [{__MODULE__, lsb_inspect: 4}]
         )

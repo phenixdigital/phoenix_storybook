@@ -211,8 +211,8 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
   defp render_variation(story, variation_id) do
     variation = Enum.find(story.variations(), &(&1.id == variation_id))
 
-    story
-    |> RenderingContext.build(variation, %{})
+    TreeStorybook
+    |> RenderingContext.build(story, variation, %{})
     |> ComponentRenderer.render()
   end
 end
