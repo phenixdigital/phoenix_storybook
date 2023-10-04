@@ -56,6 +56,7 @@ defmodule PhoenixStorybook.Router do
       |> Keyword.put(:application_router, __CALLER__.module)
       |> Keyword.put_new(:as, :live_storybook)
       |> Keyword.put_new(:pipeline, true)
+      |> Keyword.put_new(:scoped_path, "/")
 
     session_name_opt = Keyword.get(opts, :session_name, :live_storybook)
     session_name_iframe_opt = :"#{session_name_opt}_iframe"
@@ -72,7 +73,7 @@ defmodule PhoenixStorybook.Router do
           end
         end
 
-        scope path: "/" do
+        scope path: Keyword.fetch!(opts, :scoped_path) do
           pipe_through(:storybook_browser)
 
           {session_name, session_opts, route_opts} =
