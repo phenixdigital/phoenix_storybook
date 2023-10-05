@@ -119,7 +119,10 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   end
 
   defp pre_class do
-    "lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm lsb-rounded-md lsb-bg-slate-800 lsb-overflow-x-scroll lsb-whitespace-pre-wrap lsb-break-normal"
+    """
+    lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm
+    lsb-rounded-md lsb-bg-slate-800 lsb-whitespace-pre-wrap lsb-break-normal
+    """
   end
 
   defp component_code_heex(story, function, attributes, let, slots, template)
