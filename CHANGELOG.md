@@ -1,12 +1,13 @@
 # CHANGELOG
 
-## v0.5.7 (not yet released)
+## v0.5.7 (2023-10-05)
 
 - **improvement**: bumped to `phoenix_live_view 0.20.0``
 - **improvement**: bumped to Erlang 26 / Elixir 1.15
 - **improvement**: [better router formatting and exporting formatting configuration](https://github.com/phenixdigital/phoenix_storybook/issues/332)
 - **bugfix**: [fixed theme attributes being stripped out from code preview even when themes aren't being used](https://github.com/phenixdigital/phoenix_storybook/issues/352)
 - **bugfix**: [updated generated story to the latest phoenix core components](https://github.com/phenixdigital/phoenix_storybook/pull/334)
+- **bugfix**: [fixed white bar in code preview](https://github.com/phenixdigital/phoenix_storybook/issues/359)
 
 ## v0.5.6 (2023-07-18)
 
