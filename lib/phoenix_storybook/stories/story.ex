@@ -179,7 +179,6 @@ defmodule PhoenixStorybook.Story do
       @behaviour unquote(component_behaviour(live?))
       @before_compile StorySource
 
-      import Phoenix.Component
       alias Phoenix.LiveView.JS
       alias PhoenixStorybook.Stories.{Attr, Doc, Slot, Variation, VariationGroup}
 
@@ -259,8 +258,6 @@ defmodule PhoenixStorybook.Story do
   def example do
     quote do
       use Phoenix.LiveView
-
-      import Phoenix.Component
 
       @behaviour StoryBehaviour
       @behaviour ExampleBehaviour
