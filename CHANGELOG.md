@@ -9,6 +9,7 @@ You can also [sponsor me](https://github.com/sponsors/cblavier), as it would ena
 ## v0.5.8 (not released)
 
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
+- **bugfix**: [fixed potential import module clashes](https://github.com/phenixdigital/phoenix_storybook/issues/290)
 
 ## v0.5.7 (2023-10-05)
 
