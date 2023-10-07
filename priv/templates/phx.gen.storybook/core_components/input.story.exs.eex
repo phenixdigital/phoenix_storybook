@@ -1,6 +1,6 @@
 defmodule Storybook.CoreComponents.Input do
   use PhoenixStorybook.Story, :component
-  alias <%= schema.core_components_module %>
+  alias <%= schema.core_components_module_name %>
 
   def function, do: &CoreComponents.input/1
   def imports, do: [{CoreComponents, [simple_form: 1]}]

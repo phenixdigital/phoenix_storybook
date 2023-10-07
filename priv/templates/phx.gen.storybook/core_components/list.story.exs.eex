@@ -1,7 +1,7 @@
 defmodule Storybook.CoreComponents.List do
   use PhoenixStorybook.Story, :component
 
-  def function, do: &<%= schema.core_components_module %>.list/1
+  def function, do: &<%= schema.core_components_module_name %>.list/1
 
   def variations do
     [

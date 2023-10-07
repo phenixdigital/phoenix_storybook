@@ -1,6 +1,6 @@
 defmodule Storybook.CoreComponents.Modal do
   use PhoenixStorybook.Story, :component
-  alias <%= schema.core_components_module %>
+  alias <%= schema.core_components_module_name %>
 
   def function, do: &CoreComponents.modal/1
   def imports, do: [{CoreComponents, [button: 1, hide_modal: 1, show_modal: 1]}]

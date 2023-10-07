@@ -110,6 +110,22 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
     end)
   end
 
+  @tag :capture_log
+  test "generated component stories do not contain the Elixir. prefix", config do
+    in_tmp_project(config.test, fn ->
+      for _ <- 1..8, do: send(self(), {:mix_shell_input, :yes?, true})
+      Storybook.run([])
+
+      story_file = "storybook/core_components/button.story.exs"
+      [{component, _}] = Code.compile_file(story_file)
+      assert component.storybook_type() == :component
+      assert component.function() == &PhoenixStorybookWeb.CoreComponents.button/1
+
+      story_content = File.read!(story_file)
+      assert story_content =~ "def function, do: &PhoenixStorybookWeb.CoreComponents.button/1"
+    end)
+  end
+
   test "with wrong flags it fails", config do
     in_tmp_project(config.test, fn ->
       assert_raise Mix.Error, "Invalid option: --unknown-flag", fn ->
