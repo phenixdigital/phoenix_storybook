@@ -6,7 +6,7 @@
 
 📚 [Documentation](https://hexdocs.pm/phoenix_storybook)
 &nbsp; - &nbsp;
-🔎 [Demo](http://phx-live-storybook-sample.fly.dev/storybook)
+🔎 [Demo](https://phoenix-storybook-demo.fly.dev/)
 &nbsp; - &nbsp;
 🎓 [Sample repository](https://github.com/phenixdigital/phoenix_storybook_sample)
 &nbsp; - &nbsp;
