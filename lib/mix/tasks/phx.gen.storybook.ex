@@ -39,6 +39,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     web_module = web_module()
     web_module_name = Module.split(web_module) |> List.last()
     core_components_module = Module.concat([web_module, :CoreComponents])
+    core_components_module_name = Macro.to_string(core_components_module)
     app_name = String.to_atom(Macro.underscore(web_module))
     app_folder = Path.join("lib", to_string(app_name))
     core_components_folder = "storybook/core_components"
@@ -50,7 +51,8 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       app: app_name,
       sandbox_class: String.replace(to_string(app_name), "_", "-"),
       module: web_module,
-      core_components_module: core_components_module
+      core_components_module: core_components_module,
+      core_components_module_name: core_components_module_name
     }
 
     mapping =
