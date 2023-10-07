@@ -6,6 +6,10 @@ I would greatly appreciate your [code contributions](https://github.com/phenixdi
 
 You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and developing new features 🤗
 
+## v0.5.8 (not released)
+
+- **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
+
 ## v0.5.7 (2023-10-05)
 
 - **improvement**: bumped to `phoenix_live_view 0.20.0``
