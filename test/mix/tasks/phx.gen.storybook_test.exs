@@ -4,6 +4,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   use ExUnit.Case
   import PhoenixStorybook.MixHelper
   alias Mix.Tasks.Phx.Gen.Storybook
+  alias PhoenixStorybook.ExsCompiler
 
   setup do
     Mix.Task.clear()
@@ -117,9 +118,9 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       Storybook.run([])
 
       story_file = "storybook/core_components/button.story.exs"
-      [{component, _}] = Code.compile_file(story_file)
-      assert component.storybook_type() == :component
-      assert component.function() == &PhoenixStorybookWeb.CoreComponents.button/1
+      story = ExsCompiler.compile_exs!(story_file)
+      assert story.storybook_type() == :component
+      assert story.function() == &PhoenixStorybookWeb.CoreComponents.button/1
 
       story_content = File.read!(story_file)
       assert story_content =~ "def function, do: &PhoenixStorybookWeb.CoreComponents.button/1"

@@ -10,7 +10,7 @@ defmodule PhoenixStorybook.ExsCompiler do
   def start_link(opts), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   def init(opts), do: {:ok, opts}
 
-  def compile_exs!(path, relative_to) do
+  def compile_exs!(path, relative_to \\ "./") do
     do_compile_exs!(path, relative_to)
   end
 
