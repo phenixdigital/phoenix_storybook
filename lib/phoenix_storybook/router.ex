@@ -32,6 +32,8 @@ defmodule PhoenixStorybook.Router do
     * `:pipeline` - Set to `false` if you don't want a router pipeline to be created. This is useful
        if you want to define your own `:storybook_browser` pipeline, or if you mount multiple
        storybooks, in which case the pipeline only has to be defined once. Defaults to `true`.
+    * `:csrf` - Set to `false` if your LiveView socket is configured without csrf, then the JS code
+       will attach to the socket without providing a csrf token. Defaults to `true`.
 
   ## Usage
 
@@ -56,6 +58,7 @@ defmodule PhoenixStorybook.Router do
       |> Keyword.put(:application_router, __CALLER__.module)
       |> Keyword.put_new(:as, :live_storybook)
       |> Keyword.put_new(:pipeline, true)
+      |> Keyword.put_new(:csrf, true)
 
     session_name_opt = Keyword.get(opts, :session_name, :live_storybook)
     session_name_iframe_opt = :"#{session_name_opt}_iframe"
@@ -137,9 +140,10 @@ defmodule PhoenixStorybook.Router do
         private: %{
           live_socket_path: live_socket_path,
           backend_module: backend_module,
-          application_router: Keyword.get(opts, :application_router),
+          application_router: Keyword.fetch!(opts, :application_router),
           assets_path: assets_path,
-          csp_nonce_assign_key: csp_nonce_assign_key
+          csp_nonce_assign_key: csp_nonce_assign_key,
+          csrf: Keyword.fetch!(opts, :csrf)
         },
         as: Keyword.fetch!(opts, :as)
       ]

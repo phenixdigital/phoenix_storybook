@@ -15,7 +15,7 @@ let socketPath =
 
 let csrfToken = window.parent.document
   .querySelector("meta[name='csrf-token']")
-  .getAttribute("content");
+  ?.getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
   hooks: { ...window.storybook.Hooks },
@@ -25,7 +25,7 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
       _csrf_token: csrfToken,
     };
   },
-  ...window.storybook.LiveSocketOptions
+  ...window.storybook.LiveSocketOptions,
 });
 
 liveSocket.connect();

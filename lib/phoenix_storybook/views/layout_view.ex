@@ -70,6 +70,8 @@ defmodule PhoenixStorybook.LayoutView do
     end
   end
 
+  defp csrf?(conn), do: conn.private.csrf
+
   defp storybook_setting(conn_or_socket, key, default \\ nil)
 
   defp storybook_setting(conn_or_socket, key, default) do
