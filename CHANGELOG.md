@@ -9,6 +9,7 @@ You can also [sponsor me](https://github.com/sponsors/cblavier), as it would ena
 ## v0.5.8 (not released)
 
 - **improvement**: [Content-Security-Policy (CSP) support](https://github.com/phenixdigital/phoenix_storybook/issues/149). Special thanks to [Gaia](https://github.com/gaiabeatrice) for the PR 🙏
+- **improvement**: [CSRF token is optional](https://github.com/phenixdigital/phoenix_storybook/issues/340)
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
 - **bugfix**: [fixed potential import module clashes](https://github.com/phenixdigital/phoenix_storybook/issues/290)
 
