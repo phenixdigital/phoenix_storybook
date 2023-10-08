@@ -26,7 +26,9 @@
     <%= if path = storybook_css_path(@conn) do %>
       <link nonce={csp_nonce(@conn, :style)} phx-track-static rel="stylesheet" href={application_static_path(path)}/>
     <% end %>
-    <style nonce={csp_nonce(@conn, :style)} raw(makeup_stylesheet(@conn)) %></style>
+    <style nonce={csp_nonce(@conn, :style)}>
+      <%= raw(makeup_stylesheet(@conn))%>
+    </style>
   </head>
 
   <body class={["lsb lsb-max-w-full lsb-overflow-hidden", wait_for_icons?(@conn)]}>
