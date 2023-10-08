@@ -14,8 +14,8 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
       defmodule SourceFailStory do
         use PhoenixStorybook.Story, :component
         import Phoenix.Component
-        def function, do: &badge/1
-        defp badge(assigns), do: ~H"<span>Hello World</span>"
+        def function, do: &SourceFailStory.badge/1
+        def badge(assigns), do: ~H"<span>Hello World</span>"
       end
 
       assert is_nil(SourceFailStory.__component_source__())
