@@ -3,6 +3,7 @@
 [![github](https://github.com/phenixdigital/phoenix_storybook/actions/workflows/elixir.yml/badge.svg)](https://github.com/phenixdigital/phoenix_storybook/actions/workflows/elixir.yml)
 [![codecov](https://codecov.io/gh/phenixdigital/phoenix_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phoenix_storybook)
 [![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phoenix_storybook.svg)](https://github.com/phenixdigital/phoenix_storybook/releases/)
+[![GitHub sponsors](https://img.shields.io/github/sponsors/cblavier)](https://github.com/sponsors/cblavier)
 
 📚 [Documentation](https://hexdocs.pm/phoenix_storybook)
 &nbsp; - &nbsp;
