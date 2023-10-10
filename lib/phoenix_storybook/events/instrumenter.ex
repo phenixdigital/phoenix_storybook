@@ -10,7 +10,7 @@ defmodule PhoenixStorybook.Events.Instrumenter do
       [:phoenix, :live_component, :handle_event, :stop]
     ]
 
-    :telemetry.attach_many("lsb-instrumenter", events, &__MODULE__.handle_event/4, nil)
+    :telemetry.attach_many("psb-instrumenter", events, &__MODULE__.handle_event/4, nil)
   end
 
   def handle_event([:phoenix, :live_view, :handle_event, :stop], _measurements, metadata, _config) do

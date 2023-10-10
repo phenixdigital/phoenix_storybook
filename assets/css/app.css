@@ -2,82 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-.lsb {
+.psb {
   font-family: "Inter var", ui-sans-serif, system-ui, sans-serif;
-  @apply lsb-antialiased lsb-text-gray-600 lsb-text-inherit;
+  @apply psb-antialiased psb-text-gray-600 psb-text-inherit;
 }
 
-.lsb-wait-for-icons {
+.psb-wait-for-icons {
   display: none;
 }
 
-.fontawesome-i2svg-active .lsb-wait-for-icons {
+.fontawesome-i2svg-active .psb-wait-for-icons {
   display: initial;
 }
 
-.svg-inline--fa.lsb {
+.svg-inline--fa.psb {
   display: var(--fa-display, inline-block);
   height: 1em;
   overflow: visible;
   vertical-align: -0.125em;
 }
 
-.svg-inline--fa.lsb.lsb-hidden {
+.svg-inline--fa.psb.psb-hidden {
   display: none;
 }
 
-.lsb-sandbox {
+.psb-sandbox {
   margin: 0;
   font-family: serif, system-ui, sans-serif;
-  @apply lsb-w-full;
+  @apply psb-w-full;
 }
 
-.lsb-variation-block:hover .lsb-open-playground-link {
+.psb-variation-block:hover .psb-open-playground-link {
   display: block;
 }
 
-.lsb-sandbox .lsb-welcome-page {
-  @apply lsb-w-full;
+.psb-sandbox .psb-welcome-page {
+  @apply psb-w-full;
 }
 
-.lsb-sandbox .lsb-welcome-page h1 {
-  @apply lsb-text-indigo-700 lsb-text-2xl lsb-pt-4 lsb-mb-2;
+.psb-sandbox .psb-welcome-page h1 {
+  @apply psb-text-indigo-700 psb-text-2xl psb-pt-4 psb-mb-2;
 }
 
-.lsb-sandbox .lsb-welcome-page h2 {
-  @apply lsb-text-indigo-700 lsb-text-xl lsb-pt-4 lsb-mb-2;
+.psb-sandbox .psb-welcome-page h2 {
+  @apply psb-text-indigo-700 psb-text-xl psb-pt-4 psb-mb-2;
 }
 
-.lsb-sandbox .lsb-welcome-page h3 {
-  @apply lsb-text-slate-700 lsb-text-lg lsb-pt-4 lsb-mb-2 lsb-font-bold;
+.psb-sandbox .psb-welcome-page h3 {
+  @apply psb-text-slate-700 psb-text-lg psb-pt-4 psb-mb-2 psb-font-bold;
 }
 
-.lsb-sandbox .lsb-welcome-page p {
-  @apply md:lsb-text-lg lsb-leading-6 md:lsb-leading-8 lsb-text-slate-700 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2;
+.psb-sandbox .psb-welcome-page p {
+  @apply md:psb-text-lg psb-leading-6 md:psb-leading-8 psb-text-slate-700 psb-w-full psb-text-left psb-mb-4 psb-mt-2;
 }
 
-.lsb-sandbox .lsb-welcome-page strong {
-  @apply lsb-text-indigo-700;
+.psb-sandbox .psb-welcome-page strong {
+  @apply psb-text-indigo-700;
 }
 
-.lsb-sandbox .lsb-welcome-page ul {
-  @apply lsb-list-disc lsb-ml-12 lsb-space-y-2;
+.psb-sandbox .psb-welcome-page ul {
+  @apply psb-list-disc psb-ml-12 psb-space-y-2;
 }
 
-.lsb-sandbox .lsb-welcome-page ul li {
-  @apply lsb-text-lg lsb-text-slate-700;
+.psb-sandbox .psb-welcome-page ul li {
+  @apply psb-text-lg psb-text-slate-700;
 }
 
-.lsb-sandbox .lsb-welcome-page code.inline {
-  @apply lsb-font-mono lsb-bg-gray-100 lsb-rounded-md lsb-py-1 lsb-px-1.5 lsb-text-sm;
+.psb-sandbox .psb-welcome-page code.inline {
+  @apply psb-font-mono psb-bg-gray-100 psb-rounded-md psb-py-1 psb-px-1.5 psb-text-sm;
 }
 
-.lsb-sandbox .lsb-welcome-page pre {
-  @apply lsb-bg-gray-100 lsb-rounded-lg lsb-px-4 lsb-py-2 lsb-my-4 lsb-whitespace-pre-wrap lsb-break-normal;
+.psb-sandbox .psb-welcome-page pre {
+  @apply psb-bg-gray-100 psb-rounded-lg psb-px-4 psb-py-2 psb-my-4 psb-whitespace-pre-wrap psb-break-normal;
 }
 
-.lsb-sandbox .lsb-welcome-page pre code {
-  @apply lsb-font-mono lsb-text-sm;
+.psb-sandbox .psb-welcome-page pre code {
+  @apply psb-font-mono psb-text-sm;
 }
 
 @layer base {
@@ -86,17 +86,17 @@
   2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
   */
 
-  .lsb,
-  .lsb::before,
-  .lsb::after {
+  .psb,
+  .psb::before,
+  .psb::after {
     box-sizing: border-box; /* 1 */
     border-width: 0; /* 2 */
     border-style: solid; /* 2 */
     border-color: theme("borderColor.DEFAULT", currentColor); /* 2 */
   }
 
-  .lsb::before,
-  .lsb::after {
+  .psb::before,
+  .psb::after {
     --tw-content: "";
   }
 
@@ -107,7 +107,7 @@
   4. Use the user's configured `sans` font-family by default.
   */
 
-  html.lsb {
+  html.psb {
     line-height: 1.5; /* 1 */
     -webkit-text-size-adjust: 100%; /* 2 */
     -moz-tab-size: 4; /* 3 */
@@ -136,7 +136,7 @@
   2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
   */
 
-  body.lsb {
+  body.psb {
     margin: 0; /* 1 */
     line-height: inherit; /* 2 */
   }
@@ -147,7 +147,7 @@
   3. Ensure horizontal rules are visible by default.
   */
 
-  hr.lsb {
+  hr.psb {
     height: 0; /* 1 */
     color: inherit; /* 2 */
     border-top-width: 1px; /* 3 */
@@ -157,7 +157,7 @@
   Add the correct text decoration in Chrome, Edge, and Safari.
   */
 
-  abbr.lsb:where([title]) {
+  abbr.psb:where([title]) {
     text-decoration: underline dotted;
   }
 
@@ -165,12 +165,12 @@
   Remove the default font size and weight for headings.
   */
 
-  h1.lsb,
-  h2.lsb,
-  h3.lsb,
-  h4.lsb,
-  h5.lsb,
-  h6.lsb {
+  h1.psb,
+  h2.psb,
+  h3.psb,
+  h4.psb,
+  h5.psb,
+  h6.psb {
     font-size: inherit;
     font-weight: inherit;
   }
@@ -179,7 +179,7 @@
   Reset links to optimize for opt-in styling instead of opt-out.
   */
 
-  a.lsb {
+  a.psb {
     color: inherit;
     text-decoration: inherit;
   }
@@ -188,8 +188,8 @@
   Add the correct font weight in Edge and Safari.
   */
 
-  b.lsb,
-  strong.lsb {
+  b.psb,
+  strong.psb {
     font-weight: bolder;
   }
 
@@ -198,10 +198,10 @@
   2. Correct the odd `em` font sizing in all browsers.
   */
 
-  code.lsb,
-  kbd.lsb,
-  samp.lsb,
-  pre.lsb {
+  code.psb,
+  kbd.psb,
+  samp.psb,
+  pre.psb {
     font-family: theme(
       "fontFamily.mono",
       ui-monospace,
@@ -220,7 +220,7 @@
   Add the correct font size in all browsers.
   */
 
-  small.lsb {
+  small.psb {
     font-size: 80%;
   }
 
@@ -228,19 +228,19 @@
   Prevent `sub` and `sup` elements from affecting the line height in all browsers.
   */
 
-  sub.lsb,
-  sup.lsb {
+  sub.psb,
+  sup.psb {
     font-size: 75%;
     line-height: 0;
     position: relative;
     vertical-align: baseline;
   }
 
-  sub.lsb {
+  sub.psb {
     bottom: -0.25em;
   }
 
-  sup.lsb {
+  sup.psb {
     top: -0.5em;
   }
 
@@ -250,7 +250,7 @@
   3. Remove gaps between table borders by default.
   */
 
-  table.lsb {
+  table.psb {
     text-indent: 0; /* 1 */
     border-color: inherit; /* 2 */
     border-collapse: collapse; /* 3 */
@@ -262,11 +262,11 @@
   3. Remove default padding in all browsers.
   */
 
-  button.lsb,
-  input.lsb,
-  optgroup.lsb,
-  select.lsb,
-  textarea.lsb {
+  button.psb,
+  input.psb,
+  optgroup.psb,
+  select.psb,
+  textarea.psb {
     font-family: inherit; /* 1 */
     /* font-size: 100%; 1 */
     font-weight: inherit; /* 1 */
@@ -280,8 +280,8 @@
   Remove the inheritance of text transform in Edge and Firefox.
   */
 
-  button.lsb,
-  select.lsb {
+  button.psb,
+  select.psb {
     text-transform: none;
   }
 
@@ -290,10 +290,10 @@
   2. Remove default button styles.
   */
 
-  button.lsb,
-  .lsb[type="button"],
-  .lsb[type="reset"],
-  .lsb[type="submit"] {
+  button.psb,
+  .psb[type="button"],
+  .psb[type="reset"],
+  .psb[type="submit"] {
     -webkit-appearance: button; /* 1 */
     background-color: transparent; /* 2 */
     background-image: none; /* 2 */
@@ -303,7 +303,7 @@
   Use the modern Firefox focus style for all focusable elements.
   */
 
-  .lsb:-moz-focusring {
+  .psb:-moz-focusring {
     outline: auto;
   }
 
@@ -311,7 +311,7 @@
   Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
   */
 
-  .lsb:-moz-ui-invalid {
+  .psb:-moz-ui-invalid {
     box-shadow: none;
   }
 
@@ -319,7 +319,7 @@
   Add the correct vertical alignment in Chrome and Firefox.
   */
 
-  progress.lsb {
+  progress.psb {
     vertical-align: baseline;
   }
 
@@ -327,8 +327,8 @@
   Correct the cursor style of increment and decrement buttons in Safari.
   */
 
-  .lsb::-webkit-inner-spin-button,
-  .lsb::-webkit-outer-spin-button {
+  .psb::-webkit-inner-spin-button,
+  .psb::-webkit-outer-spin-button {
     height: auto;
   }
 
@@ -337,7 +337,7 @@
   2. Correct the outline style in Safari.
   */
 
-  .lsb[type="search"] {
+  .psb[type="search"] {
     -webkit-appearance: textfield; /* 1 */
     outline-offset: -2px; /* 2 */
   }
@@ -346,7 +346,7 @@
   Remove the inner padding in Chrome and Safari on macOS.
   */
 
-  .lsb::-webkit-search-decoration {
+  .psb::-webkit-search-decoration {
     -webkit-appearance: none;
   }
 
@@ -355,7 +355,7 @@
   2. Change font properties to `inherit` in Safari.
   */
 
-  .lsb::-webkit-file-upload-button {
+  .psb::-webkit-file-upload-button {
     -webkit-appearance: button; /* 1 */
     font: inherit; /* 2 */
   }
@@ -364,7 +364,7 @@
   Add the correct display in Chrome and Safari.
   */
 
-  summary.lsb {
+  summary.psb {
     display: list-item;
   }
 
@@ -372,34 +372,34 @@
   Removes the default spacing and border for appropriate elements.
   */
 
-  blockquote.lsb,
-  dl.lsb,
-  dd.lsb,
-  h1.lsb,
-  h2.lsb,
-  h3.lsb,
-  h4.lsb,
-  h5.lsb,
-  h6.lsb,
-  hr.lsb,
-  figure.lsb,
-  p.lsb,
-  pre.lsb {
+  blockquote.psb,
+  dl.psb,
+  dd.psb,
+  h1.psb,
+  h2.psb,
+  h3.psb,
+  h4.psb,
+  h5.psb,
+  h6.psb,
+  hr.psb,
+  figure.psb,
+  p.psb,
+  pre.psb {
     margin: 0;
   }
 
-  fieldset.lsb {
+  fieldset.psb {
     margin: 0;
     padding: 0;
   }
 
-  legend.lsb {
+  legend.psb {
     padding: 0;
   }
 
-  ol.lsb,
-  ul.lsb,
-  menu.lsb {
+  ol.psb,
+  ul.psb,
+  menu.psb {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -409,7 +409,7 @@
   Prevent resizing textareas horizontally by default.
   */
 
-  textarea.lsb {
+  textarea.psb {
     resize: vertical;
   }
 
@@ -418,8 +418,8 @@
   2. Set the default placeholder color to the user's configured gray 400 color.
   */
 
-  input.lsb::placeholder,
-  textarea.lsb::placeholder {
+  input.psb::placeholder,
+  textarea.psb::placeholder {
     opacity: 1; /* 1 */
     color: theme("colors.gray.400", #9ca3af); /* 2 */
   }
@@ -428,15 +428,15 @@
   Set the default cursor for buttons.
   */
 
-  button.lsb,
-  .lsb[role="button"] {
+  button.psb,
+  .psb[role="button"] {
     cursor: pointer;
   }
 
   /*
   Make sure disabled buttons don't get the pointer cursor.
   */
-  .lsb:disabled {
+  .psb:disabled {
     cursor: default;
   }
 
@@ -446,14 +446,14 @@
     This can trigger a poorly considered lint error in some tools but is included by design.
   */
 
-  img.lsb,
-  svg.lsb,
-  video.lsb,
-  canvas.lsb,
-  audio.lsb,
-  iframe.lsb,
-  embed.lsb,
-  object.lsb {
+  img.psb,
+  svg.psb,
+  video.psb,
+  canvas.psb,
+  audio.psb,
+  iframe.psb,
+  embed.psb,
+  object.psb {
     display: block; /* 1 */
     vertical-align: middle; /* 2 */
   }
@@ -462,8 +462,8 @@
   Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
   */
 
-  img.lsb,
-  video.lsb {
+  img.psb,
+  video.psb {
     max-width: 100%;
     height: auto;
   }

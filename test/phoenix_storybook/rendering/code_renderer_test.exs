@@ -206,12 +206,12 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
   describe "render_component_source/2" do
     test "it renders a component source", %{component: component} do
       source = CodeRenderer.render_component_source(component) |> rendered_to_string()
-      assert source =~ ~r/<pre.*lsb highlight.*\/pre>/s
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
     end
 
     test "it renders a live component source", %{live_component: component} do
       source = CodeRenderer.render_component_source(component) |> rendered_to_string()
-      assert source =~ ~r/<pre.*lsb highlight.*\/pre>/s
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
     end
   end
 

@@ -7,10 +7,10 @@ defmodule Storybook.CoreComponents.Modal do
 
   def template do
     """
-    <.button phx-click={show_modal(":variation_id")} lsb-code-hidden>
+    <.button phx-click={show_modal(":variation_id")} psb-code-hidden>
       Open modal
     </.button>
-    <.lsb-variation/>
+    <.psb-variation/>
     """
   end
 

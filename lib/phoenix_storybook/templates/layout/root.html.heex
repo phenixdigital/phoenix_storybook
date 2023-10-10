@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="lsb" phx-socket={live_socket_path(@conn)}>
+<html lang="en" class="psb" phx-socket={live_socket_path(@conn)}>
   
   <head>
     <meta charset="utf-8"/>
@@ -33,7 +33,7 @@
     </style>
   </head>
 
-  <body class={["lsb lsb-max-w-full lsb-overflow-hidden", wait_for_icons?(@conn)]}>
+  <body class={["psb psb-max-w-full psb-overflow-hidden", wait_for_icons?(@conn)]}>
     <%= @inner_content %>
   </body>
 </html>

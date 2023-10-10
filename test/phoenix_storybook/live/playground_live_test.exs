@@ -223,7 +223,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       html = view |> element("#playground-preview-live") |> render()
       assert html =~ "component: hello default"
 
-      view |> element("a.lsb-theme", "Colorful") |> render_click()
+      view |> element("a.psb-theme", "Colorful") |> render_click()
       wait_for_preview_lv(view)
       html = view |> element("#playground-preview-live") |> render()
       assert html =~ "component: hello colorful"
@@ -234,7 +234,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       form_theme_selector = "#tree_storybook_component-playground-form_theme"
       assert view |> element(form_theme_selector) |> render() =~ ~s|value=":default"|
 
-      view |> element("a.lsb-theme", "Colorful") |> render_click()
+      view |> element("a.psb-theme", "Colorful") |> render_click()
 
       wait_for_lv(view)
       assert view |> element(form_theme_selector) |> render() =~ ~s|value=":colorful"|

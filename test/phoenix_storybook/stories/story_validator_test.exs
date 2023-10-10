@@ -201,7 +201,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       mock = component_stub(template: nil)
       assert validate!(mock)
 
-      mock = component_stub(template: "<div><.lsb-variation/></div>")
+      mock = component_stub(template: "<div><.psb-variation/></div>")
       assert validate!(mock)
     end
 
@@ -222,7 +222,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
 
       mock =
         component_stub(
-          variations: [%Variation{id: :foo, template: "<div><.lsb-variation/></div>"}]
+          variations: [%Variation{id: :foo, template: "<div><.psb-variation/></div>"}]
         )
 
       assert validate!(mock)
@@ -246,7 +246,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       mock =
         component_stub(
           variations: [
-            %VariationGroup{id: :foo, variations: [], template: "<div><.lsb-variation/></div>"}
+            %VariationGroup{id: :foo, variations: [], template: "<div><.psb-variation/></div>"}
           ]
         )
 
@@ -269,7 +269,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
           variations: [
             %VariationGroup{
               id: :group,
-              variations: [%Variation{id: :foo, template: "<div><.lsb-variation/></div>"}]
+              variations: [%Variation{id: :foo, template: "<div><.psb-variation/></div>"}]
             }
           ]
         )

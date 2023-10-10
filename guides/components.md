@@ -97,13 +97,13 @@ that will for instance render a button next to the component, to toggle its visi
 
 You can define a template in your component story by defining a `template/0` function.
 Every variation will be rendered within the defined template, the variation itself is injected
-in place of `<.lsb-variation/>`.
+in place of `<.psb-variation/>`.
 
 ```elixir
 def template do
   """
   <div class="my-custom-wrapper">
-    <.lsb-variation/>
+    <.psb-variation/>
   </div>
   """
 end
@@ -121,7 +121,7 @@ Variation groups can also leverage on templating:
 ```elixir
 """
 <div class="one-wrapper-for-each-variation">
-  <.lsb-variation/>
+  <.psb-variation/>
 </div>
 """
 ```
@@ -131,7 +131,7 @@ Variation groups can also leverage on templating:
 ```elixir
 """
 <div class="a-single-wrapper-for-all">
-  <.lsb-variation-group/>
+  <.psb-variation-group/>
 </div>
 """
 ```
@@ -142,12 +142,12 @@ by the current variation (or variation group) id.
 ### Placeholder attributes
 
 In template, you can pass some extra attributes to your variation. Just add them to the
-`.lsb-variation` or `.lsb-variation-group` placeholder.
+`.psb-variation` or `.psb-variation-group` placeholder.
 
 ```elixir
 """
 <.form_for :let={f} for={%{}} as={:user}>
-  <.lsb-variation form={f}/>
+  <.psb-variation form={f}/>
 </.form>
 """
 ```
@@ -167,7 +167,7 @@ defmodule Storybook.Components.Modal do
     """
     <div>
       <button phx-click={Modal.show_modal()}>Open modal</button>
-      <.lsb-variation/>
+      <.psb-variation/>
     </div>
     """
   end
@@ -202,7 +202,7 @@ defmodule Storybook.Components.Slideover do
       <button phx-click={JS.push("assign", value: %{show: true})}>
         Open slideover
       </button>
-      <.lsb-variation/>
+      <.psb-variation/>
     </div>
     """
   end
@@ -225,13 +225,13 @@ end
 
 By default, the code preview will render the variation and its template markup as well.
 You can choose to render only the variation markup, without its surrounding template by using the
-`lsb-code-hidden` HTML attribute.
+`psb-code-hidden` HTML attribute.
 
 ```elixir
 """
-<div lsb-code-hidden>
+<div psb-code-hidden>
   <button phx-click={Modal.show_modal()}>Open modal</button>
-  <.lsb-variation/>
+  <.psb-variation/>
 </div>
 """
 ```

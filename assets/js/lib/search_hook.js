@@ -32,7 +32,7 @@ export const SearchHook = {
       childList: true,
     });
 
-    window.addEventListener("lsb:open-search", () => {
+    window.addEventListener("psb:open-search", () => {
       this.liveSocket.execJS(
         searchContainer,
         searchContainer.getAttribute("phx-show")
@@ -45,7 +45,7 @@ export const SearchHook = {
       );
     });
 
-    window.addEventListener("lsb:close-search", () => {
+    window.addEventListener("psb:close-search", () => {
       this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-hide"));
       this.liveSocket.execJS(
         searchContainer,
@@ -54,7 +54,7 @@ export const SearchHook = {
     });
 
     window.addEventListener("keydown", (e) => {
-      if ((e.metaKey && (e.key === "k" || e.key === "K"))) {
+      if (e.metaKey && (e.key === "k" || e.key === "K")) {
         e.preventDefault();
         this.dispatchOpenSearch();
       }
@@ -157,12 +157,12 @@ export const SearchHook = {
   },
 
   dispatchOpenSearch() {
-    const event = new Event("lsb:open-search");
+    const event = new Event("psb:open-search");
     window.dispatchEvent(event);
   },
 
   dispatchCloseSearch() {
-    const event = new Event("lsb:close-search");
+    const event = new Event("psb:close-search");
     window.dispatchEvent(event);
   },
 };
