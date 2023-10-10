@@ -10,7 +10,7 @@ defmodule TreeStorybook.TemplateLiveComponent do
       <button id="toggle-status" phx-click={JS.push("toggle", value: %{attr: :status})}>Toggle status</button>
       <button id="set-status-true" phx-click={JS.push("assign", value: %{status: true})}>Set status to true</button>
       <button id="set-status-false" phx-click={JS.push("assign", value: %{status: false})}>Set status to false</button>
-      <.lsb-variation/>
+      <.psb-variation/>
     </div>
     """
   end

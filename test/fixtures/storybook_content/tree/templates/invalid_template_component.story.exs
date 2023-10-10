@@ -5,7 +5,7 @@ defmodule TreeStorybook.InvalidTemplateComponent do
   def template do
     """
     <div id=":variation_id">
-      <.lsb-variation/>
+      <.psb-variation/>
     </div>
     """
   end
@@ -25,7 +25,7 @@ defmodule TreeStorybook.InvalidTemplateComponent do
     [
       %Variation{
         id: :invalid_template_placeholder,
-        template: ~s|<div class="variation-template"><.lsb-variation-group/></div>|,
+        template: ~s|<div class="variation-template"><.psb-variation-group/></div>|,
         attributes: %{label: "invalid template"}
       }
     ]

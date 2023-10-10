@@ -7,10 +7,10 @@ defmodule Storybook.CoreComponents.Flash do
 
   def template do
     """
-    <.button phx-click={show("#:variation_id")} lsb-code-hidden>
+    <.button phx-click={show("#:variation_id")} psb-code-hidden>
       Open flash
     </.button>
-    <.lsb-variation/>
+    <.psb-variation/>
     """
   end
 

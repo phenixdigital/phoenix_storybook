@@ -8,6 +8,7 @@ You can also [sponsor me](https://github.com/sponsors/cblavier), as it would ena
 
 ## v0.5.8 (not released)
 
+- **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
 - **improvement**: [Content-Security-Policy (CSP) support](https://github.com/phenixdigital/phoenix_storybook/issues/149). Special thanks to [Gaia](https://github.com/gaiabeatrice) for the PR 🙏
 - **improvement**: [CSRF token is optional](https://github.com/phenixdigital/phoenix_storybook/issues/340)
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
@@ -15,7 +16,7 @@ You can also [sponsor me](https://github.com/sponsors/cblavier), as it would ena
 
 ## v0.5.7 (2023-10-05)
 
-- **improvement**: bumped to `phoenix_live_view 0.20.0``
+- **improvement**: bumped to `phoenix_live_view 0.20.0`
 - **improvement**: bumped to Erlang 26 / Elixir 1.15
 - **improvement**: [better router formatting and exporting formatting configuration](https://github.com/phenixdigital/phoenix_storybook/issues/332)
 - **bugfix**: [fixed theme attributes being stripped out from code preview even when themes aren't being used](https://github.com/phenixdigital/phoenix_storybook/issues/352)

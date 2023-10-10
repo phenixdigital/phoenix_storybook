@@ -27,15 +27,15 @@ export const StoryHook = {
     });
   },
   bindCopyCodeLinks() {
-    const buttonClasses = ["lsb-text-slate-500", "hover:lsb-text-slate-100"];
+    const buttonClasses = ["psb-text-slate-500", "hover:psb-text-slate-100"];
     const buttonActiveClasses = [
-      "lsb-text-green-400",
-      "hover:lsb-text-green-400",
+      "psb-text-green-400",
+      "hover:psb-text-green-400",
     ];
     const iconClass = "fa-copy";
     const iconActiveClass = "fa-check";
 
-    window.addEventListener("lsb:copy-code", (e) => {
+    window.addEventListener("psb:copy-code", (e) => {
       let button = e.target;
       let icon =
         button.querySelector(".svg-inline--fa") ||

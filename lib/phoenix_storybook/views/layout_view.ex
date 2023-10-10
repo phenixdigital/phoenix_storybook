@@ -21,14 +21,14 @@ defmodule PhoenixStorybook.LayoutView do
         <.fa_icon
           style={:thin}
           name="angle-right"
-          class="lsb-px-2 lsb-text-slate-500"
+          class="psb-px-2 psb-text-slate-500"
           plan={@fa_plan}
         />
       </:separator>
       <span class={[
-        "lsb",
+        "psb",
         @span_class,
-        "[&:not(:last-child)]:lsb-truncate last:lsb-whitespace-nowrap"
+        "[&:not(:last-child)]:psb-truncate last:psb-whitespace-nowrap"
       ]}>
         <%= item %>
       </span>
@@ -64,7 +64,7 @@ defmodule PhoenixStorybook.LayoutView do
 
   defp wait_for_icons?(conn_or_socket) do
     if fa_kit_id(conn_or_socket) && fa_rendering(conn_or_socket) == :svg do
-      "lsb-wait-for-icons"
+      "psb-wait-for-icons"
     else
       nil
     end
@@ -143,13 +143,13 @@ defmodule PhoenixStorybook.LayoutView do
   end
 
   defp show_dropdown_transition do
-    {"lsb-ease-out lsb-duration-200", "lsb-opacity-0 lsb-scale-95",
-     "lsb-opacity-100 lsb-scale-100"}
+    {"psb-ease-out psb-duration-200", "psb-opacity-0 psb-scale-95",
+     "psb-opacity-100 psb-scale-100"}
   end
 
   defp hide_dropdown_transition do
-    {"lsb-ease-out lsb-duration-200", "lsb-opacity-100 lsb-scale-100",
-     "lsb-opacity-0 lsb-scale-95"}
+    {"psb-ease-out psb-duration-200", "psb-opacity-100 psb-scale-100",
+     "psb-opacity-0 psb-scale-95"}
   end
 
   def sandbox_class(conn_or_socket, container, %{theme: nil}) do
@@ -172,7 +172,7 @@ defmodule PhoenixStorybook.LayoutView do
         _ -> nil
       end
 
-    ["lsb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]
+    ["psb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]
   end
 
   # for conn

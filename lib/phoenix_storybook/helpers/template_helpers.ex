@@ -1,12 +1,12 @@
 defmodule PhoenixStorybook.TemplateHelpers do
   @moduledoc false
 
-  @variation_regex ~r{(<\.lsb-variation\/>)|(<\.lsb-variation\s[^(\>)]*\/>)}
-  @variation_group_regex ~r{<\.lsb-variation-group[^(\>)]*\/>}
+  @variation_regex ~r{(<\.psb-variation\/>)|(<\.psb-variation\s[^(\>)]*\/>)}
+  @variation_group_regex ~r{<\.psb-variation-group[^(\>)]*\/>}
   @html_attributes_regex ~r{(\w+)=((?:.(?!["']?\s+(?:\S+)=|\s*\/?[>]))+.["']?)?}
   @js_push_regex ~r[(JS\.push\("(?:assign|toggle)".*value:\s+)(%{.*})(.*\))]
 
-  def default_template, do: "<.lsb-variation/>"
+  def default_template, do: "<.psb-variation/>"
 
   def set_variation_dom_id(template, unique_variation_id) do
     String.replace(template, ":variation_id", unique_variation_id)
@@ -50,7 +50,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
   end
 
   def code_hidden?(template) do
-    String.contains?(template, "lsb-code-hidden")
+    String.contains?(template, "psb-code-hidden")
   end
 
   def replace_template_variation(template, variation_markup, indent? \\ false) do
@@ -89,14 +89,14 @@ defmodule PhoenixStorybook.TemplateHelpers do
   # When rendering a variation from the component Playground, the playground will pass some context
   # (topic and variation_id).
   # We use this context to wrap template examples, unknown from the Playground, within a
-  # `lsb_inspect/4` call that will broadcast examples to the Playground.
+  # `psb_inspect/4` call that will broadcast examples to the Playground.
   defp extract_placeholder_attributes(template, regex, {topic, variation_id}) do
     [placeholder | _] = Regex.run(regex, template)
 
     @html_attributes_regex
     |> Regex.scan(placeholder)
     |> Enum.map_join(" ", fn [_, term1, term2] ->
-      "#{term1}={lsb_inspect(#{inspect(topic)}, #{inspect(variation_id)}, :#{term1}, #{inspect_val(term2)})}"
+      "#{term1}={psb_inspect(#{inspect(topic)}, #{inspect(variation_id)}, :#{term1}, #{inspect_val(term2)})}"
     end)
   end
 

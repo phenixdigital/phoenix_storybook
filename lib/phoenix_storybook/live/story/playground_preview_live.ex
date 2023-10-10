@@ -88,7 +88,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
           assigns.variation,
           assigns.variations_attributes,
           playground_topic: assigns.topic,
-          imports: [{__MODULE__, lsb_inspect: 4}]
+          imports: [{__MODULE__, psb_inspect: 4}]
         )
       )
 
@@ -105,11 +105,11 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
     """
   end
 
-  # Attributes passed in templates (as <.lsb-variation .../> tag attributes) carry a value only
+  # Attributes passed in templates (as <.psb-variation .../> tag attributes) carry a value only
   # known at runtime.
-  # Template will call `lsb_inspect/4` for each of these attributes, in order to let the Playground
+  # Template will call `psb_inspect/4` for each of these attributes, in order to let the Playground
   # know their current value.
-  def lsb_inspect(playground_topic, variation_id, key, val) do
+  def psb_inspect(playground_topic, variation_id, key, val) do
     PubSub.broadcast!(
       PhoenixStorybook.PubSub,
       playground_topic,
