@@ -13,6 +13,7 @@ You can also [sponsor me](https://github.com/sponsors/cblavier), as it would ena
 - **improvement**: [CSRF token is optional](https://github.com/phenixdigital/phoenix_storybook/issues/340)
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
 - **bugfix**: [fixed potential import module clashes](https://github.com/phenixdigital/phoenix_storybook/issues/290)
+- **bugfix**: generated story for flash core_component has been updated (flash was no longer supporting the `autoshow` option)
 
 ## v0.5.7 (2023-10-05)
 
