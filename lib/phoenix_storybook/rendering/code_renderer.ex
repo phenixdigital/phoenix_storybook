@@ -120,8 +120,8 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
 
   defp pre_class do
     """
-    lsb highlight lsb-p-2 md:lsb-p-3 lsb-border lsb-border-slate-800 lsb-text-xs md:lsb-text-sm
-    lsb-rounded-md lsb-bg-slate-800 lsb-whitespace-pre-wrap lsb-break-normal
+    psb highlight psb-p-2 md:psb-p-3 psb-border psb-border-slate-800 psb-text-xs md:psb-text-sm
+    psb-rounded-md psb-bg-slate-800 psb-whitespace-pre-wrap psb-break-normal
     """
   end
 

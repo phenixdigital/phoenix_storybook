@@ -121,8 +121,8 @@ defmodule MyAppWeb.Storybook do
     # The chosen theme key will be passed as an assign to all components.
     # ex: <.component theme={:colorful}/>
     #
-    # The chosen theme class will also be added to the `.lsb-sandbox` container.
-    # ex: <div class="lsb-sandbox theme-colorful">...</div>
+    # The chosen theme class will also be added to the `.psb-sandbox` container.
+    # ex: <div class="psb-sandbox theme-colorful">...</div>
     #
     # If no theme has been selected or if no theme is present in the URL the first one is enabled.
     themes: [

@@ -20,10 +20,10 @@ The two last tuple elements are optional.
 {:fa, "book"} # note that the FontAwesome icon name omits the fa- prefix
 {:fa, "book", :solid} # same than previous one, :solid is the default style
 {:fa, "skull", :duotone} # only for FontAwesome paid users
-{:fa, "skull", :duotone, "lsb-px-2"}
+{:fa, "skull", :duotone, "psb-px-2"}
 {:hero, "cake"} # for all HeroIcons
 {:hero, "cake", :outline} # same than previous one, :outline is the default style
-{:hero, "cake", :outline, "lsb-w-2 lsb-h-2"}
+{:hero, "cake", :outline, "psb-w-2 psb-h-2"}
 ```
 
 ## FontAwesome icons
@@ -64,7 +64,7 @@ The last tuple argument is an optional CSS class list you can pass to improve ic
 Since the icon is rendered within the storybook layout, and not within your components sandbox, you
 should use CSS classes supported by the storybook.
 
-- any `lsb-w-*` or `lsb-h-*` class (TailwindCSS classes for height & width prefixed by `lsb-`)
-- any `lsb-p-*` or `lsb-m-*` class (padding & margin)
-- any `lsb-text-color-###`
+- any `psb-w-*` or `psb-h-*` class (TailwindCSS classes for height & width prefixed by `psb-`)
+- any `psb-p-*` or `psb-m-*` class (padding & margin)
+- any `psb-text-color-###`
 - any `fa-*` (FontAwesome modifiers)

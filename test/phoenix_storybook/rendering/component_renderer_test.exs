@@ -121,7 +121,7 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
       assert html |> Floki.find("span") |> length() == 2
     end
 
-    test "renders a variation group with a <.lsb-variation-group/> placeholder template", %{
+    test "renders a variation group with a <.psb-variation-group/> placeholder template", %{
       template_component: component
     } do
       html =

@@ -64,7 +64,7 @@ defmodule PhoenixStorybook.SidebarTest do
       [{"div", [{"class", link_class} | _], _}] =
         find(document, "nav>ul>li>ul>li:nth-child(5)>ul>li:nth-child(1)>div")
 
-      assert String.contains?(link_class, "lsb-font-bold")
+      assert String.contains?(link_class, "psb-font-bold")
     end
 
     test "sidebar with an icon folder is well displayed" do

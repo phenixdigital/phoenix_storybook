@@ -191,7 +191,7 @@ defmodule PhoenixStorybook.Story do
       end
 
       @impl unquote(component_behaviour(live?))
-      def container, do: {:div, class: "lsb-flex lsb-flex-col lsb-items-center lsb-gap-y-[5px]"}
+      def container, do: {:div, class: "psb-flex psb-flex-col psb-items-center psb-gap-y-[5px]"}
 
       @impl unquote(component_behaviour(live?))
       def imports, do: []

@@ -4,19 +4,19 @@ export const SidebarHook = {
     const overlay = document.querySelector("#sidebar-overlay");
 
     const openSidebar = () => {
-      sidebarContainer.classList.remove("lsb-hidden");
-      overlay.classList.remove("lsb-hidden");
+      sidebarContainer.classList.remove("psb-hidden");
+      overlay.classList.remove("psb-hidden");
     };
 
     const closeSidebar = () => {
-      sidebarContainer.classList.add("lsb-hidden");
-      overlay.classList.add("lsb-hidden");
+      sidebarContainer.classList.add("psb-hidden");
+      overlay.classList.add("psb-hidden");
     };
 
-    this.handleEvent("lsb:open-sidebar", openSidebar);
-    this.handleEvent("lsb:close-sidebar", closeSidebar);
+    this.handleEvent("psb:open-sidebar", openSidebar);
+    this.handleEvent("psb:close-sidebar", closeSidebar);
 
-    window.addEventListener("lsb:open-sidebar", openSidebar);
-    window.addEventListener("lsb:close-sidebar", closeSidebar);
+    window.addEventListener("psb:open-sidebar", openSidebar);
+    window.addEventListener("psb:close-sidebar", closeSidebar);
   },
 };
