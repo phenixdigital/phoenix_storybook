@@ -9,9 +9,11 @@
 &nbsp; - &nbsp;
 🔎 [Demo](https://phoenix-storybook-demo.fly.dev/)
 &nbsp; - &nbsp;
-🎓 [Sample repository](https://github.com/phenixdigital/phoenix_storybook_sample)
+🎓 [Sample app](https://github.com/phenixdigital/phoenix_storybook_sample)
 &nbsp; - &nbsp;
 🍿 [Getting started video](https://www.youtube.com/watch?v=MTE7dLhkQ8Q)
+&nbsp; - &nbsp;
+🦊 [ElixirCasts](https://elixircasts.io/phoenix-storybook)
 
 <!-- MDOC !-->
 
