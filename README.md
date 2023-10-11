@@ -61,10 +61,10 @@ def deps do
 end
 ```
 
-> **Note**
+> [!IMPORTANT]
+> 
 > When picking a github version of the library (instead of an official hex.pm release) you
 > need the get the storybook's assets compiled.
->
 > To do so, please run `mix dev.storybook`.
 
 ### 2. Run the generator
