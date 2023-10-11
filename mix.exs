@@ -58,7 +58,7 @@ defmodule PhoenixStorybook.MixProject do
       {:jason, "~> 1.3", optional: true},
       {:earmark, "~> 1.4"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:floki, "~> 0.34.0", only: :test},
       {:mox, "~> 1.0", only: :test},
