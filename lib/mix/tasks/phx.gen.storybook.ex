@@ -37,7 +37,6 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     Mix.shell().info("Starting storybook generation")
 
     web_module = web_module()
-    web_module_name = Module.split(web_module) |> List.last()
     core_components_module = Module.concat([web_module, :CoreComponents])
     core_components_module_name = Macro.to_string(core_components_module)
     app_name = String.to_atom(Macro.underscore(web_module))
@@ -48,9 +47,10 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     css_folder = "assets/css"
 
     schema = %{
-      app: app_name,
+      app_name: app_name,
       sandbox_class: String.replace(to_string(app_name), "_", "-"),
-      module: web_module,
+      web_module: web_module,
+      web_module_name: web_module |> Module.split() |> List.last(),
       core_components_module: core_components_module,
       core_components_module_name: core_components_module_name
     }
@@ -79,14 +79,14 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       Mix.Generator.create_file(target, source_content)
     end
 
-    with true <- print_router_instructions(web_module_name, app_name, opts),
-         true <- print_esbuild_instructions(web_module_name, app_name, opts),
-         true <- print_tailwind_instructions(web_module_name, app_name, opts),
-         true <- print_watchers_instructions(web_module_name, app_name, opts),
-         true <- print_live_reload_instructions(web_module_name, app_name, opts),
-         true <- print_formatter_instructions(web_module_name, app_name, opts),
-         true <- print_mixexs_instructions(web_module_name, app_name, opts),
-         true <- print_docker_instructions(web_module_name, app_name, opts) do
+    with true <- print_router_instructions(schema, opts),
+         true <- print_esbuild_instructions(schema, opts),
+         true <- print_tailwind_instructions(schema, opts),
+         true <- print_watchers_instructions(schema, opts),
+         true <- print_live_reload_instructions(schema, opts),
+         true <- print_formatter_instructions(schema, opts),
+         true <- print_mixexs_instructions(schema, opts),
+         true <- print_docker_instructions(schema, opts) do
       Mix.shell().info("You are all set! 🚀")
       Mix.shell().info("You can run mix phx.server and visit http://localhost:4000/storybook")
     else
@@ -162,25 +162,25 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
   defp switch_to_string({name, nil}), do: name
   defp switch_to_string({name, val}), do: name <> "=" <> val
 
-  defp print_router_instructions(web_module, _app_name, _opts) do
+  defp print_router_instructions(schema, _opts) do
     print_instructions("""
       Add the following to your #{IO.ANSI.bright()}router.ex#{IO.ANSI.reset()}:
 
-        use #{web_module}, :router
+        use #{schema.web_module}, :router
         import PhoenixStorybook.Router
 
         scope "/" do
           storybook_assets()
         end
 
-        scope "/", #{web_module} do
+        scope "/", #{schema.web_module} do
           pipe_through(:browser)
-          live_storybook "/storybook", backend_module: #{web_module}.Storybook
+          live_storybook "/storybook", backend_module: #{schema.web_module}.Storybook
         end
     """)
   end
 
-  defp print_esbuild_instructions(_web_module, _app_name, _opts) do
+  defp print_esbuild_instructions(_schema, _opts) do
     print_instructions("""
       Add #{IO.ANSI.bright()}js/storybook.js#{IO.ANSI.reset()} as a new entry point to your esbuild args in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
 
@@ -193,9 +193,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  defp print_tailwind_instructions(_web_module, _app_name, _opts = [tailwind: false]), do: true
+  defp print_tailwind_instructions(_schema, _opts = [tailwind: false]), do: true
 
-  defp print_tailwind_instructions(_web_module, _app_name, _opts) do
+  defp print_tailwind_instructions(schema, _opts) do
     print_instructions("""
       Add a new Tailwind build profile for #{IO.ANSI.bright()}css/storybook.css#{IO.ANSI.reset()} in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
 
@@ -213,15 +213,24 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
             cd: Path.expand("../assets", __DIR__)
           ]#{IO.ANSI.reset()}
     """)
+
+    print_instructions("""
+      Set #{IO.ANSI.bright()}important#{IO.ANSI.reset()} option in your Tailwind config in #{IO.ANSI.bright()}assets/tailwind.config.js#{IO.ANSI.reset()}:
+
+        module.exports = {
+          #{IO.ANSI.bright()}important: ".#{schema.sandbox_class}",#{IO.ANSI.reset()}
+          ...
+        }
+    """)
   end
 
-  defp print_watchers_instructions(_web_module, _app_name, _opts = [tailwind: false]), do: true
+  defp print_watchers_instructions(_schema, _opts = [tailwind: false]), do: true
 
-  defp print_watchers_instructions(web_module, app_name, _opts) do
+  defp print_watchers_instructions(schema, _opts) do
     print_instructions("""
       Add a new #{IO.ANSI.bright()}endpoint watcher#{IO.ANSI.reset()} for your new Tailwind build profile in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
 
-        config #{inspect(app_name)}, #{web_module}.Endpoint,
+        config #{inspect(schema.app_name)}, #{schema.web_module}.Endpoint,
           ...
           watchers: [
             ...
@@ -230,11 +239,11 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  defp print_live_reload_instructions(web_module, app_name, _opts) do
+  defp print_live_reload_instructions(schema, _opts) do
     print_instructions("""
       Add a new #{IO.ANSI.bright()}live_reload pattern#{IO.ANSI.reset()} to your endpoint in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
 
-        config #{inspect(app_name)}, #{web_module}.Endpoint,
+        config #{inspect(schema.app_name)}, #{schema.web_module}.Endpoint,
           live_reload: [
             patterns: [
               ...
@@ -244,7 +253,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  defp print_formatter_instructions(_web_module, _app_name, _opts) do
+  defp print_formatter_instructions(_schema, _opts) do
     print_instructions("""
       Add your storybook content to #{IO.ANSI.bright()}.formatter.exs#{IO.ANSI.reset()}
 
@@ -258,9 +267,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  defp print_mixexs_instructions(_web_module, _app_name, _opts = [tailwind: false]), do: true
+  defp print_mixexs_instructions(_schema, _opts = [tailwind: false]), do: true
 
-  defp print_mixexs_instructions(_web_module, _app_name, _opts) do
+  defp print_mixexs_instructions(_schema, _opts) do
     print_instructions("""
       Add an alias to #{IO.ANSI.bright()}mix.exs#{IO.ANSI.reset()}
 
@@ -277,7 +286,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  defp print_docker_instructions(_web_module, _app_name, _opts) do
+  defp print_docker_instructions(_schema, _opts) do
     print_instructions("""
       Add a COPY directive in #{IO.ANSI.bright()}Dockerfile#{IO.ANSI.reset()}
 

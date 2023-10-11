@@ -1,6 +1,6 @@
-defmodule <%= inspect schema.module %>.Storybook do
+defmodule <%= inspect schema.web_module %>.Storybook do
   use PhoenixStorybook,
-    otp_app: <%= inspect schema.app %>,
+    otp_app: <%= inspect schema.app_name %>,
     content_path: Path.expand("../../storybook", __DIR__),
     # assets path are remote path, not local file-system paths
     css_path: "/assets/storybook.css",

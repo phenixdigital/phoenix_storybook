@@ -5,5 +5,5 @@
  */
 
 .lsb-sandbox, .<%= schema.sandbox_class %> {
-  font-family: ui-sans-serif, system-ui;
+  font-family: system-ui;
 }

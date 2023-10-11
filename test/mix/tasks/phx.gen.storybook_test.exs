@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   @tag :capture_log
   test "mix phx.gen.storybook generates a working storybook", config do
     in_tmp_project(config.test, fn ->
-      for _ <- 1..8, do: send(self(), {:mix_shell_input, :yes?, true})
+      for _ <- 1..9, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run([])
 
       [{index, _}] = Code.compile_file("storybook/_root.index.exs")
@@ -51,6 +51,11 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive(
         :yes?,
         ~r|Add a new Tailwind build profile for.*css/storybook.css.*in.*config/config.exs.*|
+      )
+
+      assert_shell_receive(
+        :yes?,
+        ~r|Set.*important.*option in your Tailwind config in.*assets/tailwind.config.js.*:|
       )
 
       assert_shell_receive(
@@ -114,7 +119,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   @tag :capture_log
   test "generated component stories do not contain the Elixir. prefix", config do
     in_tmp_project(config.test, fn ->
-      for _ <- 1..8, do: send(self(), {:mix_shell_input, :yes?, true})
+      for _ <- 1..9, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run([])
 
       story_file = "storybook/core_components/button.story.exs"
