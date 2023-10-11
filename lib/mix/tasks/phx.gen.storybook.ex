@@ -287,14 +287,18 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
   end
 
   defp print_docker_instructions(_schema, _opts) do
-    print_instructions("""
-      Add a COPY directive in #{IO.ANSI.bright()}Dockerfile#{IO.ANSI.reset()}
+    if File.exists?("dockerfile") || File.exists?("Dockerfile") do
+      print_instructions("""
+        Add a COPY directive in #{IO.ANSI.bright()}Dockerfile#{IO.ANSI.reset()}
 
-      COPY priv priv
-      COPY lib lib
-      COPY assets assets
-      #{IO.ANSI.bright()}COPY storybook storybook#{IO.ANSI.reset()}
-    """)
+        COPY priv priv
+        COPY lib lib
+        COPY assets assets
+        #{IO.ANSI.bright()}COPY storybook storybook#{IO.ANSI.reset()}
+      """)
+    else
+      true
+    end
   end
 
   defp print_instructions(message) do

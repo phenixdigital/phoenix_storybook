@@ -14,6 +14,8 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   @tag :capture_log
   test "mix phx.gen.storybook generates a working storybook", config do
     in_tmp_project(config.test, fn ->
+      File.touch("Dockerfile")
+
       for _ <- 1..9, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run([])
 
@@ -78,7 +80,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
   test "mix phx.gen.storybook --no-tailwind generates a working storybook without tailwind",
        config do
     in_tmp_project(config.test, fn ->
-      for _ <- 1..5, do: send(self(), {:mix_shell_input, :yes?, true})
+      for _ <- 1..4, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run(["--no-tailwind"])
 
       assert_file("storybook/_root.index.exs")
@@ -112,7 +114,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       )
 
       assert_shell_receive(:yes?, ~r|Add your storybook content to.*\.formatter.exs.*|)
-      assert_shell_receive(:yes?, ~r|Add a COPY directive in .*Dockerfile.*|)
+      # assert_shell_receive(:yes?, ~r|Add a COPY directive in .*Dockerfile.*|)
     end)
   end
 
