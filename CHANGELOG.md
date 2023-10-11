@@ -1,19 +1,23 @@
 # CHANGELOG
 
-⭐ Want to help with the Phoenix Storybook project? ⭐
+> [!IMPORTANT]
+> 
+> **⭐ Want to help with the Phoenix Storybook project? ⭐**
+> 
+> - I would greatly appreciate your [code contributions](https://github.com/phenixdigital/phoenix_storybook/CONTRIBUTING.md).
+> 
+> - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and >   developing new features 🤗
 
-I would greatly appreciate your [code contributions](https://github.com/phenixdigital/phoenix_storybook/CONTRIBUTING.md).
-
-You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and developing new features 🤗
-
-## v0.5.8 (not released)
+## v0.6.0 (not released)
 
 - **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
 - **improvement**: [Content-Security-Policy (CSP) support](https://github.com/phenixdigital/phoenix_storybook/issues/149). Special thanks to [Gaia](https://github.com/gaiabeatrice) for the PR 🙏
 - **improvement**: [CSRF token is optional](https://github.com/phenixdigital/phoenix_storybook/issues/340)
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
 - **bugfix**: [fixed potential import module clashes](https://github.com/phenixdigital/phoenix_storybook/issues/290)
-- **bugfix**: generated story for flash core_component has been updated (flash was no longer supporting the `autoshow` option)
+- **bugfix**: [generated story for flash core_component has been updated (flash was no longer supporting the `autoshow` option)](https://github.com/phenixdigital/phoenix_storybook/pull/369)
+- **bugfix**: [`mix phx.gen.storybook` now prints how to set the _important_ sandbox strategy](https://github.com/phenixdigital/phoenix_storybook/issues/289)
+- **bugfix**: `mix phx.gen.storybook` no longer prints Docker instructions when no Docker file is present.
 
 ## v0.5.7 (2023-10-05)
 
