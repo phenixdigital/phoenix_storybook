@@ -324,3 +324,19 @@ Both open & close events would work, but code would be rendered like this.
   on-close={JS.push("close")}
 />
 ```
+
+## Layout
+
+You can control how your story variations are rendered in the stories tab by defining an optional `layout/0` function in any of your `component` or `live_component` stories.
+
+By default a story will be rendered with the `:two_columns` layout. But you can use the alternate `:one_column` layout making the component preview taking the full container width.
+
+```elixir
+defmodule Storybook.Components.Breadcrumb do
+  use PhoenixStorybook.Story, :component
+
+  def layout, do: :one_column
+
+  # ...
+end
+```

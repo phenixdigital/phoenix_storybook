@@ -1,6 +1,7 @@
 defmodule TreeStorybook.LiveComponent do
   use PhoenixStorybook.Story, :live_component
   def component, do: LiveComponent
+  def layout, do: :one_column
 
   def container, do: :iframe
 

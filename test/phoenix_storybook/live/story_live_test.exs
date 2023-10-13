@@ -266,7 +266,30 @@ defmodule PhoenixStorybook.StoryLiveTest do
                   {"class", "theme-prefix-default psb-sandbox block"},
                   {"data-foo", "bar"}
                 ], _}
+               | _
              ] = html
+    end
+
+    test "renders with different layouts", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component")
+
+      component_html = view |> element("#hello-component") |> render() |> Floki.parse_fragment!()
+      [{"id", _id}, {"class", class}] = component_html |> Enum.at(0) |> elem(1)
+      assert class =~ "lg:psb-col-span-2"
+
+      code_html = view |> element("#hello-code") |> render() |> Floki.parse_fragment!()
+      [{"id", _id}, {"class", class}] = code_html |> Enum.at(0) |> elem(1)
+      assert class =~ "lg:psb-col-span-3"
+
+      {:ok, view, _html} = live(conn, "/storybook/live_component")
+
+      component_html = view |> element("#hello-component") |> render() |> Floki.parse_fragment!()
+      [{"id", _id}, {"class", class}] = component_html |> Enum.at(0) |> elem(1)
+      refute class =~ "lg:psb-col-span-2"
+
+      code_html = view |> element("#hello-code") |> render() |> Floki.parse_fragment!()
+      [{"id", _id}, {"class", class}] = code_html |> Enum.at(0) |> elem(1)
+      refute class =~ "lg:psb-col-span-3"
     end
   end
 

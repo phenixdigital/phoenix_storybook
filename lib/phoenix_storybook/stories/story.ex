@@ -139,6 +139,7 @@ defmodule PhoenixStorybook.Story do
     @callback slots() :: [Slot.t()]
     @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
+    @callback layout() :: atom()
   end
 
   defmodule LiveComponentBehaviour do
@@ -152,6 +153,7 @@ defmodule PhoenixStorybook.Story do
     @callback slots() :: [Slot.t()]
     @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
+    @callback layout() :: atom()
   end
 
   defmodule PageBehaviour do
@@ -211,6 +213,9 @@ defmodule PhoenixStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def template, do: PhoenixStorybook.TemplateHelpers.default_template()
 
+      @impl unquote(component_behaviour(live?))
+      def layout, do: :two_columns
+
       if unquote(live?) do
         def merged_attributes, do: Attr.merge_attributes(component(), attributes())
         def merged_slots, do: Slot.merge_slots(component(), slots())
@@ -225,7 +230,8 @@ defmodule PhoenixStorybook.Story do
                      attributes: 0,
                      slots: 0,
                      variations: 0,
-                     template: 0
+                     template: 0,
+                     layout: 0
     end
   end
 

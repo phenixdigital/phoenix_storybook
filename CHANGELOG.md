@@ -1,16 +1,17 @@
 # CHANGELOG
 
 > [!IMPORTANT]
-> 
+>
 > **⭐ Want to help with the Phoenix Storybook project? ⭐**
-> 
+>
 > - I would greatly appreciate your [code contributions](https://github.com/phenixdigital/phoenix_storybook/CONTRIBUTING.md).
-> 
-> - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and >   developing new features 🤗
+>
+> - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
 ## v0.6.0 (not released)
 
 - **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
+- **feature**: [render any stories with the new :one_column layout](https://github.com/phenixdigital/phoenix_storybook/issues/296)
 - **improvement**: [Content-Security-Policy (CSP) support](https://github.com/phenixdigital/phoenix_storybook/issues/149). Special thanks to [Gaia](https://github.com/gaiabeatrice) for the PR 🙏
 - **improvement**: [CSRF token is optional](https://github.com/phenixdigital/phoenix_storybook/issues/340)
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
