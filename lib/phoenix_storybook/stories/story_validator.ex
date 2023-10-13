@@ -58,6 +58,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
     validate_component_imports!(file_path, story)
     validate_component_container!(file_path, story)
     validate_component_template!(file_path, story)
+    validate_component_layout!(file_path, story)
     validate_attribute_list_type!(file_path, attributes)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
@@ -179,6 +180,14 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
 
   defp validate_component_template!(file_path, story) do
     validate_type!(file_path, story.template, :string, "story template must be a binary")
+  end
+
+  defp validate_component_layout!(file_path, story) do
+    case story.layout() do
+      l when l in ~w(one_column two_columns)a -> :ok
+      {:div, options} when is_list(options) -> :ok
+      _ -> compile_error!(file_path, "story layout must be :one_column or :two_columns")
+    end
   end
 
   defp validate_attribute_list_type!(file_path, attributes) do

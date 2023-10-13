@@ -212,6 +212,25 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "story layout" do
+    test "with proper value it wont raise" do
+      mock = component_stub(layout: :one_column)
+      assert validate!(mock)
+
+      mock = component_stub(layout: :two_columns)
+      assert validate!(mock)
+
+      mock = component_stub(layout: :one_column)
+      assert validate!(mock)
+    end
+
+    test "with invalid value it will raise" do
+      mock = component_stub(layout: :invalid)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "story layout must be :one_column or :two_columns"
+    end
+  end
+
   describe "variation template" do
     test "with proper type it wont raise" do
       mock = component_stub(variations: [%Variation{id: :foo, template: nil}])

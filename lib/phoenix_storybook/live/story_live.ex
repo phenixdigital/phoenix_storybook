@@ -357,7 +357,7 @@ defmodule PhoenixStorybook.StoryLive do
       )
 
     ~H"""
-    <div class="psb  psb-space-y-12 psb-pb-12" id={"story-variations-#{story_id(@story)}"}>
+    <div class="psb psb-space-y-12 psb-pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(assigns.backend_module, assigns.story, variation, extra_attributes) do %>
@@ -396,7 +396,13 @@ defmodule PhoenixStorybook.StoryLive do
             </.link>
           </div>
           <!-- Variation component preview -->
-          <div class="psb psb-border psb-border-slate-100 psb-rounded-md psb-col-span-5 lg:psb-col-span-2 psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm">
+          <div
+            id={"#{anchor_id(variation)}-component"}
+            class={[
+              "psb psb-border psb-border-slate-100 psb-rounded-md psb-col-span-5  psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
+              component_layout_class(@story)
+            ]}
+          >
             <%= if @story.container() == :iframe do %>
               <iframe
                 phx-update="ignore"
@@ -421,7 +427,13 @@ defmodule PhoenixStorybook.StoryLive do
             <% end %>
           </div>
           <!-- Variation code -->
-          <div class="psb psb-border psb-border-slate-100 psb-bg-slate-800 psb-rounded-md psb-col-span-5 lg:psb-col-span-3 psb-group psb-relative psb-shadow-sm psb-flex psb-flex-col psb-justify-center">
+          <div
+            id={"#{anchor_id(variation)}-code"}
+            class={[
+              "psb psb-border psb-border-slate-100 psb-bg-slate-800 psb-rounded-md psb-col-span-5 psb-group psb-relative psb-shadow-sm psb-flex psb-flex-col psb-justify-center",
+              code_layout_class(@story)
+            ]}
+          >
             <div
               phx-click={JS.dispatch("psb:copy-code")}
               class="psb psb-hidden group-hover:psb-block psb-bg-slate-700 psb-text-slate-500 hover:psb-text-slate-100 psb-z-10 psb-absolute psb-top-2 psb-right-2 psb-px-2 psb-py-1 psb-rounded-md psb-cursor-pointer"
@@ -513,6 +525,20 @@ defmodule PhoenixStorybook.StoryLive do
           <%= @source |> CodeRenderer.render_source() |> to_raw_html() %>
         </div>
         """
+    end
+  end
+
+  defp component_layout_class(story) do
+    case story.layout() do
+      :one_column -> nil
+      :two_columns -> "lg:psb-col-span-2"
+    end
+  end
+
+  defp code_layout_class(story) do
+    case story.layout() do
+      :one_column -> nil
+      :two_columns -> "lg:psb-col-span-3"
     end
   end
 

@@ -33,4 +33,7 @@ defmodule PhoenixStorybook.ComponentStub do
 
   @impl ComponentBehaviour
   def template, do: PhoenixStorybook.TemplateHelpers.default_template()
+
+  @impl ComponentBehaviour
+  def layout, do: :two_columns
 end
