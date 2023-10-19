@@ -8,7 +8,7 @@ defmodule PhoenixStorybook.Dbg do
     end
   end
 
-  defp custom_debug(code, _options, caller, device) do
+  defp custom_debug(code, options, caller, device) do
     alias PhoenixStorybook.Dbg
 
     quote do
@@ -23,7 +23,7 @@ defmodule PhoenixStorybook.Dbg do
 
       IO.puts(
         unquote(device),
-        "#{unquote(Macro.to_string(code))} #{Dbg.light_green("=>")} #{result |> inspect() |> Dbg.bright()}"
+        "#{unquote(Macro.to_string(code))} #{Dbg.light_green("=>")} #{result |> inspect(unquote(options)) |> Dbg.bright()}"
       )
 
       result

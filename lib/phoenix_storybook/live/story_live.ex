@@ -403,27 +403,37 @@ defmodule PhoenixStorybook.StoryLive do
               component_layout_class(@story)
             ]}
           >
-            <%= if @story.container() == :iframe do %>
-              <iframe
-                phx-update="ignore"
-                id={iframe_id(@story, variation)}
-                src={
-                  path_to_iframe(@socket, @root_path, @story_path,
-                    variation_id: variation.id,
-                    theme: @theme
-                  )
-                }
-                class="psb-w-full psb-border-0"
-                height="0"
-                onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
-              />
-            <% else %>
-              <div
-                class={LayoutView.sandbox_class(@socket, @story.container(), assigns)}
-                {@sandbox_attributes}
-              >
-                <%= ComponentRenderer.render(rendering_context) %>
-              </div>
+            <%= case {@story.container(), @story.storybook_type()} do %>
+              <% {:iframe, :component} -> %>
+                <iframe
+                  phx-update="ignore"
+                  id={iframe_id(@story, variation)}
+                  class="psb-w-full psb-border-0"
+                  srcdoc={iframe_srcdoc(assigns, rendering_context)}
+                  height="0"
+                  onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
+                />
+              <% {:iframe, :live_component} -> %>
+                <iframe
+                  phx-update="ignore"
+                  id={iframe_id(@story, variation)}
+                  class="psb-w-full psb-border-0"
+                  src={
+                    path_to_iframe(@socket, @root_path, @story_path,
+                      variation_id: variation.id,
+                      theme: @theme
+                    )
+                  }
+                  height="0"
+                  onload="javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
+                />
+              <% {container, _} -> %>
+                <div
+                  class={LayoutView.sandbox_class(@socket, container, assigns)}
+                  {@sandbox_attributes}
+                >
+                  <%= ComponentRenderer.render(rendering_context) %>
+                </div>
             <% end %>
           </div>
           <!-- Variation code -->
@@ -540,6 +550,17 @@ defmodule PhoenixStorybook.StoryLive do
       :one_column -> nil
       :two_columns -> "lg:psb-col-span-3"
     end
+  end
+
+  defp iframe_srcdoc(assigns, rendering_context) do
+    assigns = assign(assigns, conn: assigns.socket, rendering_context: rendering_context)
+
+    ~H"""
+    <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
+      <%= ComponentRenderer.render(@rendering_context) %>
+    <% end %>
+    """
+    |> Safe.to_iodata()
   end
 
   # removing Storybook's specific not useful while reading example's source code.
