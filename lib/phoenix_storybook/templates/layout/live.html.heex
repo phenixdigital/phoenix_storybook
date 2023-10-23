@@ -8,8 +8,12 @@
       </.link>
     </div>
 
-    <%= if themes = themes(@socket) do %>
-      <div class="psb psb-absolute psb-top-4 psb-right-14 lg:psb-right-5 psb-inline-block">
+    <div id="buttons-container" class="psb psb-absolute psb-top-4 psb-right-14 lg:psb-right-5 psb-flex psb-gap-2" phx-hook="colorModeHook">
+      <button type="button" class="psb psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-900 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:psb-text-yellow-500 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500" phx-click={JS.push("set-color-mode", value: %{"mode" => @color_mode }) |> JS.dispatch("psb:toggle-darkmode")}>
+        <.fa_icon style={:regular} name="lightbulb" plan={@fa_plan}/>
+      </button>
+      <%= if themes = themes(@socket) do %>
+      <div class="psb psb-inline-block">
         <button type="button" class="psb psb-h-7 psb-w-7 psb-bg-gray-100 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500" phx-click={JS.show(to: "#psb-theme-dropdown", transition: show_dropdown_transition())}>
           <.fa_icon style={:regular} name="palette" class={current_theme_dropdown_class(@socket, assigns)} plan={@fa_plan}/>
         </button>
@@ -35,7 +39,8 @@
           </div>
         </div>
       </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 
   <div class="psb lg:psb-hidden psb-absolute psb-top-4 psb-right-5 psb-inline-block ">

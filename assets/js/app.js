@@ -13,6 +13,28 @@ if (window.storybook === undefined) {
   window.storybook = {};
 }
 
+const colorModeHook = {
+  mounted() {
+    if (!localStorage.psb_theme) return
+    const colorMode = localStorage.getItem("psb_theme")
+    this.pushEvent("psb:color-mode", { "color-mode": colorMode })
+  },
+};
+
+function toggleColorMode(){
+  const htmlClass = document.documentElement.classList.contains('psb-dark')
+  if(localStorage.psb_theme == 'dark' && !htmlClass) document.documentElement.classList.add('psb-dark')
+  else if(localStorage.psb_theme == 'light' && htmlClass) document.documentElement.classList.remove('psb-dark')
+}
+
+window.addEventListener("psb:toggle-darkmode", () => {
+  if(localStorage.psb_theme == 'light') localStorage.psb_theme = 'dark';
+  else localStorage.psb_theme = 'light';
+  toggleColorMode();
+})
+
+toggleColorMode();
+
 let socketPath =
   document.querySelector("html").getAttribute("phx-socket") || "/live";
 
@@ -21,7 +43,7 @@ let csrfToken = document
   ?.getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
-  hooks: { ...window.storybook.Hooks, StoryHook, SearchHook, SidebarHook },
+  hooks: { ...window.storybook.Hooks, StoryHook, SearchHook, SidebarHook, colorModeHook },
   uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
     return {
