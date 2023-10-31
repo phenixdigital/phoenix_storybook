@@ -430,9 +430,9 @@ defmodule PhoenixStorybook.StoryLive do
                   onload={iframe_onload_js()}
                   {@sandbox_attributes}
                 />
-              <% {container, _} -> %>
+              <% {container_with_opts, _component_kind} -> %>
                 <div
-                  class={LayoutView.sandbox_class(@socket, container, assigns)}
+                  class={LayoutView.sandbox_class(@socket, container_with_opts, assigns)}
                   {@sandbox_attributes}
                 >
                   <%= ComponentRenderer.render(rendering_context) %>

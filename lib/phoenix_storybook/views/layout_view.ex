@@ -211,13 +211,13 @@ defmodule PhoenixStorybook.LayoutView do
     end
   end
 
-  @default_div_class "psb-flex psb-flex-col psb-items-center psb-gap-y-[5px]"
+  @default_div_class "psb-flex psb-flex-col psb-items-center psb-gap-y-[5px] psb-p-[5px]"
   def normalize_story_container(:div), do: {:div, class: @default_div_class}
 
   def normalize_story_container({:div, opts}),
     do: {:div, Keyword.put_new(opts, :class, @default_div_class)}
 
-  @default_iframe_style "display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;"
+  @default_iframe_style "display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; padding: 5px;"
   def normalize_story_container(:iframe), do: {:iframe, style: @default_iframe_style}
 
   def normalize_story_container({:iframe, opts}),

@@ -30,7 +30,7 @@ defmodule PhoenixStorybook.VisualTestLiveTest do
 
   test "renders another component range", %{conn: conn} do
     {:ok, _view, html} = conn |> get("/storybook/visual_tests", start: "a", end: "z") |> live()
-    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 16
+    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 19
   end
 
   test "exclude components from the range", %{conn: conn} do
@@ -43,7 +43,7 @@ defmodule PhoenixStorybook.VisualTestLiveTest do
       )
       |> live()
 
-    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 14
+    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 17
   end
 
   @tag :capture_log
