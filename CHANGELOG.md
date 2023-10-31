@@ -12,6 +12,7 @@
 
 - **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
 - **feature**: [render any stories with the new :one_column layout](https://github.com/phenixdigital/phoenix_storybook/issues/296)
+- **improvement**: [function components use iframe srcdoc](https://github.com/phenixdigital/phoenix_storybook/pull/382).
 - **improvement**: [Content-Security-Policy (CSP) support](https://github.com/phenixdigital/phoenix_storybook/issues/149). Special thanks to [Gaia](https://github.com/gaiabeatrice) for the PR 🙏
 - **improvement**: [CSRF token is optional](https://github.com/phenixdigital/phoenix_storybook/issues/340)
 - **bugfix**: [generating stories without Elixir. prefix in module names](https://github.com/phenixdigital/phoenix_storybook/issues/343)
