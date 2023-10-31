@@ -196,13 +196,8 @@ defmodule PhoenixStorybook.LayoutView do
     ]
   end
 
-  defp main_sandbox_class(conn_or_socket, container) do
-    container_class =
-      case container do
-        {_tag, opts} -> Keyword.get(opts, :class)
-        _ -> nil
-      end
-
+  defp main_sandbox_class(conn_or_socket, {_container, container_opts}) do
+    container_class = Keyword.get(container_opts, :class)
     ["psb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]
   end
 
@@ -215,4 +210,18 @@ defmodule PhoenixStorybook.LayoutView do
         Map.get(assigns, assign)
     end
   end
+
+  @default_div_class "psb-flex psb-flex-col psb-items-center psb-gap-y-[5px]"
+  def normalize_story_container(:div), do: {:div, class: @default_div_class}
+
+  def normalize_story_container({:div, opts}),
+    do: {:div, Keyword.put_new(opts, :class, @default_div_class)}
+
+  @default_iframe_style "display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px;"
+  def normalize_story_container(:iframe), do: {:iframe, style: @default_iframe_style}
+
+  def normalize_story_container({:iframe, opts}),
+    do: {:iframe, Keyword.put_new(opts, :style, @default_iframe_style)}
+
+  def normalize_story_container({container, opts}), do: {container, opts}
 end
