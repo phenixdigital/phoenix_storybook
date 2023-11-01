@@ -42,11 +42,17 @@ end
 
 If you need further _sandboxing_ you can opt in for `iframe` rendering.
 
+- For function components, storybook will use the iframe srcdoc attribute (the whole iframe content
+  is inlined as an HTML attribute).
+- For live components, storybook will use the typical iframe behavior, triggering an extra HTTP
+  request to fetch the iframe content.
+
 ```elixir
 # storybook/my_component.story.exs
 defmodule Storybook.MyComponent do
   use PhoenixStorybook.Story, :component
   def container, do: :iframe
+  # or def container, do: {:iframe, style: "display: inline; ..."}
 end
 ```
 

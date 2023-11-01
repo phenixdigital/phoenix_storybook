@@ -122,11 +122,15 @@ defmodule PhoenixStorybook.Router do
         %{} = keys -> Map.take(keys, [:img, :style, :script])
       end
 
+    csrf? = Keyword.fetch!(opts, :csrf)
+
     session_args = [
       backend_module,
+      live_socket_path,
       assets_path,
       path,
-      csp_nonce_assign_key
+      csp_nonce_assign_key,
+      csrf?
     ]
 
     {
@@ -143,7 +147,7 @@ defmodule PhoenixStorybook.Router do
           application_router: Keyword.fetch!(opts, :application_router),
           assets_path: assets_path,
           csp_nonce_assign_key: csp_nonce_assign_key,
-          csrf: Keyword.fetch!(opts, :csrf)
+          csrf: csrf?
         },
         as: Keyword.fetch!(opts, :as)
       ]
@@ -153,19 +157,23 @@ defmodule PhoenixStorybook.Router do
   def __session__(
         conn,
         backend_module,
+        live_socket_path,
         assets_path,
         path,
-        csp_nonce_assign_key
+        csp_nonce_assign_key,
+        csrf?
       ) do
     %{
       "backend_module" => backend_module,
+      "live_socket_path" => live_socket_path,
       "assets_path" => assets_path,
       "root_path" => path,
       "csp_nonces" => %{
         img: conn.assigns[csp_nonce_assign_key[:img]],
         style: conn.assigns[csp_nonce_assign_key[:style]],
         script: conn.assigns[csp_nonce_assign_key[:script]]
-      }
+      },
+      "csrf" => csrf?
     }
   end
 

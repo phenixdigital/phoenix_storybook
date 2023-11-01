@@ -96,7 +96,13 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div
         id={"sandbox-#{@counter}"}
-        class={LayoutView.sandbox_class(@socket, @story.container(), assigns)}
+        class={
+          LayoutView.sandbox_class(
+            @socket,
+            LayoutView.normalize_story_container(@story.container()),
+            assigns
+          )
+        }
         style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;"
       >
         <%= ComponentRenderer.render(@context) %>

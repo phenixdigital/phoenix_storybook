@@ -173,7 +173,13 @@ defmodule PhoenixStorybook.VisualTestLive do
             />
           <% else %>
             <div
-              class={LayoutView.sandbox_class(@socket, @story.container(), assigns)}
+              class={
+                LayoutView.sandbox_class(
+                  @socket,
+                  LayoutView.normalize_story_container(@story.container),
+                  assigns
+                )
+              }
               {story.sandbox_attributes}
             >
               <%= ComponentRenderer.render(rendering_context) %>

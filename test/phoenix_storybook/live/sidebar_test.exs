@@ -27,7 +27,7 @@ defmodule PhoenixStorybook.SidebarTest do
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 9 stories
-      assert find(document, "nav>ul>li>ul>li") |> length() == 10
+      assert find(document, "nav>ul>li>ul>li") |> length() == 11
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4
@@ -45,7 +45,7 @@ defmodule PhoenixStorybook.SidebarTest do
       assert find(document, "nav>ul>li") |> length() == 1
 
       # test sidebar has 9 stories
-      assert find(document, "nav>ul>li>ul>li") |> length() == 10
+      assert find(document, "nav>ul>li>ul>li") |> length() == 11
 
       # test 4 of them are links (ie. not folders)
       assert find(document, "nav>ul>li>ul>li>div>a") |> length() == 4

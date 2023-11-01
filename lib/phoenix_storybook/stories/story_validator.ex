@@ -172,9 +172,17 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
 
   defp validate_component_container!(file_path, story) do
     case story.container() do
-      c when c in ~w(nil div iframe)a -> :ok
-      {:div, options} when is_list(options) -> :ok
-      _ -> compile_error!(file_path, "story container must be :div, {:div, opts} or :iframe")
+      c when c in ~w(nil div iframe)a ->
+        :ok
+
+      {c, options} when c in ~w(div iframe)a and is_list(options) ->
+        :ok
+
+      _ ->
+        compile_error!(
+          file_path,
+          "story container must be :div, {:div, opts}, :iframe or {:iframe, opts}"
+        )
     end
   end
 

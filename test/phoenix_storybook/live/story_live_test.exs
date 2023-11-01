@@ -251,7 +251,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
                {"div",
                 [
                   {"class",
-                   "theme-prefix-default psb-sandbox psb-flex psb-flex-col psb-items-center psb-gap-y-[5px]"}
+                   "theme-prefix-default psb-sandbox psb-flex psb-flex-col psb-items-center psb-gap-y-[5px] psb-p-[5px]"}
                 ], _}
              ] = html
     end
@@ -268,6 +268,48 @@ defmodule PhoenixStorybook.StoryLiveTest do
                 ], _}
                | _
              ] = html
+    end
+
+    test "function component container is a srcdoc iframe", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/containers/components/iframe")
+
+      [{"iframe", attrs, _}] =
+        view
+        |> element("#iframe-tree_storybook_containers_components_iframe-variation-hello")
+        |> render()
+        |> Floki.parse_fragment!(attributes_as_maps: true)
+
+      refute is_nil(attrs["srcdoc"])
+    end
+
+    test "function component container is a srcdoc iframe with custom opts", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/containers/components/iframe_with_opts")
+
+      [{"iframe", attrs, _}] =
+        view
+        |> element(
+          "#iframe-tree_storybook_containers_components_iframe_with_opts-variation-hello"
+        )
+        |> render()
+        |> Floki.parse_fragment!(attributes_as_maps: true)
+
+      refute is_nil(attrs["srcdoc"])
+      assert attrs["data-foo"] == "bar"
+    end
+
+    test "live component container is a regular iframe", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/containers/live_components/iframe")
+
+      [{"iframe", attrs, _}] =
+        view
+        |> element("#iframe-tree_storybook_containers_live_components_iframe-variation-hello")
+        |> render()
+        |> Floki.parse_fragment!(attributes_as_maps: true)
+
+      assert attrs["src"] ==
+               "/storybook/iframe/containers/live_components/iframe?theme=default&variation_id=hello"
+
+      assert is_nil(attrs["srcdoc"])
     end
 
     test "renders with different layouts", %{conn: conn} do

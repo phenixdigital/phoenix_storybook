@@ -21,7 +21,7 @@
     <% end %>
   </head>
   
-  <% container = if assigns[:story], do: assigns[:story].container(), else: :div %>
+  <% container = if assigns[:story], do: normalize_story_container(assigns[:story].container()), else: {:div, []} %>
   <body class={sandbox_class(@conn, container, assigns)} style="margin: 0;">
     <%= @inner_content %>
   </body>

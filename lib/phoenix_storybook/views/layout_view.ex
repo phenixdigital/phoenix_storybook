@@ -3,7 +3,7 @@ defmodule PhoenixStorybook.LayoutView do
   use PhoenixStorybook.Web, :view
 
   alias Makeup.Styles.HTML.StyleMap
-  alias Phoenix.LiveView.JS
+  alias Phoenix.LiveView.{JS, Socket}
   alias PhoenixStorybook.AssetHelpers
   alias PhoenixStorybook.{FolderEntry, StoryEntry}
   alias PhoenixStorybook.ThemeHelpers
@@ -41,12 +41,26 @@ defmodule PhoenixStorybook.LayoutView do
     apply(StyleMap, style, []) |> Makeup.stylesheet()
   end
 
-  defp live_socket_path(conn = %Plug.Conn{}) do
-    [Enum.map(conn.script_name, &["/" | &1]) | conn.private.live_socket_path]
+  def live_socket_path(socket = %Socket{}) do
+    full_live_socket_path(
+      socket.endpoint.script_name(),
+      fetch_assign(socket, :live_socket_path)
+    )
   end
 
-  defp storybook_css_path(conn), do: storybook_setting(conn, :css_path)
-  defp storybook_js_path(conn), do: storybook_setting(conn, :js_path)
+  def live_socket_path(conn) do
+    full_live_socket_path(
+      conn.script_name,
+      conn.private.live_socket_path
+    )
+  end
+
+  defp full_live_socket_path(script_name, socket_path) do
+    [Enum.map(script_name, &["/" | &1]) | socket_path]
+  end
+
+  def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
+  def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
   defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
 
@@ -54,7 +68,7 @@ defmodule PhoenixStorybook.LayoutView do
     title(conn_or_socket) <> " - "
   end
 
-  defp fa_kit_id(conn_or_socket) do
+  def fa_kit_id(conn_or_socket) do
     storybook_setting(conn_or_socket, :font_awesome_kit_id)
   end
 
@@ -70,7 +84,24 @@ defmodule PhoenixStorybook.LayoutView do
     end
   end
 
-  defp csrf?(conn), do: conn.private.csrf
+  def csrf?(socket = %Socket{}), do: fetch_assign(socket, :csrf)
+  def csrf?(conn = %Plug.Conn{}), do: conn.private.csrf
+
+  def csp_nonce(%Plug.Conn{} = conn, type) when type in [:script, :style, :img] do
+    csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
+    conn.assigns[csp_nonce_assign_key]
+  end
+
+  def csp_nonce(socket = %Socket{}, type)
+      when type in [:script, :style, :img] do
+    csp_nonces = fetch_assign(socket, :csp_nonces)
+    csp_nonces[type]
+  end
+
+  # for liveview
+  def csp_nonce(csp_nonces, type) when type in [:script, :style, :img] do
+    csp_nonces[type]
+  end
 
   defp storybook_setting(conn_or_socket, key, default \\ nil)
 
@@ -79,15 +110,15 @@ defmodule PhoenixStorybook.LayoutView do
     backend_module.config(key, default)
   end
 
-  defp backend_module(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.backend_module
+  defp backend_module(s = %Socket{}), do: s.assigns.__assigns__.backend_module
   defp backend_module(conn = %Plug.Conn{}), do: conn.private.backend_module
 
-  defp assets_path(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.assets_path
+  defp assets_path(s = %Socket{}), do: s.assigns.__assigns__.assets_path
   defp assets_path(conn = %Plug.Conn{}), do: conn.private.assets_path
 
-  defp application_static_path(path), do: Path.join("/", path)
+  def application_static_path(path), do: Path.join("/", path)
 
-  defp asset_path(conn_or_socket, path) do
+  def asset_path(conn_or_socket, path) do
     assets_path = assets_path(conn_or_socket)
     Path.join(assets_path, asset_file_name(path))
   end
@@ -165,24 +196,32 @@ defmodule PhoenixStorybook.LayoutView do
     ]
   end
 
-  defp main_sandbox_class(conn_or_socket, container) do
-    container_class =
-      case container do
-        {_tag, opts} -> Keyword.get(opts, :class)
-        _ -> nil
-      end
-
+  defp main_sandbox_class(conn_or_socket, {_container, container_opts}) do
+    container_class = Keyword.get(container_opts, :class)
     ["psb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]
   end
 
-  # for conn
-  def csp_nonce(%Plug.Conn{} = conn, type) when type in [:script, :style, :img] do
-    csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
-    conn.assigns[csp_nonce_assign_key]
+  defp fetch_assign(socket, assign) do
+    case socket.assigns do
+      %Phoenix.LiveView.Socket.AssignsNotInSocket{__assigns__: assigns} ->
+        Map.get(assigns, assign)
+
+      assigns ->
+        Map.get(assigns, assign)
+    end
   end
 
-  # for liveview
-  def csp_nonce(csp_nonces, type) when type in [:script, :style, :img] do
-    csp_nonces[type]
-  end
+  @default_div_class "psb-flex psb-flex-col psb-items-center psb-gap-y-[5px] psb-p-[5px]"
+  def normalize_story_container(:div), do: {:div, class: @default_div_class}
+
+  def normalize_story_container({:div, opts}),
+    do: {:div, Keyword.put_new(opts, :class, @default_div_class)}
+
+  @default_iframe_style "display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; padding: 5px;"
+  def normalize_story_container(:iframe), do: {:iframe, style: @default_iframe_style}
+
+  def normalize_story_container({:iframe, opts}),
+    do: {:iframe, Keyword.put_new(opts, :style, @default_iframe_style)}
+
+  def normalize_story_container({container, opts}), do: {container, opts}
 end
