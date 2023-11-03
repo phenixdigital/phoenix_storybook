@@ -5,9 +5,9 @@
       <%= csrf_meta_tag() %>
     <% end %>
     <%= if path = storybook_js_path(@conn) do %>
-      <script nonce={csp_nonce(@conn, :script)} phx-track-static type="text/javascript" src={application_static_path(path)}></script>
+      <script defer nonce={csp_nonce(@conn, :script)} phx-track-static type="text/javascript" src={application_static_path(path)}></script>
     <% end %>
-    <script nonce={csp_nonce(@conn, :script)} type="text/javascript" src={asset_path(@conn, "js/iframe.js")}></script>  
+    <script defer nonce={csp_nonce(@conn, :script)} type="text/javascript" src={asset_path(@conn, "js/iframe.js")}></script>  
 
     <%= if fa_kit_id = fa_kit_id(@conn) do %>
       <script nonce={csp_nonce(@conn, :script)} defer src={"https://kit.fontawesome.com/#{fa_kit_id}.js"} crossorigin="anonymous"></script>
