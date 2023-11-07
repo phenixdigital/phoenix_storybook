@@ -24,7 +24,7 @@ defmodule PhoenixStorybook.MixProject do
         coverage: :test
       ],
       dialyzer: [
-        plt_add_apps: [:mix, :jason, :earmark],
+        plt_add_apps: [:mix],
         plt_local_path: ".plts",
         plt_core_path: ".plts",
         plt_file: {:no_warn, ".plts/storybook.plt"}
@@ -37,12 +37,9 @@ defmodule PhoenixStorybook.MixProject do
   def application do
     [
       mod: {PhoenixStorybook.Application, []},
-      extra_applications: [:logger] ++ extra_applications(Mix.env())
+      extra_applications: [:logger]
     ]
   end
-
-  defp extra_applications(env) when env in [:dev, :test], do: [:hex]
-  defp extra_applications(_), do: []
 
   defp elixirc_paths(:test), do: ["lib", "test/fixtures"]
   defp elixirc_paths(_), do: ["lib"]

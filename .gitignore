@@ -37,3 +37,4 @@ phoenix_storybook-*.tar
 .vscode
 .tool-versions
 .plts
+.elixir_ls

@@ -19,6 +19,7 @@ jobs:
 
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
+        id: beam
         with:
           otp-version: "26.0.2"
           elixir-version: "1.15.5-otp-26"
@@ -33,13 +34,38 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
 
+      - name: Restore PLT cache
+        id: plt_cache
+        uses: actions/cache/restore@v3
+        with:
+          key: |
+            plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
+          path: |
+            .plts/
+
       - name: Install dependencies
-        run: |
-          mix deps.get
-          mix dialyzer —-plt --ignore-exit-status
+        run: mix deps.get
 
       - name: Compilation
         run: mix compile --warnings-as-errors
+
+      - name: Create PLTs
+        if: steps.plt_cache.outputs.cache-hit != 'true'
+        run: mix dialyzer --plt
+
+      # By default, the GitHub Cache action will only save the cache if all steps in the job succeed,
+      # so we separate the cache restore and save steps in case running dialyzer fails.
+      - name: Save PLT cache
+        id: plt_cache_save
+        uses: actions/cache/save@v3
+        if: steps.plt_cache.outputs.cache-hit != 'true'
+        with:
+          key: |
+            plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          path: |
+            .plts
 
       - name: Check formatting
         run: mix format --check-formatted
@@ -47,8 +73,8 @@ jobs:
       - name: Credo
         run: mix credo
 
-      # - name: Dialyzer
-      #   run: mix dialyzer --no-check
+      - name: Dialyzer
+        run: mix dialyzer --format github
 
       - name: Run tests
         run: mix coveralls.json
