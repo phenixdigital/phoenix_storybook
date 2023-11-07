@@ -37,12 +37,12 @@ jobs:
         id: plt_cache
         uses: actions/cache/restore@v3
         with:
+          path: .plts
           key: |
             plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
-          path: |
-            .plts/
+          
 
       - name: Install dependencies
         run: mix deps.get
@@ -61,10 +61,10 @@ jobs:
         uses: actions/cache/save@v3
         if: steps.plt_cache.outputs.cache-hit != 'true'
         with:
+          path: .plts
           key: |
             plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
-          path: |
-            .plts
+            
 
       - name: Check formatting
         run: mix format --check-formatted
