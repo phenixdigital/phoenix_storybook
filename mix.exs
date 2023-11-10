@@ -80,6 +80,7 @@ defmodule PhoenixStorybook.MixProject do
       "guides/icons.md",
       "guides/sandboxing.md",
       "guides/setup.md",
+      "guides/testing.md",
       "guides/theming.md"
     ]
   end
