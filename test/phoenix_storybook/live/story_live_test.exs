@@ -84,6 +84,14 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert html =~ "Component first doc paragraph."
     end
 
+    test "no-ops events from an event component", %{conn: conn} do
+      {:ok, view, html} = live(conn, "/storybook/event/event_component")
+      assert html =~ "Hello variation"
+      view |> element("#event-component") |> render_click()
+      # This will raise if there's no default handle_event clause
+      assert true
+    end
+
     test "renders component story and navigate to source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component")
 

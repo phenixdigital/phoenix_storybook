@@ -8,7 +8,7 @@ defmodule EventComponent do
       |> assign_new(:label, fn -> "" end)
 
     ~H"""
-    <button phx-click="greet">component: <%= @label %><%= if @theme do %> <%= @theme %><% end %></button>
+    <button id="event-component" phx-click="greet">component: <%= @label %><%= if @theme do %> <%= @theme %><% end %></button>
     """
   end
 end

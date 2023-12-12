@@ -666,6 +666,10 @@ defmodule PhoenixStorybook.StoryLive do
     {:noreply, assign(socket, :variation_extra_assigns, variation_extra_assigns)}
   end
 
+  def handle_event(_, _, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info({:playground_preview_pid, pid}, socket) do
     Process.monitor(pid)
 
