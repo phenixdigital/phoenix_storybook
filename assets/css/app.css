@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .psb {
-  font-family: "Inter var", ui-sans-serif, system-ui, sans-serif;
+  font-family: ui-sans-serif, system-ui, sans-serif;
   @apply psb-antialiased psb-text-gray-600 psb-text-inherit;
 }
 
