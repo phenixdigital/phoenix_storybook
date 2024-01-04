@@ -289,7 +289,7 @@ defmodule PhoenixStorybook.StoryLive do
         class="psb story-nav-form lg:psb-hidden"
       >
         <%= select(f, :tab, navigation_select_options(@tabs),
-          "phx-change": "set-tab",
+          "phx-change": "psb-set-tab",
           class:
             "psb psb-form-select psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base psb-border-gray-300 focus:psb-outline-none focus:psb-ring-indigo-600 focus:psb-border-indigo-600 sm:psb-text-sm psb-rounded-md",
           value: @tab
@@ -301,7 +301,7 @@ defmodule PhoenixStorybook.StoryLive do
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
           <a
             href="#"
-            phx-click="set-tab"
+            phx-click="psb-set-tab"
             phx-value-tab={tab_id}
             class={"psb psb-group focus:psb-outline-none psb-flex psb-rounded-md #{active_link(@tab, tab_id)}"}
           >
@@ -607,7 +607,7 @@ defmodule PhoenixStorybook.StoryLive do
     id |> to_string() |> String.replace("_", "-")
   end
 
-  def handle_event("set-theme", %{"theme" => theme}, socket) do
+  def handle_event("psb-set-theme", %{"theme" => theme}, socket) do
     PubSub.broadcast!(
       PhoenixStorybook.PubSub,
       socket.assigns.playground_topic,
@@ -622,15 +622,15 @@ defmodule PhoenixStorybook.StoryLive do
      |> patch_to(socket.assigns.root_path, socket.assigns.story_path, %{theme: theme})}
   end
 
-  def handle_event("set-tab", %{"tab" => tab}, socket) do
+  def handle_event("psb-set-tab", %{"tab" => tab}, socket) do
     {:noreply, patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{tab: tab})}
   end
 
-  def handle_event("set-tab", %{"navigation" => %{"tab" => tab}}, socket) do
+  def handle_event("psb-set-tab", %{"navigation" => %{"tab" => tab}}, socket) do
     {:noreply, patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{tab: tab})}
   end
 
-  def handle_event("clear-playground-error", _, socket) do
+  def handle_event("psb-clear-playground-error", _, socket) do
     {:noreply, assign(socket, :playground_error, nil)}
   end
 
