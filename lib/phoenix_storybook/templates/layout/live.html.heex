@@ -20,7 +20,7 @@
           </div>
           <div class="psb psb-py-1">
             <%= for {theme, opts} <- themes do %>
-              <a phx-click={JS.push("set-theme", value: %{"theme" => theme}) |> JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())}} class="psb psb-theme psb-text-gray-700 hover:psb-bg-gray-100 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer">
+              <a phx-click={JS.push("psb-set-theme", value: %{"theme" => theme}) |> JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())}} class="psb psb-theme psb-text-gray-700 hover:psb-bg-gray-100 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer">
                 <%= if assigns[:theme] == theme do %>
                   <span class="psb psb-text-indigo-600">
                     <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan}/><%= opts[:name] %>
