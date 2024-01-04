@@ -8,8 +8,8 @@ defmodule PhoenixStorybook.TemplateHelpersTest do
       set_variation_dom_id(
         """
         <div id=":variation_id">
-          <.psb-variation phx-click={JS.push("assign", value: %{foo: "bar"})}/>
-          <.psb-variation phx-click={JS.push("toggle", value: %{attr: :foo})}/>
+          <.psb-variation phx-click={JS.push("psb-assign", value: %{foo: "bar"})}/>
+          <.psb-variation phx-click={JS.push("psb-toggle", value: %{attr: :foo})}/>
         </div>
         """,
         "component-hello-world"
@@ -18,8 +18,8 @@ defmodule PhoenixStorybook.TemplateHelpersTest do
 
     assert template == """
            <div id="component-hello-world">
-             <.psb-variation phx-click={JS.push("assign", value: %{foo: "bar", variation_id: [:single, :hello_world]})}/>
-             <.psb-variation phx-click={JS.push("toggle", value: %{attr: :foo, variation_id: [:single, :hello_world]})}/>
+             <.psb-variation phx-click={JS.push("psb-assign", value: %{foo: "bar", variation_id: [:single, :hello_world]})}/>
+             <.psb-variation phx-click={JS.push("psb-toggle", value: %{attr: :foo, variation_id: [:single, :hello_world]})}/>
            </div>
            """
   end

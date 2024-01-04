@@ -4,7 +4,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
   @variation_regex ~r{(<\.psb-variation\/>)|(<\.psb-variation\s[^(\>)]*\/>)}
   @variation_group_regex ~r{<\.psb-variation-group[^(\>)]*\/>}
   @html_attributes_regex ~r{(\w+)=((?:.(?!["']?\s+(?:\S+)=|\s*\/?[>]))+.["']?)?}
-  @js_push_regex ~r[(JS\.push\("(?:assign|toggle)".*value:\s+)(%{.*})(.*\))]
+  @js_push_regex ~r[(JS\.push\("(?:psb-assign|psb-toggle)".*value:\s+)(%{.*})(.*\))]
 
   def default_template, do: "<.psb-variation/>"
 

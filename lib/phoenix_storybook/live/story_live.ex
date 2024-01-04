@@ -634,7 +634,7 @@ defmodule PhoenixStorybook.StoryLive do
     {:noreply, assign(socket, :playground_error, nil)}
   end
 
-  def handle_event("assign", assign_params, socket = %{assigns: assigns}) do
+  def handle_event("psb-assign", assign_params, socket = %{assigns: assigns}) do
     {variation_id, variation_extra_assigns} =
       ExtraAssignsHelpers.handle_set_variation_assign(
         assign_params,
@@ -650,7 +650,7 @@ defmodule PhoenixStorybook.StoryLive do
     {:noreply, assign(socket, :variation_extra_assigns, variation_extra_assigns)}
   end
 
-  def handle_event("toggle", assign_params, socket = %{assigns: assigns}) do
+  def handle_event("psb-toggle", assign_params, socket = %{assigns: assigns}) do
     {variation_id, variation_extra_assigns} =
       ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
