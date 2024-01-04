@@ -88,7 +88,8 @@ defmodule PhoenixStorybook.MixProject do
   defp package do
     [
       maintainers: ["Christian Blavier"],
-      files: ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md CONTRIBUTING.md .formatter.exs),
+      files:
+        ~w(mix.exs priv lib guides README.md LICENSE.md CHANGELOG.md CONTRIBUTING.md .formatter.exs),
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phenixdigital/phoenix_storybook"}
     ]
