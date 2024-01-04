@@ -18,4 +18,6 @@ defmodule NestedComponent do
     <span>I'm nested: <%= @label %></span>
     """
   end
+
+  def other_nested(assigns), do: nested(assigns)
 end

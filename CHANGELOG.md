@@ -22,6 +22,7 @@
 - **bugfix**: [`mix phx.gen.storybook` now prints how to set the _important_ sandbox strategy](https://github.com/phenixdigital/phoenix_storybook/issues/289)
 - **bugfix**: `mix phx.gen.storybook` no longer prints Docker instructions when no Docker file is present.
 - **bugfix**: [dialyxir has been restored](https://github.com/phenixdigital/phoenix_storybook/issues/317)
+- **bugfix**: [fixed multiple imports issue](https://github.com/phenixdigital/phoenix_storybook/issues/408)
 
 ## v0.5.7 (2023-10-05)
 
