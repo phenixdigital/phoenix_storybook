@@ -11,6 +11,7 @@
 ## v0.6.0 (not released)
 
 - **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
+- **change (breaking!)**: [`assign` and `toggle` events have been prefixed with `psb-`](https://github.com/phenixdigital/phoenix_storybook/issues/395) (cf. `components.md` guide)
 - **feature**: [render any stories with the new :one_column layout](https://github.com/phenixdigital/phoenix_storybook/issues/296)
 - **improvement**: [function components use iframe srcdoc](https://github.com/phenixdigital/phoenix_storybook/pull/382).
 - **improvement**: [Content-Security-Policy (CSP) support](https://github.com/phenixdigital/phoenix_storybook/issues/149). Special thanks to [Gaia](https://github.com/gaiabeatrice) for the PR 🙏
