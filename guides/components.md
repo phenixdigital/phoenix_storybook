@@ -194,7 +194,7 @@ end
 Some components don't rely on JS commands but need external assigns, like a modal that takes a
 `show={true}` or `show={false}` assign to manage its visibility state.
 
-`PhoenixStorybook` handles special `assign` and `toggle` events that you
+`PhoenixStorybook` handles special `psb-assign` and `psb-toggle` events that you
 can leverage on to update some properties that will be passed to your components as _extra assigns_.
 
 ```elixir
@@ -205,7 +205,7 @@ defmodule Storybook.Components.Slideover do
   def template do
     """
     <div>
-      <button phx-click={JS.push("assign", value: %{show: true})}>
+      <button phx-click={JS.push("psb-assign", value: %{show: true})}>
         Open slideover
       </button>
       <.psb-variation/>
@@ -218,7 +218,7 @@ defmodule Storybook.Components.Slideover do
       %Variation{
         id: :default_slideover,
         attributes: %{
-          close_event: JS.push("assign", value: %{variation_id: :default_slideover, show: false})
+          close_event: JS.push("psb-assign", value: %{variation_id: :default_slideover, show: false})
         },
         slots: ["<:body>Hello world</:body>"]
       }
