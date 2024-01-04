@@ -206,6 +206,32 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
 
       render_variation(LongListStory, :default)
     end
+
+    test "it works with multiple imports" do
+      defmodule MultipleImport do
+        use PhoenixStorybook.Story, :component
+        def function, do: &NestedComponent.nested_component/1
+        def imports, do: [{NestedComponent, nested: 1, other_nested: 1}]
+
+        def variations do
+          [
+            %Variation{
+              id: :default,
+              slots: [
+                """
+                <.nested label="hello"/>
+                <.other_nested label="world"/>
+                """
+              ]
+            }
+          ]
+        end
+      end
+
+      html = render_variation(MultipleImport, :default) |> rendered_to_string()
+      assert html =~ "hello"
+      assert html =~ "world"
+    end
   end
 
   defp render_variation(story, variation_id) do

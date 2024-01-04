@@ -196,7 +196,11 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
     ] ++ extra_imports(opts)
   end
 
-  defp extra_imports(opts), do: Keyword.get(opts, :imports, [])
+  defp extra_imports(opts) do
+    for {mod, imports} <- Keyword.get(opts, :imports, []), imp <- imports do
+      {mod, [imp]}
+    end
+  end
 
   defp module(fun) when is_function(fun), do: function_module(fun)
   defp module(mod) when is_atom(mod), do: mod
