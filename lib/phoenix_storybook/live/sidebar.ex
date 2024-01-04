@@ -51,7 +51,7 @@ defmodule PhoenixStorybook.Sidebar do
             assigns.current_path
             |> Path.split()
             |> Enum.reject(&(&1 == ""))
-            |> Enum.slice(0..-2),
+            |> Enum.slice(0..-2//1),
           reduce: {opened_folders, "/"} do
         {opened_folders, path_acc} ->
           path = Path.join(path_acc, path_item)
