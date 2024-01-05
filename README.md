@@ -56,13 +56,13 @@ Add the following to your mix.exs and run mix deps.get:
 ```elixir
 def deps do
   [
-    {:phoenix_storybook, "~> 0.5.0"}
+    {:phoenix_storybook, "~> 0.6.0"}
   ]
 end
 ```
 
 > [!IMPORTANT]
-> 
+>
 > When picking a github version of the library (instead of an official hex.pm release) you
 > need the get the storybook's assets compiled.
 > To do so, please run `mix dev.storybook`.
