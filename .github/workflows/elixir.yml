@@ -80,8 +80,10 @@ jobs:
       - name: Run tests
         run: mix coveralls.json
 
-      - name: Download codecov uploader
-        run: curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov
+      - uses: codecov/codecov-action@v4
+        with: 
+          fail_ci_if_error: true
+          files: coverage/excoveralls.json
+          token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Upload test coverage
-        run: ./codecov
+
