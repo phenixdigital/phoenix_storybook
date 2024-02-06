@@ -8,6 +8,10 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
+## v0.6.1 (not yet released)
+
+- **bugfix**: [added a missing step in generator](https://github.com/phenixdigital/phoenix_storybook/issues/419)
+
 ## v0.6.0 (2024-01-05)
 
 - **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
