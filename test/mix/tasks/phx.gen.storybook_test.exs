@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
     in_tmp_project(config.test, fn ->
       File.touch("Dockerfile")
 
-      for _ <- 1..9, do: send(self(), {:mix_shell_input, :yes?, true})
+      for _ <- 1..10, do: send(self(), {:mix_shell_input, :yes?, true})
       Storybook.run([])
 
       [{index, _}] = Code.compile_file("storybook/_root.index.exs")
@@ -58,6 +58,11 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive(
         :yes?,
         ~r|Set.*important.*option in your Tailwind config in.*assets/tailwind.config.js.*:|
+      )
+
+      assert_shell_receive(
+        :yes?,
+        ~r|Add the CSS sandbox class to your layout in.*lib/phoenix_storybook_web/components/layouts/root.html.heex.*:|
       )
 
       assert_shell_receive(

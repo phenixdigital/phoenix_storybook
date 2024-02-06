@@ -222,6 +222,13 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
           ...
         }
     """)
+
+    print_instructions("""
+      Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
+
+        <body class="bg-white antialiased #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
+        ...
+    """)
   end
 
   defp print_watchers_instructions(_schema, _opts = [tailwind: false]), do: true
