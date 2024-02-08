@@ -173,6 +173,15 @@ defmodule PhoenixStorybook.LayoutView do
     end
   end
 
+  defp color_mode?(socket) do
+    backend_module = backend_module(socket)
+    backend_module.config(:color_mode, false)
+  end
+
+  defp color_mode_icon("light"), do: "brightness"
+  defp color_mode_icon("dark"), do: "moon-stars"
+  defp color_mode_icon(_), do: "circle-half-stroke"
+
   defp show_dropdown_transition do
     {"psb-ease-out psb-duration-200", "psb-opacity-0 psb-scale-95",
      "psb-opacity-100 psb-scale-100"}

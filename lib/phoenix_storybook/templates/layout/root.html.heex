@@ -1,35 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" class="psb" phx-socket={live_socket_path(@conn)}>
-  
   <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"/>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"
+    />
     <%= if csrf?(@conn) do %>
       <%= csrf_meta_tag() %>
     <% end %>
 
-    <%= render "_favicon.html", conn: @conn %>
+    <%= render("_favicon.html", conn: @conn) %>
     <.live_title prefix={title_prefix(@conn)}>
       <%= assigns[:page_title] %>
     </.live_title>
 
     <%= if fa_kit_id = fa_kit_id(@conn) do %>
-      <script nonce={csp_nonce(@conn, :script)} defer src={"https://kit.fontawesome.com/#{fa_kit_id}.js"} crossorigin="anonymous"></script>
+      <script
+        nonce={csp_nonce(@conn, :script)}
+        defer
+        src={"https://kit.fontawesome.com/#{fa_kit_id}.js"}
+        crossorigin="anonymous"
+      >
+      </script>
     <% else %>
-      <link nonce={csp_nonce(@conn, :style)} rel="stylesheet" href={asset_path(@conn, "css/fonts.css")}/>
+      <link
+        nonce={csp_nonce(@conn, :style)}
+        rel="stylesheet"
+        href={asset_path(@conn, "css/fonts.css")}
+      />
     <% end %>
     <%= if path = storybook_js_path(@conn) do %>
-      <script nonce={csp_nonce(@conn, :script)} phx-track-static type="text/javascript" src={application_static_path(path)}></script>
+      <script
+        nonce={csp_nonce(@conn, :script)}
+        phx-track-static
+        type="text/javascript"
+        src={application_static_path(path)}
+      >
+      </script>
     <% end %>
-    <script nonce={csp_nonce(@conn, :script)} type="text/javascript" src={asset_path(@conn, "js/app.js")}></script>  
+    <script
+      nonce={csp_nonce(@conn, :script)}
+      type="text/javascript"
+      src={asset_path(@conn, "js/app.js")}
+    >
+    </script>
 
-    <link nonce={csp_nonce(@conn, :style)} rel="stylesheet" href={asset_path(@conn, "css/app.css")}/>
+    <link
+      nonce={csp_nonce(@conn, :style)}
+      rel="stylesheet"
+      href={asset_path(@conn, "css/app.css")}
+    />
     <%= if path = storybook_css_path(@conn) do %>
-      <link nonce={csp_nonce(@conn, :style)} phx-track-static rel="stylesheet" href={application_static_path(path)}/>
+      <link
+        nonce={csp_nonce(@conn, :style)}
+        phx-track-static
+        rel="stylesheet"
+        href={application_static_path(path)}
+      />
     <% end %>
     <style nonce={csp_nonce(@conn, :style)}>
-      <%= raw(makeup_stylesheet(@conn))%>
+      <%= raw(makeup_stylesheet(@conn)) %>
     </style>
   </head>
 
