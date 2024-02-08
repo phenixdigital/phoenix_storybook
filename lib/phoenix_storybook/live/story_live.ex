@@ -15,7 +15,6 @@ defmodule PhoenixStorybook.StoryLive do
   import PhoenixStorybook.NavigationHelpers
 
   def mount(_params, _session, socket) do
-    connect_params = get_connect_params(socket)["extra"]
     playground_topic = "playground-#{inspect(self())}"
     event_logs_topic = "event_logs:#{inspect(self())}"
 
@@ -32,8 +31,16 @@ defmodule PhoenixStorybook.StoryLive do
        playground_preview_pid: nil,
        playground_topic: playground_topic,
        fa_plan: backend_module.config(:font_awesome_plan, :free),
-       connect_params: connect_params
+       color_mode: get_color_mode(socket)
      )}
+  end
+
+  defp get_color_mode(socket) do
+    if connected?(socket) do
+      socket |> get_connect_params() |> Map.get("color_mode")
+    else
+      nil
+    end
   end
 
   def handle_params(params, _uri, socket) when params == %{} do
@@ -496,7 +503,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp render_content(:page, assigns) do
     ~H"""
     <div class={LayoutView.sandbox_class(@socket, {:div, class: "psb psb-pb-12"}, assigns)}>
-      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme, connect_params: @connect_params})
+      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme})
       |> to_raw_html() %>
     </div>
     """
@@ -664,6 +671,10 @@ defmodule PhoenixStorybook.StoryLive do
     }
 
     {:noreply, assign(socket, :variation_extra_assigns, variation_extra_assigns)}
+  end
+
+  def handle_event("psb-set-color-mode", %{"mode" => mode}, socket) do
+    {:noreply, socket |> assign(:color_mode, mode) |> push_event("set-color-mode", %{mode: mode})}
   end
 
   def handle_event(_, _, socket) do

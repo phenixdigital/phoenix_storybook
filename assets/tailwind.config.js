@@ -30,4 +30,5 @@ module.exports = {
   },
   important: ".psb",
   prefix: "psb-",
+  darkMode: "class",
 };
