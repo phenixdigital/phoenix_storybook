@@ -1,8 +1,8 @@
-<header class="psb psb-fixed psb-top-0 psb-w-full psb-z-10 psb-shadow-md psb-shadow-slate-900/5 psb-backdrop-blur-lg psb-bg-white/50">
+<header class="psb psb-fixed psb-top-0 psb-w-full psb-z-10 psb-shadow-md psb-shadow-slate-900/5 psb-backdrop-blur-lg psb-bg-white/50 dark:psb-bg-slate-900/50">
   <div class="psb psb-h-16 psb-w-full">
-    <div class="psb psb-absolute psb-top-5 psb-left-5 psb-z-20 psb-text-indigo-600 psb-text-lg psb-font-bold psb-uppercase ">
+    <div class="psb psb-absolute psb-top-5 psb-left-5 psb-z-20 psb-text-indigo-600 dark:psb-text-sky-400 psb-text-lg psb-font-bold psb-uppercase ">
       <.link patch={@root_path} class="psb">
-        <.fa_icon style={:regular} name="book-open" class="psb-text-indigo-600" plan={@fa_plan} />
+        <.fa_icon style={:regular} name="book-open" plan={@fa_plan} />
         <span class="psb psb-ml-1"><%= title(@socket) %></span>
       </.link>
     </div>
@@ -12,23 +12,37 @@
         <%= if color_mode?(@socket) do %>
           <button
             type="button"
-            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-900 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:psb-text-yellow-500 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500"
+            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
             phx-click={
               JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())
             }
           >
-            <.fa_icon style={:regular} name={color_mode_icon(@color_mode)} plan={@fa_plan} />
+            <div id="color-mode-icon" phx-update="ignore">
+              <.fa_icon
+                style={:regular}
+                name={color_mode_icon("light")}
+                plan={@fa_plan}
+                class="psb-inline-block dark:psb-hidden"
+              />
+              <.fa_icon
+                style={:regular}
+                name={color_mode_icon("dark")}
+                plan={@fa_plan}
+                class="psb-hidden dark:psb-inline-block"
+              />
+            </div>
+
             <div
               id="psb-colormode-dropdown"
-              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 focus:psb-outline-none psb-justify-start"
+              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none psb-justify-start "
               phx-click-away={
                 JS.hide(to: "#psb-colormode-dropdown", transition: hide_dropdown_transition())
               }
               phx-hook="ColorModeHook"
             >
               <div class="psb psb-px-4 psb-py-3">
-                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 psb-text-left">
-                  Pick a mode
+                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-slate-300 psb-text-left">
+                  Pick a color mode
                 </p>
               </div>
 
@@ -42,10 +56,10 @@
                       transition: hide_dropdown_transition()
                     )
                   }
-                  class="psb psb-theme psb-text-gray-700 hover:psb-bg-gray-100 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
+                  class="psb psb-text-gray-700 dark:psb-text-slate-300 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
                 >
                   <%= if @color_mode == mode do %>
-                    <span class="psb psb-text-indigo-600">
+                    <span class="psb psb-text-indigo-600 dark:psb-text-sky-400">
                       <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
                       <.fa_icon
                         name={color_mode_icon(mode)}
@@ -56,7 +70,7 @@
                       <%= String.capitalize(mode) %>
                     </span>
                   <% else %>
-                    <span class="psb psb-pl-6">
+                    <span class="psb psb-pl-6 ">
                       <.fa_icon
                         name={color_mode_icon(mode)}
                         class="fa-fw psb-pr-2"
@@ -75,7 +89,7 @@
         <%= if themes do %>
           <button
             type="button"
-            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500"
+            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
             phx-click={JS.show(to: "#psb-theme-dropdown", transition: show_dropdown_transition())}
           >
             <.fa_icon
@@ -87,13 +101,13 @@
 
             <div
               id="psb-theme-dropdown"
-              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 focus:psb-outline-none"
+              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none"
               phx-click-away={
                 JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())
               }
             >
               <div class="psb psb-px-4 psb-py-3">
-                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 psb-text-left">
+                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-gray-200 psb-text-left">
                   Pick a theme
                 </p>
               </div>
@@ -108,10 +122,10 @@
                       )
                     }
                     }
-                    class="psb psb-theme psb-text-gray-700 hover:psb-bg-gray-100 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
+                    class="psb psb-theme psb-text-gray-700 dark:psb-text-gray-500 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
                   >
                     <%= if assigns[:theme] == theme do %>
-                      <span class="psb psb-text-indigo-600">
+                      <span class="psb psb-text-indigo-600 dark:psb-text-gray-200">
                         <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} /><%= opts[:name] %>
                       </span>
                     <% else %>
@@ -133,20 +147,22 @@
     <button
       type="button"
       phx-click={JS.dispatch("psb:open-search")}
-      class="psb psb-h-7 psb-w-7 psb-bg-gray-100 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500"
+      class="psb psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-gray-200 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500"
     >
       <.fa_icon name="magnifying-glass" style={:light} plan={@fa_plan} />
     </button>
   </div>
 
-  <nav class="psb lg:psb-hidden psb-w-full psb-h-12 psb-border-slate-200 psb-border-t psb-flex psb-text-gray-600 psb-items-center psb-cursor-pointer psb-pr-2">
-    <.fa_icon
-      name="bars"
-      style={:regular}
-      class="fa-lg psb-px-4"
-      plan={@fa_plan}
-      phx-click={JS.dispatch("psb:open-sidebar")}
-    />
+  <nav class="psb lg:psb-hidden psb-w-full psb-h-12 psb-border-slate-200 dark:psb-border-slate-600 psb-border-t psb-flex psb-text-gray-600 dark:psb-text-slate-300 psb-items-center psb-cursor-pointer psb-pr-2">
+    <span id="breadcrumb-icon" phx-update="ignore">
+      <.fa_icon
+        name="bars"
+        style={:regular}
+        class="fa-lg psb-px-4"
+        plan={@fa_plan}
+        phx-click={JS.dispatch("psb:open-sidebar")}
+      />
+    </span>
     <%= if assigns[:story] do %>
       <%= render_breadcrumb(@socket, @backend_module.storybook_path(@story)) %>
     <% end %>

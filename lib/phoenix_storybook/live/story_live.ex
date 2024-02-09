@@ -189,9 +189,15 @@ defmodule PhoenixStorybook.StoryLive do
     >
       <div class="psb">
         <div class="psb psb-flex psb-my-6 psb-items-center">
-          <h2 class="psb psb-flex-1 psb-flex-nowrap psb-whitespace-nowrap psb-text-xl md:psb-text-2xl lg:psb-text-3xl psb-m-0 psb-font-extrabold psb-tracking-tight psb-text-indigo-600">
+          <h2 class="psb psb-flex-1 psb-flex-nowrap psb-whitespace-nowrap psb-text-xl md:psb-text-2xl lg:psb-text-3xl psb-m-0 psb-font-extrabold psb-tracking-tight psb-text-indigo-600 dark:psb-text-sky-400">
             <%= if icon = @story_entry.icon do %>
-              <.user_icon icon={icon} class="psb-pr-2 psb-text-indigo-600" fa_plan={@fa_plan} />
+              <span id="story-icon" phx-update="ignore">
+                <.user_icon
+                  icon={icon}
+                  class="psb-pr-2 psb-text-indigo-600 dark:psb-text-sky-400"
+                  fa_plan={@fa_plan}
+                />
+              </span>
             <% end %>
             <%= @story_entry.name %>
           </h2>
@@ -214,14 +220,14 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp print_doc(assigns = %{doc: [_header | _]}) do
     ~H"""
-    <div class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700">
+    <div class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300">
       <%= @doc |> Enum.at(0) |> raw() %>
     </div>
     <%= if Enum.count(@doc) > 1 do %>
       <a
         phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
         id="read-more"
-        class="psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 psb-cursor-pointer"
+        class="psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
       >
         <.fa_icon
           name="caret-right"
@@ -233,13 +239,13 @@ defmodule PhoenixStorybook.StoryLive do
       <a
         phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
         id="read-less"
-        class="psb psb-pt-2 psb-pb-4 psb-hidden psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 psb-cursor-pointer"
+        class="psb psb-pt-2 psb-pb-4 psb-hidden psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
       >
         <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb-mr-1" /> Read less
       </a>
       <div id="doc-next" class="psb-hidden psb-space-y-4 ">
         <%= for paragraph <- Enum.slice(@doc, 1..-1//1) do %>
-          <div class="psb psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700">
+          <div class="psb psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
             <%= raw(paragraph) %>
           </div>
         <% end %>
@@ -298,30 +304,30 @@ defmodule PhoenixStorybook.StoryLive do
         <%= select(f, :tab, navigation_select_options(@tabs),
           "phx-change": "psb-set-tab",
           class:
-            "psb psb-form-select psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base psb-border-gray-300 focus:psb-outline-none focus:psb-ring-indigo-600 focus:psb-border-indigo-600 sm:psb-text-sm psb-rounded-md",
+            "psb psb-form-select psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 focus:psb-border-indigo-600 sm:psb-text-sm psb-rounded-md",
           value: @tab
         ) %>
       </.form>
       <!-- :lg+ version of navigation tabs -->
-      <nav class="psb story-tabs psb-hidden lg:psb-flex psb-rounded-lg psb-border psb-bg-slate-100 psb-hover:psb-bg-slate-200 psb-h-10 psb-text-sm psb-font-medium">
+      <nav class="psb story-tabs psb-hidden lg:psb-flex psb-rounded-lg psb-border psb-border-gray-300 dark:psb-border-slate-600 psb-bg-slate-100 dark:psb-bg-slate-900 psb-hover:psb-bg-slate-200 dark:psb-hover:psb-bg-slate-800 psb-h-10 psb-text-sm psb-font-medium">
         <%= for tab <- @tabs do %>
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
           <a
             href="#"
             phx-click="psb-set-tab"
             phx-value-tab={tab_id}
-            class={"psb psb-group focus:psb-outline-none psb-flex psb-rounded-md #{active_link(@tab, tab_id)}"}
+            class={"psb psb-group focus:psb-outline-none psb-flex psb-rounded-md dark:psb-text-slate-400 #{active_link(@tab, tab_id)}"}
           >
             <span class={active_span(@tab, tab_id)}>
               <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
               <%= if icon do %>
                 <.user_icon
                   icon={icon}
-                  class={"lg:psb-mr-2 group-hover:psb-text-indigo-600 #{active_text(@tab, tab_id)}"}
+                  class={"lg:psb-mr-2 group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400 #{active_text(@tab, tab_id)}"}
                   fa_plan={@fa_plan}
                 />
               <% end %>
-              <span class={"psb psb-whitespace-nowrap group-hover:psb-text-indigo-600 #{active_text(@tab, tab_id)}"}>
+              <span class={"psb psb-whitespace-nowrap group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400 #{active_text(@tab, tab_id)}"}>
                 <%= tab_label %>
               </span>
             </span>
@@ -339,13 +345,13 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp active_span(same, same) do
-    "psb psb-h-full psb-rounded-md psb-flex psb-items-center psb-bg-white psb-shadow-sm \
-    psb-ring-opacity-5 psb-text-indigo-600 psb-p-1.5 lg:psb-pl-2.5 lg:psb-pr-3.5"
+    "psb psb-h-full psb-rounded-md psb-flex psb-items-center psb-bg-white dark:psb-bg-slate-700 psb-shadow-sm \
+    psb-ring-opacity-5 psb-text-indigo-600 dark:psb-text-sky-400 psb-p-1.5 lg:psb-pl-2.5 lg:psb-pr-3.5"
   end
 
   defp active_span(_tab, _current_tab), do: ""
 
-  defp active_text(same, same), do: "psb-text-indigo-600"
+  defp active_text(same, same), do: "psb-text-indigo-600 dark:psb-text-sky-400"
   defp active_text(_tab, _current_tab), do: "-psb-ml-0.5"
 
   defp navigation_select_options(tabs) do
@@ -374,7 +380,7 @@ defmodule PhoenixStorybook.StoryLive do
           class="psb psb-variation-block psb-gap-x-4 psb-grid psb-grid-cols-5"
         >
           <!-- Variation description -->
-          <div class="psb psb-col-span-5 psb-font-medium hover:psb-font-semibold psb-mb-6 psb-border-b psb-border-slate-100 md:psb-text-lg psb-leading-7 psb-text-slate-700 psb-flex psb-justify-between">
+          <div class="psb psb-col-span-5 psb-font-medium hover:psb-font-semibold psb-mb-6 psb-border-b psb-border-slate-100 dark:psb-border-slate-600 md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300 psb-flex psb-justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
               <.fa_icon
                 style={:light}
@@ -398,7 +404,7 @@ defmodule PhoenixStorybook.StoryLive do
               }
               class="psb psb-hidden psb-open-playground-link"
             >
-              <span class="psb psb-text-base psb-font-light psb-text-gray-500 hover:psb-text-indigo-600 hover:psb-font-medium ">
+              <span class="psb psb-text-base psb-font-light psb-text-gray-500 dark:psb-text-slate-300 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 hover:psb-font-medium ">
                 Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
               </span>
             </.link>
@@ -407,7 +413,7 @@ defmodule PhoenixStorybook.StoryLive do
           <div
             id={"#{anchor_id(variation)}-component"}
             class={[
-              "psb psb-border psb-border-slate-100 psb-rounded-md psb-col-span-5  psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
+              "psb psb-border dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
               component_layout_class(@story)
             ]}
           >
@@ -450,7 +456,7 @@ defmodule PhoenixStorybook.StoryLive do
           <div
             id={"#{anchor_id(variation)}-code"}
             class={[
-              "psb psb-border psb-border-slate-100 psb-bg-slate-800 psb-rounded-md psb-col-span-5 psb-group psb-relative psb-shadow-sm psb-flex psb-flex-col psb-justify-center",
+              "psb psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-bg-slate-800 psb-rounded-md psb-col-span-5 psb-group psb-relative psb-shadow-sm psb-flex psb-flex-col psb-justify-center",
               code_layout_class(@story)
             ]}
           >

@@ -3,8 +3,12 @@ export const ColorModeHook = {
     window.addEventListener("phx:set-color-mode", (e) => {
       toggleColorModeClass(e.detail.mode);
     });
-    const mode = localStorage.getItem("psb_color_mode");
-    toggleColorModeClass(mode);
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (event) => {
+        const mode = localStorage.getItem("psb_color_mode");
+        toggleColorModeClass(mode);
+      });
   },
 };
 
@@ -16,8 +20,11 @@ function toggleColorModeClass(mode) {
     (mode == "system" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches)
   ) {
-    document.documentElement.classList.add("dark");
+    document.documentElement.classList.add("psb-dark");
   } else {
-    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.remove("psb-dark");
   }
 }
+
+const mode = localStorage.getItem("psb_color_mode");
+toggleColorModeClass(mode);

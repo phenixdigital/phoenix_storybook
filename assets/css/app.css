@@ -80,6 +80,14 @@
   @apply psb-font-mono psb-text-sm;
 }
 
+.psb-dark ::-webkit-scrollbar {
+  @apply psb-bg-slate-900 psb-w-[15px];
+}
+
+.psb-dark ::-webkit-scrollbar-thumb {
+  @apply psb-bg-slate-700 psb-border-solid psb-border-4 psb-border-transparent psb-rounded-lg psb-bg-clip-content;
+}
+
 @layer base {
   /*
   1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)

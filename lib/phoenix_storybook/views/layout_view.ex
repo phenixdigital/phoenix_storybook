@@ -21,7 +21,7 @@ defmodule PhoenixStorybook.LayoutView do
         <.fa_icon
           style={:thin}
           name="angle-right"
-          class="psb-px-2 psb-text-slate-500"
+          class="psb-px-2 psb-text-slate-500 dark:psb-text-slate-300"
           plan={@fa_plan}
         />
       </:separator>
@@ -179,7 +179,7 @@ defmodule PhoenixStorybook.LayoutView do
   end
 
   defp color_mode_icon("light"), do: "brightness"
-  defp color_mode_icon("dark"), do: "moon-stars"
+  defp color_mode_icon("dark"), do: "moon"
   defp color_mode_icon(_), do: "circle-half-stroke"
 
   defp show_dropdown_transition do

@@ -53,7 +53,7 @@ defmodule PhoenixStorybook.Search do
           phx-show={show_modal()}
           phx-hide={hide_modal()}
           phx-click-away={JS.dispatch("psb:close-search")}
-          class="psb psb-opacity-0 psb-scale-90 psb-mx-auto psb-max-w-xl psb-mt-16 psb-transform psb-divide-y psb-divide-gray-100 psb-overflow-hidden psb-rounded-xl psb-bg-white psb-shadow-2xl psb-transition-all"
+          class="psb psb-opacity-0 psb-scale-90 psb-mx-auto psb-max-w-xl psb-mt-16 psb-transform psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 psb-overflow-hidden psb-rounded-xl psb-bg-white dark:psb-bg-slate-800 psb-shadow-2xl psb-transition-all"
         >
           <.form
             :let={f}
@@ -88,24 +88,34 @@ defmodule PhoenixStorybook.Search do
 
           <ul
             id="search-list"
-            class="psb psb-max-h-72 psb-scroll-py-2 psb-divide-y psb-divide-gray-200 psb-overflow-y-auto psb-pb-2 psb-text-sm psb-text-gray-800"
+            class="psb psb-max-h-72 psb-scroll-py-2 psb-divide-y psb-divide-gray-200 dark:psb-divide-slate-600 psb-overflow-y-auto psb-pb-2 psb-text-sm psb-text-gray-800"
           >
             <%= for {story, i} <- Enum.with_index(@stories) do %>
               <li
                 id={"story-#{i}"}
-                phx-highlight={JS.add_class("psb-bg-slate-50 psb-text-indigo-600")}
-                phx-baseline={JS.remove_class("psb-bg-slate-50 psb-text-indigo-600")}
+                phx-highlight={
+                  JS.add_class(
+                    "psb-bg-slate-50 dark:psb-bg-slate-700 psb-text-indigo-600 dark:psb-text-sky-400"
+                  )
+                }
+                phx-baseline={
+                  JS.remove_class(
+                    "psb-bg-slate-50 dark:psb-bg-slate-700 psb-text-indigo-600 dark:psb-text-sky-400"
+                  )
+                }
                 class="psb psb-flex psb-justify-between psb-group psb-select-none psb-px-4 psb-py-4 psb-space-x-4 psb-cursor-pointer"
                 tabindex="-1"
               >
                 <.link
                   patch={Path.join(@root_path, story.path)}
-                  class="psb psb-font-semibold psb-whitespace-nowrap"
+                  class="psb psb-font-semibold psb-whitespace-nowrap dark:psb-text-slate-300"
                 >
                   <%= story.name %>
                 </.link>
                 <div class="psb psb-truncate">
-                  <%= LayoutView.render_breadcrumb(@socket, story.path, span_class: "psb-text-xs") %>
+                  <%= LayoutView.render_breadcrumb(@socket, story.path,
+                    span_class: "psb-text-xs dark:psb-text-slate-300"
+                  ) %>
                 </div>
               </li>
             <% end %>

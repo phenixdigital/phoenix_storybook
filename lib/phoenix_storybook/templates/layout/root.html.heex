@@ -65,7 +65,10 @@
     </style>
   </head>
 
-  <body class={["psb psb-max-w-full psb-overflow-hidden", wait_for_icons?(@conn)]}>
+  <body class={[
+    "psb psb-max-w-full psb-overflow-hidden psb-bg-white dark:psb-bg-slate-900",
+    wait_for_icons?(@conn)
+  ]}>
     <%= @inner_content %>
   </body>
 </html>
