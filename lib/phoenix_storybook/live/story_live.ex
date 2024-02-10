@@ -304,7 +304,7 @@ defmodule PhoenixStorybook.StoryLive do
         <%= select(f, :tab, navigation_select_options(@tabs),
           "phx-change": "psb-set-tab",
           class:
-            "psb psb-form-select psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 focus:psb-border-indigo-600 sm:psb-text-sm psb-rounded-md",
+            "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-border-gray-300 dark:psb-border-slate-600 psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 sm:psb-text-sm psb-rounded-md",
           value: @tab
         ) %>
       </.form>
@@ -421,7 +421,7 @@ defmodule PhoenixStorybook.StoryLive do
               <% {{:iframe, iframe_opts}, :component} -> %>
                 <iframe
                   phx-update="ignore"
-                  id={iframe_id(@story, variation)}
+                  id={iframe_id(@story, variation, @color_mode)}
                   class="psb-w-full psb-border-0"
                   srcdoc={iframe_srcdoc(assigns, rendering_context, iframe_opts)}
                   height="0"
@@ -431,7 +431,7 @@ defmodule PhoenixStorybook.StoryLive do
               <% {{:iframe, _iframe_opts}, :live_component} -> %>
                 <iframe
                   phx-update="ignore"
-                  id={iframe_id(@story, variation)}
+                  id={iframe_id(@story, variation, @color_mode)}
                   class="psb-w-full psb-border-0"
                   src={
                     path_to_iframe(@socket, @root_path, @story_path,
@@ -495,6 +495,7 @@ defmodule PhoenixStorybook.StoryLive do
       variation={@variation}
       playground_error={@playground_error}
       theme={@theme}
+      color_mode={@color_mode}
       topic={@playground_topic}
       fa_plan={@fa_plan}
       root_path={@root_path}
@@ -578,7 +579,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     ~H"""
     <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
-      <div style={@iframe_opts[:style]}>
+      <div id="iframe-container" style={@iframe_opts[:style]} phx-hook="ColorModeHook">
         <%= ComponentRenderer.render(@rendering_context) %>
       </div>
     <% end %>
@@ -608,8 +609,8 @@ defmodule PhoenixStorybook.StoryLive do
     |> Phoenix.HTML.raw()
   end
 
-  defp iframe_id(story, variation) do
-    "iframe-#{story_id(story)}-variation-#{variation.id}"
+  defp iframe_id(story, variation, color_mode) do
+    "iframe-#{story_id(story)}-variation-#{variation.id}-#{color_mode}"
   end
 
   defp story_id(story_module) do

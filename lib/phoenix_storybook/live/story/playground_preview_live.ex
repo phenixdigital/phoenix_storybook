@@ -93,7 +93,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       )
 
     ~H"""
-    <div id="playground-preview-live" style="width: 100%; height: 100%;">
+    <div id="playground-preview-live" style="width: 100%; height: 100%;" phx-hook="ColorModeHook">
       <div
         id={"sandbox-#{@counter}"}
         class={
