@@ -23,7 +23,7 @@ defmodule PhoenixStorybook.Search do
   end
 
   def handle_event("navigate", %{"path" => path}, socket) do
-    {:noreply, push_patch(socket, to: path)}
+    {:noreply, push_navigate(socket, to: path)}
   end
 
   def handle_event("search", %{"search" => %{"input" => ""}}, socket) do
@@ -76,12 +76,12 @@ defmodule PhoenixStorybook.Search do
               placeholder: "Search...",
               autocomplete: "off",
               class:
-                "psb psb-h-12 psb-w-full psb-border-0 psb-bg-transparent psb-pl-11 psb-pr-4 psb-text-gray-800 psb-placeholder-gray-400 psb-outline-none focus:psb-ring-0 sm:psb-text-sm"
+                "psb psb-h-12 psb-w-full psb-border-0 psb-bg-transparent psb-pl-11 psb-pr-4 psb-text-gray-800 dark:psb-text-slate-300 psb-placeholder-gray-400 dark:psb-placeholder-slate-500 psb-outline-none focus:psb-ring-0 sm:psb-text-sm"
             ) %>
           </.form>
 
           <%= if Enum.empty?(@stories) do %>
-            <div class="psb psb-text-center psb-text-gray-600 psb-py-4">
+            <div class="psb psb-text-center psb-text-gray-600 dark:psb-text-slate-300 psb-py-4">
               <p>No stories found</p>
             </div>
           <% end %>
@@ -103,8 +103,9 @@ defmodule PhoenixStorybook.Search do
                     "psb-bg-slate-50 dark:psb-bg-slate-700 psb-text-indigo-600 dark:psb-text-sky-400"
                   )
                 }
-                class="psb psb-flex psb-justify-between psb-group psb-select-none psb-px-4 psb-py-4 psb-space-x-4 psb-cursor-pointer"
+                class="psb psb-flex psb-justify-between psb-group psb-select-none psb-px-4 psb-py-4 psb-space-x-4 psb-cursor-pointer hover:psb-bg-slate-50 dark:hover:psb-bg-slate-700"
                 tabindex="-1"
+                phx-click={JS.navigate(Path.join(@root_path, story.path))}
               >
                 <.link
                   patch={Path.join(@root_path, story.path)}

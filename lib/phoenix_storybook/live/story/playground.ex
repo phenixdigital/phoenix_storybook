@@ -254,7 +254,7 @@ defmodule PhoenixStorybook.Story.Playground do
       ]}>
         <%= if @story.container() == :iframe do %>
           <iframe
-            id={playground_preview_id(@story)}
+            id={playground_preview_id(@story, @color_mode)}
             src={
               path_to_iframe(@socket, @root_path, @story_path,
                 variation_id: to_string(@variation_id),
@@ -269,7 +269,7 @@ defmodule PhoenixStorybook.Story.Playground do
           />
         <% else %>
           <%= live_render(@socket, PlaygroundPreviewLive,
-            id: playground_preview_id(@story),
+            id: playground_preview_id(@story, @color_mode),
             session: %{
               "story" => @story,
               "variation_id" => to_string(@variation_id),
@@ -577,9 +577,9 @@ defmodule PhoenixStorybook.Story.Playground do
     "#{module}-playground-form"
   end
 
-  defp playground_preview_id(story) do
+  defp playground_preview_id(story, color_mode) do
     module = story |> Macro.underscore() |> String.replace("/", "_")
-    "#{module}-playground-preview"
+    "#{module}-playground-preview-#{color_mode}"
   end
 
   defp playground_event_logs_id(story) do
