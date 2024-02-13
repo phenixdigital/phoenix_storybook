@@ -8,7 +8,7 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
-## v0.6.1 (not yet released)
+## v0.6.1 (2024-02-13)
 
 - **bugfix**: [added a missing step in generator](https://github.com/phenixdigital/phoenix_storybook/issues/419)
 
