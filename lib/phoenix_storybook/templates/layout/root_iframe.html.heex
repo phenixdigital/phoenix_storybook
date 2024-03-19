@@ -5,23 +5,56 @@
       <%= csrf_meta_tag() %>
     <% end %>
     <%= if path = storybook_js_path(@conn) do %>
-      <script nonce={csp_nonce(@conn, :script)} phx-track-static type="text/javascript" src={application_static_path(path)}></script>
+      <script
+        nonce={csp_nonce(@conn, :script)}
+        phx-track-static
+        type="text/javascript"
+        src={application_static_path(path)}
+      >
+      </script>
     <% end %>
-    <script nonce={csp_nonce(@conn, :script)} type="text/javascript" src={asset_path(@conn, "js/iframe.js")}></script>  
+    <script
+      nonce={csp_nonce(@conn, :script)}
+      type="text/javascript"
+      src={asset_path(@conn, "js/iframe.js")}
+    >
+    </script>
 
     <%= if fa_kit_id = fa_kit_id(@conn) do %>
-      <script nonce={csp_nonce(@conn, :script)} defer src={"https://kit.fontawesome.com/#{fa_kit_id}.js"} crossorigin="anonymous"></script>
+      <script
+        nonce={csp_nonce(@conn, :script)}
+        defer
+        src={"https://kit.fontawesome.com/#{fa_kit_id}.js"}
+        crossorigin="anonymous"
+      >
+      </script>
     <% else %>
-      <link rel="stylesheet" nonce={csp_nonce(@conn, :style)} href={asset_path(@conn, "css/fonts.css")}/>
+      <link
+        rel="stylesheet"
+        nonce={csp_nonce(@conn, :style)}
+        href={asset_path(@conn, "css/fonts.css")}
+      />
     <% end %>
 
-    <link rel="stylesheet" nonce={csp_nonce(@conn, :style)} href={asset_path(@conn, "css/app.css")}/>
+    <link
+      rel="stylesheet"
+      nonce={csp_nonce(@conn, :style)}
+      href={asset_path(@conn, "css/app.css")}
+    />
     <%= if path = storybook_css_path(@conn) do %>
-      <link nonce={csp_nonce(@conn, :style)} phx-track-static rel="stylesheet" href={application_static_path(path)}/>
+      <link
+        nonce={csp_nonce(@conn, :style)}
+        phx-track-static
+        rel="stylesheet"
+        href={application_static_path(path)}
+      />
     <% end %>
   </head>
-  
-  <% container = if assigns[:story], do: normalize_story_container(assigns[:story].container()), else: {:div, []} %>
+
+  <% container =
+    if assigns[:story],
+      do: normalize_story_container(assigns[:story].container()),
+      else: {:div, []} %>
   <body class={sandbox_class(@conn, container, assigns)} style="margin: 0;">
     <%= @inner_content %>
   </body>

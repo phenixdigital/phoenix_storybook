@@ -3,6 +3,7 @@ import { Socket } from "phoenix";
 import { StoryHook } from "./lib/story_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
+import { ColorModeHook } from "./lib/color_mode_hook";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -21,12 +22,19 @@ let csrfToken = document
   ?.getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
-  hooks: { ...window.storybook.Hooks, StoryHook, SearchHook, SidebarHook },
+  hooks: {
+    ...window.storybook.Hooks,
+    StoryHook,
+    SearchHook,
+    SidebarHook,
+    ColorModeHook,
+  },
   uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
     return {
       _csrf_token: csrfToken,
       extra: window.storybook.Params,
+      color_mode: localStorage.getItem("psb_color_mode") || "system",
     };
   },
   ...window.storybook.LiveSocketOptions,
