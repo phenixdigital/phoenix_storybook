@@ -155,7 +155,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
     msg = "story imports must be a list of {atom, [{atom, integer}]}"
     validate_type!(file_path, story.aliases(), :list, msg)
 
-    for import_item <- story.imports || [] do
+    for import_item <- story.imports() || [] do
       validate_type!(file_path, import_item, {:tuple, 2}, msg)
       {mod, functions} = import_item
       validate_type!(file_path, mod, :atom, msg)
