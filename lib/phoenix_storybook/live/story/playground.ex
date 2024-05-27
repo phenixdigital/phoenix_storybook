@@ -754,7 +754,7 @@ defmodule PhoenixStorybook.Story.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: :integer, values: min..max}) do
+  defp attr_input(assigns = %{type: :integer, values: min..max//_}) do
     assigns = assigns |> assign(:min, min) |> assign(:max, max)
 
     ~H"""

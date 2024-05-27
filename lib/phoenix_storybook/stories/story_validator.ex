@@ -145,15 +145,15 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
 
   defp validate_component_aliases!(file_path, story) do
     msg = "story aliases must be a list of atoms"
-    validate_type!(file_path, story.aliases, :list, msg)
+    validate_type!(file_path, story.aliases(), :list, msg)
 
-    for alias_item <- story.aliases || [],
+    for alias_item <- story.aliases() || [],
         do: validate_type!(file_path, alias_item, :atom, msg)
   end
 
   defp validate_component_imports!(file_path, story) do
     msg = "story imports must be a list of {atom, [{atom, integer}]}"
-    validate_type!(file_path, story.aliases, :list, msg)
+    validate_type!(file_path, story.aliases(), :list, msg)
 
     for import_item <- story.imports || [] do
       validate_type!(file_path, import_item, {:tuple, 2}, msg)
