@@ -79,7 +79,7 @@ defmodule PhoenixStorybook.ValidationHelpers do
   def match_attr_type?(term, :float) when is_float(term), do: true
   def match_attr_type?(term, :boolean) when is_boolean(term), do: true
   def match_attr_type?(term, :list) when is_list(term), do: true
-  def match_attr_type?(_min.._max, :range), do: true
+  def match_attr_type?(_min.._max//_, :range), do: true
   def match_attr_type?(term, :global) when is_map(term), do: true
   def match_attr_type?(term, :map) when is_map(term), do: true
   def match_attr_type?(term, :function) when is_function(term), do: true
