@@ -78,7 +78,7 @@ jobs:
         run: mix dialyzer --format github
 
       - name: Run tests
-        run: mix coveralls.json
+        run: mix coveralls.json --warnings-as-errors --all-warnings
 
       - uses: codecov/codecov-action@v4
         with: 

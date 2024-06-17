@@ -187,7 +187,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
   end
 
   defp validate_component_template!(file_path, story) do
-    validate_type!(file_path, story.template, :string, "story template must be a binary")
+    validate_type!(file_path, story.template(), :string, "story template must be a binary")
   end
 
   defp validate_component_layout!(file_path, story) do

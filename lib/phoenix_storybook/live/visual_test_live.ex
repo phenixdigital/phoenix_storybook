@@ -176,7 +176,7 @@ defmodule PhoenixStorybook.VisualTestLive do
               class={
                 LayoutView.sandbox_class(
                   @socket,
-                  LayoutView.normalize_story_container(@story.container),
+                  LayoutView.normalize_story_container(@story.container()),
                   assigns
                 )
               }
