@@ -8,6 +8,11 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
+## v0.6.2 (2024-06-17)
+
+- **improvement**: [fixed Elixir 1.17 related warnings](https://github.com/phenixdigital/phoenix_storybook/pull/454)
+- **bugfix**: [fixed nofile_error_due_to_missing_env issue](https://github.com/phenixdigital/phoenix_storybook/pull/449)
+
 ## v0.6.1 (2024-02-13)
 
 - **bugfix**: [added a missing step in generator](https://github.com/phenixdigital/phoenix_storybook/issues/419)
