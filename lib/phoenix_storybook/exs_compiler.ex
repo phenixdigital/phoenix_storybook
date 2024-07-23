@@ -24,17 +24,21 @@ defmodule PhoenixStorybook.ExsCompiler do
   end
 
   defp do_compile_exs!(path, relative_to) do
-    Logger.debug("compiling storybook file: #{path}")
-    Code.put_compiler_option(:ignore_module_conflict, true)
-    modules = Code.compile_file(path, relative_to) |> Enum.map(&elem(&1, 0))
+    original_ignore_module_conflict = Code.get_compiler_option(:ignore_module_conflict)
 
-    Enum.find(
-      modules,
-      Enum.at(modules, 0),
-      &function_exported?(&1, :storybook_type, 0)
-    )
-  after
-    Code.put_compiler_option(:ignore_module_conflict, false)
+    try do
+      Logger.debug("compiling storybook file: #{path}")
+      Code.put_compiler_option(:ignore_module_conflict, true)
+      modules = Code.compile_file(path, relative_to) |> Enum.map(&elem(&1, 0))
+
+      Enum.find(
+        modules,
+        Enum.at(modules, 0),
+        &function_exported?(&1, :storybook_type, 0)
+      )
+    after
+      Code.put_compiler_option(:ignore_module_conflict, original_ignore_module_conflict)
+    end
   end
 
   defp do_compile_exs(path, relative_to) do
