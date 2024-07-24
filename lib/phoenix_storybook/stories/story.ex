@@ -159,7 +159,7 @@ defmodule PhoenixStorybook.Story do
   defmodule PageBehaviour do
     @moduledoc false
 
-    @callback navigation() :: [{atom(), String.t(), Icon.t()}]
+    @callback navigation() :: [{atom(), String.t(), Icon.t()} | {atom(), String.t()}]
     @callback render(map()) :: %Phoenix.LiveView.Rendered{}
   end
 
