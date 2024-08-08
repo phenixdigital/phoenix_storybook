@@ -15,7 +15,7 @@ defmodule Storybook.MyPage do
     ]
   end
 
-  # This is a dummy fonction that you should replace with your own HEEx content.
+  # This is a dummy function that you should replace with your own HEEx content.
   def render(assigns = %{tab: :welcome}) do
     ~H"""
     <div class="psb-welcome-page">
