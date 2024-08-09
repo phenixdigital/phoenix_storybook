@@ -87,7 +87,7 @@ defmodule PhoenixStorybook.Story do
   An example is a real-world UI showcasing how your components can be used and mixed in complex UI
   interfaces.
 
-  Examples ares rendered as a child LiveView, so you can implement `mount/3`, `render/1` or any
+  Examples are rendered as a child LiveView, so you can implement `mount/3`, `render/1` or any
   `handle_event/3` callback. Unfortunately `handle_params/3` cannot be defined in a child LiveView.
 
   By default, your example story's source code will be shown in a dedicated tab. But you can show
