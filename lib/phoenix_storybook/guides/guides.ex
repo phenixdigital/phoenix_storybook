@@ -5,7 +5,7 @@ defmodule PhoenixStorybook.Guides do
 
   Markup is precompiled because:
   - we don't want to force user application to embed Earmark
-  - we don't wont to put markdown guides in priv
+  - we don't want to put markdown guides in priv
 
   ## Examples
 
