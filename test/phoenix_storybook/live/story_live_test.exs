@@ -99,7 +99,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :source, theme: :default, variation_id: :hello}}"
+        ~p"/storybook/component?#{[tab: :source, theme: :default, variation_id: :hello]}"
       )
 
       assert html =~ "defmodule"
@@ -112,21 +112,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :variations, theme: :colorful, variation_id: :hello}}"
+        ~p"/storybook/component?#{[tab: :variations, theme: :colorful, variation_id: :hello]}"
       )
 
       view |> element("a", "Source") |> render_click()
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :source, theme: :colorful, variation_id: :hello}}"
+        ~p"/storybook/component?#{[tab: :source, theme: :colorful, variation_id: :hello]}"
       )
 
       html = view |> element("a", "Playground") |> render_click()
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :playground, theme: :colorful, variation_id: :hello}}"
+        ~p"/storybook/component?#{[tab: :playground, theme: :colorful, variation_id: :hello]}"
       )
 
       assert html =~ "component: hello colorful"
@@ -149,7 +149,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :source, theme: :default, variation_id: :hello}}"
+        ~p"/storybook/component?#{[tab: :source, theme: :default, variation_id: :hello]}"
       )
 
       assert html =~ "defmodule"
@@ -234,7 +234,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :playground, theme: :default, variation_id: :hello}}"
+        ~p"/storybook/component?#{[tab: :playground, theme: :default, variation_id: :hello]}"
       )
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
@@ -245,7 +245,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{%{tab: :playground, theme: :default, variation_id: :world}}"
+        ~p"/storybook/component?#{[tab: :playground, theme: :default, variation_id: :world]}"
       )
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
@@ -356,7 +356,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert html =~ "story-tabs"
 
       html = view |> element("a", "Tab 2") |> render_click()
-      assert_patched(view, ~p"/storybook/b_page?#{%{tab: :tab_2, theme: :default}}")
+      assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")
       assert html =~ "B Page: tab_2"
     end
   end
