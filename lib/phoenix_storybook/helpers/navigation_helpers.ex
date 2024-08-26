@@ -38,5 +38,7 @@ defmodule PhoenixStorybook.NavigationHelpers do
     |> Map.take([:theme, :tab, :variation_id])
     |> Map.merge(params)
     |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+    |> Enum.to_list()
+    |> Enum.sort_by(fn {key, _value} -> to_string(key) end)
   end
 end
