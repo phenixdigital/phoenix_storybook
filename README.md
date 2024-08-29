@@ -139,7 +139,10 @@ defmodule MyAppWeb.Storybook do
     #   - When eager: all .story.exs & .index.exs files are compiled upfront.
     #   - When lazy: only .index.exs files are compiled upfront and .story.exs are compile when the
     #     matching story is loaded in UI.
-    compilation_mode: :eager
+    compilation_mode: :eager,
+    
+    # If you want to see debugging logs for storybooks compilation, set this to `true`. Default: `false`
+    compilation_debug: true
   ]
 ```
 

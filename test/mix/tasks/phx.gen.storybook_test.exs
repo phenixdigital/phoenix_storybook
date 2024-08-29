@@ -130,7 +130,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       Storybook.run([])
 
       story_file = "storybook/core_components/button.story.exs"
-      story = ExsCompiler.compile_exs!(story_file)
+      story = ExsCompiler.compile_exs!(story_file, "./")
       assert story.storybook_type() == :component
       assert story.function() == &PhoenixStorybookWeb.CoreComponents.button/1
 

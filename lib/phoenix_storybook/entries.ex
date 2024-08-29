@@ -25,14 +25,21 @@ defmodule PhoenixStorybook.Entries do
   def story_file_suffix, do: ".story.exs"
   def index_file_suffix, do: ".index.exs"
 
-  def content_tree(path, folders_config) do
+  def content_tree(opts) do
+    path = Keyword.get(opts, :content_path)
+    folders_config = Keyword.get(opts, :folders, [])
+
     content_tree =
-      if(path && File.dir?(path), do: recursive_scan(path, path, folders_config), else: [])
+      if path && File.dir?(path) do
+        recursive_scan(path, path, folders_config, "", opts)
+      else
+        []
+      end
 
     [content_tree |> root_entry() |> maybe_apply_index()]
   end
 
-  defp recursive_scan(root_path, path, folders_config, storybook_path \\ "") do
+  defp recursive_scan(root_path, path, folders_config, storybook_path, opts) do
     for file_name <- path |> File.ls!() |> Enum.sort(:desc),
         file_path = Path.join(path, file_name),
         reduce: [] do
@@ -43,7 +50,10 @@ defmodule PhoenixStorybook.Entries do
 
             if Enum.any?(nested_stories) do
               storybook_path = Path.join(["/", storybook_path, file_name])
-              sub_entries = recursive_scan(root_path, file_path, folders_config, storybook_path)
+
+              sub_entries =
+                recursive_scan(root_path, file_path, folders_config, storybook_path, opts)
+
               [folder_entry(file_name, storybook_path, sub_entries) |> maybe_apply_index() | acc]
             else
               acc
@@ -54,7 +64,7 @@ defmodule PhoenixStorybook.Entries do
 
           String.ends_with?(file_path, index_file_suffix()) ->
             file_path = storybook_path |> Path.join(file_name) |> String.replace_prefix("/", "")
-            index_module = ExsCompiler.compile_exs!(file_path, root_path)
+            index_module = ExsCompiler.compile_exs!(file_path, root_path, opts)
             [index_entry(index_module, storybook_path) | acc]
 
           true ->
