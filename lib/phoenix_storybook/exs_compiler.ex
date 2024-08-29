@@ -10,8 +10,8 @@ defmodule PhoenixStorybook.ExsCompiler do
   def start_link(opts), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   def init(opts), do: {:ok, opts}
 
-  def compile_exs!(path, relative_to \\ "./") do
-    do_compile_exs!(path, relative_to)
+  def compile_exs!(path, relative_to, opts \\ []) do
+    do_compile_exs!(path, relative_to, opts)
   end
 
   def compile_exs(path, relative_to) do
@@ -19,15 +19,18 @@ defmodule PhoenixStorybook.ExsCompiler do
   end
 
   def handle_call({:compile_exs, path, relative_to}, _from, state) do
-    module = do_compile_exs(path, relative_to)
+    module = do_compile_exs(path, relative_to, state)
     {:reply, module, state}
   end
 
-  defp do_compile_exs!(path, relative_to) do
+  defp do_compile_exs!(path, relative_to, opts) do
     original_ignore_module_conflict = Code.get_compiler_option(:ignore_module_conflict)
 
     try do
-      Logger.debug("compiling storybook file: #{path}")
+      if opts[:compilation_debug] do
+        Logger.debug("compiling storybook file: #{path}")
+      end
+
       Code.put_compiler_option(:ignore_module_conflict, true)
       modules = Code.compile_file(path, relative_to) |> Enum.map(&elem(&1, 0))
 
@@ -41,8 +44,8 @@ defmodule PhoenixStorybook.ExsCompiler do
     end
   end
 
-  defp do_compile_exs(path, relative_to) do
-    module = do_compile_exs!(path, relative_to)
+  defp do_compile_exs(path, relative_to, opts) do
+    module = do_compile_exs!(path, relative_to, opts)
     {:ok, module}
   rescue
     e ->

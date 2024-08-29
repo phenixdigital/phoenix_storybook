@@ -115,7 +115,7 @@ defmodule PhoenixStorybook do
 
             story =
               story_path
-              |> ExsCompiler.compile_exs!(content_path)
+              |> ExsCompiler.compile_exs!(content_path, opts)
               |> StoryValidator.validate!()
 
             quote do
@@ -194,9 +194,7 @@ defmodule PhoenixStorybook do
   end
 
   defp content_tree(opts) do
-    content_path = Keyword.get(opts, :content_path)
-    folders_config = Keyword.get(opts, :folders, [])
-    Entries.content_tree(content_path, folders_config)
+    Entries.content_tree(opts)
   end
 
   defp compilation_mode(opts) do
