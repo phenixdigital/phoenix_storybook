@@ -8,6 +8,10 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
+## v0.6.4 (not yet released)
+
+- **improvement**: [:compilation_debug config option](https://github.com/phenixdigital/phoenix_storybook/pull/496) was added in `storybook.ex` to show/hide story compilation logs
+
 ## v0.6.3 (2024-06-24)
 
 - **improvement**: [fixed another bunch of Elixir 1.17 related warnings](https://github.com/phenixdigital/phoenix_storybook/pull/461)
