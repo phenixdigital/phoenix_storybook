@@ -11,6 +11,7 @@
 ## v0.6.4 (not yet released)
 
 - **improvement**: [:compilation_debug config option](https://github.com/phenixdigital/phoenix_storybook/pull/496) was added in `storybook.ex` to show/hide story compilation logs
+- **improvement**: fixed Elixir 1.7 related warnings
 
 ## v0.6.3 (2024-06-24)
 
