@@ -66,21 +66,23 @@ defmodule PhoenixStorybook.Sidebar do
     <section
       id="sidebar"
       phx-hook="SidebarHook"
-      class="psb psb-text-gray-600 lg:psb-block psb-fixed psb-z-20 lg:psb-z-auto psb-w-80 lg:psb-w-60 psb-text-base lg:psb-text-sm psb-h-screen psb-flex psb-flex-col psb-flex-grow psb-bg-slate-50 lg:psb-pt-20 psb-pb-32 psb-px-4 psb-overflow-y-auto"
+      class="psb psb-text-gray-600 dark:psb-text-slate-400 lg:psb-block psb-fixed psb-z-20 lg:psb-z-auto psb-w-80 lg:psb-w-60 psb-text-base lg:psb-text-sm psb-h-screen psb-flex psb-flex-col psb-flex-grow psb-bg-slate-50 dark:psb-bg-slate-800 lg:psb-pt-20 psb-pb-32 psb-px-4 psb-overflow-y-auto"
     >
-      <.fa_icon
-        style={:regular}
-        name="xmark"
-        phx-click={JS.dispatch("psb:close-sidebar")}
-        plan={@fa_plan}
-        class="psb fa-lg psb-block lg:psb-hidden psb-absolute psb-right-6 psb-top-6"
-      />
+      <span id="close-sidebar-icon" phx-update="ignore">
+        <.fa_icon
+          style={:regular}
+          name="xmark"
+          phx-click={JS.dispatch("psb:close-sidebar")}
+          plan={@fa_plan}
+          class="psb fa-lg psb-block lg:psb-hidden psb-absolute psb-right-6 psb-top-6 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 psb-cursor-pointer"
+        />
+      </span>
 
-      <div class="psb psb-bg-white psb-relative psb-pointer-events-auto psb-mb-4">
+      <div class="psb psb-bg-white dark:psb-bg-slate-900 psb-relative psb-pointer-events-auto psb-mb-4">
         <button
           id="search-button"
           phx-click={JS.dispatch("psb:open-search")}
-          class="psb psb-hidden psb-w-full lg:psb-flex psb-items-center psb-text-sm psb-leading-6 psb-text-slate-400 psb-rounded-md psb-border psb-border-1 psb-border-slate-100 hover:psb-border-slate-200 psb-py-1.5 psb-pl-2 psb-pr-3"
+          class="psb psb-hidden psb-w-full lg:psb-flex psb-items-center psb-text-sm psb-leading-6 psb-text-slate-400 psb-rounded-md psb-border psb-border-1 psb-border-slate-100 dark:psb-border-slate-600 hover:psb-border-slate-200 psb-py-1.5 psb-pl-2 psb-pr-3"
         >
           <.fa_icon
             style={:light}
@@ -121,7 +123,7 @@ defmodule PhoenixStorybook.Sidebar do
               <% folder_path = Path.join(@root_path, path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div
-                class="psb psb-flex psb-items-center psb-py-3 lg:psb-py-1.5 -psb-ml-2 psb-group psb-cursor-pointer psb-group hover:psb-text-indigo-600"
+                class="psb psb-flex psb-items-center psb-py-3 lg:psb-py-1.5 -psb-ml-2 psb-group psb-cursor-pointer psb-group hover:psb-text-indigo-600 dark:hover:psb-text-sky-400"
                 phx-click={click_action(open_folder?)}
                 phx-target={@myself}
                 phx-value-path={folder_path}
@@ -137,12 +139,12 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if folder_icon do %>
                   <.user_icon
                     icon={folder_icon}
-                    class="fa-fw psb-pr-1.5 group-hover:psb-text-indigo-600"
+                    class="fa-fw psb-pr-1.5 group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
 
-                <span class="psb group-hover:psb-text-indigo-600">
+                <span class="psb group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400">
                   <%= name %>
                 </span>
               </div>
@@ -162,13 +164,13 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if icon do %>
                   <.user_icon
                     icon={icon}
-                    class="fa-fw -psb-ml-1 psb-pr-1.5 group-hover:psb-text-indigo-600"
+                    class="fa-fw -psb-ml-1 psb-pr-1.5 group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
                 <.link
                   patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
-                  class="psb group-hover:psb-text-indigo-600"
+                  class="psb group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
                 >
                   <%= name %>
                 </.link>
@@ -186,9 +188,11 @@ defmodule PhoenixStorybook.Sidebar do
       "psb psb-flex psb-items-center -psb-ml-[12px] psb-block psb-border-l psb-py-2 lg:psb-py-1 psb-pl-4 hover:psb-border-indigo-600 hover:psb-text-indigo-600 hover:psb-border-l-1.5 psb-group"
 
     if current_path == story_path do
-      story_class <> " psb-font-bold psb-border-indigo-600 psb-text-indigo-700 psb-border-l-1.5"
+      story_class <>
+        " psb-font-bold psb-border-indigo-600 dark:psb-border-sky-400 psb-text-indigo-700 dark:psb-text-sky-400 psb-border-l-1.5"
     else
-      story_class <> " psb-border-slate-200 psb-text-slate-700"
+      story_class <>
+        " psb-border-slate-200 dark:psb-border-slate-500 psb-text-slate-700 dark:psb-text-slate-400"
     end
   end
 

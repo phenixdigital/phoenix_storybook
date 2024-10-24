@@ -21,7 +21,7 @@ defmodule PhoenixStorybook.LayoutView do
         <.fa_icon
           style={:thin}
           name="angle-right"
-          class="psb-px-2 psb-text-slate-500"
+          class="psb-px-2 psb-text-slate-500 dark:psb-text-slate-300"
           plan={@fa_plan}
         />
       </:separator>
@@ -171,6 +171,20 @@ defmodule PhoenixStorybook.LayoutView do
       nil -> ""
       {_, opts} -> Keyword.get(opts, :dropdown_class)
     end
+  end
+
+  defp color_mode?(socket) do
+    backend_module = backend_module(socket)
+    backend_module.config(:color_mode, false)
+  end
+
+  defp color_mode_icon("light"), do: "brightness"
+  defp color_mode_icon("dark"), do: "moon"
+  defp color_mode_icon(_), do: "circle-half-stroke"
+
+  defp color_mode_sandbox_dark_class(conn) do
+    backend_module = backend_module(conn)
+    backend_module.config(:color_mode_sandbox_dark_class, "dark")
   end
 
   defp show_dropdown_transition do

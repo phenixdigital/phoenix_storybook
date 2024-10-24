@@ -1,5 +1,6 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
+import { ColorModeHook } from "./lib/color_mode_hook";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -18,7 +19,7 @@ let csrfToken = window.parent.document
   ?.getAttribute("content");
 
 let liveSocket = new LiveSocket(socketPath, Socket, {
-  hooks: { ...window.storybook.Hooks },
+  hooks: { ...window.storybook.Hooks, ColorModeHook },
   uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
     return {
