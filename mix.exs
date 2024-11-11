@@ -51,7 +51,7 @@ defmodule PhoenixStorybook.MixProject do
       {:phoenix_live_view, "> 0.18.7"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
-      {:makeup_eex, "~> 0.1.0"},
+      {:makeup_eex, "~> 1.0.0"},
       {:heroicons, "~> 0.5", optional: true},
       {:jason, "~> 1.3", optional: true},
       {:earmark, "~> 1.4"},
