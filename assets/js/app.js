@@ -21,6 +21,9 @@ let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");
 
+const selectedColorMode = ColorModeHook.selectedColorMode();
+const actualColorMode = ColorModeHook.actualColorMode(selectedColorMode);
+
 let liveSocket = new LiveSocket(socketPath, Socket, {
   hooks: {
     ...window.storybook.Hooks,
@@ -34,7 +37,8 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
     return {
       _csrf_token: csrfToken,
       extra: window.storybook.Params,
-      color_mode: localStorage.getItem("psb_color_mode") || "system",
+      selected_color_mode: selectedColorMode,
+      color_mode: actualColorMode,
     };
   },
   ...window.storybook.LiveSocketOptions,

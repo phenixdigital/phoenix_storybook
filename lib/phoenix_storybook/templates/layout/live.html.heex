@@ -50,8 +50,7 @@
                 <a
                   :for={mode <- ~w(light dark system)}
                   phx-click={
-                    JS.push("psb-set-color-mode", value: %{mode: mode})
-                    |> JS.dispatch("psb:set-color-mode",
+                    JS.dispatch("psb:set-color-mode",
                       to: "#psb-colormode-dropdown",
                       detail: %{mode: mode}
                     )
@@ -62,7 +61,7 @@
                   }
                   class="psb psb-text-gray-700 dark:psb-text-slate-300 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
                 >
-                  <%= if @color_mode == mode do %>
+                  <%= if @selected_color_mode == mode do %>
                     <span class="psb psb-text-indigo-600 dark:psb-text-sky-400">
                       <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
                       <.fa_icon

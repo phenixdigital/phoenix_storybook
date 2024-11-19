@@ -32,9 +32,18 @@ defmodule PhoenixStorybook.StoryLive do
        playground_preview_pid: nil,
        playground_topic: playground_topic,
        fa_plan: backend_module.config(:font_awesome_plan, :free),
+       selected_color_mode: get_selected_color_mode(socket),
        color_mode: get_color_mode(socket)
      )
      |> assign_color_mode_class()}
+  end
+
+  defp get_selected_color_mode(socket) do
+    if connected?(socket) do
+      socket |> get_connect_params() |> Map.get("selected_color_mode")
+    else
+      nil
+    end
   end
 
   defp get_color_mode(socket) do
@@ -706,7 +715,11 @@ defmodule PhoenixStorybook.StoryLive do
     {:noreply, assign(socket, :variation_extra_assigns, variation_extra_assigns)}
   end
 
-  def handle_event("psb-set-color-mode", %{"mode" => mode}, socket) do
+  def handle_event(
+        "psb-set-color-mode",
+        %{"selected_mode" => selected_mode, "mode" => mode},
+        socket
+      ) do
     PubSub.broadcast!(
       PhoenixStorybook.PubSub,
       socket.assigns.playground_topic,
@@ -715,6 +728,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     {:noreply,
      socket
+     |> assign(:selected_color_mode, selected_mode)
      |> assign(:color_mode, mode)
      |> assign_color_mode_class()}
   end
