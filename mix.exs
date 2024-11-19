@@ -1,7 +1,7 @@
 defmodule PhoenixStorybook.MixProject do
   use Mix.Project
 
-  @version "0.6.4"
+  @version "0.7.0"
 
   def project do
     [
@@ -77,6 +77,7 @@ defmodule PhoenixStorybook.MixProject do
 
   defp extras do
     [
+      "guides/color_modes.md",
       "guides/components.md",
       "guides/icons.md",
       "guides/sandboxing.md",

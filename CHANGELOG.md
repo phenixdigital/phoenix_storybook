@@ -8,6 +8,10 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
+## v0.7.0 (2024-11-19)
+
+- **feature**: [support for dark mode](https://github.com/phenixdigital/phoenix_storybook/pull/425)
+
 ## v0.6.4 (2024-09-03)
 
 - **improvement**: [:compilation_debug config option](https://github.com/phenixdigital/phoenix_storybook/pull/496) was added in `storybook.ex` to show/hide story compilation logs
