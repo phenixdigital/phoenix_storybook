@@ -8,6 +8,10 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
+## v0.7.1 (not released)
+
+- **bugfix**: fixed color mode switch not applying immediately on Safari
+
 ## v0.7.0 (2024-11-19)
 
 - **feature**: [support for dark mode](https://github.com/phenixdigital/phoenix_storybook/pull/425)
