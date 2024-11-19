@@ -23,7 +23,7 @@ defmodule PhoenixStorybook.Search do
   end
 
   def handle_event("navigate", %{"path" => path}, socket) do
-    {:noreply, push_navigate(socket, to: path)}
+    {:noreply, push_patch(socket, to: path)}
   end
 
   def handle_event("search", %{"search" => %{"input" => ""}}, socket) do

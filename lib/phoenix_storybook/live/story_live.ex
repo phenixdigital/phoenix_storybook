@@ -631,6 +631,10 @@ defmodule PhoenixStorybook.StoryLive do
     |> Phoenix.HTML.raw()
   end
 
+  defp iframe_id(story, variation, nil) do
+    "iframe-#{story_id(story)}-variation-#{variation.id}"
+  end
+
   defp iframe_id(story, variation, color_mode) do
     "iframe-#{story_id(story)}-variation-#{variation.id}-#{color_mode}"
   end
