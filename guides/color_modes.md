@@ -1,19 +1,19 @@
 # Color modes
 
-The storybook can support color modes: _dark_, _light_ and _system_.
+The storybook supports three color modes: _dark_, _light_ and _system_.
 
-- The storybook style itself is styled based on the selected color mode
-- Your components will be wrapped in a div with a custom dark class.
+- The Storybook's styling adapts based on the selected color mode.
+- Your components are wrapped in a `<div>` with a custom dark class.
 
-The different modes are handled as such:
+The different modes are handled as follows:
 
-- when `dark`, the `dark` class (or custom dark class) is added on your components sandbox
-- when `light`, no class is set
-- when `system`, it will add the `dark` class if your system prefers dark (cf. `prefers-color-scheme`)
+- `dark`: the `dark` class (or custom dark class) is applied to your component's sandbox
+- `light`: no class is applied
+- `system`: The `dark` class is added if your system prefers dark mode (as determined by the `prefers-color-scheme` media query).
 
 ## Setup
 
-First you need enable `color_mode` support.
+To enable color mode support, you need to configure it in your Storybook setup:
 
 ```elixir
 use PhoenixStorybook,
@@ -21,16 +21,16 @@ use PhoenixStorybook,
   color_mode: true
 ```
 
-This will add a new color theme picker in the storybook header. At this time you should be able
-to render the storybook with the new mode.
+This configuration adds a color theme picker to the Storybook header, allowing you to render the Storybook with the selected mode.
 
 ## Component rendering
 
-Whenever a component of yours is rendered in the storybook, it's wrapped under a sandbox element (read [sandboxing guide](sandboxing.md))
+When your components are rendered in Storybook, they are wrapped in a sandbox element (read [sandboxing guide](sandboxing.md)).
 
-If the current color_mode is dark (or system with your system being dark), then the sandbox will carry a `dark` css class. When in light mode, no class is set.
+- If the current color mode is dark (or system mode with dark preference), the sandbox will have a `dark` CSS class.
+- In light mode, no class is applied.
 
-You can customize the default dark class:
+You can customize the default dark class by specifying it in your configuration:
 
 ```elixir
 use PhoenixStorybook,
@@ -40,7 +40,7 @@ use PhoenixStorybook,
 
 ## Tailwind setup
 
-If you use Tailwind for your own components, then update your `tailwind.config.js` accordingly.
+If you use Tailwind for your components, update your `tailwind.config.js` file as follows:
 
 ```js
 module.exports = {
@@ -49,7 +49,7 @@ module.exports = {
 };
 ```
 
-A custom dark class can be used like this:
+To use a custom dark class, modify the configuration like this:
 
 ```js
 module.exports = {
@@ -58,8 +58,7 @@ module.exports = {
 };
 ```
 
-In your own application, when setting the dark mode class to your DOM, make sure it is added on
-(or under) your sandbox/important element.
+In your application, ensure that the dark mode class is applied to your DOM element, particularly on or under your sandbox element:
 
 ```html
 <html class="storybook-demo-sandbox dark">
