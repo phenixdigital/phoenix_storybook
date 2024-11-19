@@ -128,6 +128,11 @@ defmodule MyAppWeb.Storybook do
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
+    ],
+
+    # Color mode settings. Defaults to false and 'dark'.
+    color_mode: true,
+    color_mode_sandbox_dark_class: "dark",
 
     # If you want to use custom FontAwesome icons.
     font_awesome_plan: :pro, # default value is :free
@@ -140,7 +145,7 @@ defmodule MyAppWeb.Storybook do
     #   - When lazy: only .index.exs files are compiled upfront and .story.exs are compile when the
     #     matching story is loaded in UI.
     compilation_mode: :eager,
-    
+
     # If you want to see debugging logs for storybooks compilation, set this to `true`. Default: `false`
     compilation_debug: true
   ]
@@ -154,8 +159,8 @@ config :my_app, MyAppWeb.Storybook,
   content_path: "overridden/content/path"
 ```
 
-ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), on icons in the
-[icons](guides/icons.md) guide.
+ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), icons in the
+[icons](guides/icons.md) guide and color mode in the [color modes guide](guides/color_modes.md).
 
 <!-- MDOC !-->
 
