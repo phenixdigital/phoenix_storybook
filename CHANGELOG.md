@@ -8,7 +8,7 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
-## v0.7.1 (not released)
+## v0.7.1 (2024-11-19)
 
 - **bugfix**: fixed color mode switch not applying immediately on Safari
 
