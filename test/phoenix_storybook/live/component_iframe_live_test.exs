@@ -62,6 +62,18 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       view |> element("#set-status-false") |> render_click()
       assert render(view) =~ "template_component: bar / status: false"
     end
+
+    test "it renders an story with a color theme", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/component",
+          %{"variation_id" => "hello", "theme" => "default", "color_mode" => "dark"}
+        )
+
+      assert html =~ ~s|class="dark"|
+      assert html =~ "component: hello"
+    end
   end
 
   describe "playground" do
@@ -73,6 +85,18 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
           %{"variation_id" => "hello", "playground" => true}
         )
 
+      assert html =~ "component: hello"
+    end
+
+    test "it renders a playground with a color_mode", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/component",
+          %{"variation_id" => "hello", "playground" => true, "color_mode" => "dark"}
+        )
+
+      assert html =~ ~s|class="dark"|
       assert html =~ "component: hello"
     end
 

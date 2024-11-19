@@ -1,10 +1,10 @@
 /*
 This hook is meant to:
-- remember, with local storage, which color mode has been selected by user
-- toggle psb color_mode on root element (which will change colors of the storybook itself, 
+- remember, with local storage, which color mode has been selected by the user
+- toggle psb color_mode on the HTML root element (which will change colors of the storybook itself, 
 not the component's colors)
-- push to the storybook the actual color mode (when selected value is system, it will send
-dark or light depending on the browser current prefers-color-scheme)
+- push to the storybook the selected color mode, and the actual color mode (when selected value 
+is system, it will send dark or light depending on the browser current prefers-color-scheme).
 */
 
 let self;
@@ -16,7 +16,7 @@ export const ColorModeHook = {
 
     window
       .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (event) => {
+      .addEventListener("change", () => {
         const selectedMode = this.selectedColorMode();
         const actualMode = this.actualColorMode(selectedMode);
         this.pushEvent("psb-set-color-mode", {
