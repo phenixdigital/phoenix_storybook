@@ -89,14 +89,16 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
 
     test "it renders a playground with a color_mode", %{conn: conn} do
-      {:ok, _view, html} =
+      {:ok, view, _html} =
         live_with_params(
           conn,
           "/storybook/iframe/component",
           %{"variation_id" => "hello", "playground" => true, "color_mode" => "dark"}
         )
 
-      assert html =~ ~s|class="dark"|
+      html = view |> element(".psb-sandbox") |> render()
+      [class] = html |> Floki.parse_fragment!() |> Floki.attribute("class")
+      assert class |> String.split(" ") |> Enum.member?("dark")
       assert html =~ "component: hello"
     end
 

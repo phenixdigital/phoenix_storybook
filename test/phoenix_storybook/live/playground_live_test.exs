@@ -254,8 +254,9 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       |> render_hook("psb-set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
       wait_for_preview_lv(view)
-      html = view |> element("#playground-preview-live") |> render()
-      assert html =~ ~s|class="dark"|
+      html = view |> element("#playground-preview-live .psb-sandbox") |> render()
+      [component_class] = html |> Floki.parse_fragment!() |> Floki.attribute("class")
+      assert component_class |> String.split(" ") |> Enum.member?("dark")
       assert html =~ "component: hello default"
     end
   end

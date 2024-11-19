@@ -434,7 +434,6 @@ defmodule PhoenixStorybook.StoryLive do
             id={"#{anchor_id(variation)}-component"}
             class={[
               "psb psb-border dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
-              @color_mode_class,
               component_layout_class(@story)
             ]}
           >
@@ -467,12 +466,13 @@ defmodule PhoenixStorybook.StoryLive do
                 />
               <% {container_with_opts, _component_kind} -> %>
                 <div
-                  class={LayoutView.sandbox_class(@socket, container_with_opts, assigns)}
+                  class={[
+                    LayoutView.sandbox_class(@socket, container_with_opts, assigns),
+                    @color_mode_class
+                  ]}
                   {@sandbox_attributes}
                 >
-                  <div class={@color_mode_class}>
-                    <%= ComponentRenderer.render(rendering_context) %>
-                  </div>
+                  <%= ComponentRenderer.render(rendering_context) %>
                 </div>
             <% end %>
           </div>

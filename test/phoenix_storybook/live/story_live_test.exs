@@ -443,7 +443,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component")
       refute view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
 
-      component_html = view |> element("#hello-component") |> render()
+      component_html = view |> element("#hello-component .psb-sandbox") |> render()
       [component_class] = component_html |> Floki.parse_fragment!() |> Floki.attribute("class")
       refute component_class |> String.split(" ") |> Enum.member?("dark")
 
@@ -453,7 +453,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
 
-      component_html = view |> element("#hello-component") |> render()
+      component_html = view |> element("#hello-component .psb-sandbox") |> render()
       [component_class] = component_html |> Floki.parse_fragment!() |> Floki.attribute("class")
       assert component_class |> String.split(" ") |> Enum.member?("dark")
     end
