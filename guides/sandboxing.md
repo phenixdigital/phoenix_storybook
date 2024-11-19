@@ -13,7 +13,7 @@ This guide will explain:
 - how you should provide the style of your components with scoped styles.
 - how to, as a last resort, enable iframe rendering.
 
-## 1. What JS context do your components share with the storybook?
+## What JS context do your components share with the storybook?
 
 `PhoenixStorybook` runs with Phoenix LiveView and therefore requires its `LiveSocket`. This
 LiveSocket is the same used by your components: you just need to inject it with your own `Hooks`,
@@ -44,7 +44,7 @@ external scripts.
 The `Params` will be available in page stories as `connect_params` assign.
 There is currently no way to access them in component or live component stories.
 
-## 2. How is the storybook styled?
+## How is the storybook styled?
 
 `PhoenixStorybook` is using [TailwindCSS](https://tailwindcss.com) with
 [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your
@@ -56,14 +56,14 @@ Only elements with the `.psb` class are preflighted, in order to let your compon
 So unless your components use `psb` or `psb-` prefixed classes there should be no styling leak from
 the storybook to you components.
 
-## 3. How should you provide the style of your components?
+## How should you provide the style of your components?
 
 You need to inject your component's stylesheets into the storybook. Set the
 `css_path: "/assets/storybook.css"` option in `storybook.ex`. This is a remote path (not a local
 file-system path) which means this file should be served by your own application endpoint with the
 given path.
 
-The previous part (2.) was about storybook styles not leaking into your components. This part is
+The previous part was about storybook styles not leaking into your components. This part is
 about the opposite: don't accidentally mess up Storybook styling with your styles.
 
 All containers rendering your components in the storybook (`stories`, `playground`, `pages` ...)
@@ -122,7 +122,7 @@ module.exports = {
 }
 ```
 
-## 4. Enabling iframe rendering
+## Enabling iframe rendering
 
 As a last resort, if for whatever reason you cannot make your component live within the storybook,
 it is possible to enable iframe rendering, component per component.
