@@ -26,13 +26,15 @@ defmodule PhoenixStorybook.StoryLive do
     backend_module = socket.assigns.backend_module
 
     {:ok,
-     assign(socket,
+     socket
+     |> assign(
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,
        fa_plan: backend_module.config(:font_awesome_plan, :free),
        color_mode: get_color_mode(socket)
-     )}
+     )
+     |> assign_color_mode_class()}
   end
 
   defp get_color_mode(socket) do
@@ -41,6 +43,15 @@ defmodule PhoenixStorybook.StoryLive do
     else
       nil
     end
+  end
+
+  defp assign_color_mode_class(socket = %{assigns: assigns}) do
+    class =
+      if assigns.color_mode == "dark" do
+        assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+      end
+
+    assign(socket, :color_mode_class, class)
   end
 
   def handle_params(params, _uri, socket) when params == %{} do
@@ -414,6 +425,7 @@ defmodule PhoenixStorybook.StoryLive do
             id={"#{anchor_id(variation)}-component"}
             class={[
               "psb psb-border dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
+              @color_mode_class,
               component_layout_class(@story)
             ]}
           >
@@ -436,7 +448,8 @@ defmodule PhoenixStorybook.StoryLive do
                   src={
                     path_to_iframe(@socket, @root_path, @story_path,
                       variation_id: variation.id,
-                      theme: @theme
+                      theme: @theme,
+                      color_mode: @color_mode
                     )
                   }
                   height="0"
@@ -448,7 +461,9 @@ defmodule PhoenixStorybook.StoryLive do
                   class={LayoutView.sandbox_class(@socket, container_with_opts, assigns)}
                   {@sandbox_attributes}
                 >
-                  <%= ComponentRenderer.render(rendering_context) %>
+                  <div class={@color_mode_class}>
+                    <%= ComponentRenderer.render(rendering_context) %>
+                  </div>
                 </div>
             <% end %>
           </div>
@@ -579,7 +594,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     ~H"""
     <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
-      <div id="iframe-container" style={@iframe_opts[:style]} phx-hook="ColorModeHook">
+      <div id="iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
         <%= ComponentRenderer.render(@rendering_context) %>
       </div>
     <% end %>
@@ -588,7 +603,14 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp iframe_onload_js do
-    "javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+'px';}(this));"
+    """
+    javascript:(function(o){
+      o.style.height=o.contentWindow.document.body.scrollHeight+'px';
+      setTimeout(function() {
+        o.style.height=o.contentWindow.document.body.scrollHeight+'px';
+      }, 100)
+    }(this));
+    """
   end
 
   # removing Storybook's specific not useful while reading example's source code.
@@ -681,7 +703,16 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_event("psb-set-color-mode", %{"mode" => mode}, socket) do
-    {:noreply, socket |> assign(:color_mode, mode) |> push_event("set-color-mode", %{mode: mode})}
+    PubSub.broadcast!(
+      PhoenixStorybook.PubSub,
+      socket.assigns.playground_topic,
+      {:set_color_mode, mode}
+    )
+
+    {:noreply,
+     socket
+     |> assign(:color_mode, mode)
+     |> assign_color_mode_class()}
   end
 
   def handle_event(_, _, socket) do

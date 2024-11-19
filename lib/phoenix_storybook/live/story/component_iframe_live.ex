@@ -37,8 +37,10 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
            variation_id: params["variation_id"],
            variation: current_variation(story.storybook_type(), story, params),
            topic: params["topic"],
-           theme: params["theme"]
+           theme: params["theme"],
+           color_mode: params["color_mode"]
          )
+         |> assign_color_mode_class()
          |> assign_extra_assigns()}
 
       {:error, _error, exception} ->
@@ -52,6 +54,15 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   defp load_story(socket, story_param) do
     story_path = Path.join(story_param)
     socket.assigns.backend_module.load_story(story_path)
+  end
+
+  defp assign_color_mode_class(socket = %{assigns: assigns}) do
+    class =
+      if assigns.color_mode == "dark" do
+        assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+      end
+
+    assign(socket, :color_mode_class, class)
   end
 
   defp assign_extra_assigns(socket) do
@@ -95,13 +106,14 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
             "story" => @story,
             "variation_id" => @variation_id,
             "theme" => @theme,
+            "color_mode" => @color_mode,
             "topic" => @topic,
             "backend_module" => @backend_module
           },
           container: {:div, style: "height: 100vh; width: 100wh;"}
         ) %>
       <% else %>
-        <div {@iframe_opts}>
+        <div {@iframe_opts} class={@color_mode_class}>
           <%= ComponentRenderer.render(@context) %>
         </div>
       <% end %>

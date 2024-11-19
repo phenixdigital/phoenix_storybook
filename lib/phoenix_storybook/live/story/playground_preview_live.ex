@@ -33,9 +33,20 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
        story: story,
        topic: session["topic"],
        theme: session["theme"],
+       color_mode: session["color_mode"],
        backend_module: session["backend_module"]
      )
+     |> assign_color_mode_class()
      |> assign_variations_attributes(variation_or_group), layout: false}
+  end
+
+  defp assign_color_mode_class(socket = %{assigns: assigns}) do
+    class =
+      if assigns.color_mode == "dark" do
+        assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+      end
+
+    assign(socket, :color_mode_class, class)
   end
 
   defp assign_variations_attributes(socket, variation_or_group) do
@@ -93,7 +104,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       )
 
     ~H"""
-    <div id="playground-preview-live" style="width: 100%; height: 100%;" phx-hook="ColorModeHook">
+    <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div
         id={"sandbox-#{@counter}"}
         class={
@@ -103,9 +114,12 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
             assigns
           )
         }
+        ,
         style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;"
       >
-        <%= ComponentRenderer.render(@context) %>
+        <div class={@color_mode_class}>
+          <%= ComponentRenderer.render(@context) %>
+        </div>
       </div>
     </div>
     """
@@ -146,6 +160,14 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
      |> inc_counter()
      |> assign(theme: theme)
      |> assign(variations_attributes: variation_attributes)}
+  end
+
+  def handle_info({:set_color_mode, color_mode}, socket) do
+    {:noreply,
+     socket
+     |> inc_counter()
+     |> assign(color_mode: color_mode)
+     |> assign_color_mode_class()}
   end
 
   def handle_info({:set_variation, variation}, socket) do

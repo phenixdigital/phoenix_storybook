@@ -50,7 +50,11 @@
                 <a
                   :for={mode <- ~w(light dark system)}
                   phx-click={
-                    JS.push("psb-set-color-mode", value: %{"mode" => mode})
+                    JS.push("psb-set-color-mode", value: %{mode: mode})
+                    |> JS.dispatch("psb:set-color-mode",
+                      to: "#psb-colormode-dropdown",
+                      detail: %{mode: mode}
+                    )
                     |> JS.hide(
                       to: "#psb-colormode-dropdown",
                       transition: hide_dropdown_transition()

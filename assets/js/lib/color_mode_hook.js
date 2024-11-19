@@ -1,8 +1,6 @@
 export const ColorModeHook = {
   mounted() {
-    console.log("mounted");
-    window.addEventListener("phx:set-color-mode", onSetColorMode);
-    window.addEventListener("phx:page-loading-stop", onPhxNavigation);
+    window.addEventListener("psb:set-color-mode", onSetColorMode);
 
     window
       .matchMedia("(prefers-color-scheme: dark)")
@@ -15,8 +13,7 @@ export const ColorModeHook = {
   },
 
   destroyed() {
-    window.removeEventListener("phx:set-color-mode", onSetColorMode);
-    window.removeEventListener("phx:page-loading-stop", onPhxNavigation);
+    window.removeEventListener("psb:set-color-mode", onSetColorMode);
   },
 };
 
@@ -24,15 +21,9 @@ function onSetColorMode(e) {
   toggleColorModeClass(e.detail.mode);
 }
 
-function onPhxNavigation(e) {
-  const mode = localStorage.getItem("psb_color_mode");
-  toggleColorModeClass(mode);
-}
-
 function toggleColorModeClass(mode) {
   mode = mode || "system";
   localStorage.setItem("psb_color_mode", mode);
-  const sandboxDarkClass = document.documentElement.dataset.sandboxDarkClass;
 
   if (
     mode === "dark" ||
@@ -40,15 +31,8 @@ function toggleColorModeClass(mode) {
       window.matchMedia("(prefers-color-scheme: dark)").matches)
   ) {
     document.documentElement.classList.add("psb-dark");
-    Array.from(document.getElementsByClassName("psb-sandbox")).forEach((e) => {
-      console.log(e);
-      e.classList.add(sandboxDarkClass);
-    });
   } else {
     document.documentElement.classList.remove("psb-dark");
-    Array.from(document.getElementsByClassName("psb-sandbox")).forEach((e) => {
-      e.classList.remove(sandboxDarkClass);
-    });
   }
 }
 

@@ -182,11 +182,6 @@ defmodule PhoenixStorybook.LayoutView do
   defp color_mode_icon("dark"), do: "moon"
   defp color_mode_icon(_), do: "circle-half-stroke"
 
-  defp color_mode_sandbox_dark_class(conn) do
-    backend_module = backend_module(conn)
-    backend_module.config(:color_mode_sandbox_dark_class, "dark")
-  end
-
   defp show_dropdown_transition do
     {"psb-ease-out psb-duration-200", "psb-opacity-0 psb-scale-95",
      "psb-opacity-100 psb-scale-100"}
