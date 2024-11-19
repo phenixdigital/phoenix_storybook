@@ -7,7 +7,7 @@ locals_without_parens = [
   plugins: [Phoenix.LiveView.HTMLFormatter],
   inputs: [
     "*.{ex,exs}",
-    "{config,lib,priv}/**/*.{ex,exs,eex}",
+    "{config,lib,priv}/**/*.{ex,exs,eex,heex}",
     "test/phoenix_storybook/**/*.{ex,exs}",
     "test/*.{ex,exs}"
   ],

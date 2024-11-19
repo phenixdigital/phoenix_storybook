@@ -241,6 +241,26 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     end
   end
 
+  describe "color mode switch" do
+    test "component preview is updated as a different color mode is selected", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+
+      html = view |> element("#playground-preview-live") |> render()
+      refute html =~ ~s|class="dark"|
+      assert html =~ "component: hello default"
+
+      view
+      |> element("#psb-colormode-dropdown")
+      |> render_hook("psb-set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
+
+      wait_for_preview_lv(view)
+      html = view |> element("#playground-preview-live .psb-sandbox") |> render()
+      [component_class] = html |> Floki.parse_fragment!() |> Floki.attribute("class")
+      assert component_class |> String.split(" ") |> Enum.member?("dark")
+      assert html =~ "component: hello default"
+    end
+  end
+
   describe "playground event logs" do
     test "it shows live_view type event log", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/event/event_component?tab=playground")

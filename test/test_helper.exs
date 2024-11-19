@@ -41,7 +41,8 @@ defmodule PhoenixStorybook.TestStorybook do
     themes_strategies: [
       sandbox_class: "theme-prefix",
       assign: :theme
-    ]
+    ],
+    color_mode: true
 end
 
 defmodule PhoenixStorybook.TestRouter do
