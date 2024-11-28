@@ -18,6 +18,10 @@
 
 <a href='https://ko-fi.com/C0C316P9FN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
+_I'm the sole maintainer of this project and work on it in my free time. Any tips would be appreciated!_
+
+---
+
 <!-- MDOC !-->
 
 PhoenixStorybook provides a [_storybook-like_](https://storybook.js.org) UI interface for your
