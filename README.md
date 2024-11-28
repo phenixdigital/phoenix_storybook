@@ -171,6 +171,15 @@ config :my_app, MyAppWeb.Storybook,
 
 <!-- MDOC !-->
 
+## Storybook in production
+
+A few storybooks running in production:
+
+- [Phenix Groupe](https://storybook.phenixgroupe.com/)
+- [SaladUI](https://salad-storybook.fly.dev/)
+- [Doggo](https://woylie-doggo.fly.dev/)
+- [Tremox](https://tremorx.fly.dev/)
+
 ## Contributing
 
 We would love your PRs!
