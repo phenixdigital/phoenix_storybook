@@ -3,7 +3,6 @@
 [![github](https://github.com/phenixdigital/phoenix_storybook/actions/workflows/elixir.yml/badge.svg)](https://github.com/phenixdigital/phoenix_storybook/actions/workflows/elixir.yml)
 [![codecov](https://codecov.io/gh/phenixdigital/phoenix_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phoenix_storybook)
 [![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phoenix_storybook.svg)](https://hex.pm/packages/phoenix_storybook)
-[![GitHub sponsors](https://img.shields.io/github/sponsors/cblavier)](https://github.com/sponsors/cblavier)
 
 📚 [Documentation](https://hexdocs.pm/phoenix_storybook)
 &nbsp; - &nbsp;
@@ -14,6 +13,10 @@
 🍿 [Getting started video](https://www.youtube.com/watch?v=MTE7dLhkQ8Q)
 &nbsp; - &nbsp;
 🦊 [ElixirCasts](https://elixircasts.io/phoenix-storybook)
+
+---
+
+<a href='https://ko-fi.com/C0C316P9FN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 <!-- MDOC !-->
 
