@@ -178,7 +178,7 @@ A few storybooks running in production:
 - [Phenix Groupe](https://storybook.phenixgroupe.com/)
 - [SaladUI](https://salad-storybook.fly.dev/)
 - [Doggo](https://woylie-doggo.fly.dev/)
-- [Tremox](https://tremorx.fly.dev/)
+- [Tremorx](https://tremorx.fly.dev/)
 
 ## Contributing
 
