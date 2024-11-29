@@ -2,7 +2,7 @@ defmodule PhoenixStorybook.Components.Icon do
   @moduledoc false
   use PhoenixStorybook.Web, :component
 
-  @type icon_provider :: :fa | :hero
+  @type icon_provider :: :fa | :hero | :local
 
   @type t ::
           {icon_provider(), String.t()}
@@ -31,7 +31,7 @@ defmodule PhoenixStorybook.Components.Icon do
   )
 
   attr(:name, :string, required: true, doc: "The name of the icon, without the fa- prefix.")
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:class, :any, default: nil, doc: "Additional CSS classes")
   attr(:class_list, :list, default: [], doc: "Additional CSS classes")
   attr(:rest, :global, doc: "Any HTML attribute")
 
@@ -59,7 +59,7 @@ defmodule PhoenixStorybook.Components.Icon do
   )
 
   attr(:name, :string, required: true, doc: "The name of the icon")
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:class, :any, default: nil, doc: "Additional CSS classes")
   attr(:class_list, :list, default: [], doc: "Additional CSS classes")
   attr(:rest, :global, doc: "Any HTML attribute")
 
@@ -81,6 +81,30 @@ defmodule PhoenixStorybook.Components.Icon do
       Please add :heroicons as a mix dependency.
       """
     end
+  end
+
+  @doc """
+  Local icons for internal phoenix_storybook usage.
+
+  ## Examples
+
+      <.local_icon name="book" class="text-blue-400"/>
+      <.local_icon name="book" style={:duotone} plan={:pro}/>
+  """
+
+  attr :class_list, :list, default: [], doc: "Additional CSS classes"
+  attr :class, :any, default: nil, doc: "Additional CSS classes"
+  attr :name, :string, required: true, doc: "The name of the icon, without the fa- prefix."
+  attr :rest, :global, doc: "Any HTML attribute"
+  attr :style, :atom, default: nil, doc: "One of the styles provided by provided icons."
+
+  def local_icon(assigns = %{name: name, style: style}) do
+    name = if style, do: "#{name}-#{style}", else: name
+    assigns = assign(assigns, :name, name)
+
+    ~H"""
+    <span class={[@name, @class, @class_list]} {@rest} />
+    """
   end
 
   @doc """
