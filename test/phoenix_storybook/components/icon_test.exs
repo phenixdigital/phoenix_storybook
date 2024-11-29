@@ -88,15 +88,15 @@ defmodule PhoenixStorybook.Components.IconTest do
   describe "user_icon/1" do
     test "fa tuple-2 form is working", %{assigns: assigns} do
       h = ~H(<.user_icon icon={{:fa, "book"}} fa_plan={:free} />)
-      assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book"></i>)
+      assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book "></i>)
     end
 
     test "fa tuple-3 form is working", %{assigns: assigns} do
       h = ~H(<.user_icon icon={{:fa, "book", :duotone}} fa_plan={:free} />)
-      assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book"></i>)
+      assert rendered_to_string(h) =~ ~s(<i class="fa-solid fa-book "></i>)
 
       h = ~H(<.user_icon icon={{:fa, "book", :duotone}} fa_plan={:pro} />)
-      assert rendered_to_string(h) =~ ~s(<i class="fa-duotone fa-book"></i>)
+      assert rendered_to_string(h) =~ ~s(<i class="fa-duotone fa-book "></i>)
     end
 
     test "fa tuple-4 form is working", %{assigns: assigns} do
@@ -128,12 +128,12 @@ defmodule PhoenixStorybook.Components.IconTest do
 
     test ":local tuple-2 icon is working", %{assigns: assigns} do
       h = ~H(<.user_icon icon={{:local, "hero-cake"}} />)
-      assert rendered_to_string(h) =~ ~s(<span class="hero-cake"></span>)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake "></span>)
     end
 
     test ":local tuple-3 icon is working", %{assigns: assigns} do
       h = ~H(<.user_icon icon={{:local, "hero-cake", :mini}} />)
-      assert rendered_to_string(h) =~ ~s(<span class="hero-cake-mini"></span>)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake-mini "></span>)
     end
 
     test ":local tuple-4 icon is working", %{assigns: assigns} do
