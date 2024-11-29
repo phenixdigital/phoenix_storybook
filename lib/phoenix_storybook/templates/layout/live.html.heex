@@ -22,17 +22,17 @@
           id="color-mode-icon"
           phx-update="ignore"
         >
-          <.color_mode_icon
+          <.user_icon
             :if={icon = Keyword.get(color_mode_icons(@socket), :light)}
             class="psb-inline-block dark:psb-hidden"
+            fa_plan={@fa_plan}
             icon={icon}
-            plan={@fa_plan}
           />
-          <.color_mode_icon
+          <.user_icon
             :if={icon = Keyword.get(color_mode_icons(@socket), :dark)}
             class="psb-hidden dark:psb-inline-block"
+            fa_plan={@fa_plan}
             icon={icon}
-            plan={@fa_plan}
           />
         </div>
 
@@ -67,12 +67,20 @@
               <%= if @selected_color_mode == to_string(mode) do %>
                 <span class="psb psb-text-indigo-600 dark:psb-text-sky-400">
                   <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
-                  <.color_mode_icon class="psb-pr-2" icon={icon} plan={@fa_plan} />
+                  <.user_icon
+                    class={["psb-pr-2", elem(icon, 0) == :fa && "fa-fw"]}
+                    icon={icon}
+                    plan={@fa_plan}
+                  />
                   <%= String.capitalize(to_string(mode)) %>
                 </span>
               <% else %>
                 <span class="psb psb-pl-6">
-                  <.color_mode_icon class="psb-pr-2" icon={icon} plan={@fa_plan} />
+                  <.user_icon
+                    class={["psb-pr-2", elem(icon, 0) == :fa && "fa-fw"]}
+                    icon={icon}
+                    plan={@fa_plan}
+                  />
                   <%= String.capitalize(to_string(mode)) %>
                 </span>
               <% end %>

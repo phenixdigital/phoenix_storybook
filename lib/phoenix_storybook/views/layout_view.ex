@@ -238,49 +238,4 @@ defmodule PhoenixStorybook.LayoutView do
     do: {:iframe, Keyword.put_new(opts, :style, @default_iframe_style)}
 
   def normalize_story_container({container, opts}), do: {container, opts}
-
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :icon, :any, required: true
-
-  attr :plan, :atom,
-    required: true,
-    values: ~w(free pro)a,
-    doc: "Free plan will make all icons render with solid style."
-
-  defp color_mode_icon(assigns = %{icon: icon}) do
-    assigns =
-      assign(assigns,
-        class_list: safe_elem(icon, 3),
-        name: safe_elem(icon, 1),
-        provider: safe_elem(icon, 0),
-        style: safe_elem(icon, 2)
-      )
-
-    ~H"""
-    <.fa_icon
-      :if={@provider == :fa}
-      class_list={@class_list}
-      class={["fa-fw", @class]}
-      name={@name}
-      plan={@fa_plan}
-      style={@style}
-    />
-    <.hero_icon
-      :if={@provider == :hero}
-      class_list={@class_list}
-      class={@class}
-      name={@name}
-      style={@style}
-    />
-    <.local_icon
-      :if={@provider == :local}
-      class_list={@class_list}
-      class={@class}
-      name={@name}
-      style={@style}
-    />
-    """
-  end
-
-  def safe_elem(tuple, idx), do: if(idx < tuple_size(tuple), do: elem(tuple, idx), else: nil)
 end
