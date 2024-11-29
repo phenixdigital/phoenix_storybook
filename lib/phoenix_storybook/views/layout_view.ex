@@ -1,5 +1,6 @@
 defmodule PhoenixStorybook.LayoutView do
   @moduledoc false
+  use Phoenix.Component
   use PhoenixStorybook.Web, :view
 
   alias Makeup.Styles.HTML.StyleMap
@@ -63,6 +64,14 @@ defmodule PhoenixStorybook.LayoutView do
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
 
   defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
+
+  defp color_mode_icons(conn_or_socket) do
+    storybook_setting(conn_or_socket, :color_mode_icons,
+      light: {:fa, "brightness", :regular},
+      dark: {:fa, "moon", :regular},
+      system: {:fa, "circle-half-stroke", :regular}
+    )
+  end
 
   defp title_prefix(conn_or_socket) do
     title(conn_or_socket) <> " - "
@@ -178,10 +187,6 @@ defmodule PhoenixStorybook.LayoutView do
     backend_module.config(:color_mode, false)
   end
 
-  defp color_mode_icon("light"), do: "brightness"
-  defp color_mode_icon("dark"), do: "moon"
-  defp color_mode_icon(_), do: "circle-half-stroke"
-
   defp show_dropdown_transition do
     {"psb-ease-out psb-duration-200", "psb-opacity-0 psb-scale-95",
      "psb-opacity-100 psb-scale-100"}
@@ -233,4 +238,49 @@ defmodule PhoenixStorybook.LayoutView do
     do: {:iframe, Keyword.put_new(opts, :style, @default_iframe_style)}
 
   def normalize_story_container({container, opts}), do: {container, opts}
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :icon, :any, required: true
+
+  attr :plan, :atom,
+    required: true,
+    values: ~w(free pro)a,
+    doc: "Free plan will make all icons render with solid style."
+
+  defp color_mode_icon(assigns = %{icon: icon}) do
+    assigns =
+      assign(assigns,
+        class_list: safe_elem(icon, 3),
+        name: safe_elem(icon, 1),
+        provider: safe_elem(icon, 0),
+        style: safe_elem(icon, 2)
+      )
+
+    ~H"""
+    <.fa_icon
+      :if={@provider == :fa}
+      class_list={@class_list}
+      class={["fa-fw", @class]}
+      name={@name}
+      plan={@fa_plan}
+      style={@style}
+    />
+    <.hero_icon
+      :if={@provider == :hero}
+      class_list={@class_list}
+      class={@class}
+      name={@name}
+      style={@style}
+    />
+    <.local_icon
+      :if={@provider == :local}
+      class_list={@class_list}
+      class={@class}
+      name={@name}
+      style={@style}
+    />
+    """
+  end
+
+  def safe_elem(tuple, idx), do: if(idx < tuple_size(tuple), do: elem(tuple, idx), else: nil)
 end
