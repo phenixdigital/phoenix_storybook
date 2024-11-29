@@ -139,12 +139,12 @@ defmodule PhoenixStorybook.Components.Icon do
 
   attr :rest, :global, doc: "Any HTML attribute"
 
-  def user_icon(assigns = %{icon: icon}) when is_tuple(icon) do
+  def user_icon(assigns = %{class: class, icon: icon}) do
     provider = safe_elem(icon, 0)
 
     assigns =
       assign(assigns,
-        class: safe_elem(icon, 3),
+        class: [safe_elem(icon, 3), class],
         name: safe_elem(icon, 1),
         provider: provider,
         style: safe_elem(icon, 2)
