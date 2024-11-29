@@ -8,6 +8,7 @@ PhoenixStorybook gives you the ability to render icons with 2 different provider
 - [FontAwesome](https://fontawesome.com) which offers a decent set of free icons and a lot of
   additional styles with paid plans
 - [HeroIcons](https://heroicons.com) wich offer hundreds of free high quality icons
+- [Local] which offers the ability to use locally defined icons within the application
 
 ## Declaring an icon
 
@@ -24,6 +25,9 @@ The two last tuple elements are optional.
 {:hero, "cake"} # for all HeroIcons
 {:hero, "cake", :outline} # same than previous one, :outline is the default style
 {:hero, "cake", :outline, "psb-w-2 psb-h-2"}
+{:local, "hero-cake"} # for custom or core-component-generated icons
+{:local, "hero-cake", :outline} # same than previous one, :outline is the default style
+{:local, "hero-cake", :outline, "psb-w-2 psb-h-2"}
 ```
 
 ## FontAwesome icons
@@ -57,6 +61,10 @@ end
 ```
 
 You can now use whichever HeroIcon icon you want, based on the library function names.
+
+## Local
+
+Use whichever icons you want, as long as they can be rendered via a span class tag. E.g., `<span class="hero-cake"></span>`
 
 ## Custom CSS
 
