@@ -56,7 +56,7 @@ defmodule PhoenixStorybook do
   defmacro __using__(opts) do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
     opts = merge_opts_and_config(opts, __CALLER__.module)
-    {color_mode_icons, opts} = Keyword.pop(opts, :color_mode_icons)
+    {color_mode_icons, opts} = Keyword.pop(opts, :color_mode_icons, [])
     content_tree = content_tree(opts)
 
     [
