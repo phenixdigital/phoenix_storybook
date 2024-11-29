@@ -64,24 +64,24 @@ defmodule PhoenixStorybook.Components.IconTest do
   describe "local_icon/1" do
     test "a solid icon will render properly", %{assigns: assigns} do
       h = ~H(<.local_icon name="hero-cake" />)
-      assert rendered_to_string(h) =~ ~s(<span class="hero-cake "></span>)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake"></span>)
     end
 
     test "a solid icon with custom style will render properly", %{assigns: assigns} do
       normal = ~H(<.local_icon name="hero-cake" />)
       mini = ~H(<.local_icon name="hero-cake" style={:mini} />)
-      assert rendered_to_string(mini) =~ ~s(<span class="hero-cake-mini "></span>)
+      assert rendered_to_string(mini) =~ ~s(<span class="hero-cake-mini"></span>)
       assert rendered_to_string(mini) != assert(rendered_to_string(normal))
     end
 
     test "icon CSS class can be extended", %{assigns: assigns} do
       h = ~H(<.local_icon name="hero-cake" class="w-2 h-2" />)
-      assert rendered_to_string(h) =~ ~s(<span class="hero-cake w-2 h-2 "></span>)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake w-2 h-2"></span>)
     end
 
     test "additional HTML attributes can be passed", %{assigns: assigns} do
       h = ~H(<.local_icon name="hero-cake" title="A cake" />)
-      assert rendered_to_string(h) =~ ~s(<span class="hero-cake " title="A cake"></span>)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake" title="A cake"></span>)
     end
   end
 
@@ -124,6 +124,29 @@ defmodule PhoenixStorybook.Components.IconTest do
       h = ~H(<.user_icon icon={{:hero, "cake", :mini, "w-2 h-2"}} title="Cake" />)
       assert rendered_to_string(h) =~ ~r{<svg.*title="Cake".*</svg>}s
       assert rendered_to_string(h) =~ ~r{<svg.*class="w-2 h-2".*</svg>}s
+    end
+
+    test ":local tuple-2 icon is working", %{assigns: assigns} do
+      h = ~H(<.user_icon icon={{:local, "hero-cake"}} />)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake"></span>)
+    end
+
+    test ":local tuple-3 icon is working", %{assigns: assigns} do
+      h = ~H(<.user_icon icon={{:local, "hero-cake", :mini}} />)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake-mini"></span>)
+    end
+
+    test ":local tuple-4 icon is working", %{assigns: assigns} do
+      h = ~H(<.user_icon icon={{:local, "hero-cake", :mini, "w-2 h-2"}} />)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake-mini w-2 h-2"></span>)
+
+      h = ~H(<.user_icon icon={{:local, "hero-cake", :mini, "w-2 h-2"}} title="Cake" />)
+
+      assert rendered_to_string(h) =~
+               ~s(<span class="hero-cake-mini w-2 h-2" title="Cake"></span>)
+
+      assert rendered_to_string(h) =~
+               ~s(<span class="hero-cake-mini w-2 h-2" title="Cake"></span>)
     end
   end
 end

@@ -92,7 +92,6 @@ defmodule PhoenixStorybook.Components.Icon do
       <.local_icon name="book" style={:duotone} plan={:pro}/>
   """
 
-  attr :class_list, :list, default: [], doc: "Additional CSS classes"
   attr :class, :any, default: nil, doc: "Additional CSS classes"
   attr :name, :string, required: true, doc: "The name of the icon, without the fa- prefix."
   attr :rest, :global, doc: "Any HTML attribute"
@@ -103,7 +102,7 @@ defmodule PhoenixStorybook.Components.Icon do
     assigns = assign(assigns, :name, name)
 
     ~H"""
-    <span class={[@name, @class, @class_list]} {@rest} />
+    <span class={[@name, @class]} {@rest} />
     """
   end
 
@@ -121,54 +120,42 @@ defmodule PhoenixStorybook.Components.Icon do
       <.user_icon icon={:hero, "cake", :mini, "w-2 h-2"} class="text-indigo-400"/>
   """
 
-  attr(:icon, :any,
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+
+  attr :fa_plan, :atom,
+    doc: "Free plan will make all icons render with solid style.",
     required: true,
+    values: ~w(free pro)a
+
+  attr :icon, :any,
     doc: "Icon config, a tuple of 2 to 4 items: {provider, icon, style, classes}",
     examples: [
       {:fa, "book"},
       {:fa, "book", :thin},
       {:fa, "book", :duotone, "fa-fw"},
       {:hero, "cake", :solid, "w-2 h-2"}
-    ]
-  )
+    ],
+    required: true
 
-  attr(:fa_plan, :atom,
-    required: true,
-    values: ~w(free pro)a,
-    doc: "Free plan will make all icons render with solid style."
-  )
+  attr :rest, :global, doc: "Any HTML attribute"
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "Any HTML attribute")
+  def user_icon(assigns = %{icon: icon}) when is_tuple(icon) do
+    provider = safe_elem(icon, 0)
 
-  def user_icon(assigns = %{icon: {:fa, name}}) do
-    assigns = assign(assigns, name: name)
-    ~H(<.fa_icon name={@name} plan={@fa_plan} class={@class} {@rest} />)
+    assigns =
+      assign(assigns,
+        class: safe_elem(icon, 3),
+        name: safe_elem(icon, 1),
+        provider: provider,
+        style: safe_elem(icon, 2)
+      )
+
+    case provider do
+      :fa -> ~H(<.fa_icon class={@class} name={@name} plan={@fa_plan} style={@style} {@rest} />)
+      :hero -> ~H(<.hero_icon class={@class} name={@name} style={@style} {@rest} />)
+      :local -> ~H(<.local_icon class={@class} name={@name} style={@style} {@rest} />)
+    end
   end
 
-  def user_icon(assigns = %{icon: {:fa, name, style}}) do
-    assigns = assign(assigns, name: name, style: style)
-    ~H(<.fa_icon name={@name} style={@style} plan={@fa_plan} class={@class} {@rest} />)
-  end
-
-  def user_icon(assigns = %{icon: {:fa, name, style, class}}) do
-    assigns = assign(assigns, name: name, style: style, icon_class: class)
-
-    ~H(<.fa_icon name={@name} style={@style} plan={@fa_plan} class_list={[@icon_class, @class]} {@rest} />)
-  end
-
-  def user_icon(assigns = %{icon: {:hero, name}}) do
-    assigns = assign(assigns, name: name)
-    ~H(<.hero_icon name={@name} class={@class} {@rest} />)
-  end
-
-  def user_icon(assigns = %{icon: {:hero, name, style}}) do
-    assigns = assign(assigns, name: name, style: style)
-    ~H(<.hero_icon name={@name} style={@style} class={@class} {@rest} />)
-  end
-
-  def user_icon(assigns = %{icon: {:hero, name, style, class}}) do
-    assigns = assign(assigns, name: name, style: style, icon_class: class)
-    ~H(<.hero_icon name={@name} style={@style} class_list={[@icon_class, @class]} {@rest} />)
-  end
+  defp safe_elem(tuple, idx), do: if(idx < tuple_size(tuple), do: elem(tuple, idx), else: nil)
 end
