@@ -61,6 +61,30 @@ defmodule PhoenixStorybook.Components.IconTest do
     end
   end
 
+  describe "local_icon/1" do
+    test "a solid icon will render properly", %{assigns: assigns} do
+      h = ~H(<.local_icon name="hero-cake" />)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake "></span>)
+    end
+
+    test "a solid icon with custom style will render properly", %{assigns: assigns} do
+      normal = ~H(<.local_icon name="hero-cake" />)
+      mini = ~H(<.local_icon name="hero-cake" style={:mini} />)
+      assert rendered_to_string(mini) =~ ~s(<span class="hero-cake-mini "></span>)
+      assert rendered_to_string(mini) != assert(rendered_to_string(normal))
+    end
+
+    test "icon CSS class can be extended", %{assigns: assigns} do
+      h = ~H(<.local_icon name="hero-cake" class="w-2 h-2" />)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake w-2 h-2 "></span>)
+    end
+
+    test "additional HTML attributes can be passed", %{assigns: assigns} do
+      h = ~H(<.local_icon name="hero-cake" title="A cake" />)
+      assert rendered_to_string(h) =~ ~s(<span class="hero-cake " title="A cake"></span>)
+    end
+  end
+
   describe "user_icon/1" do
     test "fa tuple-2 form is working", %{assigns: assigns} do
       h = ~H(<.user_icon icon={{:fa, "book"}} fa_plan={:free} />)
