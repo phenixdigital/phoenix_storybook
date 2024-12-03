@@ -26,8 +26,8 @@ The two last tuple elements are optional.
 {:hero, "cake", :outline} # same than previous one, :outline is the default style
 {:hero, "cake", :outline, "psb-w-2 psb-h-2"}
 {:local, "hero-cake"} # for custom or core-component-generated icons
-{:local, "hero-cake", :outline} # same than previous one, :outline is the default style
-{:local, "hero-cake", :outline, "psb-w-2 psb-h-2"}
+{:local, "hero-cake", nil} # same than previous one, :outline is the default style
+{:local, "hero-cake", nil, "psb-w-2 psb-h-2"}
 ```
 
 ## FontAwesome icons

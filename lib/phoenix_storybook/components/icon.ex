@@ -96,12 +96,8 @@ defmodule PhoenixStorybook.Components.Icon do
   attr :class, :any, default: nil, doc: "Additional CSS classes"
   attr :name, :string, required: true, doc: "The name of the icon, without the fa- prefix."
   attr :rest, :global, doc: "Any HTML attribute"
-  attr :style, :atom, default: nil, doc: "One of the styles provided by provided icons."
 
-  def local_icon(assigns = %{name: name, style: style}) do
-    name = if style, do: "#{name}-#{style}", else: name
-    assigns = assign(assigns, :name, name)
-
+  def local_icon(assigns) do
     ~H"""
     <span class={[@name, @class]} {@rest} />
     """
@@ -158,7 +154,7 @@ defmodule PhoenixStorybook.Components.Icon do
     case provider do
       :fa -> ~H(<.fa_icon class={@class} name={@name} plan={@fa_plan} style={@style} {@rest} />)
       :hero -> ~H(<.hero_icon class={@class} name={@name} style={@style} {@rest} />)
-      :local -> ~H(<.local_icon class={@class} name={@name} style={@style} {@rest} />)
+      :local -> ~H(<.local_icon class={@class} name={@name} {@rest} />)
     end
   end
 
