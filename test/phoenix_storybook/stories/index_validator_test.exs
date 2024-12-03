@@ -32,7 +32,7 @@ defmodule PhoenixStorybook.Stories.IndexValidatorTest do
   end
 
   test "with bad entry icon it will raise", %{path: path} do
-    assert_raise CompileError, ~r/icon provider must be either :fa, :hero or :local/, fn ->
+    assert_raise CompileError, ~r/icon provider must be either :fa, :hero, or :local/, fn ->
       Code.compile_file("bad_entry_icon_provider.index.exs", path)
     end
   end
