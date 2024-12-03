@@ -55,15 +55,14 @@ defmodule PhoenixStorybook do
   @doc false
   defmacro __using__(opts) do
     {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
-    opts = merge_opts_and_config(opts, __CALLER__.module)
-    {color_mode_icons, opts} = Keyword.pop(opts, :color_mode_icons, [])
+    opts = opts |> merge_opts_and_config(__CALLER__.module) |> Macro.escape()
     content_tree = content_tree(opts)
 
     [
       main_quote(opts),
       recompilation_quotes(opts),
       story_compilation_quotes(opts, content_tree),
-      config_quotes(opts, color_mode_icons),
+      config_quotes(opts),
       stories_quotes(opts, content_tree)
     ]
   end
@@ -213,14 +212,11 @@ defmodule PhoenixStorybook do
   end
 
   @doc false
-  defp config_quotes(opts, color_mode_icons) do
+  defp config_quotes(opts) do
     quote do
       @impl PhoenixStorybook.BackendBehaviour
       def config(key, default \\ nil) do
-        case key do
-          :color_mode_icons -> unquote(Macro.escape(color_mode_icons))
-          _ -> Keyword.get(unquote(opts), key, default)
-        end
+        Keyword.get(unquote(opts), key, default)
       end
     end
   end
