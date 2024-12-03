@@ -65,8 +65,8 @@ defmodule PhoenixStorybook.ValidationHelpers do
   end
 
   defp validate_icon_provider!(file, term) do
-    unless elem(term, 0) in [:fa, :hero],
-      do: compile_error!(file, "icon provider must be either :fa or :hero")
+    unless elem(term, 0) in [:fa, :hero, :local],
+      do: compile_error!(file, "icon provider must be either :fa, :hero, or :local")
   end
 
   def match_attr_type?(nil, _type), do: true
