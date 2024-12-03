@@ -125,21 +125,8 @@ defmodule PhoenixStorybook.Components.IconTest do
     end
 
     test ":local tuple-3 icon is working", %{assigns: assigns} do
-      h = ~H(<.user_icon icon={{:local, "hero-cake-mini", nil}} />)
-      assert rendered_to_string(h) =~ ~s(<span class="hero-cake-mini "></span>)
-    end
-
-    test ":local tuple-4 icon is working", %{assigns: assigns} do
-      h = ~H(<.user_icon icon={{:local, "hero-cake-mini", nil, "w-2 h-2"}} />)
+      h = ~H(<.user_icon icon={{:local, "hero-cake-mini", "w-2 h-2"}} />)
       assert rendered_to_string(h) =~ ~s(<span class="hero-cake-mini w-2 h-2"></span>)
-
-      h = ~H(<.user_icon icon={{:local, "hero-cake-mini", nil, "w-2 h-2"}} title="Cake" />)
-
-      assert rendered_to_string(h) =~
-               ~s(<span class="hero-cake-mini w-2 h-2" title="Cake"></span>)
-
-      assert rendered_to_string(h) =~
-               ~s(<span class="hero-cake-mini w-2 h-2" title="Cake"></span>)
     end
   end
 end

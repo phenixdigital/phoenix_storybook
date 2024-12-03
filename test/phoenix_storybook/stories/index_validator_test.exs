@@ -36,4 +36,16 @@ defmodule PhoenixStorybook.Stories.IndexValidatorTest do
       Code.compile_file("bad_entry_icon_provider.index.exs", path)
     end
   end
+
+  test "with bad local icon class it will raise", %{path: path} do
+    assert_raise CompileError, ~r/icon class must be a binary/, fn ->
+      Code.compile_file("bad_local_icon_class.index.exs", path)
+    end
+  end
+
+  test "with bad local icon tuple it will raise", %{path: path} do
+    assert_raise CompileError, ~r/local icons only support 2 or 3 elem tuples/, fn ->
+      Code.compile_file("bad_local_icon_tuple.index.exs", path)
+    end
+  end
 end

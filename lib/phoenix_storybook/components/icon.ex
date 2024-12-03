@@ -116,7 +116,7 @@ defmodule PhoenixStorybook.Components.Icon do
       <.user_icon icon={:hero, "cake", :mini}/>
       <.user_icon icon={:hero, "cake", :mini, "w-2 h-2"} class="text-indigo-400"/>
       <.user_icon icon={:local, "hero-cake"}/>
-      <.user_icon icon={:local, "hero-cake", nil, "w-2 h-2"} class="text-indigo-400"/>
+      <.user_icon icon={:local, "hero-cake-mini", "w-2 h-2"} class="text-indigo-400"/>
   """
 
   attr :class, :string, default: nil, doc: "Additional CSS classes"
@@ -127,14 +127,17 @@ defmodule PhoenixStorybook.Components.Icon do
     values: ~w(free pro)a
 
   attr :icon, :any,
-    doc: "Icon config, a tuple of 2 to 4 items: {provider, icon, style, classes}",
+    doc: """
+    Icon config, a tuple of 2 to 4 items: {provider, icon, style, classes}.
+    3 items tuple for local icons: {:local, icon, classes}.
+    """,
     examples: [
       {:fa, "book"},
       {:fa, "book", :thin},
       {:fa, "book", :duotone, "fa-fw"},
       {:hero, "cake", :solid, "w-2 h-2"},
       {:local, "hero-cake"},
-      {:local, "hero-cake", nil, "w-2 h-2"}
+      {:local, "hero-cake-mini", "w-2 h-2"}
     ],
     required: true
 
@@ -142,13 +145,14 @@ defmodule PhoenixStorybook.Components.Icon do
 
   def user_icon(assigns = %{class: class, icon: icon}) do
     provider = safe_elem(icon, 0)
+    custom_class = if provider == :local, do: safe_elem(icon, 2), else: safe_elem(icon, 3)
 
     assigns =
       assign(assigns,
-        class: [safe_elem(icon, 3), class],
-        name: safe_elem(icon, 1),
         provider: provider,
-        style: safe_elem(icon, 2)
+        name: safe_elem(icon, 1),
+        style: safe_elem(icon, 2),
+        class: [custom_class, class]
       )
 
     case provider do
@@ -158,5 +162,7 @@ defmodule PhoenixStorybook.Components.Icon do
     end
   end
 
-  defp safe_elem(tuple, idx), do: if(idx < tuple_size(tuple), do: elem(tuple, idx), else: nil)
+  defp safe_elem(tuple, idx) do
+    if(idx < tuple_size(tuple), do: elem(tuple, idx), else: nil)
+  end
 end
