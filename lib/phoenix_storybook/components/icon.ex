@@ -88,8 +88,9 @@ defmodule PhoenixStorybook.Components.Icon do
 
   ## Examples
 
-      <.local_icon name="book" class="text-blue-400"/>
-      <.local_icon name="book" style={:duotone} plan={:pro}/>
+      <.local_icon name="hero-cake" />
+      <.local_icon name="hero-cake" class="text-blue-400"/>
+
   """
 
   attr :class, :any, default: nil, doc: "Additional CSS classes"
@@ -118,6 +119,8 @@ defmodule PhoenixStorybook.Components.Icon do
       <.user_icon icon={:hero, "cake"}/>
       <.user_icon icon={:hero, "cake", :mini}/>
       <.user_icon icon={:hero, "cake", :mini, "w-2 h-2"} class="text-indigo-400"/>
+      <.user_icon icon={:local, "hero-cake"}/>
+      <.user_icon icon={:local, "hero-cake", nil, "w-2 h-2"} class="text-indigo-400"/>
   """
 
   attr :class, :string, default: nil, doc: "Additional CSS classes"

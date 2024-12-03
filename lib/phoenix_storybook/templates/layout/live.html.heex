@@ -69,8 +69,8 @@
                   <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
                   <.user_icon
                     class={["psb-pr-2", elem(icon, 0) == :fa && "fa-fw"]}
+                    fa_plan={@fa_plan}
                     icon={icon}
-                    plan={@fa_plan}
                   />
                   <%= String.capitalize(to_string(mode)) %>
                 </span>
@@ -78,8 +78,8 @@
                 <span class="psb psb-pl-6">
                   <.user_icon
                     class={["psb-pr-2", elem(icon, 0) == :fa && "fa-fw"]}
+                    fa_plan={@fa_plan}
                     icon={icon}
-                    plan={@fa_plan}
                   />
                   <%= String.capitalize(to_string(mode)) %>
                 </span>
