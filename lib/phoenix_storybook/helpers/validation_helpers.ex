@@ -26,6 +26,7 @@ defmodule PhoenixStorybook.ValidationHelpers do
 
       match_attr_type?(term, {:tuple, 3}) ->
         validate_icon_provider!(file, term)
+        icon_provider = elem(term, 0)
 
         validate_type!(
           file,
@@ -34,10 +35,30 @@ defmodule PhoenixStorybook.ValidationHelpers do
           message_prefix <> "icon name must be a binary"
         )
 
-        validate_type!(file, elem(term, 2), :atom, message_prefix <> "icon style must be an atom")
+        case icon_provider do
+          :local ->
+            validate_type!(
+              file,
+              elem(term, 2),
+              :string,
+              message_prefix <> "icon class must be a binary"
+            )
+
+          _ ->
+            validate_type!(
+              file,
+              elem(term, 2),
+              :atom,
+              message_prefix <> "icon style must be an atom"
+            )
+        end
 
       match_attr_type?(term, {:tuple, 4}) ->
         validate_icon_provider!(file, term)
+
+        if elem(term, 0) == :local do
+          compile_error!(file, "local icons only support 2 or 3 elem tuples")
+        end
 
         validate_type!(
           file,

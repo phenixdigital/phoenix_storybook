@@ -142,9 +142,9 @@ defmodule MyAppWeb.Storybook do
     color_mode_sandbox_dark_class: "dark",
     # Override color mode icons.
     color_mode_icons: [
-      dark: {:local, "hero-moon", nil, "psb-h-5 psb-w-5"},
-      light: {:local, "hero-sun", nil, "psb-h-5 psb-w-5"},
-      system: {:local, "hero-computer-desktop", nil, "psb-h-5 psb-w-5"}
+      dark: {:local, "hero-moon", "psb-h-5 psb-w-5"},
+      light: {:local, "hero-sun", "psb-h-5 psb-w-5"},
+      system: {:local, "hero-computer-desktop", "psb-h-5 psb-w-5"}
     ],
 
     # If you want to use custom FontAwesome icons.
