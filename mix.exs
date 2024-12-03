@@ -52,7 +52,6 @@ defmodule PhoenixStorybook.MixProject do
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
       {:makeup_eex, "~> 1.0.0"},
-      {:heroicons, "~> 0.5", optional: true},
       {:jason, "~> 1.3", optional: true},
       {:earmark, "~> 1.4"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
