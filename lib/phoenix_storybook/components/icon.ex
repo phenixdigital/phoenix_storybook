@@ -136,7 +136,9 @@ defmodule PhoenixStorybook.Components.Icon do
       {:fa, "book"},
       {:fa, "book", :thin},
       {:fa, "book", :duotone, "fa-fw"},
-      {:hero, "cake", :solid, "w-2 h-2"}
+      {:hero, "cake", :solid, "w-2 h-2"},
+      {:local, "hero-cake"},
+      {:local, "hero-cake", nil, "w-2 h-2"}
     ],
     required: true
 
