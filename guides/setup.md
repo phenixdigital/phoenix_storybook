@@ -6,7 +6,8 @@ To start using `PhoenixStorybook` in your phoenix application you will need to f
 2. Create your storybook backend module
 3. Add storybook access to your router
 4. Make your components assets available
-5. Create some content
+5. Update your Docker image
+6. Create some content
 
 ## 1. Add the `phoenix_storybook` dependency
 
