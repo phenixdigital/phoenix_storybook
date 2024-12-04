@@ -64,7 +64,8 @@ app and the storybook.
 
 In this README, we use `assets/css/storybook.css` as an example.
 
-If your components require any hooks or custom uploaders, or if your pages require connect parameters, declare them as such in a new JS bundle:
+If your components require any hooks or custom uploaders, or if your pages require connect parameters,
+declare them as such in a new JS bundle:
 
 ```javascript
 // assets/js/storybook.js
@@ -83,7 +84,18 @@ generator may guide you through these steps.
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
 
-## 5. Create some content
+## 5. Update your Docker image
+
+If you are deploying your app with Docker, then you need to copy the storybook content into your
+Docker image.
+
+Add this to your `Dockerfile`:
+
+```docker
+COPY storybook storybook
+```
+
+## 6. Create some content
 
 Then you can start creating some content for your storybook. Storybook can contain different kinds
 of _stories_:
