@@ -1,11 +1,11 @@
 # Manual setup
 
-To start using `PhoenixStorybook` in your phoenix application you will need to follow these steps:
+To start using `PhoenixStorybook` in your Phoenix application you will need to follow these steps:
 
 1. Add the `phoenix_storybook` dependency
 2. Create your storybook backend module
 3. Add storybook access to your router
-4. Make your components assets available
+4. Make your components' assets available
 5. Update your Docker image
 6. Create some content
 
@@ -58,7 +58,7 @@ scope "/", PhoenixStorybookSampleWeb do
 end
 ```
 
-## 4. Make your components assets available
+## 4. Make your components' assets available
 
 Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your
 app and the storybook.
@@ -80,7 +80,7 @@ import * as Uploaders from "./uploaders";
 })();
 ```
 
-These assets must be bundled and served by your own application. Our custom `mix phx.gen.storybook`
+Your application must bundle these assets and serve them. Our custom `mix phx.gen.storybook`
 generator may guide you through these steps.
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
@@ -102,7 +102,7 @@ Then you can start creating some content for your storybook. Storybook can conta
 of _stories_:
 
 - **component stories**: to document and showcase your components across different variations.
-- **pages**: to publish some UI guidelines, framework or whatever with regular HTML content.
+- **pages**: to publish some UI guidelines, framework with regular HTML content.
 - **examples**: to show how your components can be used and mixed in real UI pages.
 
 Stories are described as Elixir scripts (`.story.exs`) created under your `:content_path` folder.
