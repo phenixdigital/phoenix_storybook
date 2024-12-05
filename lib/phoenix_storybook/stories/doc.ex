@@ -15,7 +15,7 @@ defmodule PhoenixStorybook.Stories.Doc do
   def fetch_doc_as_html(story) do
     case fetch_component_doc(story.storybook_type(), story) do
       :error -> nil
-      doc -> doc |> strip_attributes() |> split_paragraphs() |> Enum.map(&format/1)
+      doc -> doc |> split_paragraphs() |> Enum.map(&format/1)
     end
   end
 
@@ -68,12 +68,6 @@ defmodule PhoenixStorybook.Stories.Doc do
         Logger.warning("could not fetch module doc from #{inspect(module)}")
         :error
     end
-  end
-
-  defp strip_attributes(nil), do: nil
-
-  defp strip_attributes(doc) do
-    doc |> String.split("## Attributes\n\n") |> hd()
   end
 
   defp split_paragraphs(nil), do: []
