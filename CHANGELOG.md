@@ -8,11 +8,12 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
-## v0.8.0 (not released)
+## v0.7.2 (not released)
 
 Kudos to [Jace Warren](https://github.com/keatz55) for his contribution on local icons 🙏
 
 - **feature**: [support for local icons](https://github.com/phenixdigital/phoenix_storybook/pull/518) (read the updated `icons.md` guide for details)
+- **bugfix**: [fixed missing color mode icons](https://github.com/phenixdigital/phoenix_storybook/issues/523)
 
 ## v0.7.1 (2024-11-19)
 
