@@ -264,11 +264,11 @@ defmodule PhoenixStorybook.StoryLive do
         <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb-mr-1" /> Read less
       </a>
       <div id="doc-next" class="psb-hidden psb-space-y-4 ">
-        <%= for paragraph <- Enum.slice(@doc, 1..-1//1) do %>
-          <div class="psb psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
-            <%= raw(paragraph) %>
-          </div>
-        <% end %>
+        <div class="psb psb-doc psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
+          <%= for paragraph <- Enum.slice(@doc, 1..-1//1) do %>
+            <%= paragraph |> Earmark.as_html!() |> raw() %>
+          <% end %>
+        </div>
       </div>
     <% end %>
     """
