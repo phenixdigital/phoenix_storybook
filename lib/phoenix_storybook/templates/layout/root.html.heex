@@ -17,13 +17,11 @@
     </.live_title>
 
     <%= if fa_kit_id = fa_kit_id(@conn) do %>
-      <script
-        nonce={csp_nonce(@conn, :script)}
-        defer
-        src={"https://kit.fontawesome.com/#{fa_kit_id}.js"}
+      <link
+        rel="stylesheet"
+        href={"https://kit.fontawesome.com/#{fa_kit_id}.css"}
         crossorigin="anonymous"
-      >
-      </script>
+      />
     <% else %>
       <link
         nonce={csp_nonce(@conn, :style)}
@@ -65,10 +63,7 @@
     </style>
   </head>
 
-  <body class={[
-    "psb psb-max-w-full psb-overflow-hidden psb-bg-white dark:psb-bg-slate-900",
-    wait_for_icons?(@conn)
-  ]}>
+  <body class="psb psb-max-w-full psb-overflow-hidden psb-bg-white dark:psb-bg-slate-900">
     <%= @inner_content %>
   </body>
 </html>

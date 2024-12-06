@@ -14,6 +14,7 @@ Kudos to [Jace Warren](https://github.com/keatz55) for his contribution on local
 
 - **feature**: [support for local icons](https://github.com/phenixdigital/phoenix_storybook/pull/518) (read the updated `icons.md` guide for details)
 - **bugfix**: [fixed missing color mode icons](https://github.com/phenixdigital/phoenix_storybook/issues/523)
+- **change (breaking!)**: FontAwesome icons are now CSS loaded (cf. `icons.md` guide)
 
 ## v0.7.1 (2024-11-19)
 
