@@ -7,141 +7,144 @@
       </.link>
     </div>
 
-    <div
-      :if={(themes = themes(@socket)) || color_mode?(@socket)}
-      class="psb psb-absolute psb-top-4 psb-right-14 lg:psb-right-5 psb-flex psb-gap-2"
-    >
-      <button
-        :if={color_mode?(@socket)}
-        class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
-        phx-click={JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())}
-        type="button"
-      >
-        <div
-          class="psb-flex psb-items-center psb-justify-center"
-          id="color-mode-icon"
-          phx-update="ignore"
-        >
-          <.user_icon
-            :if={icon = Keyword.get(color_mode_icons(@socket), :light)}
-            class="psb-inline-block dark:psb-hidden"
-            fa_plan={@fa_plan}
-            icon={icon}
-          />
-          <.user_icon
-            :if={icon = Keyword.get(color_mode_icons(@socket), :dark)}
-            class="psb-hidden dark:psb-inline-block"
-            fa_plan={@fa_plan}
-            icon={icon}
-          />
-        </div>
+    <%= if (themes = themes(@socket)) || color_mode?(@socket) do %>
+      <div class="psb psb-absolute psb-top-4 psb-right-14 lg:psb-right-5 psb-flex psb-gap-2">
+        <%= if color_mode?(@socket) do %>
+          <button
+            type="button"
+            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
+            phx-click={
+              JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())
+            }
+          >
+            <div id="color-mode-icon" phx-update="ignore">
+              <.fa_icon
+                style={:regular}
+                name={color_mode_icon("light")}
+                plan={@fa_plan}
+                class="psb-inline-block dark:psb-hidden"
+              />
+              <.fa_icon
+                style={:regular}
+                name={color_mode_icon("dark")}
+                plan={@fa_plan}
+                class="psb-hidden dark:psb-inline-block"
+              />
+            </div>
 
-        <div
-          id="psb-colormode-dropdown"
-          class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none psb-justify-start "
-          phx-click-away={
-            JS.hide(to: "#psb-colormode-dropdown", transition: hide_dropdown_transition())
-          }
-          phx-hook="ColorModeHook"
-          data-selected-mode={@selected_color_mode}
-        >
-          <div class="psb psb-px-4 psb-py-3">
-            <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-slate-300 psb-text-left">
-              Pick a color mode
-            </p>
-          </div>
+            <div
+              id="psb-colormode-dropdown"
+              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none psb-justify-start "
+              phx-click-away={
+                JS.hide(to: "#psb-colormode-dropdown", transition: hide_dropdown_transition())
+              }
+              phx-hook="ColorModeHook"
+              data-selected-mode={@selected_color_mode}
+            >
+              <div class="psb psb-px-4 psb-py-3">
+                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-slate-300 psb-text-left">
+                  Pick a color mode
+                </p>
+              </div>
 
-          <div class="psb psb-py-1">
-            <a
-              :for={{mode, icon} <- color_mode_icons(@socket)}
-              class="psb psb-text-gray-700 dark:psb-text-slate-300 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
-              phx-click={
-                "psb:set-color-mode"
-                |> JS.dispatch(to: "#psb-colormode-dropdown", detail: %{mode: mode})
-                |> JS.hide(
-                  to: "#psb-colormode-dropdown",
-                  transition: hide_dropdown_transition()
-                )
+              <div class="psb psb-py-1">
+                <a
+                  :for={mode <- ~w(light dark system)}
+                  phx-click={
+                    JS.dispatch("psb:set-color-mode",
+                      to: "#psb-colormode-dropdown",
+                      detail: %{mode: mode}
+                    )
+                    |> JS.hide(
+                      to: "#psb-colormode-dropdown",
+                      transition: hide_dropdown_transition()
+                    )
+                  }
+                  class="psb psb-text-gray-700 dark:psb-text-slate-300 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
+                >
+                  <%= if @selected_color_mode == mode do %>
+                    <span class="psb psb-text-indigo-600 dark:psb-text-sky-400">
+                      <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
+                      <.fa_icon
+                        name={color_mode_icon(mode)}
+                        class="fa-fw psb-pr-2"
+                        plan={@fa_plan}
+                        style={:regular}
+                      />
+                      <%= String.capitalize(mode) %>
+                    </span>
+                  <% else %>
+                    <span class="psb psb-pl-6 ">
+                      <.fa_icon
+                        name={color_mode_icon(mode)}
+                        class="fa-fw psb-pr-2"
+                        plan={@fa_plan}
+                        style={:regular}
+                      />
+                      <%= String.capitalize(mode) %>
+                    </span>
+                  <% end %>
+                </a>
+              </div>
+            </div>
+          </button>
+        <% end %>
+
+        <%= if themes do %>
+          <button
+            type="button"
+            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
+            phx-click={JS.show(to: "#psb-theme-dropdown", transition: show_dropdown_transition())}
+          >
+            <.fa_icon
+              style={:regular}
+              name="palette"
+              class={current_theme_dropdown_class(@socket, assigns)}
+              plan={@fa_plan}
+            />
+
+            <div
+              id="psb-theme-dropdown"
+              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none"
+              phx-click-away={
+                JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())
               }
             >
-              <%= if @selected_color_mode == to_string(mode) do %>
-                <span class="psb psb-text-indigo-600 dark:psb-text-sky-400">
-                  <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
-                  <.user_icon
-                    class={["psb-pr-2", elem(icon, 0) == :fa && "fa-fw"]}
-                    fa_plan={@fa_plan}
-                    icon={icon}
-                  />
-                  <%= String.capitalize(to_string(mode)) %>
-                </span>
-              <% else %>
-                <span class="psb psb-pl-6">
-                  <.user_icon
-                    class={["psb-pr-2", elem(icon, 0) == :fa && "fa-fw"]}
-                    fa_plan={@fa_plan}
-                    icon={icon}
-                  />
-                  <%= String.capitalize(to_string(mode)) %>
-                </span>
-              <% end %>
-            </a>
-          </div>
-        </div>
-      </button>
-
-      <button
-        :if={themes}
-        class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
-        phx-click={JS.show(to: "#psb-theme-dropdown", transition: show_dropdown_transition())}
-        type="button"
-      >
-        <.fa_icon
-          style={:regular}
-          name="palette"
-          class={current_theme_dropdown_class(@socket, assigns)}
-          plan={@fa_plan}
-        />
-
-        <div
-          id="psb-theme-dropdown"
-          class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none"
-          phx-click-away={
-            JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())
-          }
-        >
-          <div class="psb psb-px-4 psb-py-3">
-            <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-gray-200 psb-text-left">
-              Pick a theme
-            </p>
-          </div>
-          <div class="psb psb-py-1">
-            <%= for {theme, opts} <- themes do %>
-              <a
-                phx-click={
-                  JS.push("psb-set-theme", value: %{"theme" => theme})
-                  |> JS.hide(
-                    to: "#psb-theme-dropdown",
-                    transition: hide_dropdown_transition()
-                  )
-                }
-                }
-                class="psb psb-theme psb-text-gray-700 dark:psb-text-gray-500 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
-              >
-                <%= if assigns[:theme] == theme do %>
-                  <span class="psb psb-text-indigo-600 dark:psb-text-gray-200">
-                    <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} /><%= opts[:name] %>
-                  </span>
-                <% else %>
-                  <span class="psb psb-pl-5">
-                    <%= opts[:name] %>
-                  </span>
+              <div class="psb psb-px-4 psb-py-3">
+                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-gray-200 psb-text-left">
+                  Pick a theme
+                </p>
+              </div>
+              <div class="psb psb-py-1">
+                <%= for {theme, opts} <- themes do %>
+                  <a
+                    phx-click={
+                      JS.push("psb-set-theme", value: %{"theme" => theme})
+                      |> JS.hide(
+                        to: "#psb-theme-dropdown",
+                        transition: hide_dropdown_transition()
+                      )
+                    }
+                    }
+                    class="psb psb-theme psb-text-gray-700 dark:psb-text-gray-500 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
+                  >
+                    <%= if assigns[:theme] == theme do %>
+                      <span class="psb psb-text-indigo-600 dark:psb-text-gray-200">
+                        <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} /><%= opts[:name] %>
+                      </span>
+                    <% else %>
+                      <span class="psb psb-pl-5">
+                        <%= opts[:name] %>
+                      </span>
+                    <% end %>
+                  </a>
                 <% end %>
-              </a>
-            <% end %>
-          </div>
-        </div>
-      </button>
-    </div>
+              </div>
+            </div>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <div class="psb lg:psb-hidden psb-absolute psb-top-4 psb-right-5 psb-inline-block ">
