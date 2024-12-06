@@ -8,7 +8,7 @@
 >
 > - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
 
-## v0.7.2 (not released)
+## v0.7.2 (2024-12-06)
 
 Kudos to [Jace Warren](https://github.com/keatz55) for his contribution on local icons 🙏
 
