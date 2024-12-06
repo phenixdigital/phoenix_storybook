@@ -48,10 +48,12 @@ export const ColorModeHook = {
     }
   },
   toggleColorModeClass: (mode) => {
-    if (mode == "dark") {
-      document.documentElement.classList.add("psb-dark");
-    } else {
-      document.documentElement.classList.remove("psb-dark");
+    if ("colorMode" in document.documentElement.dataset) {
+      if (mode == "dark") {
+        document.documentElement.classList.add("psb-dark");
+      } else {
+        document.documentElement.classList.remove("psb-dark");
+      }
     }
   },
   onSetColorMode: (e) => {

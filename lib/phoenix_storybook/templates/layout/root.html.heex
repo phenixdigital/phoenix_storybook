@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="psb" phx-socket={live_socket_path(@conn)}>
+<html
+  lang="en"
+  class="psb"
+  phx-socket={live_socket_path(@conn)}
+  data-color-mode={color_mode?(@conn)}
+>
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
