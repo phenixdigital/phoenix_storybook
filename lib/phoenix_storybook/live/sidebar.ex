@@ -74,7 +74,7 @@ defmodule PhoenixStorybook.Sidebar do
           name="xmark"
           phx-click={JS.dispatch("psb:close-sidebar")}
           plan={@fa_plan}
-          class="psb fa-lg psb-block lg:psb-hidden psb-absolute psb-right-6 psb-top-6 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 psb-cursor-pointer"
+          class="fa-lg psb-block lg:psb-hidden psb-absolute psb-right-6 psb-top-6 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 psb-cursor-pointer"
         />
       </span>
 
