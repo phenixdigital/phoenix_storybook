@@ -65,14 +65,6 @@ defmodule PhoenixStorybook.LayoutView do
 
   defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
 
-  defp color_mode_icons(conn_or_socket) do
-    storybook_setting(conn_or_socket, :color_mode_icons,
-      light: {:fa, "brightness", :regular},
-      dark: {:fa, "moon", :regular},
-      system: {:fa, "circle-half-stroke", :regular}
-    )
-  end
-
   defp title_prefix(conn_or_socket) do
     title(conn_or_socket) <> " - "
   end
@@ -186,6 +178,10 @@ defmodule PhoenixStorybook.LayoutView do
     backend_module = backend_module(socket)
     backend_module.config(:color_mode, false)
   end
+
+  defp color_mode_icon("light"), do: "brightness"
+  defp color_mode_icon("dark"), do: "moon"
+  defp color_mode_icon(_), do: "circle-half-stroke"
 
   defp show_dropdown_transition do
     {"psb-ease-out psb-duration-200", "psb-opacity-0 psb-scale-95",
