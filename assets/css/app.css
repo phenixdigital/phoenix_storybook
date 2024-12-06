@@ -7,14 +7,6 @@
   @apply psb-antialiased psb-text-gray-600 psb-text-inherit;
 }
 
-.psb-wait-for-icons {
-  display: none;
-}
-
-.fontawesome-i2svg-active .psb-wait-for-icons {
-  display: initial;
-}
-
 .svg-inline--fa.psb {
   display: var(--fa-display, inline-block);
   height: 1em;

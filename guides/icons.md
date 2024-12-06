@@ -40,6 +40,8 @@ The two last tuple elements are optional.
 PhoenixStorybook is built with a very small subset of FontAwesome free icons. If you want to use
 other FontAwesome icons you need to provide a valid **FontAwesome kit id**.
 
+When configuring your kit, please make sure you pick _Web Fonts_ & _CSS Only_ options.
+
 It can be either free or paid, so you also need to configure your FontAwesome plan.
 
 ```elixir
