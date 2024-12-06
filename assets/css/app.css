@@ -41,11 +41,11 @@
 }
 
 .psb-sandbox .psb-welcome-page h3 {
-  @apply psb-text-slate-700 psb-text-lg psb-pt-4 psb-mb-2 psb-font-bold;
+  @apply psb-text-slate-500 psb-text-lg psb-pt-4 psb-mb-2 psb-font-bold;
 }
 
 .psb-sandbox .psb-welcome-page p {
-  @apply md:psb-text-lg psb-leading-6 md:psb-leading-8 psb-text-slate-700 psb-w-full psb-text-left psb-mb-4 psb-mt-2;
+  @apply md:psb-text-lg psb-leading-6 md:psb-leading-8 psb-text-slate-500 psb-w-full psb-text-left psb-mb-4 psb-mt-2;
 }
 
 .psb-sandbox .psb-welcome-page strong {
@@ -57,19 +57,22 @@
 }
 
 .psb-sandbox .psb-welcome-page ul li {
-  @apply psb-text-lg psb-text-slate-700;
+  @apply psb-text-lg psb-text-slate-500;
 }
 
 .psb-sandbox .psb-welcome-page code.inline {
-  @apply psb-font-mono psb-bg-gray-100 psb-rounded-md psb-py-1 psb-px-1.5 psb-text-sm;
+  @apply psb-border psb-bg-slate-100 dark:psb-bg-slate-800 psb-border-slate-200 dark:psb-border-slate-600;
+  @apply psb-rounded-md psb-p-0.5 psb-m-0.5 psb-text-indigo-700 dark:psb-text-sky-400;
+  @apply psb-font-mono psb-text-sm;
 }
 
 .psb-sandbox .psb-welcome-page pre {
-  @apply psb-bg-gray-100 psb-rounded-lg psb-px-4 psb-py-2 psb-my-4 psb-whitespace-pre-wrap psb-break-normal;
+  @apply psb-bg-slate-800 dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600;
+  @apply psb-rounded-lg psb-px-4 psb-py-2 psb-my-4 psb-whitespace-pre-wrap psb-break-normal;
 }
 
 .psb-sandbox .psb-welcome-page pre code {
-  @apply psb-font-mono psb-text-sm;
+  @apply psb-font-mono psb-text-sm psb-text-gray-300;
 }
 
 .psb-dark ::-webkit-scrollbar {
@@ -78,6 +81,42 @@
 
 .psb-dark ::-webkit-scrollbar-thumb {
   @apply psb-bg-slate-700 psb-border-solid psb-border-4 psb-border-transparent psb-rounded-lg psb-bg-clip-content;
+}
+
+.psb-doc p {
+  @apply psb-mb-4;
+}
+
+.psb-doc a {
+  @apply psb-underline psb-underline-offset-2 psb-decoration-slate-400 dark:psb-decoration-slate-600
+   hover:psb-text-indigo-700 hover:psb-decoration-indigo-700 dark:hover:psb-text-sky-400 
+   dark:hover:psb-decoration-sky-400;
+}
+
+.psb-doc h2 {
+  @apply psb-font-bold psb-mt-4 psb-mb-2 psb-text-[1.075em];
+}
+
+.psb-doc ul {
+  @apply psb-list-disc psb-my-4;
+}
+
+.psb-doc li {
+  @apply psb-ml-8 psb-mb-1;
+}
+
+.psb-doc pre {
+  @apply psb-my-10;
+}
+
+.psb-doc pre code {
+  @apply psb-border psb-bg-slate-800 dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 
+  psb-rounded-md psb-px-4 psb-py-4 psb-text-gray-300 psb-text-xs md:psb-text-sm;
+}
+
+.psb-doc code.inline {
+  @apply psb-border psb-bg-slate-100 dark:psb-bg-slate-800 psb-border-slate-200 dark:psb-border-slate-600;
+  @apply psb-rounded-md psb-p-0.5 psb-m-0.5 psb-text-indigo-700 dark:psb-text-sky-400 psb-text-sm;
 }
 
 @layer base {
