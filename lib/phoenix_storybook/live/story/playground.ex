@@ -31,6 +31,7 @@ defmodule PhoenixStorybook.Story.Playground do
      |> assign_variations()
      |> assign_new_variations_attributes(assigns)
      |> assign_new_template_attributes(assigns)
+     |> assign_new_theme(assigns)
      |> assign_playground_fields()
      |> assign_playground_slots()
      |> assign_variation_id()
@@ -59,7 +60,7 @@ defmodule PhoenixStorybook.Story.Playground do
   end
 
   defp assign_variations(socket, group_id, variations) do
-    variations =
+    assign_new(socket, :variations, fn ->
       for variation <- variations do
         variation_id = {group_id, variation.id}
 
@@ -68,27 +69,32 @@ defmodule PhoenixStorybook.Story.Playground do
         |> Map.put(:id, variation_id)
         |> put_in([:attributes, :theme], socket.assigns[:theme])
       end
-
-    assign(socket, variations: variations)
+    end)
   end
 
   # new_attributes may be passed by parent (LiveView) send_update.
   # It happens whenever parent is notified some component assign has been
   # updated by the component itself.
   defp assign_new_variations_attributes(socket, assigns) do
-    new_attributes = Map.get(assigns, :new_variations_attributes, %{})
+    case Map.get(assigns, :new_variations_attributes) do
+      nil ->
+        socket
 
-    variations =
-      for variation <- socket.assigns.variations do
-        variation_id = variation.id
+      new_attributes ->
+        variations =
+          for variation <- socket.assigns.variations do
+            variation_id = variation.id
 
-        case Map.get(new_attributes, variation_id) do
-          nil -> variation
-          new_attrs -> update_variation_attributes(variation, new_attrs)
-        end
-      end
+            case Map.get(new_attributes, variation_id) do
+              nil -> variation
+              new_attrs -> update_variation_attributes(variation, new_attrs)
+            end
+          end
 
-    assign(socket, variations: variations)
+        socket
+        |> assign(:variations, variations)
+        |> assign(:fields, playground_fields(socket.assigns.story, variations))
+    end
   end
 
   defp assign_new_template_attributes(socket, assigns) do
@@ -107,34 +113,54 @@ defmodule PhoenixStorybook.Story.Playground do
     assign(socket, template_attributes: template_attributes)
   end
 
+  defp assign_new_theme(socket, assigns) do
+    case Map.get(assigns, :new_theme) do
+      nil ->
+        socket
+
+      theme ->
+        variations =
+          for variation <- socket.assigns.variations do
+            update_variation_attributes(variation, %{theme: theme})
+          end
+
+        fields = Map.put(socket.assigns.fields, :theme, String.to_existing_atom(theme))
+
+        socket
+        |> assign(:fields, fields)
+        |> assign(:variations, variations)
+    end
+  end
+
   defp assign_playground_fields(socket = %{assigns: %{story: story, variations: variations}}) do
-    fields =
-      for attr = %Attr{id: attr_id} <- story.merged_attributes(), reduce: %{} do
-        acc ->
-          attr_values =
-            for %{id: variation_id, attributes: attrs} <- variations do
-              if attr_id == :id do
-                TemplateHelpers.unique_variation_id(story, variation_id)
-              else
-                Map.get(attrs, attr_id)
-              end
+    assign_new(socket, :fields, fn -> playground_fields(story, variations) end)
+  end
+
+  defp playground_fields(story, variations) do
+    for attr = %Attr{id: attr_id} <- story.merged_attributes(), reduce: %{} do
+      acc ->
+        attr_values =
+          for %{id: variation_id, attributes: attrs} <- variations do
+            if attr_id == :id do
+              TemplateHelpers.unique_variation_id(story, variation_id)
+            else
+              Map.get(attrs, attr_id)
             end
+          end
 
-          field =
-            case Enum.uniq(attr_values) do
-              [] -> nil
-              [val] -> val
-              _ -> :locked
-            end
+        field =
+          case Enum.uniq(attr_values) do
+            [] -> nil
+            [val] -> val
+            _ -> :locked
+          end
 
-          Map.put(acc, attr.id, field)
-      end
-
-    assign(socket, :fields, fields)
+        Map.put(acc, attr.id, field)
+    end
   end
 
   defp assign_playground_slots(socket = %{assigns: %{story: story, variations: variations}}) do
-    slots =
+    assign_new(socket, :slots, fn ->
       for %Slot{id: slot_id} <- story.merged_slots(), reduce: %{} do
         acc ->
           slots =
@@ -153,8 +179,7 @@ defmodule PhoenixStorybook.Story.Playground do
 
           Map.put(acc, slot_id, slot)
       end
-
-    assign(socket, :slots, slots)
+    end)
   end
 
   defp matching_slot?(:inner_block, slot) do

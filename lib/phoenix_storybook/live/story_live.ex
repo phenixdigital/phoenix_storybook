@@ -663,6 +663,7 @@ defmodule PhoenixStorybook.StoryLive do
       {:set_theme, String.to_atom(theme)}
     )
 
+    send_update(Playground, id: "playground", new_theme: theme)
     ThemeHelpers.call_theme_function(socket.assigns.backend_module, theme)
 
     {:noreply,
