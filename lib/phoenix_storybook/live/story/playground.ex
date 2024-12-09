@@ -485,7 +485,7 @@ defmodule PhoenixStorybook.Story.Playground do
                             colspan="5"
                             class="psb psb-whitespace-nowrap psb-pl-3 md:psb-pl-9 psb-pr-3 psb-pb-3 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900"
                           >
-                            <pre class="psb psb-text-gray-600 psb-p-2 psb-border psb-border-slate-100 psb-rounded-md psb-bg-slate-100 psb-overflow-x-scroll psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
+                            <pre class="psb psb-text-gray-600 psb-p-2 psb-border psb-border-slate-100 psb-rounded-md psb-bg-slate-100 psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
                           </td>
                         </tr>
                       <% end %>
@@ -724,7 +724,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: "[Multiple values]",
   disabled: true,
   class:
-    "psb psb-form-input psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-border-gray-300 psb-rounded-md"
+    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-bg-gray-100 psb-border-gray-300 psb-rounded-md"
 ) %>|
 
           {:eval, value} ->
@@ -742,7 +742,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: inspect(@value),
   disabled: true,
   class:
-    "psb psb-form-input psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
+    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-bg-gray-100 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
 ) %>|
     end
   end
