@@ -4,6 +4,7 @@ defmodule Storybook.CoreComponents.Input do
 
   def function, do: &CoreComponents.input/1
   def imports, do: [{CoreComponents, [simple_form: 1]}]
+  def render_only_function_source, do: true
 
   def template do
     """

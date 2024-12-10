@@ -4,6 +4,7 @@ defmodule Storybook.CoreComponents.Header do
 
   def function, do: &CoreComponents.header/1
   def imports, do: [{CoreComponents, button: 1}]
+  def render_only_function_source, do: true
 
   def variations do
     [

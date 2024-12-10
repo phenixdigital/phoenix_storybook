@@ -4,6 +4,7 @@ defmodule Storybook.CoreComponents.Flash do
 
   def function, do: &CoreComponents.flash/1
   def imports, do: [{CoreComponents, [button: 1, show: 1]}]
+  def render_only_function_source, do: true
 
   def template do
     """
