@@ -27,7 +27,7 @@ defmodule PhoenixStorybook.Story do
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
 
-    # defaults to false (source tab will render the full module source code)
+    # when true, the source tab will render only function's source code (defaults to false)
     def render_only_function_source, do: true
 
     def attributes, do: []
