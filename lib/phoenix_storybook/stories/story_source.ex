@@ -12,18 +12,22 @@ defmodule PhoenixStorybook.Stories.StorySource do
 
     quote do
       def __source__ do
-        unquote(read_source(env.file))
+        unquote(read_file_source(env.file))
+      end
+
+      def __module_source__ do
+        unquote(read_file_source(component_source_path))
       end
 
       def __component_source__ do
-        unquote(read_source(component_source_path))
+        unquote(read_component_source(component_source_path, env))
       end
 
       def __extra_sources__ do
         unquote(
           Macro.escape(
             for {path, full_path} <- story_extra_sources_path, into: %{} do
-              {path, read_source(full_path)}
+              {path, read_file_source(full_path)}
             end
           )
         )
@@ -37,7 +41,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
 
   defp component_source_path(env) do
     case component_definition(env) do
-      {fun_or_mod, _} -> load_source(fun_or_mod)
+      {fun_or_mod, _} -> source_path(fun_or_mod)
       _ -> nil
     end
   rescue
@@ -107,18 +111,82 @@ defmodule PhoenixStorybook.Stories.StorySource do
     end
   end
 
-  defp load_source(nil), do: nil
+  defp source_path(nil), do: nil
 
-  defp load_source(function) when is_function(function) do
+  defp source_path(function) when is_function(function) do
     module = Function.info(function)[:module]
-    load_source(module)
+    source_path(module)
   end
 
-  defp load_source(module) when is_atom(module) do
+  defp source_path(module) when is_atom(module) do
     module.__info__(:compile)[:source]
   end
 
-  defp read_source(nil), do: nil
-  defp read_source(binary) when is_binary(binary), do: File.read!(binary)
-  defp read_source(charlist_path), do: charlist_path |> to_string() |> File.read!()
+  defp read_component_source(path, env) do
+    case component_definition(env) do
+      {fun, _} when is_function(fun) -> strip_function_source(fun, path)
+      {module, _} when is_atom(module) -> read_file_source(path)
+      _ -> nil
+    end
+  rescue
+    _ -> component_source_fail(env)
+  catch
+    _ -> component_source_fail(env)
+  end
+
+  defp read_file_source(nil), do: nil
+  defp read_file_source(binary) when is_binary(binary), do: File.read!(binary)
+  defp read_file_source(charlist_path), do: charlist_path |> to_string() |> File.read!()
+
+  def strip_function_source(function, path) do
+    module = Function.info(function)[:module]
+    [start, stop] = function_source_location(function)
+
+    Enum.join(
+      [
+        "defmodule #{String.replace_leading(to_string(module), "Elixir.", "")} do",
+        "",
+        "  # stripped ...",
+        "",
+        path
+        |> read_file_source()
+        |> String.split("\n")
+        |> Enum.slice(start..stop//1)
+        |> Enum.join("\n")
+        |> String.trim_trailing(),
+        "",
+        "  # stripped ...",
+        "",
+        "end"
+      ],
+      "\n"
+    )
+  end
+
+  # Code.fetch_docs/1 does only return the line number for the start of each function.
+  # We guess the last line number as being the start of the following function (-1)
+  # Returns [start, stop]
+  defp function_source_location(function) do
+    [module: module, name: fun_name, arity: arity, env: _, type: _] = Function.info(function)
+    {_, _, _, _, _, _, functions} = Code.fetch_docs(module)
+
+    functions
+    |> Enum.sort_by(&location/1)
+    |> Enum.chunk_every(2, 1)
+    |> Enum.map(fn
+      [fun1, fun2] -> {header(fun1), location(fun1), location(fun2)}
+      [fun] -> {header(fun), location(fun), nil}
+    end)
+    |> Enum.find(fn {{:function, f, a}, _, _} -> f == fun_name and a == arity end)
+    |> then(fn
+      {_, start, nil} -> [start - 1, -3]
+      {_, start, stop} -> [start - 1, stop - 2]
+      _ -> nil
+    end)
+  end
+
+  defp header({header, _, _, _, _}), do: header
+  defp location({_, [generated: _, location: loc], _, _, _}), do: loc
+  defp location({_, loc, _, _, _}) when is_integer(loc), do: loc
+  defp location(_), do: nil
 end
