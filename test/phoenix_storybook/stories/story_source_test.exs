@@ -6,7 +6,20 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
   describe "__component_source__/0" do
     test "it returns component source" do
       {:ok, story} = TreeStorybook.load_story("/component")
-      assert story.__component_source__() =~ ~s|defmodule Component do|
+      source = story.__component_source__()
+      assert source =~ ~s|defmodule Component do|
+      assert source =~ ~s|def component(assigns) do|
+      refute source =~ ~s|def unrelated_function|
+      refute source =~ ~s|use Phoenix.Component|
+    end
+
+    test "it returns module source" do
+      {:ok, story} = TreeStorybook.load_story("/component")
+      source = story.__module_source__()
+      assert source =~ ~s|defmodule Component do|
+      assert source =~ ~s|def component(assigns) do|
+      assert source =~ ~s|def unrelated_function|
+      assert source =~ ~s|use Phoenix.Component|
     end
 
     @tag :capture_log

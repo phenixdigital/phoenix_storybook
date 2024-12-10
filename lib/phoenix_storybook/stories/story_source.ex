@@ -46,8 +46,6 @@ defmodule PhoenixStorybook.Stories.StorySource do
     end
   rescue
     _ -> component_source_fail(env)
-  catch
-    _ -> component_source_fail(env)
   end
 
   defp component_source_fail(env) do
@@ -67,8 +65,6 @@ defmodule PhoenixStorybook.Stories.StorySource do
         []
     end
   rescue
-    _ -> extra_sources_fail(env)
-  catch
     _ -> extra_sources_fail(env)
   end
 
@@ -130,8 +126,6 @@ defmodule PhoenixStorybook.Stories.StorySource do
     end
   rescue
     _ -> component_source_fail(env)
-  catch
-    _ -> component_source_fail(env)
   end
 
   defp read_file_source(nil), do: nil
@@ -181,7 +175,6 @@ defmodule PhoenixStorybook.Stories.StorySource do
     |> then(fn
       {_, start, nil} -> [start - 1, -3]
       {_, start, stop} -> [start - 1, stop - 2]
-      _ -> nil
     end)
   end
 

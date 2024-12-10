@@ -92,7 +92,9 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert true
     end
 
-    test "renders component story and navigate to source tab", %{conn: conn} do
+    test "renders component story, navigate to source tab and see full module source", %{
+      conn: conn
+    } do
       {:ok, view, _html} = live(conn, "/storybook/component")
 
       html = view |> element("a", "Source") |> render_click()
@@ -103,6 +105,25 @@ defmodule PhoenixStorybook.StoryLiveTest do
       )
 
       assert html =~ "defmodule"
+      assert html =~ "component"
+      assert html =~ "unrelated_function"
+    end
+
+    test "renders component story, navigate to source tab and see function only source", %{
+      conn: conn
+    } do
+      {:ok, view, _html} = live(conn, "/storybook/a_folder/component")
+
+      html = view |> element("a", "Source") |> render_click()
+
+      assert_patched(
+        view,
+        ~p"/storybook/a_folder/component?#{[tab: :source, theme: :default, variation_id: :group]}"
+      )
+
+      assert html =~ "defmodule"
+      assert html =~ "component"
+      refute html =~ "unrelated_function"
     end
 
     test "renders component, change theme and navigate", %{conn: conn} do
