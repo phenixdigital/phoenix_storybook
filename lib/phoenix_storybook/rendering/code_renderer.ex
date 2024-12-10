@@ -102,7 +102,11 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   Returns a rendered HEEx template.
   """
   def render_component_source(story) do
-    render_source(story.__component_source__())
+    if story.storybook_type() == :component and story.render_only_function_source() do
+      render_source(story.__component_source__())
+    else
+      render_source(story.__module_source__())
+    end
   end
 
   def render_source(source, assigns \\ %{__changed__: %{}})
@@ -112,7 +116,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     assigns = assign(assigns, source: source)
 
     ~H"""
-    <pre class={pre_class()}>
+    <pre class={[pre_class(), "dark:psb-border-slate-600 "]}>
     <%= format_elixir(@source) %>
     </pre>
     """

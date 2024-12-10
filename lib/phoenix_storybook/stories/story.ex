@@ -27,6 +27,9 @@ defmodule PhoenixStorybook.Story do
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
 
+    # defaults to false (source tab will render the full module source code)
+    def render_only_function_source, do: true
+
     def attributes, do: []
     def slots, do: []
     def variations, do: []
@@ -140,6 +143,7 @@ defmodule PhoenixStorybook.Story do
     @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
     @callback layout() :: atom()
+    @callback render_only_function_source() :: atom()
   end
 
   defmodule LiveComponentBehaviour do
@@ -154,6 +158,7 @@ defmodule PhoenixStorybook.Story do
     @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
     @callback layout() :: atom()
+    @callback render_only_function_source() :: atom()
   end
 
   defmodule PageBehaviour do
@@ -216,6 +221,9 @@ defmodule PhoenixStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def layout, do: :two_columns
 
+      @impl unquote(component_behaviour(live?))
+      def render_only_function_source, do: false
+
       if unquote(live?) do
         def merged_attributes, do: Attr.merge_attributes(component(), attributes())
         def merged_slots, do: Slot.merge_slots(component(), slots())
@@ -231,7 +239,8 @@ defmodule PhoenixStorybook.Story do
                      slots: 0,
                      variations: 0,
                      template: 0,
-                     layout: 0
+                     layout: 0,
+                     render_only_function_source: 0
     end
   end
 
