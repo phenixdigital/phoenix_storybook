@@ -10,6 +10,7 @@
 
 ## v0.7.3 (not released)
 
+- **feature**: [render only component function's source code for component stories](https://github.com/phenixdigital/phoenix_storybook/issues/529)
 - **bugfix**: fixed broken playground for stories using templating features
 
 ## v0.7.2 (2024-12-06)
