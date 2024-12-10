@@ -16,4 +16,10 @@ defmodule Component do
 
     ~H"<span data-index={@index}>component: <%= @label %><%= if @theme do %> <%= @theme %><% end %></span>"
   end
+
+  @doc """
+  Should not be extracted in Component.component/1 source code.
+  """
+  def unrelated_function, do: nil
+
 end
