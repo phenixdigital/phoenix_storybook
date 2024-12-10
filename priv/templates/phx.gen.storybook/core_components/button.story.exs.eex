@@ -2,6 +2,7 @@ defmodule Storybook.CoreComponents.Button do
   use PhoenixStorybook.Story, :component
 
   def function, do: &<%= schema.core_components_module_name %>.button/1
+  def render_only_function_source, do: true
 
   def variations do
     [
