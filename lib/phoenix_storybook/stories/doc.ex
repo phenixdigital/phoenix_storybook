@@ -12,19 +12,38 @@ defmodule PhoenixStorybook.Stories.Doc do
 
   Output HTML is splitted in paragraphs and returned as a list of paragraphs.
   """
-  def fetch_doc_as_html(story) do
+  def fetch_doc_as_html(story, stripped? \\ true) do
     case fetch_component_doc(story.storybook_type(), story) do
-      :error -> nil
-      doc -> doc |> split_paragraphs() |> Enum.map(&format/1)
+      :error ->
+        nil
+
+      doc ->
+        case split_header(doc) do
+          [] ->
+            nil
+
+          [header] ->
+            [format(header), nil]
+
+          [header, rest] ->
+            [
+              format(header),
+              if stripped? do
+                rest |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> format()
+              else
+                format(rest)
+              end
+            ]
+        end
     end
   end
 
-  defp fetch_component_doc(:component, module) do
+  def fetch_component_doc(:component, module) do
     info = Function.info(module.function())
     fetch_function_doc(info[:module], {info[:name], info[:arity]})
   end
 
-  defp fetch_component_doc(:live_component, module) do
+  def fetch_component_doc(:live_component, module) do
     fetch_module_doc(module.component())
   end
 
@@ -70,13 +89,19 @@ defmodule PhoenixStorybook.Stories.Doc do
     end
   end
 
-  defp split_paragraphs(nil), do: []
+  def strip_lv_attributes_doc(nil), do: nil
+  def strip_lv_attributes_doc(doc), do: doc |> String.split("## Attributes\n\n") |> hd()
 
-  defp split_paragraphs(doc) do
-    doc |> String.split("\n\n") |> Enum.reject(&(String.trim(&1) == ""))
-  end
+  def strip_lv_slots_doc(nil), do: nil
+  def strip_lv_slots_doc(doc), do: doc |> String.split("## Slots\n\n") |> hd()
+
+  defp split_header(nil), do: []
+  defp split_header(doc), do: String.split(doc, "\n\n", parts: 2)
 
   defp format(doc) do
-    doc |> Earmark.as_html!() |> String.trim()
+    case Earmark.as_html(doc) do
+      {:ok, doc, _} -> String.trim(doc)
+      _ -> String.trim(doc)
+    end
   end
 end

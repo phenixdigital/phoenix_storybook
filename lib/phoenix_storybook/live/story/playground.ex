@@ -386,9 +386,9 @@ defmodule PhoenixStorybook.Story.Playground do
       <div class="psb psb-flex psb-flex-col psb-mb-2">
         <div class="psb psb-overflow-x-auto md:-psb-mx-8">
           <div class="psb psb-inline-block psb-min-w-full psb-py-2 psb-align-middle md:psb-px-8">
-            <div class="psb psb-overflow-hidden psb-shadow psb-ring-1 psb-ring-black psb-ring-opacity-5 md:psb-rounded-lg">
+            <div class="psb psb-overflow-hidden psb-shadow psb-ring-1 psb-ring-black psb-ring-opacity-5 md:psb-rounded-lg dark:psb-border dark:psb-border-slate-600">
               <table class="psb psb-min-w-full psb-divide-y psb-divide-gray-300 dark:psb-divide-slate-600">
-                <thead class="psb psb-bg-gray-50 dark:psb-bg-slate-700">
+                <thead class="psb psb-bg-gray-50 dark:psb-bg-slate-800">
                   <tr>
                     <%= for {header, th_style, span_style} <- [{"Attribute", "psb-pl-3 md:psb-pl-9", "psb-w-8 md:psb-w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "psb-hidden md:psb-table-cell", ""}, {"Value", "", ""}] do %>
                       <th
@@ -402,7 +402,7 @@ defmodule PhoenixStorybook.Story.Playground do
                     <% end %>
                   </tr>
                 </thead>
-                <tbody class="psb psb-divide-y psb-divide-gray-200 dark:psb-divide-slate-600 psb-bg-white dark:psb-bg-slate-700">
+                <tbody class="psb psb-divide-y psb-divide-gray-200 dark:psb-divide-slate-600 psb-bg-white dark:psb-bg-slate-800">
                   <%= if Enum.empty?(@story.merged_attributes()) do %>
                     <tr>
                       <td
@@ -420,6 +420,8 @@ defmodule PhoenixStorybook.Story.Playground do
                     </tr>
                   <% else %>
                     <%= for attr <- @story.merged_attributes(), !is_nil(@variation)  do %>
+                      <% [doc_head | doc_tail] =
+                        if(attr.doc, do: String.split(attr.doc, "\n"), else: [nil]) %>
                       <tr>
                         <td class="psb psb-whitespace-nowrap md:psb-pr-3 md:psb-pr-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300 sm:psb-pl-6">
                           <%= if attr.required do %>
@@ -436,7 +438,51 @@ defmodule PhoenixStorybook.Story.Playground do
                           <.type_badge type={attr.type} />
                         </td>
                         <td class="psb psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300 psb-max-w-[16rem]">
-                          <%= if attr.doc, do: String.trim(attr.doc) %>
+                          <div :if={doc_head}>
+                            <span>
+                              <%= doc_head |> Earmark.as_html() |> elem(1) |> raw() %>
+                            </span>
+                            <a
+                              :if={Enum.any?(doc_tail)}
+                              phx-click={
+                                JS.show(to: "#attr-#{attr.id}-doc-next")
+                                |> JS.hide()
+                                |> JS.show(to: "#attr-#{attr.id}-read-less", display: "inline-block")
+                              }
+                              id={"attr-#{attr.id}-read-more"}
+                              class={[
+                                "psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700",
+                                "dark:hover:psb-text-sky-400 psb-cursor-pointer psb-h-4"
+                              ]}
+                            >
+                              <.fa_icon
+                                name="caret-right"
+                                style={:thin}
+                                plan={@fa_plan}
+                                class="psb-mr-1 psb-h-2"
+                              /> Read more
+                            </a>
+                            <a
+                              :if={Enum.any?(doc_tail)}
+                              phx-click={
+                                JS.hide(to: "#attr-#{attr.id}-doc-next")
+                                |> JS.hide()
+                                |> JS.show(to: "#attr-#{attr.id}-read-more", display: "inline-block")
+                              }
+                              id={"attr-#{attr.id}-read-less"}
+                              class={[
+                                "psb psb-py-2 psb-pb-4 psb-hidden psb-text-slate-400",
+                                "hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer psb-h-4"
+                              ]}
+                            >
+                              <.fa_icon
+                                name="caret-down"
+                                style={:thin}
+                                plan={@fa_plan}
+                                class="psb-mr-1 psb-h-2"
+                              /> Read less
+                            </a>
+                          </div>
                         </td>
                         <td class="psb psb-whitespace-nowrap psb-py-4 md:psb-pr-3 psb-text-sm psb-text-gray-500 dark:psb-text-slate-300 psb-hidden md:psb-table-cell">
                           <span class="psb psb-rounded psb-px-2 psb-py-1 psb-font-mono psb-text-xs md:psb-text-sm">
@@ -455,8 +501,36 @@ defmodule PhoenixStorybook.Story.Playground do
                           />
                         </td>
                       </tr>
+                      <tr
+                        :if={Enum.any?(doc_tail)}
+                        id={"attr-#{attr.id}-doc-next"}
+                        class="psb-hidden psb-relative"
+                      >
+                        <td
+                          colspan="5"
+                          class="psb psb-doc psb-bg-slate-50 dark:psb-bg-slate-800 psb-px-3 md:psb-px-8 psb-py-2 "
+                        >
+                          <.fa_icon
+                            style={:regular}
+                            name="xmark"
+                            phx-click={
+                              JS.hide(to: "#attr-#{attr.id}-doc-next")
+                              |> JS.hide(to: "#attr-#{attr.id}-read-less")
+                              |> JS.show(to: "#attr-#{attr.id}-read-more", display: "inline-block")
+                            }
+                            plan={@fa_plan}
+                            class={[
+                              "psb-absolute psb-right-2 psb-top-2 ",
+                              "hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 psb-cursor-pointer"
+                            ]}
+                          />
+                          <%= doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw() %>
+                        </td>
+                      </tr>
                     <% end %>
                     <%= for slot <- @story.merged_slots() do %>
+                      <% [doc_head | doc_tail] =
+                        if(slot.doc, do: String.split(slot.doc, "\n"), else: [nil]) %>
                       <tr>
                         <td class="psb psb-whitespace-nowrap md:psb-pr-3 md:psb-pr-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300 sm:psb-pl-6">
                           <%= if slot.required do %>
@@ -476,7 +550,54 @@ defmodule PhoenixStorybook.Story.Playground do
                           colspan="3"
                           class="psb psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
                         >
-                          <%= if slot.doc, do: String.trim(slot.doc) %>
+                          <div :if={doc_head}>
+                            <span>
+                              <%= doc_head |> Earmark.as_html() |> elem(1) |> raw() %>
+                            </span>
+                            <a
+                              :if={Enum.any?(doc_tail)}
+                              phx-click={
+                                JS.show(to: "#slot-#{slot.id}-doc-next")
+                                |> JS.hide()
+                                |> JS.show(to: "#slot-#{slot.id}-read-less", display: "inline-block")
+                              }
+                              id={"slot-#{slot.id}-read-more"}
+                              class={[
+                                "psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700",
+                                "dark:hover:psb-text-sky-400 psb-cursor-pointer psb-h-4"
+                              ]}
+                            >
+                              <.fa_icon
+                                name="caret-right"
+                                style={:thin}
+                                plan={@fa_plan}
+                                class="psb-mr-1 psb-h-2"
+                              /> Read more
+                            </a>
+                            <a
+                              :if={Enum.any?(doc_tail)}
+                              phx-click={
+                                JS.hide(to: "#slot-#{slot.id}-doc-next")
+                                |> JS.hide()
+                                |> JS.show(
+                                  to: "#slotattr-#{slot.id}-read-more",
+                                  display: "inline-block"
+                                )
+                              }
+                              id={"slot-#{slot.id}-read-less"}
+                              class={[
+                                "psb psb-py-2 psb-pb-4 psb-hidden psb-text-slate-400",
+                                "hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer psb-h-4"
+                              ]}
+                            >
+                              <.fa_icon
+                                name="caret-down"
+                                style={:thin}
+                                plan={@fa_plan}
+                                class="psb-mr-1 psb-h-2"
+                              /> Read less
+                            </a>
+                          </div>
                         </td>
                       </tr>
                       <%= if slot?(assigns, slot) do %>
@@ -485,7 +606,7 @@ defmodule PhoenixStorybook.Story.Playground do
                             colspan="5"
                             class="psb psb-whitespace-nowrap psb-pl-3 md:psb-pl-9 psb-pr-3 psb-pb-3 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900"
                           >
-                            <pre class="psb psb-text-gray-600 psb-p-2 psb-border psb-border-slate-100 psb-rounded-md psb-bg-slate-100 psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
+                            <pre class="psb psb-text-slate-600 dark:psb-text-slate-300 psb-p-2 psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-bg-slate-100 dark:psb-bg-slate-900 psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
                           </td>
                         </tr>
                       <% end %>
@@ -724,7 +845,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: "[Multiple values]",
   disabled: true,
   class:
-    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-bg-gray-100 psb-border-gray-300 psb-rounded-md"
+    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
 ) %>|
 
           {:eval, value} ->
@@ -742,7 +863,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: inspect(@value),
   disabled: true,
   class:
-    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-bg-gray-100 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
+    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600  psb-rounded-md"
 ) %>|
     end
   end
@@ -753,7 +874,7 @@ defmodule PhoenixStorybook.Story.Playground do
         bg_class:
           if(value,
             do: "psb-bg-indigo-600 dark:psb-bg-sky-400",
-            else: "psb-bg-gray-200 dark:psb-bg-slate-600"
+            else: "psb-bg-gray-200 dark:psb-bg-slate-700"
           ),
         translate_class: if(value, do: "psb-translate-x-5", else: "psb-translate-x-0")
       )
@@ -782,7 +903,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value: @value,
       step: @step,
       class:
-        "psb psb-form-input psb-text-xs md:psb-text-sm psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-800psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
+        "psb psb-form-input psb-text-xs md:psb-text-sm psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
     ) %>
     """
   end
@@ -796,7 +917,7 @@ defmodule PhoenixStorybook.Story.Playground do
       min: @min,
       max: @max,
       class:
-        "psb psb-form-input psb-text-xs md:psb-text-sm psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
+        "psb psb-form-input psb-text-xs md:psb-text-sm psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
     ) %>
     """
   end
@@ -806,7 +927,7 @@ defmodule PhoenixStorybook.Story.Playground do
     <%= text_input(@form, @attr_id,
       value: @value,
       class:
-        "psb psb-form-input psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
+        "psb psb-form-input psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
     ) %>
     """
   end
@@ -826,7 +947,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value: @value,
       disabled: true,
       class:
-        "psb psb-form-input psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
+        "psb psb-cursor-not-allowed psb-bg-gray-100 psb-form-input psb-block psb-w-full dark:psb-text-slate-700 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
     ) %>
     """
   end
@@ -838,7 +959,7 @@ defmodule PhoenixStorybook.Story.Playground do
     <%= select(@form, @attr_id, @values,
       value: @value,
       class:
-        "psb psb-form-select psb-mt-1 psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-800 psb-pl-3 psb-pr-10 psb-py-2 psb-text-xs md:psb-text-sm focus:psb-outline-none focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
+        "psb psb-form-select psb-mt-1 psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-pl-3 psb-pr-10 psb-py-2 psb-text-xs md:psb-text-sm focus:psb-outline-none focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
     ) %>
     """
   end

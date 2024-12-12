@@ -199,7 +199,14 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def render(assigns = %{story: story}) do
-    assigns = assign(assigns, story: story, doc: story.doc())
+    strip_doc_attributes? = assigns.backend_module.config(:strip_doc_attributes, true)
+
+    assigns =
+      if story.storybook_type() == :component and not strip_doc_attributes? do
+        assign(assigns, story: story, doc: story.unstripped_doc())
+      else
+        assign(assigns, story: story, doc: story.doc())
+      end
 
     ~H"""
     <div
@@ -243,7 +250,7 @@ defmodule PhoenixStorybook.StoryLive do
     <div class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300">
       <%= @doc |> Enum.at(0) |> raw() %>
     </div>
-    <%= if Enum.count(@doc) > 1 do %>
+    <%= if Enum.at(@doc, 1) && Enum.at(@doc, 1) != "" do %>
       <a
         phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
         id="read-more"
@@ -265,9 +272,7 @@ defmodule PhoenixStorybook.StoryLive do
       </a>
       <div id="doc-next" class="psb-hidden psb-space-y-4 ">
         <div class="psb psb-doc psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
-          <%= for paragraph <- Enum.slice(@doc, 1..-1//1) do %>
-            <%= paragraph |> Earmark.as_html!() |> raw() %>
-          <% end %>
+          <%= @doc |> Enum.at(1) |> raw() %>
         </div>
       </div>
     <% end %>

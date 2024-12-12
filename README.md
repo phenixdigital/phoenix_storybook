@@ -146,6 +146,10 @@ defmodule MyAppWeb.Storybook do
     font_awesome_kit_id: "foo8b41bar4625",
     font_awesome_rendering: :webfont, # default value is :svg
 
+    # Set to `false` if you want to keep attributes & slot documentations in component page header.
+    # Defaults to `true`.
+    strip_doc_attributes: false,
+
     # Story compilation mode, can be either `:eager` or `:lazy`.
     # It defaults to `:lazy` in dev environment, `:eager` in other environments.
     #   - When eager: all .story.exs & .index.exs files are compiled upfront.
