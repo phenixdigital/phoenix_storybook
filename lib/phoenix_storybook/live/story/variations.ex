@@ -12,6 +12,15 @@ defmodule PhoenixStorybook.Story.Variations do
   alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
   alias PhoenixStorybook.Story
 
+  @doc """
+  Renders all component's (including live_components) variations: code & preview.
+
+  Depending on story's container option, variation's previews will be rendered:
+  - inline by default
+  - as an iframe srcdoc for components, when container is iframe
+  - as an classic iframe for live_components, when container is iframe
+  """
+
   attr :backend_module, :any
   attr :color_mode, :atom
   attr :color_mode_class, :string
