@@ -144,6 +144,7 @@ defmodule PhoenixStorybook.Story do
     @callback template() :: String.t()
     @callback layout() :: atom()
     @callback render_only_function_source() :: atom()
+    @callback unstripped_doc() :: String.t() | [String.t()] | nil
   end
 
   defmodule LiveComponentBehaviour do
@@ -194,7 +195,7 @@ defmodule PhoenixStorybook.Story do
 
       @impl StoryBehaviour
       def doc do
-        Doc.fetch_doc_as_html(__MODULE__)
+        Doc.fetch_doc_as_html(__MODULE__, true)
       end
 
       @impl unquote(component_behaviour(live?))
@@ -230,6 +231,11 @@ defmodule PhoenixStorybook.Story do
       else
         def merged_attributes, do: Attr.merge_attributes(function(), attributes())
         def merged_slots, do: Slot.merge_slots(function(), slots())
+
+        @impl ComponentBehaviour
+        def unstripped_doc do
+          Doc.fetch_doc_as_html(__MODULE__, false)
+        end
       end
 
       defoverridable imports: 0,

@@ -12,7 +12,7 @@ defmodule PhoenixStorybook.VisualTestLiveTest do
 
   test "renders a component", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/storybook/visual_tests/component")
-    assert html =~ "component: hello default"
+    assert html =~ ~r|component:\s*hello\s*default|
   end
 
   test "renders an iframe component", %{conn: conn} do

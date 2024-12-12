@@ -71,6 +71,22 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     end
   end
 
+  describe "attribute documentation" do
+    test "renders simple attribute documentation", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/let/let_component?tab=playground")
+
+      assert view |> element("#tree_storybook_let_let_component-playground-form") |> render() =~
+               "list of stories"
+    end
+
+    test "renders slot attribute documentation", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/let/let_component?tab=playground")
+
+      assert view |> element("#tree_storybook_let_let_component-playground-form") |> render() =~
+               "slot documentation"
+    end
+  end
+
   describe "component in an iframe" do
     test "renders the playground preview iframe", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook/live_component?tab=playground")
@@ -85,7 +101,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     end
 
     test "with no attributes, it prints a placeholder", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/storybook/b_folder/component?tab=playground")
+      {:ok, _view, html} = live(conn, "/storybook/b_folder/nested_component?tab=playground")
       assert html =~ ~r|In order to use playground, you must define your component attributes|
     end
   end
@@ -221,12 +237,12 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "component preview is updated as a different theme is selected", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       html = view |> element("#playground-preview-live") |> render()
-      assert html =~ "component: hello default"
+      assert html =~ ~r|component:\s*hello\s*default|
 
       view |> element("a.psb-theme", "Colorful") |> render_click()
       wait_for_preview_lv(view)
       html = view |> element("#playground-preview-live") |> render()
-      assert html =~ "component: hello colorful"
+      assert html =~ ~r|component:\s*hello\s*colorful|
     end
 
     test "playground form is updated as a different theme is selected", %{conn: conn} do
@@ -247,7 +263,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       html = view |> element("#playground-preview-live") |> render()
       refute html =~ ~s|class="dark"|
-      assert html =~ "component: hello default"
+      assert html =~ ~r|component:\s*hello\s*default|
 
       view
       |> element("#psb-colormode-dropdown")
@@ -257,7 +273,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       html = view |> element("#playground-preview-live .psb-sandbox") |> render()
       [component_class] = html |> Floki.parse_fragment!() |> Floki.attribute("class")
       assert component_class |> String.split(" ") |> Enum.member?("dark")
-      assert html =~ "component: hello default"
+      assert html =~ ~r|component:\s*hello\s*default|
     end
   end
 

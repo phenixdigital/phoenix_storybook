@@ -42,7 +42,8 @@ defmodule PhoenixStorybook.TestStorybook do
       sandbox_class: "theme-prefix",
       assign: :theme
     ],
-    color_mode: true
+    color_mode: true,
+    strip_doc_attributes: false
 end
 
 defmodule PhoenixStorybook.TestRouter do

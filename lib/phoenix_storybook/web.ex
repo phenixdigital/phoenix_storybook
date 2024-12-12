@@ -45,6 +45,7 @@ defmodule PhoenixStorybook.Web do
     quote do
       @moduledoc false
       use Phoenix.Component
+      alias Phoenix.LiveView.JS
       unquote(view_helpers())
     end
   end

@@ -1,6 +1,15 @@
 defmodule LetComponent do
   use Phoenix.Component
 
+  attr :stories, :list, doc: "list of stories"
+
+  slot :inner_block,
+    doc: """
+    slot documentation
+
+    is working multine
+    """
+
   def let_component(assigns) do
     ~H"""
     <ul>

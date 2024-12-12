@@ -78,6 +78,8 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive(:yes?, ~r|Add your storybook content to.*\.formatter.exs.*|)
       assert_shell_receive(:yes?, ~r|Add an alias to .*mix.exs.*|)
       assert_shell_receive(:yes?, ~r|Add a COPY directive in .*Dockerfile.*|)
+      assert_shell_receive(:info, ~r|You are all set! 🚀|)
+      assert_shell_receive(:info, ~r|You can run mix phx.server and visit|)
     end)
   end
 
@@ -119,7 +121,8 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       )
 
       assert_shell_receive(:yes?, ~r|Add your storybook content to.*\.formatter.exs.*|)
-      # assert_shell_receive(:yes?, ~r|Add a COPY directive in .*Dockerfile.*|)
+      assert_shell_receive(:info, ~r|You are all set! 🚀|)
+      assert_shell_receive(:info, ~r|You can run mix phx.server and visit|)
     end)
   end
 
@@ -132,10 +135,27 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       story_file = "storybook/core_components/button.story.exs"
       story = ExsCompiler.compile_exs!(story_file, "./")
       assert story.storybook_type() == :component
-      assert story.function() == &PhoenixStorybookWeb.CoreComponents.button/1
+      assert story.function() == (&PhoenixStorybookWeb.CoreComponents.button/1)
 
       story_content = File.read!(story_file)
       assert story_content =~ "def function, do: &PhoenixStorybookWeb.CoreComponents.button/1"
+    end)
+  end
+
+  test "abort generator", config do
+    in_tmp_project(config.test, fn ->
+      send(self(), {:mix_shell_input, :yes?, false})
+      Storybook.run([])
+
+      assert_shell_receive(:info, ~r|Starting storybook generation|)
+      assert_shell_receive(:info, ~r|creating lib/phoenix_storybook_web/storybook.ex|)
+      assert_shell_receive(:info, ~r|creating storybook/_root.index.exs|)
+      assert_shell_receive(:info, ~r|creating storybook/welcome.story.exs|)
+      assert_shell_receive(:info, ~r|creating storybook/core_components/button.story.exs|)
+      assert_shell_receive(:info, ~r|creating storybook/core_components/table.story.exs|)
+      assert_shell_receive(:info, ~r|creating assets/css/storybook.css|)
+      assert_shell_receive(:info, ~r|creating assets/js/storybook.js|)
+      assert_shell_receive(:info, ~r|storybook setup aborted 🙁|)
     end)
   end
 
