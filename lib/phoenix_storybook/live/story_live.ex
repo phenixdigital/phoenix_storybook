@@ -2,13 +2,13 @@ defmodule PhoenixStorybook.StoryLive do
   use PhoenixStorybook.Web, :live_view
 
   alias Phoenix.HTML.Safe
-  alias Phoenix.{LiveView.JS, PubSub}
+  alias Phoenix.PubSub
 
   alias PhoenixStorybook.Events.EventLog
   alias PhoenixStorybook.ExtraAssignsHelpers
   alias PhoenixStorybook.LayoutView
-  alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
-  alias PhoenixStorybook.Story.{Playground, PlaygroundPreviewLive}
+  alias PhoenixStorybook.Rendering.CodeRenderer
+  alias PhoenixStorybook.Story.{ComponentDoc, Playground, PlaygroundPreviewLive, Variations}
   alias PhoenixStorybook.{StoryNotFound, StoryTabNotFound}
   alias PhoenixStorybook.ThemeHelpers
 
@@ -198,16 +198,7 @@ defmodule PhoenixStorybook.StoryLive do
     """
   end
 
-  def render(assigns = %{story: story}) do
-    strip_doc_attributes? = assigns.backend_module.config(:strip_doc_attributes, true)
-
-    assigns =
-      if story.storybook_type() == :component and not strip_doc_attributes? do
-        assign(assigns, story: story, doc: story.unstripped_doc())
-      else
-        assign(assigns, story: story, doc: story.doc())
-      end
-
+  def render(assigns = %{story: _story}) do
     ~H"""
     <div
       class="psb psb-space-y-6 psb-pb-12 psb-flex psb-flex-col psb-h-[calc(100vh_-_7rem)] lg:psb-h-[calc(100vh_-_4rem)]"
@@ -231,7 +222,12 @@ defmodule PhoenixStorybook.StoryLive do
 
           <%= @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
         </div>
-        <.print_doc doc={@doc} fa_plan={@fa_plan} />
+
+        <ComponentDoc.render_documentation
+          story={@story}
+          backend_module={@backend_module}
+          fa_plan={@fa_plan}
+        />
       </div>
 
       <%= render_content(@story.storybook_type(), assigns) %>
@@ -240,46 +236,6 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def render(assigns), do: ~H[]
-
-  defp print_doc(assigns = %{doc: doc}) when is_binary(doc) do
-    ~H"<.print_doc doc={[@doc]} />"
-  end
-
-  defp print_doc(assigns = %{doc: [_header | _]}) do
-    ~H"""
-    <div class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300">
-      <%= @doc |> Enum.at(0) |> raw() %>
-    </div>
-    <%= if Enum.at(@doc, 1) && Enum.at(@doc, 1) != "" do %>
-      <a
-        phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
-        id="read-more"
-        class="psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
-      >
-        <.fa_icon
-          name="caret-right"
-          style={:thin}
-          plan={@fa_plan}
-          class="psb-relative psb-top-px psb-mr-1"
-        /> Read more
-      </a>
-      <a
-        phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
-        id="read-less"
-        class="psb psb-pt-2 psb-pb-4 psb-hidden psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
-      >
-        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb-mr-1" /> Read less
-      </a>
-      <div id="doc-next" class="psb-hidden psb-space-y-4 ">
-        <div class="psb psb-doc psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
-          <%= @doc |> Enum.at(1) |> raw() %>
-        </div>
-      </div>
-    <% end %>
-    """
-  end
-
-  defp print_doc(assigns), do: ~H""
 
   defp navigation_tabs(story) do
     case story.storybook_type() do
@@ -383,128 +339,24 @@ defmodule PhoenixStorybook.StoryLive do
     for {tab, label, _icon} <- tabs, do: {label, tab}
   end
 
-  defp render_content(type, assigns = %{tab: :variations})
-       when type in [:component, :live_component] do
-    assigns =
-      assign(assigns,
-        sandbox_attributes:
-          case assigns.story.container() do
-            {:div, opts} -> assigns_to_attributes(opts, [:class])
-            {:iframe, opts} -> assigns_to_attributes(opts, [:style])
-            _ -> []
-          end
-      )
-
+  defp render_content(t, assigns = %{tab: :variations}) when t in [:component, :live_component] do
     ~H"""
-    <div class="psb psb-space-y-12 psb-pb-12" id={"story-variations-#{story_id(@story)}"}>
-      <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
-              extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
-              rendering_context = RenderingContext.build(assigns.backend_module, assigns.story, variation, extra_attributes) do %>
-        <div
-          id={anchor_id(variation)}
-          class="psb psb-variation-block psb-gap-x-4 psb-grid psb-grid-cols-5"
-        >
-          <!-- Variation description -->
-          <div class="psb psb-col-span-5 psb-font-medium hover:psb-font-semibold psb-mb-6 psb-border-b psb-border-slate-100 dark:psb-border-slate-600 md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300 psb-flex psb-justify-between">
-            <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
-              <.fa_icon
-                style={:light}
-                name="link"
-                class="psb-hidden -psb-ml-8 psb-pr-1 psb-text-slate-400"
-                plan={@fa_plan}
-              />
-              <%= if description do %>
-                <%= description %>
-              <% else %>
-                <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
-              <% end %>
-            <% end %>
-            <.link
-              patch={
-                path_to(@socket, @root_path, @story_path, %{
-                  tab: :playground,
-                  variation_id: variation.id,
-                  theme: @theme
-                })
-              }
-              class="psb psb-hidden psb-open-playground-link"
-            >
-              <span class="psb psb-text-base psb-font-light psb-text-gray-500 dark:psb-text-slate-300 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 hover:psb-font-medium ">
-                Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
-              </span>
-            </.link>
-          </div>
-          <!-- Variation component preview -->
-          <div
-            id={"#{anchor_id(variation)}-component"}
-            class={[
-              "psb psb-border dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
-              component_layout_class(@story)
-            ]}
-          >
-            <%= case {LayoutView.normalize_story_container(@story.container()), @story.storybook_type()} do %>
-              <% {{:iframe, iframe_opts}, :component} -> %>
-                <iframe
-                  phx-update="ignore"
-                  id={iframe_id(@story, variation, @color_mode)}
-                  class="psb-w-full psb-border-0"
-                  srcdoc={iframe_srcdoc(assigns, rendering_context, iframe_opts)}
-                  height="0"
-                  onload={iframe_onload_js()}
-                  {@sandbox_attributes}
-                />
-              <% {{:iframe, _iframe_opts}, :live_component} -> %>
-                <iframe
-                  phx-update="ignore"
-                  id={iframe_id(@story, variation, @color_mode)}
-                  class="psb-w-full psb-border-0"
-                  src={
-                    path_to_iframe(@socket, @root_path, @story_path,
-                      variation_id: variation.id,
-                      theme: @theme,
-                      color_mode: @color_mode
-                    )
-                  }
-                  height="0"
-                  onload={iframe_onload_js()}
-                  {@sandbox_attributes}
-                />
-              <% {container_with_opts, _component_kind} -> %>
-                <div
-                  class={[
-                    LayoutView.sandbox_class(@socket, container_with_opts, assigns),
-                    @color_mode_class
-                  ]}
-                  {@sandbox_attributes}
-                >
-                  <%= ComponentRenderer.render(rendering_context) %>
-                </div>
-            <% end %>
-          </div>
-          <!-- Variation code -->
-          <div
-            id={"#{anchor_id(variation)}-code"}
-            class={[
-              "psb psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-bg-slate-800 psb-rounded-md psb-col-span-5 psb-group psb-relative psb-shadow-sm psb-flex psb-flex-col psb-justify-center",
-              code_layout_class(@story)
-            ]}
-          >
-            <div
-              phx-click={JS.dispatch("psb:copy-code")}
-              class="psb psb-hidden group-hover:psb-block psb-bg-slate-700 psb-text-slate-500 hover:psb-text-slate-100 psb-z-10 psb-absolute psb-top-2 psb-right-2 psb-px-2 psb-py-1 psb-rounded-md psb-cursor-pointer"
-            >
-              <.fa_icon name="copy" class="psb-text-inherit" plan={@fa_plan} />
-            </div>
-            <%= CodeRenderer.render(rendering_context) %>
-          </div>
-        </div>
-      <% end %>
-    </div>
+    <Variations.render_variations
+      backend_module={@backend_module}
+      color_mode={@color_mode}
+      color_mode_class={@color_mode_class}
+      fa_plan={@fa_plan}
+      root_path={@root_path}
+      socket={@socket}
+      story={@story}
+      story_path={@story_path}
+      theme={@theme}
+      variation_extra_assigns={@variation_extra_assigns}
+    />
     """
   end
 
-  defp render_content(type, assigns = %{tab: :source})
-       when type in [:component, :live_component] do
+  defp render_content(t, assigns = %{tab: :source}) when t in [:component, :live_component] do
     ~H"""
     <div class="psb psb-flex-1 psb-flex psb-flex-col psb-overflow-auto psb-max-h-full">
       <%= @story |> CodeRenderer.render_component_source() |> to_raw_html() %>
@@ -512,8 +364,7 @@ defmodule PhoenixStorybook.StoryLive do
     """
   end
 
-  defp render_content(type, assigns = %{tab: :playground})
-       when type in [:component, :live_component] do
+  defp render_content(t, assigns = %{tab: :playground}) when t in [:component, :live_component] do
     ~H"""
     <.live_component
       module={Playground}
@@ -532,9 +383,9 @@ defmodule PhoenixStorybook.StoryLive do
     """
   end
 
-  defp render_content(type, _assigns = %{tab: tab})
-       when type in [:component, :live_component],
-       do: raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
+  defp render_content(t, _assigns = %{tab: tab}) when t in [:component, :live_component] do
+    raise(StoryTabNotFound, "unknown story tab #{inspect(tab)}")
+  end
 
   defp render_content(:page, assigns) do
     ~H"""
@@ -584,49 +435,6 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp component_layout_class(story) do
-    case story.layout() do
-      :one_column -> nil
-      :two_columns -> "lg:psb-col-span-2"
-    end
-  end
-
-  defp code_layout_class(story) do
-    case story.layout() do
-      :one_column -> nil
-      :two_columns -> "lg:psb-col-span-3"
-    end
-  end
-
-  defp iframe_srcdoc(assigns, rendering_context, iframe_opts) do
-    assigns =
-      assign(assigns,
-        conn: assigns.socket,
-        rendering_context: rendering_context,
-        iframe_opts: iframe_opts
-      )
-
-    ~H"""
-    <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
-      <div id="iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
-        <%= ComponentRenderer.render(@rendering_context) %>
-      </div>
-    <% end %>
-    """
-    |> Safe.to_iodata()
-  end
-
-  defp iframe_onload_js do
-    """
-    javascript:(function(o){
-      o.style.height=o.contentWindow.document.body.scrollHeight+'px';
-      setTimeout(function() {
-        o.style.height=o.contentWindow.document.body.scrollHeight+'px';
-      }, 100)
-    }(this));
-    """
-  end
-
   # removing Storybook's specific not useful while reading example's source code.
   defp remove_example_code(code) do
     code
@@ -645,20 +453,8 @@ defmodule PhoenixStorybook.StoryLive do
     |> Phoenix.HTML.raw()
   end
 
-  defp iframe_id(story, variation, nil) do
-    "iframe-#{story_id(story)}-variation-#{variation.id}"
-  end
-
-  defp iframe_id(story, variation, color_mode) do
-    "iframe-#{story_id(story)}-variation-#{variation.id}-#{color_mode}"
-  end
-
   defp story_id(story_module) do
     story_module |> Macro.underscore() |> String.replace("/", "_")
-  end
-
-  defp anchor_id(%{id: id}) do
-    id |> to_string() |> String.replace("_", "-")
   end
 
   def handle_event("psb-set-theme", %{"theme" => theme}, socket) do
