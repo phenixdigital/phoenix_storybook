@@ -93,8 +93,26 @@
    dark:hover:psb-decoration-sky-400;
 }
 
+.psb-doc h1,
+.psb-doc h2,
+.psb-doc h3,
+.psb-doc h4 {
+  @apply psb-font-bold psb-mt-4 psb-mb-2;
+}
+
+.psb-doc h1 {
+  @apply psb-text-xl;
+}
+
 .psb-doc h2 {
-  @apply psb-font-bold psb-mt-4 psb-mb-2 psb-text-[1.075em];
+  @apply psb-text-lg;
+}
+
+.psb-doc h3 {
+  @apply psb-text-base;
+}
+.psb-doc h4 {
+  @apply psb-text-base;
 }
 
 .psb-doc ul {
@@ -106,12 +124,13 @@
 }
 
 .psb-doc pre {
-  @apply psb-my-10;
+  @apply psb-my-4;
 }
 
 .psb-doc pre code {
-  @apply psb-border psb-bg-slate-800 dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 
-  psb-rounded-md psb-px-4 psb-py-4 psb-text-gray-300 psb-text-xs md:psb-text-sm;
+  @apply psb-border psb-bg-slate-800 dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600;
+  @apply psb-rounded-md psb-px-4 psb-py-4 psb-text-gray-300 psb-text-xs md:psb-text-sm psb-block;
+  @apply psb-overflow-x-auto;
 }
 
 .psb-doc code.inline {
