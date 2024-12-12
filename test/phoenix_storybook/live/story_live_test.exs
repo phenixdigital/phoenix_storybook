@@ -150,14 +150,14 @@ defmodule PhoenixStorybook.StoryLiveTest do
         ~p"/storybook/component?#{[tab: :playground, theme: :colorful, variation_id: :hello]}"
       )
 
-      assert html =~ "component: hello colorful"
+      assert html =~ ~r|component:\s*hello\s*colorful|
 
       Phoenix.PubSub.subscribe(PhoenixStorybook.PubSub, "playground-#{inspect(view.pid)}")
       view |> element("a.psb-theme", "Default") |> render_click()
       assert_receive {:set_theme, :default}
 
       assert view |> element("#tree_storybook_component-playground-preview") |> render() =~
-               "component: hello default"
+               ~r|component:\s*hello\s*default|
     end
 
     test "renders component story and navigate to source tab with select", %{conn: conn} do

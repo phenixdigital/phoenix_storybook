@@ -19,10 +19,10 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
     test "it should return HEEX for each component/variation couple",
          %{component: component, live_component: live_component} do
       assert render_variation(component, :hello) |> rendered_to_string() ==
-               "<span data-index=\"42\">component: hello</span>"
+               "<span data-index=\"42\">\n  component: hello\n  \n</span>"
 
       assert render_variation(component, :world) |> rendered_to_string() ==
-               "<span data-index=\"37\">component: world</span>"
+               "<span data-index=\"37\">\n  component: world\n  \n</span>"
 
       # I did not manage to assert against the HTML
       assert [%Phoenix.LiveView.Component{id: "live-component-single-hello"}] =
@@ -35,10 +35,7 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
     test "it also works for a variation group", %{afolder_component: component} do
       assert render_variation(component, :group)
              |> rendered_to_string() ==
-               String.trim("""
-               <span data-index=\"42\">component: hello</span>
-               <span data-index=\"37\">component: world</span>
-               """)
+               "<span data-index=\"42\">\n  component: hello\n  \n</span>\n<span data-index=\"37\">\n  component: world\n  \n</span>"
 
       # I did not manage to assert against the HTML
       assert render_variation(component, :group)
@@ -46,7 +43,7 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
 
     test "it is working with a variation without any attributes", %{afolder_component: component} do
       assert render_variation(component, :no_attributes) |> rendered_to_string() ==
-               "<span data-index=\"42\">component: </span>"
+               "<span data-index=\"42\">\n  component: \n  \n</span>"
     end
 
     test "it is working with an inner_block requiring a let attribute" do

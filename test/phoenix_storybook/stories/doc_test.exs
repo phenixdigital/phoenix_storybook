@@ -21,8 +21,9 @@ defmodule PhoenixStorybook.Stories.DocTest do
              ]
     end
 
-    test "it returns nik when there is no doc" do
-      assert "let/let_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == nil
+    test "it returns nil when there is no doc" do
+      assert "let/let_live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() ==
+               nil
     end
 
     test "it returns [] when function doc has not yet been compiled" do

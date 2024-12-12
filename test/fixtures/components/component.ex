@@ -7,19 +7,31 @@ defmodule Component do
 
   Second paragraph.
   """
-  def component(assigns) do
-    assigns =
-      assigns
-      |> assign_new(:theme, fn -> nil end)
-      |> assign_new(:label, fn -> "" end)
-      |> assign_new(:index, fn -> 42 end)
 
-    ~H"<span data-index={@index}>component: <%= @label %><%= if @theme do %> <%= @theme %><% end %></span>"
+  attr :theme, :atom, default: nil
+  attr :label, :string, default: "", doc: "Set your component label"
+
+  attr :index, :integer,
+    default: 42,
+    doc: """
+    This is a multi-line
+
+    attr documentation.
+    """
+
+  def component(assigns) do
+    ~H"""
+    <span data-index={@index}>
+      component: <%= @label %>
+      <%= if @theme do %>
+        <%= @theme %>
+      <% end %>
+    </span>
+    """
   end
 
   @doc """
   Should not be extracted in Component.component/1 source code.
   """
   def unrelated_function, do: nil
-
 end
