@@ -21,12 +21,19 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
   def render_documentation(assigns = %{story: story}) do
     strip_doc_attributes? = assigns.backend_module.config(:strip_doc_attributes, true)
 
-    assigns =
-      if story.storybook_type() == :component and not strip_doc_attributes? do
-        assign(assigns, story: story, doc: story.unstripped_doc() |> read_doc())
-      else
-        assign(assigns, story: story, doc: story.doc() |> read_doc())
+    doc =
+      cond do
+        story.storybook_type() in [:page, :example] ->
+          story.doc() |> render_page_doc() |> read_doc()
+
+        story.storybook_type() == :component and not strip_doc_attributes? ->
+          story.unstripped_doc() |> read_doc()
+
+        true ->
+          story.doc() |> read_doc()
       end
+
+    assigns = assign(assigns, :doc, doc)
 
     ~H"""
     <div class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300">
@@ -62,7 +69,20 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
     """
   end
 
+  defp render_page_doc(nil), do: nil
+
+  defp render_page_doc(doc) do
+    case String.split(doc, "\n\n", parts: 2) do
+      [] -> nil
+      [header] -> [format(header), nil]
+      [header, body] -> [format(header), format(body)]
+    end
+  end
+
+  defp format(doc) do
+    doc |> String.trim() |> Earmark.as_html() |> elem(1)
+  end
+
   defp read_doc(nil), do: [nil]
-  defp read_doc(doc) when is_binary(doc), do: [doc]
   defp read_doc(doc), do: doc
 end

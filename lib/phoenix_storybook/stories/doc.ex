@@ -25,13 +25,13 @@ defmodule PhoenixStorybook.Stories.Doc do
           [header] ->
             [format(header), nil]
 
-          [header, rest] ->
+          [header, body] ->
             [
               format(header),
               if stripped? do
-                rest |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> format()
+                body |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> format()
               else
-                format(rest)
+                format(body)
               end
             ]
         end
@@ -89,19 +89,14 @@ defmodule PhoenixStorybook.Stories.Doc do
     end
   end
 
-  def strip_lv_attributes_doc(nil), do: nil
   def strip_lv_attributes_doc(doc), do: doc |> String.split("## Attributes\n\n") |> hd()
 
-  def strip_lv_slots_doc(nil), do: nil
   def strip_lv_slots_doc(doc), do: doc |> String.split("## Slots\n\n") |> hd()
 
   defp split_header(nil), do: []
   defp split_header(doc), do: String.split(doc, "\n\n", parts: 2)
 
   defp format(doc) do
-    case Earmark.as_html(doc) do
-      {:ok, doc, _} -> String.trim(doc)
-      _ -> String.trim(doc)
-    end
+    doc |> Earmark.as_html() |> elem(1)
   end
 end

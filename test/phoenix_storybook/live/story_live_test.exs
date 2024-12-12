@@ -403,6 +403,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
       html = view |> element("a", "example.html.heex") |> render_click()
       assert html =~ ~r/Example.*template/
     end
+
+    test "renders an example story extra source content", %{conn: conn} do
+      {:ok, _view, html} =
+        live(conn, ~p"/storybook/examples/example?#{%{tab: "./example_html.ex"}}")
+
+      assert html =~ ~r/embed_templates/
+    end
   end
 
   describe "search modal" do
