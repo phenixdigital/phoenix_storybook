@@ -11,6 +11,9 @@ defmodule PhoenixStorybook.ComponentStub do
   def doc, do: ["description"]
 
   @impl ComponentBehaviour
+  def unstripped_doc, do: ["description"]
+
+  @impl ComponentBehaviour
   def function, do: fn -> "" end
 
   @impl ComponentBehaviour
