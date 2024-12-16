@@ -13,22 +13,23 @@ defmodule PhoenixStorybook.Stories.Slot do
   - `required`: `true` if the attribute is mandatory.
   """
 
-  alias PhoenixStorybook.Stories.Slot
+  alias PhoenixStorybook.Stories.{Attr, Slot}
   require Logger
 
   @type t :: %__MODULE__{
           id: atom(),
           doc: String.t(),
+          attrs: [Attr.t()],
           required: boolean
         }
 
   @enforce_keys [:id]
-  defstruct [:id, :doc, required: false]
+  defstruct [:id, :doc, attrs: [], required: false]
 
   @doc false
   def merge_slots(mod_or_fun, story_slots) do
     component_slots = read_slots(mod_or_fun)
-    component_slots_map = mod_or_fun |> read_slots() |> slots_map(:name)
+    component_slots_map = slots_map(component_slots, :name)
     story_slots_map = slots_map(story_slots, :id)
     slot_keys = Enum.uniq(Enum.map(component_slots, & &1.name) ++ Enum.map(story_slots, & &1.id))
 
@@ -51,7 +52,9 @@ defmodule PhoenixStorybook.Stories.Slot do
   end
 
   defp read_slots(function) when is_function(function) do
-    [module: module, name: name] = function |> Function.info() |> Keyword.take([:module, :name])
+    [module: module, name: name] =
+      function |> Function.info() |> Keyword.take([:module, :name])
+
     slots = get_in(module.__components__(), [name, :slots]) || []
     Enum.sort_by(slots, & &1.line)
   rescue
@@ -70,7 +73,8 @@ defmodule PhoenixStorybook.Stories.Slot do
     %Slot{
       id: slot.name,
       required: slot[:required],
-      doc: slot.doc
+      doc: slot.doc,
+      attrs: Enum.map(slot.attrs, &build_attr/1)
     }
   end
 
@@ -87,5 +91,16 @@ defmodule PhoenixStorybook.Stories.Slot do
       falsy when falsy in [nil, false] -> get_in(slot, [key]) || default
       val -> val
     end
+  end
+
+  defp build_attr(attr) do
+    %Attr{
+      id: attr.name,
+      type: attr.type,
+      required: attr[:required],
+      values: get_in(attr, [:opts, :values]),
+      examples: get_in(attr, [:opts, :examples]),
+      doc: attr.doc
+    }
   end
 end

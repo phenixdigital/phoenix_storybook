@@ -423,7 +423,7 @@ defmodule PhoenixStorybook.Story.Playground do
                       <% [doc_head | doc_tail] =
                         if(attr.doc, do: String.split(attr.doc, "\n"), else: [nil]) %>
                       <tr>
-                        <td class="psb psb-whitespace-nowrap md:psb-pr-3 md:psb-pr-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300 sm:psb-pl-6">
+                        <td class="psb psb-whitespace-nowrap  md:psb-pr-6 psb-pl-3 sm:psb-pl-6 md:psb-pl-9 psb-py-4 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300">
                           <%= if attr.required do %>
                             <.required_badge fa_plan={@fa_plan} />
                           <% end %>
@@ -508,7 +508,7 @@ defmodule PhoenixStorybook.Story.Playground do
                       >
                         <td
                           colspan="5"
-                          class="psb psb-doc psb-bg-slate-50 dark:psb-bg-slate-800 psb-px-3 md:psb-px-8 psb-py-2 "
+                          class="psb psb-doc psb-text-sm psb-bg-slate-50 dark:psb-bg-slate-800 psb-px-3 md:psb-px-8 psb-py-2 "
                         >
                           <.fa_icon
                             style={:regular}
@@ -529,82 +529,100 @@ defmodule PhoenixStorybook.Story.Playground do
                       </tr>
                     <% end %>
                     <%= for slot <- @story.merged_slots() do %>
-                      <% [doc_head | doc_tail] =
-                        if(slot.doc, do: String.split(slot.doc, "\n"), else: [nil]) %>
                       <tr>
-                        <td class="psb psb-whitespace-nowrap md:psb-pr-3 md:psb-pr-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300 sm:psb-pl-6">
-                          <%= if slot.required do %>
-                            <.required_badge fa_plan={@fa_plan} />
-                          <% end %>
+                        <td class="psb psb-whitespace-nowrap md:psb-pr-6 sm:psb-pl-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300">
+                          <.required_badge :if={slot.required} fa_plan={@fa_plan} />
                           <%= slot.id %>
-                          <%= if slot.required do %>
-                            <span class="psb psb-inline md:psb-hidden psb-text-indigo-600 dark:psb-text-sky-400 psb-text-sm psb-font-bold -psb-ml-0.5">
-                              *
-                            </span>
-                          <% end %>
+                          <span
+                            :if={slot.required}
+                            class="psb psb-inline md:psb-hidden psb-text-indigo-600 dark:psb-text-sky-400 psb-text-sm psb-font-bold -psb-ml-0.5"
+                          >
+                            *
+                          </span>
                         </td>
                         <td class="psb psb-whitespace-nowrap psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm  psb-text-gray-500">
                           <.type_badge type={:slot} />
                         </td>
                         <td
                           colspan="3"
-                          class="psb psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
+                          class="psb psb-doc psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
                         >
-                          <div :if={doc_head}>
-                            <span>
-                              <%= doc_head |> Earmark.as_html() |> elem(1) |> raw() %>
-                            </span>
-                            <a
-                              :if={Enum.any?(doc_tail)}
-                              phx-click={
-                                JS.show(to: "#slot-#{slot.id}-doc-next")
-                                |> JS.hide()
-                                |> JS.show(to: "#slot-#{slot.id}-read-less", display: "inline-block")
-                              }
-                              id={"slot-#{slot.id}-read-more"}
-                              class={[
-                                "psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700",
-                                "dark:hover:psb-text-sky-400 psb-cursor-pointer psb-h-4"
-                              ]}
-                            >
-                              <.fa_icon
-                                name="caret-right"
-                                style={:thin}
-                                plan={@fa_plan}
-                                class="psb-mr-1 psb-h-2"
-                              /> Read more
-                            </a>
-                            <a
-                              :if={Enum.any?(doc_tail)}
-                              phx-click={
-                                JS.hide(to: "#slot-#{slot.id}-doc-next")
-                                |> JS.hide()
-                                |> JS.show(
-                                  to: "#slotattr-#{slot.id}-read-more",
-                                  display: "inline-block"
-                                )
-                              }
-                              id={"slot-#{slot.id}-read-less"}
-                              class={[
-                                "psb psb-py-2 psb-pb-4 psb-hidden psb-text-slate-400",
-                                "hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer psb-h-4"
-                              ]}
-                            >
-                              <.fa_icon
-                                name="caret-down"
-                                style={:thin}
-                                plan={@fa_plan}
-                                class="psb-mr-1 psb-h-2"
-                              /> Read less
-                            </a>
+                          <div :if={slot.doc}>
+                            <%= slot.doc |> Earmark.as_html() |> elem(1) |> raw() %>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr :if={Enum.any?(slot.attrs)}>
+                        <td
+                          colspan="5"
+                          class="psb psb-whitespace-nowrap md:psb-pr-6 sm:psb-pl-6 psb-pl-3 md:psb-pl-12 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300"
+                        >
+                          <a
+                            id={"slot-#{slot.id}-attrs-show"}
+                            phx-click={
+                              JS.show(to: "#slot-#{slot.id}-attrs")
+                              |> JS.hide()
+                              |> JS.show(to: "#slot-#{slot.id}-attrs-hide")
+                            }
+                            class="psb psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
+                          >
+                            <.fa_icon
+                              name="caret-right"
+                              style={:thin}
+                              plan={@fa_plan}
+                              class="psb-pr-2"
+                            /> Show slot attributes
+                          </a>
+                          <a
+                            id={"slot-#{slot.id}-attrs-hide"}
+                            phx-click={
+                              JS.hide(to: "#slot-#{slot.id}-attrs")
+                              |> JS.hide()
+                              |> JS.show(to: "#slot-#{slot.id}-attrs-show")
+                            }
+                            class="psb psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer psb-hidden"
+                          >
+                            <.fa_icon
+                              name="caret-down"
+                              style={:thin}
+                              plan={@fa_plan}
+                              class="psb-pr-2"
+                            /> Hide slot attributes
+                          </a>
+                        </td>
+                      </tr>
+                      <tr
+                        :for={attr <- slot.attrs}
+                        :if={Enum.any?(slot.attrs)}
+                        id={"slot-#{slot.id}-attrs"}
+                        class="psb-hidden psb-bg-slate-50 dark:psb-bg-slate-800"
+                      >
+                        <td class="psb psb-whitespace-nowrap psb-pl-3 sm:psb-pl-6 md:psb-pl-20 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300">
+                          <.required_badge :if={attr.required} fa_plan={@fa_plan} /> {attr.id}
+                          <span
+                            :if={attr.required}
+                            class="psb psb-inline md:psb-hidden psb-text-indigo-600 dark:psb-text-sky-400 psb-text-sm psb-font-bold -psb-ml-0.5"
+                          >
+                            *
+                          </span>
+                        </td>
+                        <td class="psb psb-whitespace-nowrap psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm  psb-text-gray-500">
+                          <.type_badge type={attr.type} />
+                        </td>
+                        <td
+                          colspan="3"
+                          class="psb psb-doc psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
+                        >
+                          <div :if={attr.doc()}>
+                            <%= attr.doc() |> Earmark.as_html() |> elem(1) |> raw() %>
                           </div>
                         </td>
                       </tr>
                       <%= if slot?(assigns, slot) do %>
-                        <tr class="psb !psb-border-t-0">
+                        <tr class="psb psb-bg-slate-50 dark:psb-bg-slate-800">
                           <td
                             colspan="5"
-                            class="psb psb-whitespace-nowrap psb-pl-3 md:psb-pl-9 psb-pr-3 psb-pb-3 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900"
+                            class="psb psb-whitespace-nowrap psb-pl-3 md:psb-pl-9 psb-pr-3 psb-py-3 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900"
                           >
                             <pre class="psb psb-text-slate-600 dark:psb-text-slate-300 psb-p-2 psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-bg-slate-100 dark:psb-bg-slate-900 psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
                           </td>
