@@ -91,7 +91,12 @@ defmodule PhoenixStorybook.StoryTest do
 
       assert SlotComponentStory.merged_slots() == [
                %Slot{id: :foo, doc: "foo documentation", required: true},
-               %Slot{id: :nested, doc: "with nested attrs", required: false},
+               %Slot{
+                 id: :nested,
+                 doc: "with nested attrs",
+                 required: false,
+                 attrs: [%Attr{id: :nested_attr, type: :string}]
+               },
                %Slot{id: :bar, doc: nil, required: false}
              ]
     end
@@ -178,15 +183,32 @@ defmodule PhoenixStorybook.StoryTest do
         def slots do
           [
             %Slot{id: :foo, doc: "foo documentation"},
-            %Slot{id: :bar}
+            %Slot{id: :bar},
+            %Slot{
+              id: :also_nested,
+              attrs: [
+                %Attr{id: :nested_attr, type: :string}
+              ]
+            }
           ]
         end
       end
 
       assert SlotLiveComponentStory.merged_slots() == [
                %Slot{id: :foo, doc: "foo documentation", required: true},
-               %Slot{id: :nested, doc: "with nested attrs", required: false},
-               %Slot{id: :bar, doc: nil, required: false}
+               %Slot{
+                 id: :nested,
+                 doc: "with nested attrs",
+                 required: false,
+                 attrs: [%Attr{id: :nested_attr, type: :string}]
+               },
+               %Slot{id: :bar, doc: nil, required: false},
+               %Slot{
+                 id: :also_nested,
+                 doc: nil,
+                 required: false,
+                 attrs: [%Attr{id: :nested_attr, type: :string}]
+               }
              ]
     end
   end

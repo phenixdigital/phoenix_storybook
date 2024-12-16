@@ -87,6 +87,10 @@
   @apply psb-mb-4;
 }
 
+.psb-doc p:last-child {
+  @apply psb-mb-0;
+}
+
 .psb-doc a {
   @apply psb-underline psb-underline-offset-2 psb-decoration-slate-400 dark:psb-decoration-slate-600
    hover:psb-text-indigo-700 hover:psb-decoration-indigo-700 dark:hover:psb-text-sky-400 
