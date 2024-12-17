@@ -231,8 +231,7 @@ defmodule PhoenixStorybook.Story.Playground do
               name={icon}
               class={"psb-pr-1 #{active_link(@upper_tab, tab)}"}
               plan={@fa_plan}
-            />
-            {label}
+            /> {label}
           </a>
         <% end %>
       </nav>
@@ -257,8 +256,7 @@ defmodule PhoenixStorybook.Story.Playground do
               name={icon}
               class={"psb-pr-1 #{active_link(@lower_tab, tab)}"}
               plan={@fa_plan}
-            />
-            {label}
+            /> {label}
             {event_counter(tab, @event_logs_unread)}
           </a>
         <% end %>
@@ -532,16 +530,14 @@ defmodule PhoenixStorybook.Story.Playground do
                               "psb-absolute psb-right-2 psb-top-2 ",
                               "hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 psb-cursor-pointer"
                             ]}
-                          />
-                          {doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw()}
+                          /> {doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw()}
                         </td>
                       </tr>
                     <% end %>
                     <%= for slot <- @story.merged_slots() do %>
                       <tr>
                         <td class="psb psb-whitespace-nowrap md:psb-pr-6 sm:psb-pl-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300">
-                          <.required_badge :if={slot.required} fa_plan={@fa_plan} />
-                          {slot.id}
+                          <.required_badge :if={slot.required} fa_plan={@fa_plan} /> {slot.id}
                           <span
                             :if={slot.required}
                             class="psb psb-inline md:psb-hidden psb-text-indigo-600 dark:psb-text-sky-400 psb-text-sm psb-font-bold -psb-ml-0.5"
@@ -1020,7 +1016,7 @@ defmodule PhoenixStorybook.Story.Playground do
         acc ->
           attr_definition = Enum.find(story.merged_attributes(), &(&1.id == key))
 
-          if (is_nil(value) || value == "") and !attr_definition.required do
+          if attr_definition && (is_nil(value) || value == "") && !attr_definition.required do
             Map.put(acc, key, nil)
           else
             Map.put(acc, key, cast_value(story, key, value))
