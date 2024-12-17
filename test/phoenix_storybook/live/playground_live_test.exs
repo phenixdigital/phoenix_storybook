@@ -6,6 +6,8 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
   @endpoint PhoenixStorybook.PlaygroundLiveTestEndpoint
   @moduletag :capture_log
 
+  use Phoenix.VerifiedRoutes, endpoint: @endpoint, router: PhoenixStorybook.TestRouter
+
   setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
@@ -254,6 +256,13 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       wait_for_lv(view)
       assert view |> element(form_theme_selector) |> render() =~ ~s|value=":colorful"|
+    end
+
+    test "it doees not fail with no theme strategies", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/tree_storybook/component?tab=playground")
+      html = view |> element("#playground-preview-live") |> render()
+      assert html =~ ~r|component:\s*hello|
+      refute html =~ ~r|default|
     end
   end
 

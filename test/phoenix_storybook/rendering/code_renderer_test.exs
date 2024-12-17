@@ -75,8 +75,8 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <.let_component :let={entry} stories={["foo", "bar", "qix"]}>
-                 **<%= entry %>**
+               <.let_component stories={["foo", "bar", "qix"]}>
+                 <:my_slot :let={entry}>**<%= entry %>**</:my_slot>
                </.let_component>
                """)
     end

@@ -7,8 +7,7 @@ defmodule TreeStorybook.Let.LetComponent do
       %Variation{
         id: :default,
         attributes: %{stories: ~w(foo bar qix)},
-        let: :entry,
-        slots: ["**<%= entry %>**"]
+        slots: ["<:my_slot :let={entry}>**<%= entry %>**</:my_slot>"]
       }
     ]
   end
