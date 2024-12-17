@@ -22,7 +22,7 @@ use PhoenixStorybook,
   ]
 ```
 
-If the `theme_strategies` key is undefined, the default `sandbox_class: "theme"` strategy is applied.
+If the `themes_strategies` key is undefined, the default `sandbox_class: "theme"` strategy is applied.
 
 ## CSS theming
 

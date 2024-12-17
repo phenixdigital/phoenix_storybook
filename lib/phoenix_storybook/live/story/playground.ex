@@ -5,7 +5,7 @@ defmodule PhoenixStorybook.Story.Playground do
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhoenixStorybook.Rendering.{CodeRenderer, RenderingContext}
   alias PhoenixStorybook.Story.PlaygroundPreviewLive
-  alias PhoenixStorybook.TemplateHelpers
+  alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers}
   alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
   import PhoenixStorybook.NavigationHelpers
@@ -59,7 +59,7 @@ defmodule PhoenixStorybook.Story.Playground do
     end
   end
 
-  defp assign_variations(socket, group_id, variations) do
+  defp assign_variations(socket = %{assigns: assigns}, group_id, variations) do
     assign_new(socket, :variations, fn ->
       for variation <- variations do
         variation_id = {group_id, variation.id}
@@ -67,7 +67,15 @@ defmodule PhoenixStorybook.Story.Playground do
         variation
         |> Map.take([:attributes, :let, :slots, :template])
         |> Map.put(:id, variation_id)
-        |> put_in([:attributes, :theme], socket.assigns[:theme])
+        |> then(fn variation ->
+          case dbg(ThemeHelpers.theme_strategy(assigns.backend_module, :assign)) do
+            nil ->
+              variation
+
+            theme_assign ->
+              put_in(variation, [:attributes, String.to_atom(theme_assign)], assigns[:theme])
+          end
+        end)
       end
     end)
   end
@@ -614,8 +622,8 @@ defmodule PhoenixStorybook.Story.Playground do
                           colspan="3"
                           class="psb psb-doc psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
                         >
-                          <div :if={attr.doc()}>
-                            <%= attr.doc() |> Earmark.as_html() |> elem(1) |> raw() %>
+                          <div :if={attr.doc}>
+                            <%= attr.doc |> Earmark.as_html() |> elem(1) |> raw() %>
                           </div>
                         </td>
                       </tr>
