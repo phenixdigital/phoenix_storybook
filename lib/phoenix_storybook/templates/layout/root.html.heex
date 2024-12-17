@@ -13,12 +13,12 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"
     />
     <%= if csrf?(@conn) do %>
-      <%= csrf_meta_tag() %>
+      {csrf_meta_tag()}
     <% end %>
 
-    <%= render("_favicon.html", conn: @conn) %>
+    {render("_favicon.html", conn: @conn)}
     <.live_title prefix={title_prefix(@conn)}>
-      <%= assigns[:page_title] %>
+      {assigns[:page_title]}
     </.live_title>
 
     <%= if fa_kit_id = fa_kit_id(@conn) do %>
@@ -69,6 +69,6 @@
   </head>
 
   <body class="psb psb-max-w-full psb-overflow-hidden psb-bg-white dark:psb-bg-slate-900">
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>

@@ -31,7 +31,7 @@ defmodule PhoenixStorybook.LayoutView do
         @span_class,
         "[&:not(:last-child)]:psb-truncate last:psb-whitespace-nowrap"
       ]}>
-        <%= item %>
+        {item}
       </span>
     </.intersperse>
     """

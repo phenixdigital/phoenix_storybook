@@ -69,7 +69,7 @@ defmodule PhoenixStorybook.Search do
               plan={@fa_plan}
               class="psb-pointer-events-none psb-absolute psb-top-3.5 psb-left-4 psb-h-5 psb-w-5 psb-text-gray-400"
             />
-            <%= text_input(f, :input,
+            {text_input(f, :input,
               id: "search-input",
               "phx-change": "search",
               "phx-target": @myself,
@@ -77,7 +77,7 @@ defmodule PhoenixStorybook.Search do
               autocomplete: "off",
               class:
                 "psb psb-h-12 psb-w-full psb-border-0 psb-bg-transparent psb-pl-11 psb-pr-4 psb-text-gray-800 dark:psb-text-slate-300 psb-placeholder-gray-400 dark:psb-placeholder-slate-500 psb-outline-none focus:psb-ring-0 sm:psb-text-sm"
-            ) %>
+            )}
           </.form>
 
           <%= if Enum.empty?(@stories) do %>
@@ -111,12 +111,12 @@ defmodule PhoenixStorybook.Search do
                   patch={Path.join(@root_path, story.path)}
                   class="psb psb-font-semibold psb-whitespace-nowrap dark:psb-text-slate-300"
                 >
-                  <%= story.name %>
+                  {story.name}
                 </.link>
                 <div class="psb psb-truncate">
-                  <%= LayoutView.render_breadcrumb(@socket, story.path,
+                  {LayoutView.render_breadcrumb(@socket, story.path,
                     span_class: "psb-text-xs dark:psb-text-slate-300"
-                  ) %>
+                  )}
                 </div>
               </li>
             <% end %>

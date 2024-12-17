@@ -201,10 +201,10 @@ defmodule PhoenixStorybook.Story.Playground do
   def render(assigns) do
     ~H"""
     <div id="playground" class="psb psb-flex psb-flex-col psb-flex-1">
-      <%= render_upper_navigation_tabs(assigns) %>
-      <%= render_upper_tab_content(assigns) %>
-      <%= render_lower_navigation_tabs(assigns) %>
-      <%= render_lower_tab_content(assigns) %>
+      {render_upper_navigation_tabs(assigns)}
+      {render_upper_tab_content(assigns)}
+      {render_lower_navigation_tabs(assigns)}
+      {render_lower_tab_content(assigns)}
     </div>
     """
   end
@@ -232,7 +232,7 @@ defmodule PhoenixStorybook.Story.Playground do
               class={"psb-pr-1 #{active_link(@upper_tab, tab)}"}
               plan={@fa_plan}
             />
-            <%= label %>
+            {label}
           </a>
         <% end %>
       </nav>
@@ -258,8 +258,8 @@ defmodule PhoenixStorybook.Story.Playground do
               class={"psb-pr-1 #{active_link(@lower_tab, tab)}"}
               plan={@fa_plan}
             />
-            <%= label %>
-            <%= event_counter(tab, @event_logs_unread) %>
+            {label}
+            {event_counter(tab, @event_logs_unread)}
           </a>
         <% end %>
       </nav>
@@ -302,7 +302,7 @@ defmodule PhoenixStorybook.Story.Playground do
             onload="javascript:(function(o){ var height = o.contentWindow.document.body.scrollHeight; if (height > o.style.height) o.style.height=height+'px'; }(this));"
           />
         <% else %>
-          <%= live_render(@socket, PlaygroundPreviewLive,
+          {live_render(@socket, PlaygroundPreviewLive,
             id: playground_preview_id(@story),
             session: %{
               "story" => @story,
@@ -313,7 +313,7 @@ defmodule PhoenixStorybook.Story.Playground do
               "backend_module" => @backend_module
             },
             container: {:div, style: "height: 100%; width: 100%;"}
-          ) %>
+          )}
         <% end %>
       </div>
       <div
@@ -405,7 +405,7 @@ defmodule PhoenixStorybook.Story.Playground do
                         class={"psb #{th_style} psb-py-3.5 psb-text-left psb-text-xs md:psb-text-sm psb-font-semibold psb-text-gray-900 dark:psb-text-slate-300"}
                       >
                         <span class={"psb #{span_style} psb-truncate psb-inline-block"}>
-                          <%= header %>
+                          {header}
                         </span>
                       </th>
                     <% end %>
@@ -436,7 +436,7 @@ defmodule PhoenixStorybook.Story.Playground do
                           <%= if attr.required do %>
                             <.required_badge fa_plan={@fa_plan} />
                           <% end %>
-                          <%= attr.id %>
+                          {attr.id}
                           <%= if attr.required do %>
                             <span class="psb psb-inline md:psb-hidden psb-text-indigo-600 dark:psb-text-sky-400 psb-text-sm psb-font-bold -psb-ml-0.5">
                               *
@@ -449,7 +449,7 @@ defmodule PhoenixStorybook.Story.Playground do
                         <td class="psb psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300 psb-max-w-[16rem]">
                           <div :if={doc_head}>
                             <span>
-                              <%= doc_head |> Earmark.as_html() |> elem(1) |> raw() %>
+                              {doc_head |> Earmark.as_html() |> elem(1) |> raw()}
                             </span>
                             <a
                               :if={Enum.any?(doc_tail)}
@@ -495,7 +495,7 @@ defmodule PhoenixStorybook.Story.Playground do
                         </td>
                         <td class="psb psb-whitespace-nowrap psb-py-4 md:psb-pr-3 psb-text-sm psb-text-gray-500 dark:psb-text-slate-300 psb-hidden md:psb-table-cell">
                           <span class="psb psb-rounded psb-px-2 psb-py-1 psb-font-mono psb-text-xs md:psb-text-sm">
-                            <%= unless is_nil(attr.default), do: inspect(attr.default) %>
+                            {unless is_nil(attr.default), do: inspect(attr.default)}
                           </span>
                         </td>
                         <td class="psb psb-whitespace-nowrap psb-pr-3 psb-psb-py-4 psb-text-sm psb-font-medium">
@@ -533,7 +533,7 @@ defmodule PhoenixStorybook.Story.Playground do
                               "hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 psb-cursor-pointer"
                             ]}
                           />
-                          <%= doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw() %>
+                          {doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw()}
                         </td>
                       </tr>
                     <% end %>
@@ -541,7 +541,7 @@ defmodule PhoenixStorybook.Story.Playground do
                       <tr>
                         <td class="psb psb-whitespace-nowrap md:psb-pr-6 sm:psb-pl-6 psb-pl-3 md:psb-pl-9 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300">
                           <.required_badge :if={slot.required} fa_plan={@fa_plan} />
-                          <%= slot.id %>
+                          {slot.id}
                           <span
                             :if={slot.required}
                             class="psb psb-inline md:psb-hidden psb-text-indigo-600 dark:psb-text-sky-400 psb-text-sm psb-font-bold -psb-ml-0.5"
@@ -557,7 +557,7 @@ defmodule PhoenixStorybook.Story.Playground do
                           class="psb psb-doc psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
                         >
                           <div :if={slot.doc}>
-                            <%= slot.doc |> Earmark.as_html() |> elem(1) |> raw() %>
+                            {slot.doc |> Earmark.as_html() |> elem(1) |> raw()}
                           </div>
                         </td>
                       </tr>
@@ -623,7 +623,7 @@ defmodule PhoenixStorybook.Story.Playground do
                           class="psb psb-doc psb-py-4 md:psb-pr-3 psb-text-xs md:psb-text-sm psb-text-gray-500 dark:psb-text-slate-300"
                         >
                           <div :if={attr.doc}>
-                            <%= attr.doc |> Earmark.as_html() |> elem(1) |> raw() %>
+                            {attr.doc |> Earmark.as_html() |> elem(1) |> raw()}
                           </div>
                         </td>
                       </tr>
@@ -652,17 +652,17 @@ defmodule PhoenixStorybook.Story.Playground do
       id="variation-selection-form"
       class="psb psb-flex psb-flex-col md:psb-flex-row psb-space-y-1 md:psb-space-x-2 psb-justify-end psb-w-full psb-mb-6"
     >
-      <%= label(f, :variation_id, "Open a variation",
+      {label(f, :variation_id, "Open a variation",
         class:
           "psb psb-text-gray-400 dark:psb-text-slate-300 psb-text-xs md:psb-text-sm psb-self-end md:psb-self-center"
-      ) %>
-      <%= select(f, :variation_id, variation_options(@story),
+      )}
+      {select(f, :variation_id, variation_options(@story),
         "phx-change": "set-variation",
         "phx-target": @myself,
         class:
           "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-pr-10 psb-py-1 psb-border-gray-300 dark:psb-border-slate-600 focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-rounded-md",
         value: @variation_id
-      ) %>
+      )}
     </.form>
     """
   end
@@ -684,12 +684,11 @@ defmodule PhoenixStorybook.Story.Playground do
 
         <div>
           <span class="psb-text-gray-400 group-hover:psb-font-bold">
-            <%= @event_log.time |> Time.truncate(:millisecond) |> Time.to_iso8601() %>
+            {@event_log.time |> Time.truncate(:millisecond) |> Time.to_iso8601()}
           </span>
-          <span class="psb-text-indigo-500 group-hover:psb-font-bold"><%= @event_log.type %></span>
+          <span class="psb-text-indigo-500 group-hover:psb-font-bold">{@event_log.type}</span>
           <span class="psb-text-orange-500 group-hover:psb-font-bold">
-            event:
-            <span class="psb-text-gray-400 group-hover:psb-font-bold"><%= @event_log.event %></span>
+            event: <span class="psb-text-gray-400 group-hover:psb-font-bold">{@event_log.event}</span>
           </span>
         </div>
       </div>
@@ -697,8 +696,8 @@ defmodule PhoenixStorybook.Story.Playground do
       <div class="psb-details psb-hidden psb-pl-4">
         <%= for {key, value} <- Map.from_struct(@event_log) do %>
           <div>
-            <span class="psb-text-indigo-500"><%= key %>:</span>
-            <span class="psb-text-gray-400"><%= inspect(value) %></span>
+            <span class="psb-text-indigo-500">{key}:</span>
+            <span class="psb-text-gray-400">{inspect(value)}</span>
           </div>
         <% end %>
       </div>
@@ -778,7 +777,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :string}) do
     ~H"""
     <span class={"psb-bg-slate-100 psb-text-slate-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -786,7 +785,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :atom}) do
     ~H"""
     <span class={"psb-bg-blue-100 psb-text-blue-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -794,7 +793,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :boolean}) do
     ~H"""
     <span class={"psb-bg-slate-500 psb-text-white #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -802,7 +801,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :integer}) do
     ~H"""
     <span class={"psb-bg-green-100 psb-text-green-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -810,7 +809,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :float}) do
     ~H"""
     <span class={"psb-bg-teal-100 psb-text-teal-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -818,7 +817,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :map}) do
     ~H"""
     <span class={"psb-bg-fuchsia-100 psb-text-fuchsia-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -826,7 +825,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :list}) do
     ~H"""
     <span class={"psb-bg-purple-100 psb-text-purple-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -834,7 +833,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: :slot}) do
     ~H"""
     <span class={"psb-bg-rose-100 psb-text-rose-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -842,7 +841,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp type_badge(assigns = %{type: _type}) do
     ~H"""
     <span class={"psb-bg-amber-100 psb-text-amber-800 #{type_badge_class()}"}>
-      <%= type_label(@type) %>
+      {type_label(@type)}
     </span>
     """
   end
@@ -865,12 +864,12 @@ defmodule PhoenixStorybook.Story.Playground do
       nil ->
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
-            ~H|<%= text_input(@form, @attr_id,
+            ~H|{text_input(@form, @attr_id,
   value: "[Multiple values]",
   disabled: true,
   class:
     "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
-) %>|
+)}|
 
           {:eval, value} ->
             value = String.replace(value, ~s|"|, "")
@@ -883,12 +882,12 @@ defmodule PhoenixStorybook.Story.Playground do
       value ->
         assigns = assign(assigns, value: value)
 
-        ~H|<%= text_input(@form, @attr_id,
+        ~H|{text_input(@form, @attr_id,
   value: inspect(@value),
   disabled: true,
   class:
     "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600  psb-rounded-md"
-) %>|
+)}|
     end
   end
 
@@ -911,7 +910,7 @@ defmodule PhoenixStorybook.Story.Playground do
       phx-target={@myself}
       role="switch"
     >
-      <%= hidden_input(@form, @attr_id, value: "#{@value}") %>
+      {hidden_input(@form, @attr_id, value: "#{@value}")}
       <span class={"psb #{@translate_class} psb-form-input psb-p-0 psb-border-0 psb-pointer-events-none psb-inline-block psb-h-5 psb-w-5 psb-rounded-full psb-bg-white psb-shadow psb-transform psb-ring-0 psb-transition psb-ease-in-out psb-duration-200"}>
       </span>
     </button>
@@ -923,12 +922,12 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
-    <%= number_input(@form, @attr_id,
+    {number_input(@form, @attr_id,
       value: @value,
       step: @step,
       class:
         "psb psb-form-input psb-text-xs md:psb-text-sm psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
-    ) %>
+    )}
     """
   end
 
@@ -936,23 +935,23 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assigns |> assign(:min, min) |> assign(:max, max)
 
     ~H"""
-    <%= number_input(@form, @attr_id,
+    {number_input(@form, @attr_id,
       value: @value,
       min: @min,
       max: @max,
       class:
         "psb psb-form-input psb-text-xs md:psb-text-sm psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
-    ) %>
+    )}
     """
   end
 
   defp attr_input(assigns = %{type: :string, values: nil}) do
     ~H"""
-    <%= text_input(@form, @attr_id,
+    {text_input(@form, @attr_id,
       value: @value,
       class:
         "psb psb-form-input psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
-    ) %>
+    )}
     """
   end
 
@@ -967,12 +966,12 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, value: value)
 
     ~H"""
-    <%= text_input(@form, @attr_id,
+    {text_input(@form, @attr_id,
       value: @value,
       disabled: true,
       class:
         "psb psb-cursor-not-allowed psb-bg-gray-100 psb-form-input psb-block psb-w-full dark:psb-text-slate-700 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
-    ) %>
+    )}
     """
   end
 
@@ -980,11 +979,11 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
 
     ~H"""
-    <%= select(@form, @attr_id, @values,
+    {select(@form, @attr_id, @values,
       value: @value,
       class:
         "psb psb-form-select psb-mt-1 psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-pl-3 psb-pr-10 psb-py-2 psb-text-xs md:psb-text-sm focus:psb-outline-none focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
-    ) %>
+    )}
     """
   end
 

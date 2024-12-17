@@ -188,7 +188,7 @@ defmodule PhoenixStorybook.StoryLive do
     <div class="psb psb-my-6 md:psb-my-12 psb-space-y-4 md:psb-space-y-8 psb-flex psb-flex-col">
       <h1 class="psb psb-font-medium psb-text-red-500 psb-text-lg md:psb-text-xl lg:psb-text-2xl psb-align-middle">
         <.fa_icon style={:duotone} name="bomb" plan={@fa_plan} />
-        <%= @story_load_error %>
+        {@story_load_error}
       </h1>
 
       <div class="psb psb-border psb-rounded-md psb-border-slate-100 psb-bg-slate-800 psb-p-4 psb-overflow-x-scroll">
@@ -217,10 +217,10 @@ defmodule PhoenixStorybook.StoryLive do
                 />
               </span>
             <% end %>
-            <%= @story_entry.name %>
+            {@story_entry.name}
           </h2>
 
-          <%= @story |> navigation_tabs() |> render_navigation_tabs(assigns) %>
+          {@story |> navigation_tabs() |> render_navigation_tabs(assigns)}
         </div>
 
         <ComponentDoc.render_documentation
@@ -230,7 +230,7 @@ defmodule PhoenixStorybook.StoryLive do
         />
       </div>
 
-      <%= render_content(@story.storybook_type(), assigns) %>
+      {render_content(@story.storybook_type(), assigns)}
     </div>
     """
   end
@@ -282,12 +282,12 @@ defmodule PhoenixStorybook.StoryLive do
         id={"#{Macro.underscore(@story)}-navigation-form"}
         class="psb story-nav-form lg:psb-hidden"
       >
-        <%= select(f, :tab, navigation_select_options(@tabs),
+        {select(f, :tab, navigation_select_options(@tabs),
           "phx-change": "psb-set-tab",
           class:
             "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-border-gray-300 dark:psb-border-slate-600 psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 sm:psb-text-sm psb-rounded-md",
           value: @tab
-        ) %>
+        )}
       </.form>
       <!-- :lg+ version of navigation tabs -->
       <nav class="psb story-tabs psb-hidden lg:psb-flex psb-rounded-lg psb-border psb-border-gray-300 dark:psb-border-slate-600 psb-bg-slate-100 dark:psb-bg-slate-900 psb-hover:psb-bg-slate-200 dark:psb-hover:psb-bg-slate-800 psb-h-10 psb-text-sm psb-font-medium">
@@ -309,7 +309,7 @@ defmodule PhoenixStorybook.StoryLive do
                 />
               <% end %>
               <span class={"psb psb-whitespace-nowrap group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400 #{active_text(@tab, tab_id)}"}>
-                <%= tab_label %>
+                {tab_label}
               </span>
             </span>
           </a>
@@ -359,7 +359,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp render_content(t, assigns = %{tab: :source}) when t in [:component, :live_component] do
     ~H"""
     <div class="psb psb-flex-1 psb-flex psb-flex-col psb-overflow-auto psb-max-h-full">
-      <%= @story |> CodeRenderer.render_component_source() |> to_raw_html() %>
+      {@story |> CodeRenderer.render_component_source() |> to_raw_html()}
     </div>
     """
   end
@@ -390,8 +390,8 @@ defmodule PhoenixStorybook.StoryLive do
   defp render_content(:page, assigns) do
     ~H"""
     <div class={LayoutView.sandbox_class(@socket, {:div, class: "psb psb-pb-12"}, assigns)}>
-      <%= @story.render(%{__changed__: %{}, tab: @tab, theme: @theme})
-      |> to_raw_html() %>
+      {@story.render(%{__changed__: %{}, tab: @tab, theme: @theme})
+      |> to_raw_html()}
     </div>
     """
   end
@@ -411,10 +411,10 @@ defmodule PhoenixStorybook.StoryLive do
   defp render_content(:example, assigns = %{tab: :source}) do
     ~H"""
     <div class="psb psb-flex-1 psb-flex psb-flex-col psb-overflow-auto psb-max-h-full">
-      <%= @story.__source__()
+      {@story.__source__()
       |> remove_example_code()
       |> CodeRenderer.render_source()
-      |> to_raw_html() %>
+      |> to_raw_html()}
     </div>
     """
   end
@@ -429,7 +429,7 @@ defmodule PhoenixStorybook.StoryLive do
 
         ~H"""
         <div class="psb psb-flex-1 psb-flex psb-flex-col psb-overflow-auto psb-max-h-full">
-          <%= @source |> CodeRenderer.render_source() |> to_raw_html() %>
+          {@source |> CodeRenderer.render_source() |> to_raw_html()}
         </div>
         """
     end

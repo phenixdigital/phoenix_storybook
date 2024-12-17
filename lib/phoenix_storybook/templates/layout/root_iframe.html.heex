@@ -2,7 +2,7 @@
 <html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
   <head>
     <%= if csrf?(@conn) do %>
-      <%= csrf_meta_tag() %>
+      {csrf_meta_tag()}
     <% end %>
     <%= if path = storybook_js_path(@conn) do %>
       <script
@@ -54,6 +54,6 @@
       do: normalize_story_container(assigns[:story].container()),
       else: {:div, []} %>
   <body class={sandbox_class(@conn, container, assigns)} style="margin: 0;">
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>

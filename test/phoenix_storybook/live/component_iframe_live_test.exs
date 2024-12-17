@@ -44,22 +44,25 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
 
       assert html =~ "template_component: hello / status: false"
 
-      view |> element("#set-foo") |> render_click()
+      view |> element("#set-foo-template-iframe-component-single-hello") |> render_click()
       assert render(view) =~ "template_component: foo / status: false"
 
-      view |> element("#set-bar") |> render_click()
+      view |> element("#set-bar-template-iframe-component-single-hello") |> render_click()
       assert render(view) =~ "template_component: bar / status: false"
 
-      view |> element("#toggle-status") |> render_click()
+      view |> element("#toggle-status-template-iframe-component-single-hello") |> render_click()
       assert render(view) =~ "template_component: bar / status: true"
 
-      view |> element("#toggle-status") |> render_click()
+      view |> element("#toggle-status-template-iframe-component-single-hello") |> render_click()
       assert render(view) =~ "template_component: bar / status: false"
 
-      view |> element("#set-status-true") |> render_click()
+      view |> element("#set-status-true-template-iframe-component-single-hello") |> render_click()
       assert render(view) =~ "template_component: bar / status: true"
 
-      view |> element("#set-status-false") |> render_click()
+      view
+      |> element("#set-status-false-template-iframe-component-single-hello")
+      |> render_click()
+
       assert render(view) =~ "template_component: bar / status: false"
     end
 

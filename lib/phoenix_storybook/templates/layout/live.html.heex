@@ -3,7 +3,7 @@
     <div class="psb psb-absolute psb-top-5 psb-left-5 psb-z-20 psb-text-indigo-600 dark:psb-text-sky-400 psb-text-lg psb-font-bold psb-uppercase ">
       <.link patch={@root_path} class="psb">
         <.fa_icon style={:regular} name="book-open" plan={@fa_plan} />
-        <span class="psb psb-ml-1"><%= title(@socket) %></span>
+        <span class="psb psb-ml-1">{title(@socket)}</span>
       </.link>
     </div>
 
@@ -71,7 +71,7 @@
                         plan={@fa_plan}
                         style={:regular}
                       />
-                      <%= String.capitalize(mode) %>
+                      {String.capitalize(mode)}
                     </span>
                   <% else %>
                     <span class="psb psb-pl-6 ">
@@ -81,7 +81,7 @@
                         plan={@fa_plan}
                         style={:regular}
                       />
-                      <%= String.capitalize(mode) %>
+                      {String.capitalize(mode)}
                     </span>
                   <% end %>
                 </a>
@@ -130,11 +130,11 @@
                   >
                     <%= if assigns[:theme] == theme do %>
                       <span class="psb psb-text-indigo-600 dark:psb-text-gray-200">
-                        <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} /><%= opts[:name] %>
+                        <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />{opts[:name]}
                       </span>
                     <% else %>
                       <span class="psb psb-pl-5">
-                        <%= opts[:name] %>
+                        {opts[:name]}
                       </span>
                     <% end %>
                   </a>
@@ -168,7 +168,7 @@
       />
     </span>
     <%= if assigns[:story] do %>
-      <%= render_breadcrumb(@socket, @backend_module.storybook_path(@story)) %>
+      {render_breadcrumb(@socket, @backend_module.storybook_path(@story))}
     <% end %>
   </nav>
 </header>
@@ -218,5 +218,5 @@
     "psb-overflow-x-hidden"
   ]}
 >
-  <%= @inner_content %>
+  {@inner_content}
 </div>

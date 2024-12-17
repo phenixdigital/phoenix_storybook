@@ -99,11 +99,11 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       assert code =~
                String.trim("""
                <div id="template-component-single-hello" class="template-div">
-                 <button id="set-foo" phx-click={JS.push("psb-assign", value: %{label: "foo"})}>Set label to foo</button>
-                 <button id="set-bar" phx-click={JS.push("psb-assign", value: %{label: "bar"})}>Set label to bar</button>
-                 <button id="toggle-status" phx-click={JS.push("psb-toggle", value: %{attr: :status})}>Toggle status</button>
-                 <button id="set-status-true" phx-click={JS.push("psb-assign", value: %{status: true})}>Set status to true</button>
-                 <button id="set-status-false" phx-click={JS.push("psb-assign", value: %{status: false})}>Set status to false</button>
+                 <button id="set-foo-template-component-single-hello" phx-click={JS.push("psb-assign", value: %{label: "foo"})}>Set label to foo</button>
+                 <button id="set-bar-template-component-single-hello" phx-click={JS.push("psb-assign", value: %{label: "bar"})}>Set label to bar</button>
+                 <button id="toggle-status-template-component-single-hello" phx-click={JS.push("psb-toggle", value: %{attr: :status})}>Toggle status</button>
+                 <button id="set-status-true-template-component-single-hello" phx-click={JS.push("psb-assign", value: %{status: true})}>Set status to true</button>
+                 <button id="set-status-false-template-component-single-hello" phx-click={JS.push("psb-assign", value: %{status: false})}>Set status to false</button>
                  <.template_component label="hello"/>
                </div>
                """)

@@ -100,7 +100,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     ~H"""
     <%= if @variation_id do %>
       <%= if @playground do %>
-        <%= live_render(@socket, PlaygroundPreviewLive,
+        {live_render(@socket, PlaygroundPreviewLive,
           id: playground_preview_id(@story),
           session: %{
             "story" => @story,
@@ -111,10 +111,10 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
             "backend_module" => @backend_module
           },
           container: {:div, style: "height: 100vh; width: 100wh;"}
-        ) %>
+        )}
       <% else %>
         <div {@iframe_opts} class={@color_mode_class}>
-          <%= ComponentRenderer.render(@context) %>
+          {ComponentRenderer.render(@context)}
         </div>
       <% end %>
     <% end %>

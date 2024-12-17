@@ -150,7 +150,7 @@ defmodule PhoenixStorybook.VisualTestLive do
       style="width: 650px; margin: 0 auto; margin-top: 40px;"
     >
       <h1 style="color: #6366f1; padding-bottom: 5px; border-bottom: 1px solid #d1d5db;">
-        <%= story.entry.name %>
+        {story.entry.name}
       </h1>
 
       <%= for variation <- story.story.variations(),
@@ -182,7 +182,7 @@ defmodule PhoenixStorybook.VisualTestLive do
               }
               {story.sandbox_attributes}
             >
-              <%= ComponentRenderer.render(rendering_context) %>
+              {ComponentRenderer.render(rendering_context)}
             </div>
           <% end %>
         </div>

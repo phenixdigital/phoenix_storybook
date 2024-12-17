@@ -42,7 +42,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
       :if={@doc}
       class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300"
     >
-      <%= raw(@doc.header) %>
+      {raw(@doc.header)}
     </div>
     <div :if={@doc && @doc.body && @doc.body != ""}>
       <a
@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
       </a>
       <div id="doc-next" class="psb-hidden psb-space-y-4 ">
         <div class="psb psb-doc psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
-          <%= raw(@doc.body) %>
+          {raw(@doc.body)}
         </div>
       </div>
     </div>

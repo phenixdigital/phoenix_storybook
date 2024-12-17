@@ -97,15 +97,13 @@ defmodule PhoenixStorybook.Sidebar do
       </div>
 
       <nav class="psb psb-flex-1 xl:psb-sticky">
-        <%= render_stories(
-          assign(assigns, stories: @content_tree, folder_path: @root_path, root: true)
-        ) %>
+        {render_stories(assign(assigns, stories: @content_tree, folder_path: @root_path, root: true))}
       </nav>
 
       <div class="psb psb-hidden lg:psb-block psb-fixed psb-bottom-3 psb-left-0 psb-w-60 psb-text-md psb-text-center psb-text-slate-400 hover:psb-text-indigo-600 hover:psb-font-bold">
         <%= link to: "https://github.com/phenixdigital/phoenix_storybook", target: "_blank", class: "psb" do %>
           <.fa_icon style={:brands} name="github" plan={:pro} />
-          - <%= Application.spec(:phoenix_storybook, :vsn) %>
+          - {Application.spec(:phoenix_storybook, :vsn)}
         <% end %>
       </div>
       <.hidden_icons fa_plan={@fa_plan} content_flat_list={@content_flat_list} />
@@ -145,18 +143,18 @@ defmodule PhoenixStorybook.Sidebar do
                 <% end %>
 
                 <span class="psb group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400">
-                  <%= name %>
+                  {name}
                 </span>
               </div>
 
               <%= if open_folder? or @root do %>
-                <%= render_stories(
+                {render_stories(
                   assign(assigns,
                     stories: entries,
                     folder_path: Path.join(@folder_path, path),
                     root: false
                   )
-                ) %>
+                )}
               <% end %>
             <% %StoryEntry{name: name, path: path, icon: icon} -> %>
               <% story_path = Path.join(@root_path, path) %>
@@ -172,7 +170,7 @@ defmodule PhoenixStorybook.Sidebar do
                   patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
                   class="psb group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
                 >
-                  <%= name %>
+                  {name}
                 </.link>
               </div>
             <% _ -> %>

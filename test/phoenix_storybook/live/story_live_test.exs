@@ -184,25 +184,25 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert render(hello_element) =~ "template_component: hello / status: false"
       assert render(world_element) =~ "template_component: world / status: false"
 
-      view |> element("#hello #set-foo") |> render_click()
+      view |> element("#set-foo-template-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_component: foo / status: false"
 
-      view |> element("#hello #set-bar") |> render_click()
+      view |> element("#set-bar-template-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_component: bar / status: false"
 
-      view |> element("#hello #toggle-status") |> render_click()
+      view |> element("#toggle-status-template-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_component: bar / status: true"
 
-      view |> element("#hello #toggle-status") |> render_click()
+      view |> element("#toggle-status-template-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_component: bar / status: false"
 
-      view |> element("#hello #set-status-true") |> render_click()
+      view |> element("#set-status-true-template-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_component: bar / status: true"
 
-      view |> element("#hello #set-status-false") |> render_click()
+      view |> element("#set-status-false-template-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_component: bar / status: false"
 
-      view |> element("#world #set-foo") |> render_click()
+      view |> element("#set-foo-template-component-single-world") |> render_click()
       assert render(world_element) =~ "template_component: foo / status: false"
     end
 
@@ -214,19 +214,19 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert render(hello_element) =~ "template_live_component: hello / status: false"
       assert render(world_element) =~ "template_live_component: world / status: false"
 
-      view |> element("#hello #set-foo") |> render_click()
+      view |> element("#set-foo-template-live-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_live_component: foo / status: false"
 
-      view |> element("#hello #set-bar") |> render_click()
+      view |> element("#set-bar-template-live-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_live_component: bar / status: false"
 
-      view |> element("#hello #toggle-status") |> render_click()
+      view |> element("#toggle-status-template-live-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_live_component: bar / status: true"
 
-      view |> element("#hello #toggle-status") |> render_click()
+      view |> element("#toggle-status-template-live-component-single-hello") |> render_click()
       assert render(hello_element) =~ "template_live_component: bar / status: false"
 
-      view |> element("#world #set-foo") |> render_click()
+      view |> element("#set-foo-template-live-component-single-world") |> render_click()
       assert render(world_element) =~ "template_live_component: foo / status: false"
     end
 
@@ -239,11 +239,12 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert render(variation_one) =~ "template_component: one / status: false"
       assert render(variation_two) =~ "template_component: two / status: false"
 
-      view |> element(~s|[id="template-component-group-one"] #set-bar|) |> render_click()
+      view |> element("#set-bar-template-component-group-one") |> render_click()
+
       assert render(variation_one) =~ "template_component: bar / status: false"
       assert render(variation_two) =~ "template_component: two / status: false"
 
-      view |> element(~s|[id="template-component-group-two"] #toggle-status|) |> render_click()
+      view |> element("#toggle-status-template-component-group-two") |> render_click()
       assert render(variation_one) =~ "template_component: bar / status: false"
       assert render(variation_two) =~ "template_component: two / status: true"
     end

@@ -87,7 +87,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
         )
 
       if context.options[:format] == false do
-        ~H[<%= @heex %>]
+        ~H[{@heex}]
       else
         ~H"""
         <pre class={pre_class()}>

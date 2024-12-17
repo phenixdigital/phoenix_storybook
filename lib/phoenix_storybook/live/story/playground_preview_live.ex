@@ -117,7 +117,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
         ,
         style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;"
       >
-        <%= ComponentRenderer.render(@context) %>
+        {ComponentRenderer.render(@context)}
       </div>
     </div>
     """

@@ -372,22 +372,40 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       playground_element = element(playground_preview_view, "#playground-preview-live")
       assert render(playground_element) =~ "template_component: hello"
 
-      playground_preview_view |> element("#set-foo") |> render_click()
+      playground_preview_view
+      |> element("#set-foo-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: foo / status: false"
 
-      playground_preview_view |> element("#set-bar") |> render_click()
+      playground_preview_view
+      |> element("#set-bar-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      playground_preview_view |> element("#toggle-status") |> render_click()
+      playground_preview_view
+      |> element("#toggle-status-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: true"
 
-      playground_preview_view |> element("#toggle-status") |> render_click()
+      playground_preview_view
+      |> element("#toggle-status-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      playground_preview_view |> element("#set-status-true") |> render_click()
+      playground_preview_view
+      |> element("#set-status-true-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: true"
 
-      playground_preview_view |> element("#set-status-false") |> render_click()
+      playground_preview_view
+      |> element("#set-status-false-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: false"
     end
 
@@ -397,7 +415,11 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       playground_element = element(playground_preview_view, "#playground-preview-live")
 
       assert render(playground_element) =~ "template_component: hello"
-      playground_preview_view |> element("#set-foo") |> render_click()
+
+      playground_preview_view
+      |> element("#set-foo-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: foo / status: false"
 
       form_selector = "#tree_storybook_template_component-playground-form"
@@ -410,7 +432,10 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       wait_for_preview_lv(view)
       assert render(playground_element) =~ "template_component: bar / status: false"
 
-      playground_preview_view |> element("#toggle-status") |> render_click()
+      playground_preview_view
+      |> element("#toggle-status-template-component-single-hello")
+      |> render_click()
+
       assert render(playground_element) =~ "template_component: bar / status: true"
 
       wait_for_lv(view)
@@ -431,7 +456,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: two"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group-one"] #set-foo|)
+      |> element("#set-foo-template-component-group-one")
       |> render_click()
 
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -444,7 +469,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_label_selector, "value") == "[Multiple values]"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group-two"] #set-foo|)
+      |> element("#set-foo-template-component-group-two")
       |> render_click()
 
       assert render(playground_element) =~ "template_component: foo / status: false"
@@ -454,7 +479,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       assert render(playground_element) =~ "template_component: bar / status: false"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group-one"] #toggle-status|)
+      |> element("#toggle-status-template-component-group-one")
       |> render_click()
 
       assert render(playground_element) =~ "template_component: bar / status: true"
@@ -464,7 +489,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       assert get_element_attribute(view, form_toggle_selector, "value") == "[Multiple values]"
 
       playground_preview_view
-      |> element(~s|[id="template-component-group-two"] #toggle-status|)
+      |> element("#toggle-status-template-component-group-two")
       |> render_click()
 
       wait_for_lv(view)

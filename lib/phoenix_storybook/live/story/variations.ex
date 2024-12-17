@@ -62,9 +62,9 @@ defmodule PhoenixStorybook.Story.Variations do
                 plan={@fa_plan}
               />
               <%= if description do %>
-                <%= description %>
+                {description}
               <% else %>
-                <%= variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ") %>
+                {variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ")}
               <% end %>
             <% end %>
             <.link
@@ -125,7 +125,7 @@ defmodule PhoenixStorybook.Story.Variations do
                   ]}
                   {@sandbox_attributes}
                 >
-                  <%= ComponentRenderer.render(rendering_context) %>
+                  {ComponentRenderer.render(rendering_context)}
                 </div>
             <% end %>
           </div>
@@ -143,7 +143,7 @@ defmodule PhoenixStorybook.Story.Variations do
             >
               <.fa_icon name="copy" class="psb-text-inherit" plan={@fa_plan} />
             </div>
-            <%= CodeRenderer.render(rendering_context) %>
+            {CodeRenderer.render(rendering_context)}
           </div>
         </div>
       <% end %>
@@ -192,7 +192,7 @@ defmodule PhoenixStorybook.Story.Variations do
     ~H"""
     <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
       <div id="iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
-        <%= ComponentRenderer.render(@rendering_context) %>
+        {ComponentRenderer.render(@rendering_context)}
       </div>
     <% end %>
     """
