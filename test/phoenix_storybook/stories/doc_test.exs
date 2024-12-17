@@ -8,17 +8,17 @@ defmodule PhoenixStorybook.Stories.DocTest do
 
   describe "fetch_doc_as_html/2" do
     test "it returns a function component documentation" do
-      assert "component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == [
-               "<p>\nComponent first doc paragraph.\nStill first paragraph.</p>\n",
-               "<p>\nSecond paragraph.</p>\n"
-             ]
+      assert "component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == %Doc{
+               header: "<p>\nComponent first doc paragraph.\nStill first paragraph.</p>\n",
+               body: "<p>\nSecond paragraph.</p>\n"
+             }
     end
 
     test "it returns a live component documentation" do
-      assert "live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == [
-               "<p>\nLiveComponent first doc paragraph.\nStill first paragraph.</p>\n",
-               "<p>\nSecond paragraph.</p>\n"
-             ]
+      assert "live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == %Doc{
+               header: "<p>\nLiveComponent first doc paragraph.\nStill first paragraph.</p>\n",
+               body: "<p>\nSecond paragraph.</p>\n"
+             }
     end
 
     test "it returns nil when there is no doc" do

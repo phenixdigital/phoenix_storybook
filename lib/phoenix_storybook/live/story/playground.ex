@@ -308,22 +308,23 @@ defmodule PhoenixStorybook.Story.Playground do
           ) %>
         <% end %>
       </div>
-      <%= if @upper_tab == :code do %>
-        <div class="psb psb-relative psb-group psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 lg:psb-col-span-2 lg:psb-mb-0 psb-flex psb-items-center psb-px-2 psb-min-h-32 psb-bg-slate-800 psb-shadow-sm">
-          <div
-            phx-click={JS.dispatch("psb:copy-code")}
-            class="psb psb-hidden group-hover:psb-block psb-bg-slate-700 psb-text-slate-500 hover:psb-text-slate-100 psb-z-10 psb-absolute psb-top-2 psb-right-2 psb-px-2 psb-py-1 psb-rounded-md psb-cursor-pointer"
-          >
-            <.fa_icon name="copy" class="psb-text-inherit" plan={@fa_plan} />
-          </div>
-          <.playground_code
-            story={@story}
-            variation={@variation}
-            variations={@variations}
-            backend_module={@backend_module}
-          />
+      <div
+        :if={@upper_tab == :code}
+        class="psb psb-relative psb-group psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 lg:psb-col-span-2 lg:psb-mb-0 psb-flex psb-items-center psb-px-2 psb-min-h-32 psb-bg-slate-800 psb-shadow-sm"
+      >
+        <div
+          phx-click={JS.dispatch("psb:copy-code")}
+          class="psb psb-hidden group-hover:psb-block psb-bg-slate-700 psb-text-slate-500 hover:psb-text-slate-100 psb-z-10 psb-absolute psb-top-2 psb-right-2 psb-px-2 psb-py-1 psb-rounded-md psb-cursor-pointer"
+        >
+          <.fa_icon name="copy" class="psb-text-inherit" plan={@fa_plan} />
         </div>
-      <% end %>
+        <.playground_code
+          story={@story}
+          variation={@variation}
+          variations={@variations}
+          backend_module={@backend_module}
+        />
+      </div>
       <%= if @playground_error do %>
         <% error_bg = if @upper_tab == :code, do: "psb-bg-slate/20", else: "psb-bg-white/20" %>
         <div class={"psb psb-absolute psb-inset-2 psb-z-10 psb-backdrop-blur-lg psb-text-red-600 #{error_bg} psb-rounded psb-flex psb-flex-col psb-justify-center psb-items-center psb-space-y-2"}>
@@ -508,7 +509,7 @@ defmodule PhoenixStorybook.Story.Playground do
                       >
                         <td
                           colspan="5"
-                          class="psb psb-doc psb-text-sm psb-bg-slate-50 dark:psb-bg-slate-800 psb-px-3 md:psb-px-8 psb-py-2 "
+                          class="psb psb-doc psb-text-sm psb-text-gray-500 dark:psb-text-slate-400 psb-bg-slate-50 dark:psb-bg-slate-800 psb-px-3 md:psb-px-8 psb-py-4"
                         >
                           <.fa_icon
                             style={:regular}
@@ -555,7 +556,7 @@ defmodule PhoenixStorybook.Story.Playground do
                       <tr :if={Enum.any?(slot.attrs)}>
                         <td
                           colspan="5"
-                          class="psb psb-whitespace-nowrap md:psb-pr-6 sm:psb-pl-6 psb-pl-3 md:psb-pl-12 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300"
+                          class="psb psb-whitespace-nowrap md:psb-pr-6 sm:psb-pl-6 psb-pl-3 md:psb-pl-10 psb-py-4 psb-text-sm psb-font-medium psb-text-gray-900 dark:psb-text-slate-300"
                         >
                           <a
                             id={"slot-#{slot.id}-attrs-show"}
@@ -618,16 +619,14 @@ defmodule PhoenixStorybook.Story.Playground do
                           </div>
                         </td>
                       </tr>
-                      <%= if slot?(assigns, slot) do %>
-                        <tr class="psb psb-bg-slate-50 dark:psb-bg-slate-800">
-                          <td
-                            colspan="5"
-                            class="psb psb-whitespace-nowrap psb-pl-3 md:psb-pl-9 psb-pr-3 psb-py-3 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900"
-                          >
-                            <pre class="psb psb-text-slate-600 dark:psb-text-slate-300 psb-p-2 psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-bg-slate-100 dark:psb-bg-slate-900 psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
-                          </td>
-                        </tr>
-                      <% end %>
+                      <tr :if={slot?(assigns, slot)} class="psb psb-bg-slate-50 dark:psb-bg-slate-800">
+                        <td
+                          colspan="5"
+                          class="psb psb-whitespace-nowrap psb-pl-3 md:psb-pl-9 psb-pr-3 psb-py-3 psb-text-xs md:psb-text-sm psb-font-medium psb-text-gray-900"
+                        >
+                          <pre class="psb psb-text-slate-600 dark:psb-text-slate-300 psb-p-2 psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-bg-slate-100 dark:psb-bg-slate-900 psb-whitespace-pre-wrap psb-break-normal psb-flex-1"><%= do_render_slot(assigns, slot) %></pre>
+                        </td>
+                      </tr>
                     <% end %>
                   <% end %>
                 </tbody>
@@ -637,27 +636,26 @@ defmodule PhoenixStorybook.Story.Playground do
         </div>
       </div>
     </.form>
-    <%= unless Enum.empty?(@story.merged_attributes()) do %>
-      <.form
-        :let={f}
-        for={%{}}
-        as={:variation}
-        id="variation-selection-form"
-        class="psb psb-flex psb-flex-col md:psb-flex-row psb-space-y-1 md:psb-space-x-2 psb-justify-end psb-w-full psb-mb-6"
-      >
-        <%= label(f, :variation_id, "Open a variation",
-          class:
-            "psb psb-text-gray-400 dark:psb-text-slate-300 psb-text-xs md:psb-text-sm psb-self-end md:psb-self-center"
-        ) %>
-        <%= select(f, :variation_id, variation_options(@story),
-          "phx-change": "set-variation",
-          "phx-target": @myself,
-          class:
-            "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-pr-10 psb-py-1 psb-border-gray-300 dark:psb-border-slate-600 focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-rounded-md",
-          value: @variation_id
-        ) %>
-      </.form>
-    <% end %>
+    <.form
+      :let={f}
+      :if={Enum.any?(@story.merged_attributes())}
+      for={%{}}
+      as={:variation}
+      id="variation-selection-form"
+      class="psb psb-flex psb-flex-col md:psb-flex-row psb-space-y-1 md:psb-space-x-2 psb-justify-end psb-w-full psb-mb-6"
+    >
+      <%= label(f, :variation_id, "Open a variation",
+        class:
+          "psb psb-text-gray-400 dark:psb-text-slate-300 psb-text-xs md:psb-text-sm psb-self-end md:psb-self-center"
+      ) %>
+      <%= select(f, :variation_id, variation_options(@story),
+        "phx-change": "set-variation",
+        "phx-target": @myself,
+        class:
+          "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-pr-10 psb-py-1 psb-border-gray-300 dark:psb-border-slate-600 focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-rounded-md",
+        value: @variation_id
+      ) %>
+    </.form>
     """
   end
 
