@@ -82,9 +82,10 @@ defmodule PhoenixStorybook.Stories.Doc do
   end
 
   def strip_lv_attributes_doc(doc),
-    do: doc |> String.split("## Attributes\n\n", trim: true) |> hd()
+    do: (" " <> doc) |> String.split("## Attributes\n\n", trim: true) |> hd()
 
-  def strip_lv_slots_doc(doc), do: doc |> String.split("## Slots\n\n", trim: true) |> hd()
+  def strip_lv_slots_doc(doc),
+    do: (" " <> doc) |> String.split("## Slots\n\n", trim: true) |> hd()
 
   defp split_header(nil, _stripped?), do: []
   defp split_header(doc, false), do: String.split(doc, "\n\n", parts: 2, trim: true)

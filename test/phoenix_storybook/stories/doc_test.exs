@@ -9,14 +9,14 @@ defmodule PhoenixStorybook.Stories.DocTest do
   describe "fetch_doc_as_html/2" do
     test "it returns a function component documentation" do
       assert "component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == %Doc{
-               header: "<p>\nComponent first doc paragraph.\nStill first paragraph.</p>\n",
+               header: "<p>\n  Component first doc paragraph.\nStill first paragraph.</p>\n",
                body: "<p>\nSecond paragraph.</p>\n"
              }
     end
 
     test "it returns a live component documentation" do
       assert "live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == %Doc{
-               header: "<p>\nLiveComponent first doc paragraph.\nStill first paragraph.</p>\n",
+               header: "<p>\n  LiveComponent first doc paragraph.\nStill first paragraph.</p>\n",
                body: "<p>\nSecond paragraph.</p>\n"
              }
     end
@@ -26,7 +26,7 @@ defmodule PhoenixStorybook.Stories.DocTest do
              |> compile_story()
              |> Doc.fetch_doc_as_html() ==
                %Doc{
-                 header: "<p>\nComponent mixing any attribute possible types.</p>\n",
+                 header: "<p>\n  Component mixing any attribute possible types.</p>\n",
                  body: nil
                }
     end
