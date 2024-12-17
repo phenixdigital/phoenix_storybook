@@ -65,7 +65,6 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
   defp assign_variations_attributes(socket, variation_or_group, variations) do
     assign(
       socket,
-      counter: 0,
       variation: variation_or_group,
       variation_id: if(variation_or_group, do: variation_or_group.id, else: nil),
       variations_attributes:
@@ -106,7 +105,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
     ~H"""
     <div id="playground-preview-live" style="width: 100%; height: 100%;">
       <div
-        id={"sandbox-#{@counter}"}
+        id="sandbox"
         class={[
           LayoutView.sandbox_class(
             @socket,
@@ -145,7 +144,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
          attributes |> Map.merge(new_attrs) |> Map.reject(fn {_, v} -> is_nil(v) end)}
       end
 
-    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variation_attributes)}
+    {:noreply, assign(socket, variations_attributes: variation_attributes)}
   end
 
   def handle_info({:set_theme, theme}, socket) do
@@ -156,7 +155,6 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
 
     {:noreply,
      socket
-     |> inc_counter()
      |> assign(theme: theme)
      |> assign(variations_attributes: variation_attributes)}
   end
@@ -164,7 +162,6 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
   def handle_info({:set_color_mode, color_mode}, socket) do
     {:noreply,
      socket
-     |> inc_counter()
      |> assign(color_mode: color_mode)
      |> assign_color_mode_class()}
   end
@@ -193,7 +190,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       end
 
     send_variations_attributes(assigns.topic, variation_attributes)
-    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variation_attributes)}
+    {:noreply, assign(socket, variations_attributes: variation_attributes)}
   end
 
   def handle_event("psb-toggle", assign_params, socket = %{assigns: assigns}) do
@@ -214,7 +211,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       end
 
     send_variations_attributes(assigns.topic, variation_attributes)
-    {:noreply, socket |> inc_counter() |> assign(variations_attributes: variation_attributes)}
+    {:noreply, assign(socket, variations_attributes: variation_attributes)}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}
@@ -225,11 +222,5 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       topic,
       {:new_variations_attributes, variation_attributes}
     )
-  end
-
-  # Some components outside of the liveview world needs an ID update to re-render.
-  # It's the case for FontAwesome JS.
-  defp inc_counter(socket) do
-    assign(socket, :counter, socket.assigns.counter + 1)
   end
 end
