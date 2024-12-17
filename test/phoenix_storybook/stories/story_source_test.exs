@@ -63,6 +63,8 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
       assert source =~ ~s|def component(assigns) do|
       refute source =~ ~s|def unrelated_function|
       refute source =~ ~s|use Phoenix.Component|
+      refute source =~ ~s|attr :index2|
+      refute source =~ ~s|should not appear|
     end
   end
 

@@ -123,7 +123,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   ## Preserves the defmodule do ... end
   def strip_function_source(module_source, function) do
     module = Function.info(function)[:module]
-    [start, stop] = function_source_location(function)
+    [start, stop] = function_source_location(function, module_source)
 
     Enum.join(
       [
@@ -148,7 +148,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   # Code.fetch_docs/1 does only return the line number for the start of each function.
   # We guess the last line number as being the start of the following function (-1)
   # Returns [start, stop]
-  defp function_source_location(function) do
+  defp function_source_location(function, module_source) do
     Function.info(function)
     [module: module, name: fun_name, arity: arity, env: _, type: _] = Function.info(function)
     {_, _, _, _, _, _, functions} = Code.fetch_docs(module)
@@ -162,8 +162,23 @@ defmodule PhoenixStorybook.Stories.StorySource do
     end)
     |> Enum.find(fn {{:function, f, a}, _, _} -> f == fun_name and a == arity end)
     |> then(fn
-      {_, start, nil} -> [start - 1, -3]
-      {_, start, stop} -> [start - 1, stop - 2]
+      {_, start, nil} ->
+        [start - 1, find_function_end(module_source, start, -1)]
+
+      {_, start, next_fun_start} ->
+        [start - 1, find_function_end(module_source, start, next_fun_start - 1)]
+    end)
+  end
+
+  defp find_function_end(module_source, start_line, max_line) do
+    source_lines = String.split(module_source, "\n")
+
+    max_line..start_line
+    |> Enum.find(max_line, fn line ->
+      source_lines
+      |> Enum.at(line)
+      |> String.trim()
+      |> Kernel.==("end")
     end)
   end
 
