@@ -13,6 +13,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   alias Phoenix.HTML
   alias PhoenixStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhoenixStorybook.Stories.Attr
+  alias PhoenixStorybook.Stories.StorySource
   alias PhoenixStorybook.TemplateHelpers
   alias PhoenixStorybook.ThemeHelpers
 
@@ -102,8 +103,10 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   Returns a rendered HEEx template.
   """
   def render_component_source(story) do
-    if story.storybook_type() == :component && story.render_only_function_source() do
-      render_source(story.__component_source__())
+    if story.storybook_type() == :component and story.render_only_function_source() do
+      story.__module_source__()
+      |> StorySource.strip_function_source(story.function())
+      |> render_source()
     else
       render_source(story.__module_source__())
     end

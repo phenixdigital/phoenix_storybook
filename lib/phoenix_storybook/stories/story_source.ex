@@ -12,22 +12,18 @@ defmodule PhoenixStorybook.Stories.StorySource do
 
     quote do
       def __source__ do
-        unquote(read_file_source(env.file))
+        unquote(read_source_file(env.file))
       end
 
       def __module_source__ do
-        unquote(read_file_source(component_source_path))
-      end
-
-      def __component_source__ do
-        unquote(read_component_source(component_source_path, env))
+        unquote(read_source_file(component_source_path))
       end
 
       def __extra_sources__ do
         unquote(
           Macro.escape(
             for {path, full_path} <- story_extra_sources_path, into: %{} do
-              {path, read_file_source(full_path)}
+              {path, read_source_file(full_path)}
             end
           )
         )
@@ -45,7 +41,8 @@ defmodule PhoenixStorybook.Stories.StorySource do
       _ -> nil
     end
   rescue
-    _ -> component_source_fail(env)
+    _e ->
+      component_source_fail(env)
   end
 
   defp component_source_fail(env) do
@@ -118,21 +115,13 @@ defmodule PhoenixStorybook.Stories.StorySource do
     module.__info__(:compile)[:source]
   end
 
-  defp read_component_source(path, env) do
-    case component_definition(env) do
-      {fun, _} when is_function(fun) -> strip_function_source(fun, path)
-      {module, _} when is_atom(module) -> read_file_source(path)
-      _ -> nil
-    end
-  rescue
-    _ -> component_source_fail(env)
-  end
+  defp read_source_file(nil), do: nil
+  defp read_source_file(binary) when is_binary(binary), do: File.read!(binary)
+  defp read_source_file(charlist_path), do: charlist_path |> to_string() |> File.read!()
 
-  defp read_file_source(nil), do: nil
-  defp read_file_source(binary) when is_binary(binary), do: File.read!(binary)
-  defp read_file_source(charlist_path), do: charlist_path |> to_string() |> File.read!()
-
-  def strip_function_source(function, path) do
+  ## Extracts a .function declaration from its module.
+  ## Preserves the defmodule do ... end
+  def strip_function_source(module_source, function) do
     module = Function.info(function)[:module]
     [start, stop] = function_source_location(function)
 
@@ -142,8 +131,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
         "",
         "  # stripped ...",
         "",
-        path
-        |> read_file_source()
+        module_source
         |> String.split("\n")
         |> Enum.slice(start..stop//1)
         |> Enum.join("\n")
@@ -161,6 +149,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   # We guess the last line number as being the start of the following function (-1)
   # Returns [start, stop]
   defp function_source_location(function) do
+    Function.info(function)
     [module: module, name: fun_name, arity: arity, env: _, type: _] = Function.info(function)
     {_, _, _, _, _, _, functions} = Code.fetch_docs(module)
 

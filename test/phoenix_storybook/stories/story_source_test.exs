@@ -1,18 +1,10 @@
 defmodule PhoenixStorybook.Stories.StorySourceTest do
   use ExUnit.Case, async: true
 
+  alias PhoenixStorybook.Stories.StorySource
   alias PhoenixStorybook.TreeStorybook
 
-  describe "__component_source__/0" do
-    test "it returns component source" do
-      {:ok, story} = TreeStorybook.load_story("/component")
-      source = story.__component_source__()
-      assert source =~ ~s|defmodule Component do|
-      assert source =~ ~s|def component(assigns) do|
-      refute source =~ ~s|def unrelated_function|
-      refute source =~ ~s|use Phoenix.Component|
-    end
-
+  describe "__module_source__/0" do
     test "it returns module source" do
       {:ok, story} = TreeStorybook.load_story("/component")
       source = story.__module_source__()
@@ -31,7 +23,7 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
         def badge(assigns), do: ~H"<span>Hello World</span>"
       end
 
-      assert is_nil(SourceFailStory.__component_source__())
+      assert is_nil(SourceFailStory.__module_source__())
     end
   end
 
@@ -59,6 +51,18 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
     test "it returns story.exs file path" do
       {:ok, story} = TreeStorybook.load_story("/component")
       assert story.__file_path__() =~ tree_fixture_path("component.story.exs")
+    end
+  end
+
+  describe "strip_function_source" do
+    test "it extracts function from module source" do
+      {:ok, story} = TreeStorybook.load_story("/component")
+      module_source = story.__module_source__()
+      source = StorySource.strip_function_source(module_source, story.function())
+      assert source =~ ~s|defmodule Component do|
+      assert source =~ ~s|def component(assigns) do|
+      refute source =~ ~s|def unrelated_function|
+      refute source =~ ~s|use Phoenix.Component|
     end
   end
 
