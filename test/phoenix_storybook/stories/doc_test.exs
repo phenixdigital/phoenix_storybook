@@ -21,6 +21,16 @@ defmodule PhoenixStorybook.Stories.DocTest do
              }
     end
 
+    test "returns no body for a single line documentation" do
+      assert "b_folder/all_types_component.story.exs"
+             |> compile_story()
+             |> Doc.fetch_doc_as_html() ==
+               %Doc{
+                 header: "<p>\nComponent mixing any attribute possible types.</p>\n",
+                 body: nil
+               }
+    end
+
     test "it returns nil when there is no doc" do
       assert "let/let_live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() ==
                nil

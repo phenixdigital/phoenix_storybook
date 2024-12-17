@@ -77,7 +77,6 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
 
   defp render_page_doc(doc) do
     case String.split(doc, "\n\n", parts: 2) do
-      [] -> nil
       [header] -> %Doc{header: format(header)}
       [header, body] -> %Doc{header: format(header), body: format(body)}
     end
