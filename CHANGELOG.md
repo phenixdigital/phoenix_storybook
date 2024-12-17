@@ -6,11 +6,17 @@
 >
 > - I would greatly appreciate your [code contributions](https://github.com/phenixdigital/phoenix_storybook/CONTRIBUTING.md).
 >
-> - You can also [sponsor me](https://github.com/sponsors/cblavier), as it would enable me to dedicate my free time to fixing bugs and > developing new features 🤗
+> - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
+>   more of my free time to fixing bugs and developing new features 🤗
 
-## v0.7.3 (not released)
+## v0.8.0 (not released)
 
-- **feature**: [render only component function's source code for component stories](https://github.com/phenixdigital/phoenix_storybook/issues/529)
+- **improvement**: [component documentation's markdown is properly formatted](https://github.com/phenixdigital/phoenix_storybook/issues/514)
+- **improvement**: [component documentation's attribute stripping can be opted out by configuration](https://github.com/phenixdigital/phoenix_storybook/issues/515)
+- **improvement**: [playground attribute documentation is properly formatted and can be expanded
+  when written on multiple lines](https://github.com/phenixdigital/phoenix_storybook/issues/516).
+- **improvement**: nested slot attributes are properly displayed in the playground
+- **improvement**: [render only component function's source code for component stories](https://github.com/phenixdigital/phoenix_storybook/issues/529)
 - **bugfix**: fixed broken playground for stories using templating features
 
 ## v0.7.2 (2024-12-06)
