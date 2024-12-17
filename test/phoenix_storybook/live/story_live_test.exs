@@ -47,7 +47,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       # reaching items inside
       assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
-               "All types component description"
+               "Component mixing any attribute possible types"
 
       # closing "B folder"
       element(view, "#sidebar div", "Config Name") |> render_click()

@@ -22,23 +22,10 @@ defmodule PhoenixStorybook.Stories.Doc do
         nil
 
       doc ->
-        case split_header(doc) do
-          [] ->
-            nil
-
-          [header] ->
-            %Doc{header: format(header)}
-
-          [header, body] ->
-            %Doc{
-              header: format(header),
-              body:
-                if stripped? do
-                  body |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> format()
-                else
-                  format(body)
-                end
-            }
+        case split_header(doc, stripped?) do
+          [] -> nil
+          [header] -> %Doc{header: format(header)}
+          [header, body] -> %Doc{header: format(header), body: format(body)}
         end
     end
   end
@@ -94,12 +81,17 @@ defmodule PhoenixStorybook.Stories.Doc do
     end
   end
 
-  def strip_lv_attributes_doc(doc), do: doc |> String.split("## Attributes\n\n") |> hd()
+  def strip_lv_attributes_doc(doc),
+    do: doc |> String.split("## Attributes\n\n", trim: true) |> hd()
 
-  def strip_lv_slots_doc(doc), do: doc |> String.split("## Slots\n\n") |> hd()
+  def strip_lv_slots_doc(doc), do: doc |> String.split("## Slots\n\n", trim: true) |> hd()
 
-  defp split_header(nil), do: []
-  defp split_header(doc), do: String.split(doc, "\n\n", parts: 2)
+  defp split_header(nil, _stripped?), do: []
+  defp split_header(doc, false), do: String.split(doc, "\n\n", parts: 2, trim: true)
+
+  defp split_header(doc, true) do
+    doc |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> split_header(false)
+  end
 
   defp format(doc) do
     doc |> Earmark.as_html() |> elem(1)

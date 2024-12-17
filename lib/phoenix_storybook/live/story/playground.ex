@@ -68,12 +68,12 @@ defmodule PhoenixStorybook.Story.Playground do
         |> Map.take([:attributes, :let, :slots, :template])
         |> Map.put(:id, variation_id)
         |> then(fn variation ->
-          case dbg(ThemeHelpers.theme_strategy(assigns.backend_module, :assign)) do
+          case ThemeHelpers.theme_strategy(assigns.backend_module, :assign) do
             nil ->
               variation
 
             theme_assign ->
-              put_in(variation, [:attributes, String.to_atom(theme_assign)], assigns[:theme])
+              put_in(variation, [:attributes, theme_assign], assigns[:theme])
           end
         end)
       end

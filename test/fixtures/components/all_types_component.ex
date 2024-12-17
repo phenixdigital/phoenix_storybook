@@ -1,13 +1,16 @@
 defmodule AllTypesComponent do
   use Phoenix.Component
 
+  @doc """
+  Component mixing any attribute possible types.
+  """
+
   attr :event, Phoenix.LiveView.JS
 
   defmodule Struct do
     defstruct [:name]
   end
 
-  @doc "All types component description"
   def all_types_component(assigns) do
     assigns =
       assigns
@@ -38,9 +41,9 @@ defmodule AllTypesComponent do
       <p>map: <%= inspect(@map) %></p>
       <%= render_slot(@inner_block) %>
       <ul>
-      <%= for thing <- @slot_thing do %>
-        <li><%= render_slot(thing) %></li>
-      <% end %>
+        <%= for thing <- @slot_thing do %>
+          <li><%= render_slot(thing) %></li>
+        <% end %>
       </ul>
     </div>
     """
