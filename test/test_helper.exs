@@ -57,6 +57,13 @@ defmodule PhoenixStorybook.TestRouter do
     backend_module: PhoenixStorybook.TestStorybook
   )
 
+  live_storybook("/tree_storybook",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.TreeStorybook,
+    session_name: :tree_storybook,
+    pipeline: false
+  )
+
   scope "/admin" do
     live_storybook("/storybook",
       otp_app: :phoenix_storybook,
