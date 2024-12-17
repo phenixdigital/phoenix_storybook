@@ -4,6 +4,8 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
   use PhoenixStorybook.Web, :component
   import PhoenixStorybook.Components.Icon
 
+  alias PhoenixStorybook.Stories.Doc
+
   @doc """
   Renders story documentation.
 
@@ -36,11 +38,13 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
     assigns = assign(assigns, :doc, doc)
 
     ~H"""
-    <div class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300">
-      <%= @doc |> Enum.at(0) |> raw() %>
+    <div
+      :if={@doc}
+      class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300"
+    >
+      <%= raw(@doc.header) %>
     </div>
-    <% body = Enum.at(@doc, 1) %>
-    <div :if={body && body != ""}>
+    <div :if={@doc && @doc.body && @doc.body != ""}>
       <a
         phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
         id="read-more"
@@ -62,7 +66,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
       </a>
       <div id="doc-next" class="psb-hidden psb-space-y-4 ">
         <div class="psb psb-doc psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
-          <%= raw(body) %>
+          <%= raw(@doc.body) %>
         </div>
       </div>
     </div>
@@ -74,8 +78,8 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
   defp render_page_doc(doc) do
     case String.split(doc, "\n\n", parts: 2) do
       [] -> nil
-      [header] -> [format(header), nil]
-      [header, body] -> [format(header), format(body)]
+      [header] -> %Doc{header: format(header)}
+      [header, body] -> %Doc{header: format(header), body: format(body)}
     end
   end
 
@@ -83,6 +87,6 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
     doc |> String.trim() |> Earmark.as_html() |> elem(1)
   end
 
-  defp read_doc(nil), do: [nil]
+  defp read_doc(nil), do: nil
   defp read_doc(doc), do: doc
 end

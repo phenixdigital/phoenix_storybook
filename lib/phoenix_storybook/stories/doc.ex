@@ -3,7 +3,11 @@ defmodule PhoenixStorybook.Stories.Doc do
   Functions to fetch component documentation and render it at HTML.
   """
 
+  alias PhoenixStorybook.Stories.Doc
+
   require Logger
+
+  defstruct [:header, :body]
 
   @doc """
   Fetch component documentation from component source and format it as HTML.
@@ -23,17 +27,18 @@ defmodule PhoenixStorybook.Stories.Doc do
             nil
 
           [header] ->
-            [format(header), nil]
+            %Doc{header: format(header)}
 
           [header, body] ->
-            [
-              format(header),
-              if stripped? do
-                body |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> format()
-              else
-                format(body)
-              end
-            ]
+            %Doc{
+              header: format(header),
+              body:
+                if stripped? do
+                  body |> strip_lv_attributes_doc() |> strip_lv_slots_doc() |> format()
+                else
+                  format(body)
+                end
+            }
         end
     end
   end

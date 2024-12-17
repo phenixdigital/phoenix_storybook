@@ -1,11 +1,12 @@
 defmodule TreeStorybook.APage do
   use PhoenixStorybook.Story, :page
 
-  def doc, do: """"
-  a page
+  def doc,
+    do: """
+    a page
 
-  multiline doc
-  """
+    multiline doc
+    """
 
   def render(assigns) do
     ~H"""
