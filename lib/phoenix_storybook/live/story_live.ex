@@ -208,7 +208,7 @@ defmodule PhoenixStorybook.StoryLive do
         <div class="psb psb-flex psb-my-6 psb-items-center">
           <h2 class="psb psb-flex-1 psb-flex-nowrap psb-whitespace-nowrap psb-text-xl md:psb-text-2xl lg:psb-text-3xl psb-m-0 psb-font-extrabold psb-tracking-tight psb-text-indigo-600 dark:psb-text-sky-400">
             <%= if icon = @story_entry.icon do %>
-              <span id="story-icon" phx-update="ignore">
+              <span id={"story-icon-#{story_id(@story)}"} phx-update="ignore">
                 <.user_icon
                   icon={icon}
                   class="psb-pr-2 psb-text-indigo-600 dark:psb-text-sky-400"
@@ -280,10 +280,10 @@ defmodule PhoenixStorybook.StoryLive do
         class="psb story-nav-form lg:psb-hidden"
       >
         {select(f, :tab, navigation_select_options(@tabs),
-          "phx-change": "psb-set-tab",
-          class:
-            "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-border-gray-300 dark:psb-border-slate-600 psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 sm:psb-text-sm psb-rounded-md",
-          value: @tab
+        "phx-change": "psb-set-tab",
+        class:
+        "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-border-gray-300 dark:psb-border-slate-600 psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 sm:psb-text-sm psb-rounded-md",
+        value: @tab
         )}
       </.form>
       <!-- :lg+ version of navigation tabs -->
