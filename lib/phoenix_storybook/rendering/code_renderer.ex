@@ -176,11 +176,15 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
         {name, val} when is_binary(val) ->
           ~s|#{name}="#{val}"|
 
+        {_name, false} ->
+          nil
+
+        {name, true} ->
+          name
+
         {name, val} ->
           case find_attribute_definitition(attributes_definitions, name) do
             %Attr{type: :global} -> attributes_markup(val)
-            %Attr{type: :boolean} when val -> name
-            %Attr{type: :boolean} -> nil
             _ -> ~s|#{name}={#{inspect_val(val)}}|
           end
       end)
