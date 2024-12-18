@@ -1,7 +1,7 @@
 defmodule TreeStorybook.AFolder.Component do
   use PhoenixStorybook.Story, :component
   def function, do: &Component.component/1
-  def render_only_function_source, do: true
+  def render_source, do: :function
   def container, do: {:div, class: "block", "data-foo": "bar"}
 
   def variations do

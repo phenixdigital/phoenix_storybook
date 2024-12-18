@@ -239,9 +239,15 @@ defmodule PhoenixStorybook.StoryLive do
       type when type in [:component, :live_component] ->
         [
           {:variations, "Stories", {:fa, "eye", :regular}},
-          {:playground, "Playground", {:fa, "dice", :regular}},
-          {:source, "Source", source_icon()}
+          {:playground, "Playground", {:fa, "dice", :regular}}
         ]
+        |> then(fn tabs ->
+          if story.render_source() do
+            tabs ++ [{:source, "Source", source_icon()}]
+          else
+            tabs
+          end
+        end)
 
       :example ->
         navigation = [

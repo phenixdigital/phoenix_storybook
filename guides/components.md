@@ -352,15 +352,16 @@ end
 Storybook renders the source code for any of your components.
 
 By default, it displays the complete module source code. For function components, you can choose to
-render only the function's source code by adding a `render_only_function_source/1` function to your
-story.
+render only the function's source code by adding a `render_source/0` function to your story.
 
 ```elixir
 defmodule Storybook.Components.Breadcrumb do
   use PhoenixStorybook.Story, :component
 
-  def layout, do: :one_column
+  def render_source, do: :function
 
   # ...
 end
 ```
+
+The source tab can also be disabled with the `false` value.
