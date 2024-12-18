@@ -8,6 +8,11 @@ defmodule PhoenixStorybook.NavigationHelpers do
     LiveView.push_patch(socket, to: path)
   end
 
+  def navigate_to(socket, root_path, story_path, params \\ %{}) do
+    path = path_to(socket, root_path, story_path, params)
+    LiveView.push_navigate(socket, to: path)
+  end
+
   def path_to(%{assigns: assigns}, root_path, story_path, params) do
     query = build_query(assigns, params)
     build_path(root_path, story_path, query)
@@ -25,6 +30,7 @@ defmodule PhoenixStorybook.NavigationHelpers do
     path = Path.join(root_path, story_path)
 
     if Enum.any?(query) do
+      query = query |> Enum.to_list() |> Enum.sort_by(&elem(&1, 0))
       path <> "?" <> URI.encode_query(query)
     else
       path

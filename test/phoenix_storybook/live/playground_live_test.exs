@@ -54,20 +54,24 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
 
-      view
-      |> element("#variation-selection-form_variation_id")
-      |> render_change(%{variation: %{variation_id: "world"}})
+      {:ok, view, _html} =
+        view
+        |> element("#variation-selection-form_variation_id")
+        |> render_change(%{variation: %{variation_id: "world"}})
+        |> follow_redirect(conn)
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
     end
 
     test "we can switch to another variation group from the playground", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/storybook/a_folder/live_component?tab=playground")
+      {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/live_component?tab=playground")
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
 
-      view
-      |> element("#variation-selection-form_variation_id")
-      |> render_change(%{variation: %{variation_id: "default"}})
+      {:ok, view, _html} =
+        view
+        |> element("#variation-selection-form_variation_id")
+        |> render_change(%{variation: %{variation_id: "default"}})
+        |> follow_redirect(conn)
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
     end

@@ -280,10 +280,10 @@ defmodule PhoenixStorybook.StoryLive do
         class="psb story-nav-form lg:psb-hidden"
       >
         {select(f, :tab, navigation_select_options(@tabs),
-        "phx-change": "psb-set-tab",
-        class:
-        "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-border-gray-300 dark:psb-border-slate-600 psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 sm:psb-text-sm psb-rounded-md",
-        value: @tab
+          "phx-change": "psb-set-tab",
+          class:
+            "psb psb-form-select dark:psb-bg-slate-800 psb-text-gray-600 dark:psb-text-slate-300 psb-border-gray-300 dark:psb-border-slate-600 psb-w-full psb-pl-3 psb-pr-10 psb-py-1 psb-text-base focus:psb-outline-none focus:psb-ring-indigo-600 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-600 dark:focus:psb-border-sky-400 sm:psb-text-sm psb-rounded-md",
+          value: @tab
         )}
       </.form>
       <!-- :lg+ version of navigation tabs -->

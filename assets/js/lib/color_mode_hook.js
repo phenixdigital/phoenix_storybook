@@ -28,7 +28,7 @@ export const ColorModeHook = {
   },
 
   destroyed() {
-    window.removeEventListener("psb:set-color-mode", onSetColorMode);
+    window.removeEventListener("psb:set-color-mode", this.onSetColorMode);
   },
 
   selectedColorMode() {
