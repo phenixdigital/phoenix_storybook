@@ -137,7 +137,7 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if folder_icon do %>
                   <.user_icon
                     icon={folder_icon}
-                    class="fa-fw psb-pr-1.5 group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
+                    class="fa-fw -psb-ml-1 psb-mr-1.5 group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>

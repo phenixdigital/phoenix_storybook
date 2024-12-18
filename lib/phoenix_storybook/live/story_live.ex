@@ -187,8 +187,7 @@ defmodule PhoenixStorybook.StoryLive do
     ~H"""
     <div class="psb psb-my-6 md:psb-my-12 psb-space-y-4 md:psb-space-y-8 psb-flex psb-flex-col">
       <h1 class="psb psb-font-medium psb-text-red-500 psb-text-lg md:psb-text-xl lg:psb-text-2xl psb-align-middle">
-        <.fa_icon style={:duotone} name="bomb" plan={@fa_plan} />
-        {@story_load_error}
+        <.fa_icon style={:duotone} name="bomb" plan={@fa_plan} /> {@story_load_error}
       </h1>
 
       <div class="psb psb-border psb-rounded-md psb-border-slate-100 psb-bg-slate-800 psb-p-4 psb-overflow-x-scroll">
@@ -219,7 +218,6 @@ defmodule PhoenixStorybook.StoryLive do
             <% end %>
             {@story_entry.name}
           </h2>
-
           {@story |> navigation_tabs() |> render_navigation_tabs(assigns)}
         </div>
 
@@ -229,7 +227,6 @@ defmodule PhoenixStorybook.StoryLive do
           fa_plan={@fa_plan}
         />
       </div>
-
       {render_content(@story.storybook_type(), assigns)}
     </div>
     """
