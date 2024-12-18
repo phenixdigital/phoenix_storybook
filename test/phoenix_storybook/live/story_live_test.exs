@@ -126,6 +126,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute html =~ "unrelated_function"
     end
 
+    test "renders component story, navigation to source has been disabled", %{
+      conn: conn
+    } do
+      {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/live_component")
+      refute has_element?(view, "a", "Source")
+
+      {:ok, _view, html} =
+        live(
+          conn,
+          ~p"/storybook/a_folder/live_component?#{[tab: :source, theme: :default, variation_id: :group]}"
+        )
+
+      refute html =~ "defmodule"
+    end
+
     test "renders component, change theme and navigate", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
