@@ -153,7 +153,7 @@ defmodule PhoenixStorybook.Story.Variations do
 
   defp component_layout_class(story) do
     case story.layout() do
-      :one_column -> nil
+      :one_column -> "lg:psb-mb-4"
       :two_columns -> "lg:psb-col-span-2"
     end
   end

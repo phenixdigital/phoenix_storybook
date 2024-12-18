@@ -864,7 +864,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: "[Multiple values]",
   disabled: true,
   class:
-    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md"
+    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 focus:psb-border-indigo-500 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md dark:psb-text-slate-500"
 )}|
 
           {:eval, value} ->
@@ -882,7 +882,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: inspect(@value),
   disabled: true,
   class:
-    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600  psb-rounded-md"
+    "psb psb-form-input psb-cursor-not-allowed psb-block psb-w-full psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-border-sky-400 psb-text-xs md:psb-text-sm psb-bg-gray-100 dark:psb-bg-slate-800 psb-border-gray-300 dark:psb-border-slate-600 psb-rounded-md dark:psb-text-slate-500"
 )}|
     end
   end
@@ -966,7 +966,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value: @value,
       disabled: true,
       class:
-        "psb psb-cursor-not-allowed psb-bg-gray-100 psb-form-input psb-block psb-w-full dark:psb-text-slate-700 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
+        "psb psb-cursor-not-allowed psb-bg-gray-100 psb-form-input psb-block psb-w-full dark:psb-text-slate-500 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
     )}
     """
   end
@@ -1052,7 +1052,7 @@ defmodule PhoenixStorybook.Story.Playground do
     end
 
     {:noreply,
-     patch_to(s, assigns.root_path, assigns.story_path, %{
+     navigate_to(s, assigns.root_path, assigns.story_path, %{
        tab: :playground,
        variation_id: variation_id
      })}
