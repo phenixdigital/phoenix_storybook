@@ -27,8 +27,10 @@ defmodule PhoenixStorybook.Story do
     # required
     def function, do: &MyAppWeb.MyComponent.my_component/1
 
-    # when true, the source tab will render only function's source code (defaults to false)
-    def render_only_function_source, do: true
+    # By default (`:module` value), it will render the full component's mode source code.
+    # - when set on `:function`, it will render only function's source code
+    # - when set on `false`, the source tab will be unavailable
+    def render_source, do: :function
 
     def attributes, do: []
     def slots, do: []
@@ -143,7 +145,7 @@ defmodule PhoenixStorybook.Story do
     @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
     @callback layout() :: atom()
-    @callback render_only_function_source() :: atom()
+    @callback render_source() :: atom()
     @callback unstripped_doc() :: String.t() | [String.t()] | nil
   end
 
@@ -159,7 +161,7 @@ defmodule PhoenixStorybook.Story do
     @callback variations() :: [Variation.t() | VariationGroup.t()]
     @callback template() :: String.t()
     @callback layout() :: atom()
-    @callback render_only_function_source() :: atom()
+    @callback render_source() :: atom()
   end
 
   defmodule PageBehaviour do
@@ -223,7 +225,7 @@ defmodule PhoenixStorybook.Story do
       def layout, do: :two_columns
 
       @impl unquote(component_behaviour(live?))
-      def render_only_function_source, do: false
+      def render_source, do: :module
 
       if unquote(live?) do
         def merged_attributes, do: Attr.merge_attributes(component(), attributes())
@@ -246,7 +248,7 @@ defmodule PhoenixStorybook.Story do
                      variations: 0,
                      template: 0,
                      layout: 0,
-                     render_only_function_source: 0
+                     render_source: 0
     end
   end
 

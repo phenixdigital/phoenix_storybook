@@ -41,6 +41,6 @@ defmodule PhoenixStorybook.ComponentStub do
   def layout, do: :two_columns
 
   @impl ComponentBehaviour
-  def render_only_function_source, do: false
+  def render_source, do: :module
 
 end

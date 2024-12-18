@@ -4,7 +4,7 @@ defmodule Storybook.CoreComponents.Modal do
 
   def function, do: &CoreComponents.modal/1
   def imports, do: [{CoreComponents, [button: 1, hide_modal: 1, show_modal: 1]}]
-  def render_only_function_source, do: true
+  def render_source, do: :function
 
   def template do
     """

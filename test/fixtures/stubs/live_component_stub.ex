@@ -38,5 +38,5 @@ defmodule PhoenixStorybook.LiveComponentStub do
   def layout, do: :two_columns
 
   @impl LiveComponentBehaviour
-  def render_only_function_source, do: false
+  def render_source, do: :module
 end

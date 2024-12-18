@@ -4,7 +4,7 @@ defmodule Storybook.CoreComponents.Table do
 
   def function, do: &CoreComponents.table/1
   def aliases, do: [Storybook.CoreComponents.Table.User]
-  def render_only_function_source, do: true
+  def render_source, do: :function
 
   def variations do
     [
