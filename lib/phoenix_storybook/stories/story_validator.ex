@@ -59,6 +59,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
     validate_component_container!(file_path, story)
     validate_component_template!(file_path, story)
     validate_component_layout!(file_path, story)
+    validate_component_render_source!(file_path, story)
     validate_attribute_list_type!(file_path, attributes)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
@@ -195,6 +196,13 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
       l when l in ~w(one_column two_columns)a -> :ok
       {:div, options} when is_list(options) -> :ok
       _ -> compile_error!(file_path, "story layout must be :one_column or :two_columns")
+    end
+  end
+
+  defp validate_component_render_source!(file_path, story) do
+    case story.render_source() do
+      s when s in ~w(module function false)a -> :ok
+      _ -> compile_error!(file_path, "story render_source must be :module, :function or false")
     end
   end
 

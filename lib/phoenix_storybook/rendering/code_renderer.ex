@@ -106,7 +106,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     render_source = story.render_source()
 
     cond do
-      !!render_source == false ->
+      !render_source ->
         render_source(nil)
 
       story.storybook_type() == :component and story.render_source() == :function ->

@@ -238,6 +238,25 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "story render_source" do
+    test "with proper value it wont raise" do
+      mock = component_stub(render_source: :module)
+      assert validate!(mock)
+
+      mock = component_stub(render_source: :function)
+      assert validate!(mock)
+
+      mock = component_stub(render_source: false)
+      assert validate!(mock)
+    end
+
+    test "with invalid value it will raise" do
+      mock = component_stub(render_source: :story)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "story render_source must be :module, :function or false"
+    end
+  end
+
   describe "variation template" do
     test "with proper type it wont raise" do
       mock = component_stub(variations: [%Variation{id: :foo, template: nil}])
