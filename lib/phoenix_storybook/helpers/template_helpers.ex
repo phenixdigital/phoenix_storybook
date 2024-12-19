@@ -74,7 +74,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
         extract_placeholder_attributes(template, @variation_group_regex, inspect)
 
       true ->
-        ""
+        []
     end
   end
 
@@ -83,7 +83,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
 
     @html_attributes_regex
     |> Regex.scan(placeholder)
-    |> Enum.map_join(" ", fn [match, _, _] -> match end)
+    |> Enum.map(fn [match, _, _] -> match end)
   end
 
   # When rendering a variation from the component Playground, the playground will pass some context
@@ -95,7 +95,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
 
     @html_attributes_regex
     |> Regex.scan(placeholder)
-    |> Enum.map_join(" ", fn [_, term1, term2] ->
+    |> Enum.map(fn [_, term1, term2] ->
       "#{term1}={psb_inspect(#{inspect(topic)}, #{inspect(variation_id)}, :#{term1}, #{inspect_val(term2)})}"
     end)
   end

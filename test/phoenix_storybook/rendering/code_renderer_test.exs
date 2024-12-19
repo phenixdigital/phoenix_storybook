@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
 
     test "it is working with a variation without any attributes", %{afolder_component: component} do
       code = render_variation_code(component, :no_attributes)
-      assert code =~ ~s|<.component/>|
+      assert code =~ ~s|<.component />|
     end
 
     test "it is working with an inner_block requiring a let attribute" do
