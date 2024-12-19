@@ -236,6 +236,18 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
 
     print_instructions("""
+      Add your #{IO.ANSI.bright()}storybook content#{IO.ANSI.reset()} in your Tailwind config in #{IO.ANSI.bright()}assets/tailwind.config.js#{IO.ANSI.reset()}:
+
+        module.exports = {
+          content: [
+            ...,
+            #{IO.ANSI.bright()}"../storybook/**/*.*exs"#{IO.ANSI.reset()}
+          ]
+          ...
+        }
+    """)
+
+    print_instructions("""
       Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
 
         <body class="bg-white #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
