@@ -14,12 +14,12 @@ defmodule PhoenixStorybook.ExsCompiler do
     do_compile_exs!(path, relative_to, opts)
   end
 
-  def compile_exs(path, relative_to) do
-    GenServer.call(__MODULE__, {:compile_exs, path, relative_to})
+  def compile_exs(path, relative_to, opts \\ []) do
+    GenServer.call(__MODULE__, {:compile_exs, path, relative_to, opts})
   end
 
-  def handle_call({:compile_exs, path, relative_to}, _from, state) do
-    module = do_compile_exs(path, relative_to, state)
+  def handle_call({:compile_exs, path, relative_to, opts}, _from, state) do
+    module = do_compile_exs(path, relative_to, opts)
     {:reply, module, state}
   end
 
