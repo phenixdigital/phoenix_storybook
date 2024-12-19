@@ -100,7 +100,7 @@ defmodule PhoenixStorybook do
             story_path = String.replace_prefix(story_path, "/", "")
             story_path = story_path <> Entries.story_file_suffix()
 
-            case ExsCompiler.compile_exs(story_path, unquote(content_path)) do
+            case ExsCompiler.compile_exs(story_path, unquote(content_path), unquote(opts)) do
               {:ok, story} -> StoryValidator.validate(story)
               {:error, message, exception} -> {:error, message, exception}
             end
