@@ -607,6 +607,10 @@
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
 readers do not read off random characters that represent icons */
+.fa-ad {
+  --fa: "\f641";
+  --fa--fa: "\f641\f641";
+}
 .fa-adjust {
   --fa: "\f042";
   --fa--fa: "\f042\f042";
@@ -615,6 +619,10 @@ readers do not read off random characters that represent icons */
   --fa: "\f105";
   --fa--fa: "\f105\f105";
 }
+.fa-arrow-alt-circle-left {
+  --fa: "\f359";
+  --fa--fa: "\f359\f359";
+}
 .fa-arrow-right {
   --fa: "\f061";
   --fa--fa: "\f061\f061";
@@ -622,6 +630,10 @@ readers do not read off random characters that represent icons */
 .fa-bars {
   --fa: "\f0c9";
   --fa--fa: "\f0c9\f0c9";
+}
+.fa-bolt {
+  --fa: "\f0e7";
+  --fa--fa: "\f0e7\f0e7";
 }
 .fa-bomb {
   --fa: "\f1e2";
@@ -663,9 +675,17 @@ readers do not read off random characters that represent icons */
   --fa: "\f192";
   --fa--fa: "\f192\f192";
 }
+.fa-circle-exclamation {
+  --fa: "\f06a";
+  --fa--fa: "\f06a\f06a";
+}
 .fa-circle-half-stroke {
   --fa: "\f042";
   --fa--fa: "\f042\f042";
+}
+.fa-circle-left {
+  --fa: "\f359";
+  --fa--fa: "\f359\f359";
 }
 .fa-circle-question {
   --fa: "\f059";
@@ -691,6 +711,10 @@ readers do not read off random characters that represent icons */
   --fa: "\f192";
   --fa--fa: "\f192\f192";
 }
+.fa-exclamation-circle {
+  --fa: "\f06a";
+  --fa--fa: "\f06a\f06a";
+}
 .fa-eye {
   --fa: "\f06e";
   --fa--fa: "\f06e\f06e";
@@ -703,6 +727,14 @@ readers do not read off random characters that represent icons */
   --fa: "\e1a7";
   --fa--fa: "\e1a7\e1a7";
 }
+.fa-header {
+  --fa: "\f1dc";
+  --fa--fa: "\f1dc\f1dc";
+}
+.fa-heading {
+  --fa: "\f1dc";
+  --fa--fa: "\f1dc\f1dc";
+}
 .fa-heart-music-camera-bolt {
   --fa: "\f86d";
   --fa--fa: "\f86d\f86d";
@@ -711,9 +743,21 @@ readers do not read off random characters that represent icons */
   --fa: "\f86d";
   --fa--fa: "\f86d\f86d";
 }
+.fa-input-text {
+  --fa: "\e1bf";
+  --fa--fa: "\e1bf\e1bf";
+}
 .fa-link {
   --fa: "\f0c1";
   --fa--fa: "\f0c1\f0c1";
+}
+.fa-list {
+  --fa: "\f03a";
+  --fa--fa: "\f03a\f03a";
+}
+.fa-list-squares {
+  --fa: "\f03a";
+  --fa--fa: "\f03a\f03a";
 }
 .fa-list-timeline {
   --fa: "\e1d1";
@@ -743,6 +787,10 @@ readers do not read off random characters that represent icons */
   --fa: "\f059";
   --fa--fa: "\f059\f059";
 }
+.fa-rectangle-ad {
+  --fa: "\f641";
+  --fa--fa: "\f641\f641";
+}
 .fa-remove {
   --fa: "\f00d";
   --fa--fa: "\f00d\f00d";
@@ -766,6 +814,10 @@ readers do not read off random characters that represent icons */
 .fa-xmark {
   --fa: "\f00d";
   --fa--fa: "\f00d\f00d";
+}
+.fa-zap {
+  --fa: "\f0e7";
+  --fa--fa: "\f0e7\f0e7";
 }
 
 .sr-only,
