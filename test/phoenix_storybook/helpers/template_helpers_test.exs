@@ -129,38 +129,41 @@ defmodule PhoenixStorybook.TemplateHelpersTest do
   end
 
   test "extract_placeholder_attributes/2" do
-    assert extract_placeholder_attributes("<span/>") == ""
-    assert extract_placeholder_attributes("<.psb-variation/>") == ""
-    assert extract_placeholder_attributes("<.psb-variation-group/>") == ""
-    assert extract_placeholder_attributes(~s|<.psb-variation foo="bar"/>|) == ~s|foo="bar"|
+    assert extract_placeholder_attributes("<span/>") == []
+    assert extract_placeholder_attributes("<.psb-variation/>") == []
+    assert extract_placeholder_attributes("<.psb-variation-group/>") == []
+    assert extract_placeholder_attributes(~s|<.psb-variation foo="bar"/>|) == [~s|foo="bar"|]
 
     assert extract_placeholder_attributes(~s|<.psb-variation-group form={f} foo="bar"/>|) ==
-             ~s|form={f} foo="bar"|
+             [~s|form={f}|, ~s|foo="bar"|]
 
     assert extract_placeholder_attributes(~s|<.psb-variation label="foo" status={true}/>|) ==
-             ~s|label="foo" status={true}|
+             [~s|label="foo"|, ~s|status={true}|]
   end
 
   test "extract_placeholder_attributes/2 with inspection" do
-    assert extract_placeholder_attributes("<span/>", {"topic", :variation_id}) == ""
-    assert extract_placeholder_attributes("<.psb-variation/>", {"topic", :variation_id}) == ""
+    assert extract_placeholder_attributes("<span/>", {"topic", :variation_id}) == []
+    assert extract_placeholder_attributes("<.psb-variation/>", {"topic", :variation_id}) == []
 
     assert extract_placeholder_attributes("<.psb-variation-group/>", {"topic", :variation_id}) ==
-             ""
+             []
 
     assert extract_placeholder_attributes(~s|<.psb-variation foo={f}/>|, {"topic", :variation_id}) ==
-             ~s|foo={psb_inspect("topic", :variation_id, :foo, f)}|
+             [~s|foo={psb_inspect("topic", :variation_id, :foo, f)}|]
 
     assert extract_placeholder_attributes(
              ~s|<.psb-variation foo={"bar"}/>|,
              {"topic", :variation_id}
            ) ==
-             ~s|foo={psb_inspect("topic", :variation_id, :foo, "bar")}|
+             [~s|foo={psb_inspect("topic", :variation_id, :foo, "bar")}|]
 
     assert extract_placeholder_attributes(
              ~s|<.psb-variation-group form={f} foo="bar"/>|,
              {"topic", :variation_id}
            ) ==
-             ~s|form={psb_inspect("topic", :variation_id, :form, f)} foo={psb_inspect("topic", :variation_id, :foo, "bar")}|
+             [
+               ~s|form={psb_inspect("topic", :variation_id, :form, f)}|,
+               ~s|foo={psb_inspect("topic", :variation_id, :foo, "bar")}|
+             ]
   end
 end

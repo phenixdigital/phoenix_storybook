@@ -145,7 +145,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.#{fun}"}#{let_markup(let)}#{template_attributes_markup(template)}#{attributes_markup(story, attributes)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.#{fun}"}#{maybe_wrap_attributes(story, attributes, let, template)}#{if self_closed?, do: "/>", else: ">"}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.#{fun}>"}
     """)
@@ -157,14 +157,34 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.live_component module={#{mod}}"}#{let_markup(let)}#{template_attributes_markup(template)}#{attributes_markup(story, attributes)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.live_component module={#{mod}}"}#{maybe_wrap_attributes(story, attributes, let, template)}#{if self_closed?, do: "/>", else: ">"}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.live_component>"}
     """)
   end
 
-  defp let_markup(nil), do: ""
-  defp let_markup(let), do: " :let={#{to_string(let)}}"
+  @wrap_attributes_treshold 80
+  defp maybe_wrap_attributes(story, attributes, let, template) do
+    attrs =
+      [
+        let_markup(let),
+        template_attributes_markup(template),
+        attributes_markup(story, attributes)
+      ]
+      |> List.flatten()
+      |> Enum.reject(&(&1 == ""))
+
+    attrs_binary = Enum.join(attrs, " ")
+
+    if String.length(attrs_binary) > @wrap_attributes_treshold do
+      "\n  " <> Enum.join(attrs, "\n  ") <> "\n"
+    else
+      " " <> attrs_binary
+    end
+  end
+
+  defp let_markup(nil), do: []
+  defp let_markup(let), do: [":let={#{to_string(let)}}"]
 
   defp attributes_markup(story \\ nil, attributes)
 
@@ -172,33 +192,28 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
 
   defp attributes_markup(story, attributes) do
     attributes_definitions = if story, do: story.merged_attributes(), else: []
-    prefix = if story, do: " ", else: ""
 
-    attributes_markup =
-      attributes
-      |> Enum.map(fn
-        {name, {:eval, val}} ->
-          ~s|#{name}={#{val}}|
+    attributes
+    |> Enum.map(fn
+      {name, {:eval, val}} ->
+        ~s|#{name}={#{val}}|
 
-        {name, val} when is_binary(val) ->
-          ~s|#{name}="#{val}"|
+      {name, val} when is_binary(val) ->
+        ~s|#{name}="#{val}"|
 
-        {_name, false} ->
-          nil
+      {_name, false} ->
+        nil
 
-        {name, true} ->
-          name
+      {name, true} ->
+        name
 
-        {name, val} ->
-          case find_attribute_definitition(attributes_definitions, name) do
-            %Attr{type: :global} -> attributes_markup(val)
-            _ -> ~s|#{name}={#{inspect_val(val)}}|
-          end
-      end)
-      |> Enum.reject(&is_nil/1)
-      |> Enum.join(" ")
-
-    prefix <> attributes_markup
+      {name, val} ->
+        case find_attribute_definitition(attributes_definitions, name) do
+          %Attr{type: :global} -> attributes_markup(val)
+          _ -> ~s|#{name}={#{inspect_val(val)}}|
+        end
+    end)
+    |> Enum.reject(&is_nil/1)
   end
 
   defp find_attribute_definitition(attributes_definitions, attr_id) do
@@ -206,10 +221,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   end
 
   defp template_attributes_markup(template) do
-    case TemplateHelpers.extract_placeholder_attributes(template) do
-      "" -> ""
-      attributes -> " " <> attributes
-    end
+    TemplateHelpers.extract_placeholder_attributes(template)
   end
 
   defp inspect_val(struct = %{__struct__: struct_name}) when is_struct(struct) do
