@@ -7,30 +7,32 @@ defmodule PhoenixStorybook.Stories.StorySource do
   # To fetch component source, we need to either call function() or component() on the story
   # module, which are not yet compiled.
   defmacro __before_compile__(env) do
-    component_source_path = component_source_path(env)
-    story_extra_sources_path = story_extra_sources_path(env)
+    if PhoenixStorybook.enabled?() do
+      component_source_path = component_source_path(env)
+      story_extra_sources_path = story_extra_sources_path(env)
 
-    quote do
-      def __source__ do
-        unquote(read_source_file(env.file))
-      end
+      quote do
+        def __source__ do
+          unquote(read_source_file(env.file))
+        end
 
-      def __module_source__ do
-        unquote(read_source_file(component_source_path))
-      end
+        def __module_source__ do
+          unquote(read_source_file(component_source_path))
+        end
 
-      def __extra_sources__ do
-        unquote(
-          Macro.escape(
-            for {path, full_path} <- story_extra_sources_path, into: %{} do
-              {path, read_source_file(full_path)}
-            end
+        def __extra_sources__ do
+          unquote(
+            Macro.escape(
+              for {path, full_path} <- story_extra_sources_path, into: %{} do
+                {path, read_source_file(full_path)}
+              end
+            )
           )
-        )
-      end
+        end
 
-      def __file_path__ do
-        unquote(env.file)
+        def __file_path__ do
+          unquote(env.file)
+        end
       end
     end
   end
