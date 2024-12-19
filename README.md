@@ -167,7 +167,15 @@ All settings can be overridden from your config files.
 ```elixir
 # config/config.exs
 config :my_app, MyAppWeb.Storybook,
-  content_path: "overridden/content/path"
+  compilation_mode: :lazy,
+  compilation_debug: :true
+```
+
+`phoenix_storybook` can also be completely disabled, per environment, with the following settings:
+
+```elixir
+# config/config.exs
+config :phoenix_storybook, enabled: false
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), icons in the
