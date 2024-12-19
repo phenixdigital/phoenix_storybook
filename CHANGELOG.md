@@ -17,6 +17,7 @@
   when written on multiple lines](https://github.com/phenixdigital/phoenix_storybook/issues/516).
 - **improvement**: nested slot attributes are properly displayed in the playground
 - **improvement**: [render only component function's source code for component stories](https://github.com/phenixdigital/phoenix_storybook/issues/529)
+- **improvement**: [updated generator with improved core_components' stories](https://github.com/phenixdigital/phoenix_storybook/issues/546)
 - **bugfix**: fixed broken playground for stories using templating features
 
 ## v0.7.2 (2024-12-06)

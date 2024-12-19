@@ -50,7 +50,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       app_name: app_name,
       sandbox_class: String.replace(to_string(app_name), "_", "-"),
       web_module: web_module,
-      web_module_name: web_module |> Module.split() |> List.last(),
+      web_module_name: Macro.to_string(web_module),
       core_components_module: core_components_module,
       core_components_module_name: core_components_module_name
     }
@@ -62,6 +62,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
         {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")}
       ] ++
         maybe_core_components(core_components_module, core_components_folder) ++
+        maybe_core_components_index(core_components_module) ++
         maybe_core_components_example(core_components_module) ++
         stylesheet(css_folder, opts[:tailwind]) ++
         [{"storybook.js", Path.join(js_folder, "storybook.js")}]
@@ -117,9 +118,20 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     Code.ensure_loaded?(module) && function_exported?(module, function, 1)
   end
 
+  defp maybe_core_components_index(core_components_module) do
+    if Code.ensure_loaded?(core_components_module) do
+      [
+        {"core_components/_core_components.index.exs.eex",
+         "storybook/core_components/_core_components.index.exs"}
+      ]
+    else
+      []
+    end
+  end
+
   defp maybe_core_components_example(core_components_module) do
     if Code.ensure_loaded?(core_components_module) &&
-         Enum.all?(~w(button header table modal input simple_form)a, fn function ->
+         Enum.all?(~w(button header table input simple_form)a, fn function ->
            function_exported?(core_components_module, function, 1)
          end) do
       [
@@ -166,16 +178,16 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     print_instructions("""
       Add the following to your #{IO.ANSI.bright()}router.ex#{IO.ANSI.reset()}:
 
-        use #{schema.web_module}, :router
+        use #{schema.web_module_name}, :router
         import PhoenixStorybook.Router
 
         scope "/" do
           storybook_assets()
         end
 
-        scope "/", #{schema.web_module} do
+        scope "/", #{schema.web_module_name} do
           pipe_through(:browser)
-          live_storybook "/storybook", backend_module: #{schema.web_module}.Storybook
+          live_storybook "/storybook", backend_module: #{schema.web_module_name}.Storybook
         end
     """)
   end
@@ -226,7 +238,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     print_instructions("""
       Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
 
-        <body class="bg-white antialiased #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
+        <body class="bg-white #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
         ...
     """)
   end
@@ -237,7 +249,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     print_instructions("""
       Add a new #{IO.ANSI.bright()}endpoint watcher#{IO.ANSI.reset()} for your new Tailwind build profile in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
 
-        config #{inspect(schema.app_name)}, #{schema.web_module}.Endpoint,
+        config #{inspect(schema.app_name)}, #{schema.web_module_name}.Endpoint,
           ...
           watchers: [
             ...
@@ -250,7 +262,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     print_instructions("""
       Add a new #{IO.ANSI.bright()}live_reload pattern#{IO.ANSI.reset()} to your endpoint in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
 
-        config #{inspect(schema.app_name)}, #{schema.web_module}.Endpoint,
+        config #{inspect(schema.app_name)}, #{schema.web_module_name}.Endpoint,
           live_reload: [
             patterns: [
               ...
