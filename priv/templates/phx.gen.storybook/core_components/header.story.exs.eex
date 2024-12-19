@@ -1,34 +1,52 @@
-defmodule Storybook.CoreComponents.Header do
+defmodule Storybook.Components.CoreComponents.Header do
   use PhoenixStorybook.Story, :component
-  alias <%= schema.core_components_module_name %>
 
-  def function, do: &CoreComponents.header/1
-  def imports, do: [{CoreComponents, button: 1}]
+  def function, do: &<%= schema.core_components_module_name %>.header/1
+  def imports, do: [{<%= schema.core_components_module_name %>, button: 1}]
   def render_source, do: :function
+
+  def template do
+    """
+    <div class="w-full" psb-code-hidden>
+      <.psb-variation/>
+    </div>
+    """
+  end
 
   def variations do
     [
       %Variation{
         id: :default,
+        description: "With a title",
         slots: [
-          "Hello World"
+          "Section title"
         ]
       },
       %Variation{
-        id: :with_a_subtitle,
+        id: :subtitle,
+        description: "With a subtitle",
         slots: [
-          "Hello World",
-          "<:subtitle>I'm a header subtitle</:subtitle>"
+          "Section title",
+          """
+          <:subtitle>
+            Here a subtitle
+          </:subtitle>
+          """
         ]
       },
       %Variation{
-        id: :with_actions,
+        id: :actions,
+        description: "With a subtitle and actions",
         slots: [
-          "Hello World",
-          "<:subtitle>I'm a header subtitle</:subtitle>",
+          "Section title",
+          """
+          <:subtitle>
+            Here a subtitle
+          </:subtitle>
+          """,
           """
           <:actions>
-            <.button>Link</.button>
+            <.button>Action!</.button>
           </:actions>
           """
         ]

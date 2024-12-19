@@ -1,47 +1,42 @@
-defmodule Storybook.CoreComponents.Flash do
+defmodule Storybook.Components.CoreComponents.Flash do
   use PhoenixStorybook.Story, :component
-  alias <%= schema.core_components_module_name %>
 
-  def function, do: &CoreComponents.flash/1
-  def imports, do: [{CoreComponents, [button: 1, show: 1]}]
+  def function, do: &<%= schema.core_components_module_name %>.flash/1
+  def imports, do: [{<%= schema.core_components_module_name %>, show: 1, button: 1}]
   def render_source, do: :function
 
   def template do
     """
-    <.button phx-click={show("#:variation_id")} psb-code-hidden>
-      Open flash
-    </.button>
-    <.psb-variation/>
+    <div>
+      <.button phx-click={show("#:variation_id")}>
+        Trigger flash
+      </.button>
+      <.psb-variation/>
+    </div>
     """
   end
 
   def variations do
     [
       %Variation{
-        id: :info_no_title,
+        id: :info,
+        description: "Info message",
         attributes: %{
           kind: :info,
-          hidden: true
+          hidden: true,
+          title: "Did you know?"
         },
-        slots: ["Info message"]
+        slots: ["Flash message"]
       },
       %Variation{
-        id: :error_with_title,
+        id: :error,
+        description: "Error message",
         attributes: %{
           kind: :error,
           hidden: true,
-          title: "Flash title"
+          title: "Oops!"
         },
-        slots: ["Error message"]
-      },
-      %Variation{
-        id: :no_close_button,
-        attributes: %{
-          kind: :info,
-          hidden: true,
-          close: false
-        },
-        slots: ["Info message"]
+        slots: ["Sorry, it just crashed"]
       }
     ]
   end
