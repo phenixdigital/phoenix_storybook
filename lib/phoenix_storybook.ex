@@ -54,17 +54,19 @@ defmodule PhoenixStorybook do
 
   @doc false
   defmacro __using__(opts) do
-    {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
-    opts = opts |> merge_opts_and_config(__CALLER__.module) |> Macro.escape()
-    content_tree = content_tree(opts)
+    if enabled?() do
+      {opts, _} = Code.eval_quoted(opts, [], __CALLER__)
+      opts = opts |> merge_opts_and_config(__CALLER__.module) |> Macro.escape()
+      content_tree = Entries.content_tree(opts)
 
-    [
-      main_quote(opts),
-      recompilation_quotes(opts),
-      story_compilation_quotes(opts, content_tree),
-      config_quotes(opts),
-      stories_quotes(opts, content_tree)
-    ]
+      [
+        main_quote(opts),
+        recompilation_quotes(opts),
+        story_compilation_quotes(opts, content_tree),
+        config_quotes(opts),
+        stories_quotes(opts, content_tree)
+      ]
+    end
   end
 
   defp merge_opts_and_config(opts, backend_module) do
@@ -193,10 +195,6 @@ defmodule PhoenixStorybook do
     find_entry_by_path_quotes ++ [single_quote]
   end
 
-  defp content_tree(opts) do
-    Entries.content_tree(opts)
-  end
-
   defp compilation_mode(opts) do
     case Keyword.get(opts, :compilation_mode) do
       mode when mode in [:lazy, :eager] ->
@@ -219,5 +217,9 @@ defmodule PhoenixStorybook do
         Keyword.get(unquote(opts), key, default)
       end
     end
+  end
+
+  def enabled? do
+    Application.get_env(:phoenix_storybook, :enabled, true)
   end
 end
