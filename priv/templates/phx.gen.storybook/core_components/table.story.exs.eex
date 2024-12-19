@@ -62,7 +62,7 @@ defmodule Storybook.Components.CoreComponents.Table do
     [
       """
       <:col :let={user} label="ID">
-        <%%Agent= user.id %>
+        <%%= user.id %>
       </:col>
       """,
       """
