@@ -157,20 +157,23 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.live_component module={#{mod}}"}#{maybe_wrap_attributes(story, attributes, let, template)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.live_component"}#{maybe_wrap_attributes(story, attributes, let, template, mod)}#{if self_closed?, do: "/>", else: ">"}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.live_component>"}
     """)
   end
 
   @wrap_attributes_treshold 80
-  defp maybe_wrap_attributes(story, attributes, let, template) do
+  defp maybe_wrap_attributes(story, attributes, let, template, module \\ nil) do
     attrs =
       [
         let_markup(let),
         template_attributes_markup(template),
         attributes_markup(story, attributes)
       ]
+      |> then(fn attrs ->
+        if module, do: ["module={#{module}}" | attrs], else: attrs
+      end)
       |> List.flatten()
       |> Enum.reject(&(&1 == ""))
 

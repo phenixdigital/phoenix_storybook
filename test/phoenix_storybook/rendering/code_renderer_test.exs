@@ -28,6 +28,17 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       code = render_variation_code(component, :world)
       assert code =~ ~s|<.component id="component-single-world" index={37} label="world"/>|
 
+      code = render_variation_code(component, :lengthy)
+
+      assert code =~
+               String.trim("""
+               <.component
+                 id="component-single-lengthy"
+                 index={37}
+                 label="Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt."
+               />
+               """)
+
       code = render_variation_code(live_component, :hello)
       assert code =~ ~s|<.live_component module={LiveComponent} label="hello"/>|
 
@@ -38,6 +49,16 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
                <.live_component module={LiveComponent} label="world">
                  <span>inner block</span>
                </.live_component>
+               """)
+
+      code = render_variation_code(live_component, :lengthy)
+
+      assert code =~
+               String.trim("""
+               <.live_component
+                 module={LiveComponent}
+                 label="Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt."
+               />
                """)
     end
 
