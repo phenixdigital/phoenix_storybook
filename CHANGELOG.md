@@ -4,7 +4,7 @@
 >
 > **⭐ Want to help with the Phoenix Storybook project? ⭐**
 >
-> - I would greatly appreciate your [code contributions](https://github.com/phenixdigital/phoenix_storybook/CONTRIBUTING.md).
+> - I would greatly appreciate your [code contributions](https://github.com/phenixdigital/phoenix_storybook/blob/main/CONTRIBUTING.md).
 >
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
