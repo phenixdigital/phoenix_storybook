@@ -1011,12 +1011,13 @@ defmodule PhoenixStorybook.Story.Playground do
 
     fields =
       for {key, value} <- params,
+          not String.starts_with?(key, "_unused_"),
           key = String.to_atom(key),
           reduce: assigns.fields do
         acc ->
           attr_definition = Enum.find(story.merged_attributes(), &(&1.id == key))
 
-          if attr_definition && (is_nil(value) || value == "") && !attr_definition.required do
+          if (is_nil(value) || value == "") && !attr_definition.required do
             Map.put(acc, key, nil)
           else
             Map.put(acc, key, cast_value(story, key, value))
