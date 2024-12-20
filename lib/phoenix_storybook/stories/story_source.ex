@@ -175,7 +175,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   defp find_function_end(module_source, start_line, max_line) do
     source_lines = String.split(module_source, "\n")
 
-    max_line..start_line
+    max_line..start_line//-1
     |> Enum.find(max_line, fn line ->
       source_lines
       |> Enum.at(line)
