@@ -9,9 +9,9 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
-## v0.8.0 (not released)
+## v0.8.0 (2025-01-07)
 
-- **change (breaking!)**: requires `phoenix_live_view` 1.0.0 or higher
+- **change (breaking!)**: requires `phoenix_live_view ~> 1.0.x`
 - **feature**: [new tab to preview function components HTML](https://github.com/phenixdigital/phoenix_storybook/issues/534)
 - **improvement**: [component documentation's markdown is properly formatted](https://github.com/phenixdigital/phoenix_storybook/issues/514)
 - **improvement**: [component documentation's attribute stripping can be opted out by configuration](https://github.com/phenixdigital/phoenix_storybook/issues/515)
