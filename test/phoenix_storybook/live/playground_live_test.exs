@@ -75,6 +75,22 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
     end
+
+    test "playground rendered HTML is available", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      view |> element("a", "HTML") |> render_click()
+
+      view
+      |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
+      |> render_change()
+
+      assert view |> element("pre") |> render() =~ "world"
+    end
+
+    test "playground rendered HTML is unavailable for live_components", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/live_component?tab=playground")
+      refute has_element?(view, "a", "HTML")
+    end
   end
 
   describe "attribute documentation" do
