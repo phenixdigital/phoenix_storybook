@@ -3,10 +3,14 @@ defmodule PhoenixStorybook.Story.Playground do
   use PhoenixStorybook.Web, :live_component
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhoenixStorybook.Rendering.{CodeRenderer, RenderingContext}
+  alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
   alias PhoenixStorybook.Story.PlaygroundPreviewLive
   alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers}
   alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
+
+  alias Makeup.Formatters.HTML.HTMLFormatter
+  alias Makeup.Lexers.HTMLLexer
+  alias Phoenix.HTML
 
   import PhoenixStorybook.NavigationHelpers
 
@@ -209,8 +213,18 @@ defmodule PhoenixStorybook.Story.Playground do
     """
   end
 
-  defp render_upper_navigation_tabs(assigns) do
-    assigns = assign(assigns, tabs: [{:preview, "Preview", "eye"}, {:code, "Code", "code"}])
+  defp render_upper_navigation_tabs(assigns = %{story: story}) do
+    tabs =
+      [{:preview, "Preview", "eye"}, {:code, "Code", "code"}]
+      |> then(fn tabs ->
+        if story.storybook_type() == :component do
+          tabs ++ [{:html, "HTML", "browser"}]
+        else
+          tabs
+        end
+      end)
+
+    assigns = assign(assigns, tabs: tabs)
 
     ~H"""
     <div class="psb psb-border-b psb-border-gray-200 dark:psb-border-slate-600 psb-mb-6">
@@ -331,6 +345,23 @@ defmodule PhoenixStorybook.Story.Playground do
           backend_module={@backend_module}
         />
       </div>
+      <div
+        :if={@upper_tab == :html and @story.storybook_type() == :component}
+        class="psb psb-relative psb-group psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 lg:psb-col-span-2 lg:psb-mb-0 psb-flex psb-items-center psb-px-2 psb-min-h-32 psb-bg-slate-800 psb-shadow-sm"
+      >
+        <div
+          phx-click={JS.dispatch("psb:copy-code")}
+          class="psb psb-hidden group-hover:psb-block psb-bg-slate-700 psb-text-slate-500 hover:psb-text-slate-100 psb-z-10 psb-absolute psb-top-2 psb-right-2 psb-px-2 psb-py-1 psb-rounded-md psb-cursor-pointer"
+        >
+          <.fa_icon name="copy" class="psb-text-inherit" plan={@fa_plan} />
+        </div>
+        <.playground_html
+          story={@story}
+          variation={@variation}
+          variations={@variations}
+          backend_module={@backend_module}
+        />
+      </div>
       <%= if @playground_error do %>
         <% error_bg = if @upper_tab == :code, do: "psb-bg-slate/20", else: "psb-bg-white/20" %>
         <div class={"psb psb-absolute psb-inset-2 psb-z-10 psb-backdrop-blur-lg psb-text-red-600 #{error_bg} psb-rounded psb-flex psb-flex-col psb-justify-center psb-items-center psb-space-y-2"}>
@@ -358,6 +389,45 @@ defmodule PhoenixStorybook.Story.Playground do
       variation_attributes
     )
     |> CodeRenderer.render()
+  end
+
+  defp playground_html(assigns) do
+    variation_attributes = for v <- assigns.variations, into: %{}, do: {v.id, v.attributes}
+
+    html =
+      RenderingContext.build(
+        assigns.backend_module,
+        assigns.story,
+        assigns.variation,
+        variation_attributes
+      )
+      |> ComponentRenderer.render()
+      |> Phoenix.HTML.html_escape()
+      |> Phoenix.HTML.safe_to_string()
+      |> format_heex()
+
+    assigns = assign(assigns, :html, html)
+
+    ~H"""
+    <pre class={pre_class()}>
+    {@html}
+    </pre>
+    """
+  end
+
+  defp format_heex(code) do
+    code
+    |> String.trim()
+    |> HTMLLexer.lex()
+    |> HTMLFormatter.format_inner_as_binary([])
+    |> HTML.raw()
+  end
+
+  defp pre_class do
+    """
+    psb highlight psb-p-2 md:psb-p-3 psb-border psb-border-slate-800 psb-text-xs md:psb-text-sm
+    psb-rounded-md psb-bg-slate-800 psb-whitespace-pre-wrap psb-break-normal
+    """
   end
 
   defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
