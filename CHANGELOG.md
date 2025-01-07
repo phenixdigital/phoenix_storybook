@@ -11,6 +11,8 @@
 
 ## v0.8.0 (not released)
 
+- **change (breaking!)**: requires `phoenix_live_view` 1.0.0 or higher
+- **feature**: [new tab to preview function components HTML](https://github.com/phenixdigital/phoenix_storybook/issues/534)
 - **improvement**: [component documentation's markdown is properly formatted](https://github.com/phenixdigital/phoenix_storybook/issues/514)
 - **improvement**: [component documentation's attribute stripping can be opted out by configuration](https://github.com/phenixdigital/phoenix_storybook/issues/515)
 - **improvement**: [playground attribute documentation is properly formatted and can be expanded
