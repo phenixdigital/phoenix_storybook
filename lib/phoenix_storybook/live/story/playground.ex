@@ -404,6 +404,7 @@ defmodule PhoenixStorybook.Story.Playground do
       |> ComponentRenderer.render()
       |> Phoenix.HTML.html_escape()
       |> Phoenix.HTML.safe_to_string()
+      |> Phoenix.LiveView.HTMLFormatter.format([])
       |> format_heex()
 
     assigns = assign(assigns, :html, html)
