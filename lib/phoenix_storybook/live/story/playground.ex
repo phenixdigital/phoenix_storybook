@@ -14,6 +14,10 @@ defmodule PhoenixStorybook.Story.Playground do
 
   import PhoenixStorybook.NavigationHelpers
 
+  defmodule Expr do
+    defstruct [:string, :value, :error]
+  end
+
   def mount(socket) do
     {:ok, assign(socket, event_logs: [], event_logs_unread: 0)}
   end
@@ -160,14 +164,14 @@ defmodule PhoenixStorybook.Story.Playground do
             end
           end
 
-        field =
+        value =
           case Enum.uniq(attr_values) do
             [] -> nil
             [val] -> val
             _ -> :locked
           end
 
-        Map.put(acc, attr.id, field)
+        Map.put(acc, attr.id, expand_field(attr, value))
     end
   end
 
@@ -576,6 +580,7 @@ defmodule PhoenixStorybook.Story.Playground do
                             values={attr.values}
                             myself={@myself}
                             template_attributes={Map.get(@template_attributes, @variation_id, %{})}
+                            fa_plan={@fa_plan}
                           />
                         </td>
                       </tr>
@@ -1022,23 +1027,31 @@ defmodule PhoenixStorybook.Story.Playground do
     """
   end
 
-  defp attr_input(assigns = %{type: _type, values: nil, value: value}) do
-    value =
-      case value do
-        nil -> ""
-        s when is_binary(s) -> s
-        val -> inspect(val)
-      end
-
-    assigns = assign(assigns, value: value)
-
+  defp attr_input(assigns = %{type: _type, values: nil, value: %Expr{}}) do
     ~H"""
-    {text_input(@form, @attr_id,
-      value: @value,
-      disabled: true,
-      class:
-        "psb psb-cursor-not-allowed psb-bg-gray-100 psb-form-input psb-block psb-w-full dark:psb-text-slate-500 dark:psb-bg-slate-800 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md"
-    )}
+    <div class="psb-relative psb-flex psb-items-center">
+      {textarea(@form, @attr_id,
+        value: @value.string,
+        class:
+          "psb psb-form-input psb-block psb-w-full dark:psb-text-slate-300 dark:psb-bg-slate-700 psb-shadow-sm focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400 focus:psb-border-indigo-500 dark:focus:psb-ring-sky-400 psb-border-gray-300 dark:psb-border-slate-600 psb-text-xs md:psb-text-sm psb-rounded-md",
+        rows: 1,
+        phx_hook: "MaintainAttrsHook",
+        data_attrs: "style"
+      )}
+      <.fa_icon
+        style={:solid}
+        name="droplet"
+        class={[
+          "psb-absolute psb-right-2 fa-xl psb-opacity-60 ",
+          if(@value.error != nil,
+            do: "psb-text-red-400 dark:psb-text-red-400",
+            else: "psb-text-indigo-400 dark:psb-text-sky-400"
+          )
+        ]}
+        plan={@fa_plan}
+        title={@value.error}
+      />
+    </div>
     """
   end
 
@@ -1089,14 +1102,16 @@ defmodule PhoenixStorybook.Story.Playground do
           attr_definition = Enum.find(story.merged_attributes(), &(&1.id == key))
 
           if (is_nil(value) || value == "") && !attr_definition.required do
-            Map.put(acc, key, nil)
+            Map.put(acc, key, expand_field(attr_definition, nil))
           else
             Map.put(acc, key, cast_value(story, key, value))
           end
       end
 
-    variations = update_variations_attributes(assigns.variations, fields)
-    send_attributes(assigns.topic, fields)
+    bare_fields = Enum.map(fields, fn {attr_id, value} -> {attr_id, collapse_field(value)} end)
+
+    variations = update_variations_attributes(assigns.variations, bare_fields)
+    send_attributes(assigns.topic, bare_fields)
 
     {:noreply, assign(socket, variations: variations, fields: fields)}
   end
@@ -1107,9 +1122,10 @@ defmodule PhoenixStorybook.Story.Playground do
         socket = %{assigns: assigns}
       ) do
     fields = Map.put(assigns.fields, String.to_atom(key), value)
+    bare_fields = Enum.map(fields, fn {attr_id, value} -> {attr_id, collapse_field(value)} end)
 
-    variations = update_variations_attributes(assigns.variations, fields)
-    send_attributes(assigns.topic, fields)
+    variations = update_variations_attributes(assigns.variations, bare_fields)
+    send_attributes(assigns.topic, bare_fields)
     {:noreply, assign(socket, variations: variations, fields: fields)}
   end
 
@@ -1158,14 +1174,40 @@ defmodule PhoenixStorybook.Story.Playground do
   defp cast_value(story, attr_id, value) do
     attr = story.merged_attributes() |> Enum.find(&(&1.id == attr_id))
 
-    case attr.type do
-      :atom -> String.to_atom(value)
-      :boolean -> String.to_atom(value)
-      :integer -> String.to_integer(value)
-      :float -> String.to_float(value)
-      _ -> value
+    case {attr.type, attr.values} do
+      {:boolean, _} -> String.to_atom(value)
+      {:integer, _} -> String.to_integer(value)
+      {:float, _} -> String.to_float(value)
+      {:string, _} -> value
+      {:atom, values} when values != nil -> value
+      _ -> eval_expr(value)
     end
   rescue
     _ -> value
   end
+
+  defp eval_expr(string) do
+    case Dune.eval_string(string) do
+      %Dune.Success{value: evaluated} -> %Expr{value: evaluated, string: string}
+      %Dune.Failure{message: error} -> %Expr{string: string, error: error}
+    end
+  end
+
+  defp expand_field(_attr, :locked), do: :locked
+
+  defp expand_field(%{type: type, values: nil}, value)
+       when type in [:any, :atom, :list, :map, :global] or
+              (is_tuple(type) and elem(type, 0) == :struct) do
+    if value == nil do
+      %Expr{value: nil, string: ""}
+    else
+      %Expr{value: value, string: inspect(value)}
+    end
+  end
+
+  defp expand_field(_attr, value), do: value
+
+  defp collapse_field(%Expr{value: value, error: nil}), do: value
+  defp collapse_field(%Expr{}), do: nil
+  defp collapse_field(value), do: value
 end
