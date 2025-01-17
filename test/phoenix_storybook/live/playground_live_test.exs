@@ -33,7 +33,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "renders playground code a simple component", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       view |> element("a", "Code") |> render_click()
-      assert view |> element("pre") |> render() =~ "hello"
+      assert view |> element("#playground pre") |> render() =~ "hello"
     end
 
     test "playground code is updated as form is changed", %{conn: conn} do
@@ -44,7 +44,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
-      assert view |> element("pre") |> render() =~ "world"
+      assert view |> element("#playground pre") |> render() =~ "world"
 
       view |> element("a", "Preview") |> render_click()
       assert view |> element("#playground-preview-live") |> render() =~ "component: world"
@@ -84,7 +84,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
-      assert view |> element("pre") |> render() =~ "world"
+      assert view |> element("#playground pre") |> render() =~ "world"
     end
 
     test "playground rendered HTML is unavailable for live_components", %{conn: conn} do

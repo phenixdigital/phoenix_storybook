@@ -236,6 +236,53 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
     end
   end
 
+  describe "render_code_block/3" do
+    test "it renders Elixir code" do
+      code = """
+      def hello_world do
+        IO.puts(\"Hello, world!\")
+      end
+      """
+
+      source = CodeRenderer.render_code_block(code, :elixir) |> rendered_to_string()
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s[<span class="kd">def</span>]
+    end
+
+    test "it renders HEEx code" do
+      code = """
+      <.button phx-click="go">Send!</.button>
+      """
+
+      source = CodeRenderer.render_code_block(code, :heex) |> rendered_to_string()
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s[<span class="nf">.button</span>]
+    end
+
+    test "it does not highlight syntax when `format: false` is given" do
+      code = """
+      <.button phx-click="go">Send!</.button>
+      """
+
+      source = CodeRenderer.render_code_block(code, :heex, format: false) |> rendered_to_string()
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s[<.button phx-click="go">Send!</.button>]
+    end
+
+    test "it does not trim whitespace when `trim: false` is given" do
+      code = """
+        <.button phx-click="go">Send!</.button>
+      """
+
+      source =
+        CodeRenderer.render_code_block(code, :heex, trim: false, format: false)
+        |> rendered_to_string()
+
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s[  <.button phx-click="go">Send!</.button>]
+    end
+  end
+
   describe "render booleans with their shorthand notation" do
     test "when true, the attribute is rendered, shorthand", %{all_types_component: component} do
       code = render_variation_code(component, :toggle_true)
