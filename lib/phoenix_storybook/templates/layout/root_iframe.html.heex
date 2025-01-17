@@ -8,7 +8,7 @@
       <script
         nonce={csp_nonce(@conn, :script)}
         phx-track-static
-        type="text/javascript"
+        type={storybook_js_type(@conn)}
         src={application_static_path(path)}
       >
       </script>

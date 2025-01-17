@@ -38,6 +38,8 @@ Then set the `js_path: "/assets/storybook.js"` option to the storybook within yo
 file. This is a remote path (not a local file-system path) which means this file should be served
 by your own application endpoint with the given path.
 
+If you are using ESM-style imports, you can set the `js_script_type: "module"`" option as well.
+
 You can also use this script to inject whatever content you want into document `HEAD`, such as
 external scripts.
 

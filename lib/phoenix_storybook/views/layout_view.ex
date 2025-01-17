@@ -62,6 +62,7 @@ defmodule PhoenixStorybook.LayoutView do
 
   def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
+  def storybook_js_type(conn), do: storybook_setting(conn, :js_script_type, "text/javascript")
 
   defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
 
