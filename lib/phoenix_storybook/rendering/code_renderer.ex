@@ -83,7 +83,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
       assigns =
         assign(
           %{__changed__: %{}},
-          heex: format_heex(heex, context.options)
+          heex: format_code(heex, :heex, context.options)
         )
 
       if context.options[:format] == false do
@@ -127,7 +127,17 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
 
     ~H"""
     <pre class={[pre_class(), "dark:psb-border-slate-600"]}>
-    <%= format_elixir(@source) %>
+    <%= format_code(@source, :elixir) %>
+    </pre>
+    """
+  end
+
+  def render_code_block(code, lang, options \\ []) do
+    assigns = assign(%{__changed__: %{}}, code: code, lang: lang, options: options)
+
+    ~H"""
+    <pre class={pre_class()}>
+    <%= format_code(@code, @lang, @options) %>
     </pre>
     """
   end
@@ -252,24 +262,24 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     code |> String.split("\n") |> Enum.reject(&(&1 == "")) |> Enum.join("\n")
   end
 
-  defp format_heex(code, opts) do
-    if opts[:format] == false do
-      code |> String.trim() |> HTML.raw()
-    else
-      code
-      |> String.trim()
-      |> HEExLexer.lex()
-      |> HTMLFormatter.format_inner_as_binary([])
-      |> HTML.raw()
-    end
-  end
+  defp format_code(code, lang, opts \\ []) do
+    format? = Keyword.get(opts, :format, true)
+    trim? = Keyword.get(opts, :trim, true)
 
-  defp format_elixir(code) do
-    code
-    |> String.trim()
-    |> ElixirLexer.lex()
-    |> HTMLFormatter.format_inner_as_binary([])
-    |> HTML.raw()
+    code = if trim?, do: String.trim(code), else: code
+
+    code =
+      if format? do
+        case lang do
+          :elixir -> ElixirLexer.lex(code)
+          :heex -> HEExLexer.lex(code)
+        end
+        |> HTMLFormatter.format_inner_as_binary([])
+      else
+        code
+      end
+
+    HTML.raw(code)
   end
 
   defp function_name(fun), do: Function.info(fun)[:name]

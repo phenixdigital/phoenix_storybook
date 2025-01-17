@@ -6,6 +6,28 @@ defmodule Component do
   Still first paragraph.
 
   Second paragraph.
+
+  ## Examples
+
+      <.component label="hello" />
+
+  and
+
+      iex> Component.component(%{label: "hello"})
+      %Phoenix.LiveView.Rendered{}
+
+  and
+
+  ```heex
+  <.component theme={:cool} />
+  ```
+
+  and
+
+  ```elixir
+  iex> Component.component(%{theme: :boring})
+  %Phoenix.LiveView.Rendered{}
+  ```
   """
 
   attr :theme, :atom, default: nil

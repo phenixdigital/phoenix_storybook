@@ -8,10 +8,16 @@ defmodule PhoenixStorybook.Stories.DocTest do
 
   describe "fetch_doc_as_html/2" do
     test "it returns a function component documentation" do
-      assert "component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == %Doc{
+      assert %Doc{
                header: "<p>\n  Component first doc paragraph.\nStill first paragraph.</p>\n",
-               body: "<p>\nSecond paragraph.</p>\n"
-             }
+               body: "<p>\nSecond paragraph.</p>\n<h2>\nExamples</h2>" <> examples
+             } =
+               "component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html()
+
+      assert examples =~ ~s[<span class="nf">.component</span>]
+      assert examples =~ ~s[<span class="nc">Component</span>]
+      assert examples =~ ~s[<span class="ss">:cool</span>]
+      assert examples =~ ~s[<span class="ss">:boring</span>]
     end
 
     test "it returns a live component documentation" do
