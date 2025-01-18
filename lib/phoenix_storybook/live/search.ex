@@ -53,6 +53,8 @@ defmodule PhoenixStorybook.Search do
           phx-show={show_modal()}
           phx-hide={hide_modal()}
           phx-click-away={JS.dispatch("psb:close-search")}
+          phx-window-keydown={JS.exec("phx-click-away")}
+          phx-key="Escape"
           class="psb psb-opacity-0 psb-scale-90 psb-mx-auto psb-max-w-xl psb-mt-16 psb-transform psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 psb-overflow-hidden psb-rounded-xl psb-bg-white dark:psb-bg-slate-800 psb-shadow-2xl psb-transition-all"
         >
           <.form
