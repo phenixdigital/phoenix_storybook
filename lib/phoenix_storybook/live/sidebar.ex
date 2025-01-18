@@ -168,7 +168,7 @@ defmodule PhoenixStorybook.Sidebar do
                 <% end %>
                 <.link
                   patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
-                  class="psb group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
+                  class="psb psb-block psb-w-full psb-py-2 lg:psb-py-1 group-hover:psb-text-indigo-600 dark:group-hover:psb-text-sky-400"
                 >
                   {name}
                 </.link>
@@ -183,7 +183,7 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp story_class(current_path, story_path) do
     story_class =
-      "psb psb-flex psb-items-center -psb-ml-[12px] psb-block psb-border-l psb-py-2 lg:psb-py-1 psb-pl-4 hover:psb-border-indigo-600 hover:psb-text-indigo-600 hover:psb-border-l-1.5 psb-group"
+      "psb psb-flex psb-items-center -psb-ml-[12px] psb-block psb-border-l psb-pl-4 hover:psb-border-indigo-600 hover:psb-text-indigo-600 hover:psb-border-l-1.5 psb-group"
 
     if current_path == story_path do
       story_class <>
