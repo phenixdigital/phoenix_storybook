@@ -9,6 +9,13 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v0.8.1 (2025-01-20)
+
+- **improvement**: [better formatting of playground's HTML](https://github.com/phenixdigital/phoenix_storybook/pull/562) - 🙏 [@xxdavid](https://github.com/xxdavid)
+- **improvement**: [highlight code blocks in components doc](https://github.com/phenixdigital/phoenix_storybook/pull/561) - 🙏 [@xxdavid](https://github.com/xxdavid)
+- **improvement**: [support ESM imports for scripts](https://github.com/phenixdigital/phoenix_storybook/pull/563) - 🙏 [@cschmatzler](https://github.com/cschmatzler)
+- **improvement**: [UX tweaks](https://github.com/phenixdigital/phoenix_storybook/pull/565) - 🙏 [@sodapopcan](https://github.com/sodapopcan)
+
 ## v0.8.0 (2025-01-07)
 
 - **change (breaking!)**: requires `phoenix_live_view ~> 1.0.x`
