@@ -17,7 +17,7 @@ defmodule PhoenixStorybook.MixProject do
       deps: deps(),
       package: package(),
       docs: docs(),
-      test_coverage: [tool: ExCoveralls],
+      test_coverage: [tool: ExCoveralls, export: "excoveralls"],
       preferred_cli_env: [
         coveralls: :test,
         "coveralls.lcov": :test,
