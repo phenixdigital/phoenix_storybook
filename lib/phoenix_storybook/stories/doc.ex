@@ -113,6 +113,7 @@ defmodule PhoenixStorybook.Stories.Doc do
         "elixir" -> :elixir
         "heex" -> :heex
         "" -> code |> String.trim_leading() |> guess_lang()
+        _ -> :unknown
       end
 
     CodeRenderer.render_code_block(code, lang, trim: false)

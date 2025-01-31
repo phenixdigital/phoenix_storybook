@@ -9,6 +9,10 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v0.8.2 (not released)
+
+- **bugfix**: [fixed support of non elixir code blocks](https://github.com/phenixdigital/phoenix_storybook/issues/570)
+
 ## v0.8.1 (2025-01-20)
 
 - **improvement**: [better formatting of playground's HTML](https://github.com/phenixdigital/phoenix_storybook/pull/562) - 🙏 [@xxdavid](https://github.com/xxdavid)

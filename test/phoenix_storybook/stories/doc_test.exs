@@ -81,6 +81,16 @@ defmodule PhoenixStorybook.Stories.DocTest do
       assert log =~
                "could not fetch module doc from PhoenixStorybook.Stories.DocTest.NoDocLiveComponent"
     end
+
+    test "it does not crash with css and untyped code blocks" do
+      %Doc{header: header, body: body} =
+        "event/event_component.story.exs"
+        |> compile_story()
+        |> Doc.fetch_doc_as_html()
+
+      refute is_nil(header)
+      refute is_nil(body)
+    end
   end
 
   defp compile_story(path) do

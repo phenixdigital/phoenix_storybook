@@ -1,6 +1,19 @@
 defmodule EventComponent do
   use Phoenix.Component
 
+  @doc """
+  Component doc
+
+  ```
+  Some code
+  ```
+
+  ```css
+  .my-class {
+    margin: 0;
+  }
+  ```
+  """
   def component(assigns) do
     assigns =
       assigns
