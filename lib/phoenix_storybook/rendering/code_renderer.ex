@@ -271,10 +271,10 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     code =
       if format? do
         case lang do
-          :elixir -> ElixirLexer.lex(code)
-          :heex -> HEExLexer.lex(code)
+          :elixir -> code |> ElixirLexer.lex() |> HTMLFormatter.format_inner_as_binary([])
+          :heex -> code |> HEExLexer.lex() |> HTMLFormatter.format_inner_as_binary([])
+          _ -> code
         end
-        |> HTMLFormatter.format_inner_as_binary([])
       else
         code
       end
