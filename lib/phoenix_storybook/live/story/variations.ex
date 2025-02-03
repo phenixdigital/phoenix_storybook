@@ -44,21 +44,21 @@ defmodule PhoenixStorybook.Story.Variations do
       )
 
     ~H"""
-    <div class="psb psb-space-y-12 psb-pb-12" id={"story-variations-#{story_id(@story)}"}>
+    <div class="psb psb:space-y-12 psb:pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(assigns.backend_module, assigns.story, variation, extra_attributes) do %>
         <div
           id={anchor_id(variation)}
-          class="psb psb-variation-block psb-gap-x-4 psb-grid psb-grid-cols-5"
+          class="psb psb-variation-block psb:gap-x-4 psb:grid psb:grid-cols-5"
         >
           <!-- Variation description -->
-          <div class="psb psb-col-span-5 psb-font-medium hover:psb-font-semibold psb-mb-6 psb-border-b psb-border-slate-100 dark:psb-border-slate-600 md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300 psb-flex psb-justify-between">
+          <div class="psb psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-6 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
               <.fa_icon
                 style={:light}
                 name="link"
-                class="psb-hidden -psb-ml-8 psb-pr-1 psb-text-slate-400"
+                class="psb:hidden psb:-ml-8 psb:pr-1 psb:text-slate-400"
                 plan={@fa_plan}
               />
               <%= if description do %>
@@ -75,9 +75,9 @@ defmodule PhoenixStorybook.Story.Variations do
                   theme: @theme
                 })
               }
-              class="psb psb-hidden psb-open-playground-link"
+              class="psb psb:hidden psb:open-playground-link"
             >
-              <span class="psb psb-text-base psb-font-light psb-text-gray-500 dark:psb-text-slate-300 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 hover:psb-font-medium ">
+              <span class="psb psb:text-base psb:font-light psb:text-gray-500 psb:dark:text-slate-300 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-medium ">
                 Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
               </span>
             </.link>
@@ -86,7 +86,7 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-component"}
             class={[
-              "psb psb-border dark:psb-bg-slate-800 psb-border-slate-100 dark:psb-border-slate-600 psb-rounded-md psb-col-span-5 psb-mb-4 lg:psb-mb-0 psb-flex psb-items-center psb-justify-center psb-p-2 psb-bg-white psb-shadow-sm",
+              "psb psb:border psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600 psb:rounded-md psb:col-span-5 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-white psb:shadow-sm",
               component_layout_class(@story)
             ]}
           >
@@ -95,7 +95,7 @@ defmodule PhoenixStorybook.Story.Variations do
                 <iframe
                   phx-update="ignore"
                   id={iframe_id(@story, variation, @color_mode)}
-                  class="psb-w-full psb-border-0"
+                  class="psb:w-full psb:border-0"
                   srcdoc={iframe_srcdoc(assigns, rendering_context, iframe_opts)}
                   height="0"
                   onload={iframe_onload_js()}
@@ -105,7 +105,7 @@ defmodule PhoenixStorybook.Story.Variations do
                 <iframe
                   phx-update="ignore"
                   id={iframe_id(@story, variation, @color_mode)}
-                  class="psb-w-full psb-border-0"
+                  class="psb:w-full psb:border-0"
                   src={
                     path_to_iframe(@socket, @root_path, @story_path,
                       variation_id: variation.id,
@@ -133,15 +133,15 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-code"}
             class={[
-              "psb psb-border psb-border-slate-100 dark:psb-border-slate-600 psb-bg-slate-800 psb-rounded-md psb-col-span-5 psb-group psb-relative psb-shadow-sm psb-flex psb-flex-col psb-justify-center",
+              "psb psb:border psb:border-slate-100 psb:dark:border-slate-600 psb:bg-slate-800 psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
               code_layout_class(@story)
             ]}
           >
             <div
               phx-click={JS.dispatch("psb:copy-code")}
-              class="psb psb-hidden group-hover:psb-block psb-bg-slate-700 psb-text-slate-500 hover:psb-text-slate-100 psb-z-10 psb-absolute psb-top-2 psb-right-2 psb-px-2 psb-py-1 psb-rounded-md psb-cursor-pointer"
+              class="psb psb:hidden psb:group-hover:block psb:bg-slate-700 psb:text-slate-500 psb:hover:text-slate-100 psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
             >
-              <.fa_icon name="copy" class="psb-text-inherit" plan={@fa_plan} />
+              <.fa_icon name="copy" class="psb:text-inherit" plan={@fa_plan} />
             </div>
             {CodeRenderer.render(rendering_context)}
           </div>
@@ -153,15 +153,15 @@ defmodule PhoenixStorybook.Story.Variations do
 
   defp component_layout_class(story) do
     case story.layout() do
-      :one_column -> "lg:psb-mb-4"
-      :two_columns -> "lg:psb-col-span-2"
+      :one_column -> "psb:lg:mb-4"
+      :two_columns -> "psb:lg:col-span-2"
     end
   end
 
   defp code_layout_class(story) do
     case story.layout() do
       :one_column -> nil
-      :two_columns -> "lg:psb-col-span-3"
+      :two_columns -> "psb:lg:col-span-3"
     end
   end
 

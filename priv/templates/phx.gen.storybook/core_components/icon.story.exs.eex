@@ -75,7 +75,7 @@ defmodule Storybook.Components.CoreComponents.Icon do
       %VariationGroup{
         id: :motion,
         template: """
-        <div class="py-2" psb-code-hidden>
+        <div class="py-2" psb:code-hidden>
           <.psb-variation/>
         </div>
         """,

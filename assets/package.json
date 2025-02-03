@@ -4,12 +4,12 @@
   "description": "PhoenixStorybook assets",
   "main": "./assets/js/phoenix_storybook.js",
   "scripts": {
-    "build:css": "tailwindcss --minify -i css/app.css -o ../priv/static/css/app.css",
-    "build:fonts_css": "tailwindcss --minify -i css/fonts.css -o ../priv/static/css/fonts.css",
+    "build:css": "npx @tailwindcss/cli --minify -i css/app.css -o ../priv/static/css/app.css",
+    "build:fonts_css": "npx @tailwindcss/cli --minify -i css/fonts.css -o ../priv/static/css/fonts.css",
     "build:js": "esbuild js/*.js --minify --bundle --outdir=../priv/static/js",
     "build": "npm-run-all build:*",
-    "watch:css": "tailwindcss -i css/app.css -o ../priv/static/css/app.css --watch",
-    "watch:fonts_css": "tailwindcss -i css/fonts.css -o ../priv/static/css/fonts.css --watch",
+    "watch:css": "npx @tailwindcss/cli -i css/app.css -o ../priv/static/css/app.css --watch",
+    "watch:fonts_css": "npx @tailwindcss/cli -i css/fonts.css -o ../priv/static/css/fonts.css --watch",
     "watch:js": "esbuild js/*.js --bundle --outdir=../priv/static/js --watch",
     "watch": "npm-run-all --parallel watch:*"
   },
@@ -17,13 +17,14 @@
   "license": "ISC",
   "devDependencies": {
     "@biomejs/biome": "2.0.6",
+    "@tailwindcss/cli": "^4.0.8",
     "@tailwindcss/forms": "^0.5.10",
     "esbuild": "^0.25.5",
     "npm-run-all": "^4.1.5",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "tailwindcss": "^4.0.0",
-    "tailwindcss-font-inter": "^3.1.0"
+    "tailwindcss": "^4.0.8",
+    "tailwindcss-font-inter": "^4.0.0"
   }
 }

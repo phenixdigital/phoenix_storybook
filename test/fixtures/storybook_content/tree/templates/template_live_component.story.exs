@@ -7,7 +7,7 @@ defmodule TreeStorybook.TemplateLiveComponent do
     <div>
       <button class="btn" id="set-foo-:variation_id" phx-click={JS.push("psb-assign", value: %{label: "foo"})}>Set label to foo</button>
       <button class="btn" id="set-bar-:variation_id" phx-click={JS.push("psb-assign", value: %{label: "bar"})}>Set label to bar</button>
-      <button class="btn" id="toggle-status-:variation_id" phx-click={JS.push("psb-toggle", value: %{attr: :status})}>Toggle status</button>
+      <button class="btn" id="toggle-status-:variation_id" phx-click={JS.push("psb:toggle", value: %{attr: :status})}>Toggle status</button>
       <button class="btn" id="set-status-true-:variation_id" phx-click={JS.push("psb-assign", value: %{status: true})}>Set status to true</button>
       <button class="btn" id="set-status-false-:variation_id" phx-click={JS.push("psb-assign", value: %{status: false})}>Set status to false</button>
       <.psb-variation/>

@@ -77,8 +77,8 @@ Kudos to [Jace Warren](https://github.com/keatz55) for his contribution on local
 
 ## v0.6.0 (2024-01-05)
 
-- **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb-` (matching `live storybook` renaming to `phoenix storybook`).
-- **change (breaking!)**: [`assign` and `toggle` events have been prefixed with `psb-`](https://github.com/phenixdigital/phoenix_storybook/issues/395) (cf. `components.md` guide)
+- **change (breaking!)**: all css `lsb-` prefixes have been renamed to `psb:` (matching `live storybook` renaming to `phoenix storybook`).
+- **change (breaking!)**: [`assign` and `toggle` events have been prefixed with `psb:`](https://github.com/phenixdigital/phoenix_storybook/issues/395) (cf. `components.md` guide)
 - **feature**: [render any stories with the new :one_column layout](https://github.com/phenixdigital/phoenix_storybook/issues/296)
 - **improvement**: fixed compatibility with phoenix_html_helpers
 - **improvement**: [function components use iframe srcdoc](https://github.com/phenixdigital/phoenix_storybook/pull/382).

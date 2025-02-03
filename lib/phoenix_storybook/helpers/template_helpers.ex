@@ -4,7 +4,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
   @variation_regex ~r{(<\.psb-variation\/>)|(<\.psb-variation\s[^(\>)]*\/>)}
   @variation_group_regex ~r{<\.psb-variation-group[^(\>)]*\/>}
   @html_attributes_regex ~r{(\w+)=((?:.(?!["']?\s+(?:\S+)=|\s*\/?[>]))+.["']?)?}
-  @js_push_regex ~r[(JS\.push\("(?:psb-assign|psb-toggle)".*value:\s+)(%{.*})(.*\))]
+  @js_push_regex ~r[(JS\.push\("(?:psb-assign|psb:toggle)".*value:\s+)(%{.*})(.*\))]
 
   def default_template, do: "<.psb-variation/>"
 
@@ -50,7 +50,7 @@ defmodule PhoenixStorybook.TemplateHelpers do
   end
 
   def code_hidden?(template) do
-    String.contains?(template, "psb-code-hidden")
+    String.contains?(template, "psb:code-hidden")
   end
 
   def replace_template_variation(template, variation_markup, indent? \\ false) do

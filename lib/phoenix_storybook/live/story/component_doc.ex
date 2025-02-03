@@ -40,7 +40,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
     ~H"""
     <div
       :if={@doc}
-      class="psb psb-text-base md:psb-text-lg psb-leading-7 psb-text-slate-700 dark:psb-text-slate-300"
+      class="psb psb:text-base psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300"
     >
       {raw(@doc.header)}
     </div>
@@ -48,24 +48,24 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
       <a
         phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
         id="read-more"
-        class="psb psb-py-2 psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
+        class="psb psb:py-2 psb:inline-block psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
       >
         <.fa_icon
           name="caret-right"
           style={:thin}
           plan={@fa_plan}
-          class="psb-relative psb-top-px psb-mr-1"
+          class="psb:relative psb:top-px psb:mr-1"
         /> Read more
       </a>
       <a
         phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
         id="read-less"
-        class="psb psb-pt-2 psb-pb-4 psb-hidden psb-inline-block psb-text-slate-400 hover:psb-text-indigo-700 dark:hover:psb-text-sky-400 psb-cursor-pointer"
+        class="psb psb:pt-2 psb:pb-4 psb:hidden psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
       >
-        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb-mr-1" /> Read less
+        <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb:mr-1" /> Read less
       </a>
-      <div id="doc-next" class="psb-hidden psb-space-y-4 ">
-        <div class="psb psb-doc psb-text-sm md:psb-text-base psb-leading-7 psb-text-slate-700 dark:psb-text-slate-500">
+      <div id="doc-next" class="psb:hidden psb:space-y-4 ">
+        <div class="psb psb-doc psb:text-sm psb:md:text-base psb:leading-7 psb:text-slate-700 psb:dark:text-slate-500">
           {raw(@doc.body)}
         </div>
       </div>

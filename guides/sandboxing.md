@@ -51,11 +51,11 @@ There is currently no way to access them in component or live component stories.
 `PhoenixStorybook` is using [TailwindCSS](https://tailwindcss.com) with
 [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your
 browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix):
-`psb-` (which means that instead of using `bg-blue-400` the storybook uses `psb-bg-blue-400`).
+`psb:` (which means that instead of using `bg-blue-400` the storybook uses `psb:bg-blue-400`).
 
 Only elements with the `.psb` class are preflighted, in order to let your component styling as-is.
 
-So unless your components use `psb` or `psb-` prefixed classes there should be no styling leak from
+So unless your components use `psb` or `psb:` prefixed classes there should be no styling leak from
 the storybook to you components.
 
 ## How should you provide the style of your components?

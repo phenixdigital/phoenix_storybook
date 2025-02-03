@@ -296,7 +296,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
                {"div",
                 [
                   {"class",
-                   "theme-prefix-default psb-sandbox psb-flex psb-flex-col psb-items-center psb-gap-y-[5px] psb-p-[5px]"}
+                   "theme-prefix-default psb-sandbox psb:flex psb:flex-col psb:items-center psb:gap-y-[5px] psb:p-[5px]"}
                 ], _}
              ] = html
     end
@@ -362,21 +362,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       component_html = view |> element("#hello-component") |> render() |> Floki.parse_fragment!()
       [{"id", _id}, {"class", class}] = component_html |> Enum.at(0) |> elem(1)
-      assert class =~ "lg:psb-col-span-2"
+      assert class =~ "psb:lg:col-span-2"
 
       code_html = view |> element("#hello-code") |> render() |> Floki.parse_fragment!()
       [{"id", _id}, {"class", class}] = code_html |> Enum.at(0) |> elem(1)
-      assert class =~ "lg:psb-col-span-3"
+      assert class =~ "psb:lg:col-span-3"
 
       {:ok, view, _html} = live(conn, ~p"/storybook/live_component")
 
       component_html = view |> element("#hello-component") |> render() |> Floki.parse_fragment!()
       [{"id", _id}, {"class", class}] = component_html |> Enum.at(0) |> elem(1)
-      refute class =~ "lg:psb-col-span-2"
+      refute class =~ "psb:lg:col-span-2"
 
       code_html = view |> element("#hello-code") |> render() |> Floki.parse_fragment!()
       [{"id", _id}, {"class", class}] = code_html |> Enum.at(0) |> elem(1)
-      refute class =~ "lg:psb-col-span-3"
+      refute class =~ "psb:lg:col-span-3"
     end
   end
 

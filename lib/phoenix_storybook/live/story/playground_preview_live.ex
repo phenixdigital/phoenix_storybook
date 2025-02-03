@@ -193,7 +193,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
     {:noreply, assign(socket, variations_attributes: variation_attributes)}
   end
 
-  def handle_event("psb-toggle", assign_params, socket = %{assigns: assigns}) do
+  def handle_event("psb:toggle", assign_params, socket = %{assigns: assigns}) do
     variation_attributes =
       for {variation_id, attributes} <- assigns.variations_attributes, into: %{} do
         {new_variation_id, new_attributes} =

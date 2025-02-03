@@ -194,7 +194,7 @@ end
 Some components don't rely on JS commands but need external assigns, like a modal that takes a
 `show={true}` or `show={false}` assign to manage its visibility state.
 
-`PhoenixStorybook` handles special `psb-assign` and `psb-toggle` events that you
+`PhoenixStorybook` handles special `psb-assign` and `psb:toggle` events that you
 can leverage on to update some properties that will be passed to your components as _extra assigns_.
 
 ```elixir
@@ -231,11 +231,11 @@ end
 
 By default, the code preview will render the variation and its template markup as well.
 You can choose to render only the variation markup, without its surrounding template by using the
-`psb-code-hidden` HTML attribute.
+`psb:code-hidden` HTML attribute.
 
 ```elixir
 """
-<div psb-code-hidden>
+<div psb:code-hidden>
   <button phx-click={Modal.show_modal()}>Open modal</button>
   <.psb-variation/>
 </div>

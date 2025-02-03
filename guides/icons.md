@@ -27,12 +27,12 @@ The two last tuple elements are optional.
 {:fa, "book"} # note that the FontAwesome icon name omits the fa- prefix
 {:fa, "book", :solid} # same than previous one, :solid is the default style
 {:fa, "skull", :duotone} # only for FontAwesome paid users
-{:fa, "skull", :duotone, "psb-px-2"}
+{:fa, "skull", :duotone, "psb:px-2"}
 {:hero, "cake"} # for all HeroIcons
 {:hero, "cake", :outline} # same than previous one, :outline is the default style
-{:hero, "cake", :outline, "psb-w-2 psb-h-2"}
+{:hero, "cake", :outline, "psb:w-2 psb:h-2"}
 {:local, "hero-cake"} # for custom or core-component-generated icons
-{:local, "hero-cake", "psb-w-2 psb-h-2"}, # styles are not supported: 3rd elem is custom css
+{:local, "hero-cake", "psb:w-2 psb:h-2"}, # styles are not supported: 3rd elem is custom css
 ```
 
 ## FontAwesome icons
@@ -76,7 +76,7 @@ You can now use whichever HeroIcon icon you want, based on the library function 
 ```elixir
 {:hero, "cake"} # for all HeroIcons
 {:hero, "cake", :outline} # same than previous one, :outline is the default style
-{:hero, "cake", :outline, "psb-w-2 psb-h-2"}
+{:hero, "cake", :outline, "psb:w-2 psb:h-2"}
 ```
 
 ### heroicons CSS
@@ -157,7 +157,7 @@ Then you can use Heroicons as local icons:
 
 ```elixir
 {:local, "hero-cake"} # for custom or core-component-generated icons
-{:local, "hero-cake", "psb-w-2 psb-h-2"}, # styles are not supported: 3rd
+{:local, "hero-cake", "psb:w-2 psb:h-2"}, # styles are not supported: 3rd
 ```
 
 ## Local
@@ -165,13 +165,13 @@ Then you can use Heroicons as local icons:
 Use whichever icons you want, as long as they can be rendered via a span class tag.
 
 ```elixir
-{:local, "my-icon", "psb-w-2 psb-h-2"}
+{:local, "my-icon", "psb:w-2 psb:h-2"}
 ```
 
 will be rendered as:
 
 ```html
-<span class="my-icon psb-w-2 psb-h-2"></span>
+<span class="my-icon psb:w-2 psb:h-2"></span>
 ```
 
 ## Custom CSS
@@ -180,7 +180,7 @@ The last tuple argument is an optional CSS class list you can pass to improve ic
 Since the icon is rendered within the storybook layout, and not within your components sandbox, you
 should use CSS classes supported by the storybook.
 
-- any `psb-w-*` or `psb-h-*` class (TailwindCSS classes for height & width prefixed by `psb-`)
-- any `psb-p-*` or `psb-m-*` class (padding & margin)
-- any `psb-text-color-###`
+- any `psb:w-*` or `psb:h-*` class (TailwindCSS classes for height & width prefixed by `psb:`)
+- any `psb:p-*` or `psb:m-*` class (padding & margin)
+- any `psb:text-color-###`
 - any `fa-*` (FontAwesome modifiers)
