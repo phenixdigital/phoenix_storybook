@@ -58,19 +58,16 @@
       href={asset_path(@conn, "css/app.css")}
     />
     <%= if path = storybook_css_path(@conn) do %>
-      <link
-        nonce={csp_nonce(@conn, :style)}
-        phx-track-static
-        rel="stylesheet"
-        href={application_static_path(path)}
-      />
+      <style nonce={csp_nonce(@conn, :style)}>
+      @import "<%= path %>" layer(app);
+      </style>
     <% end %>
     <style nonce={csp_nonce(@conn, :style)}>
       <%= raw(makeup_stylesheet(@conn)) %>
     </style>
   </head>
 
-  <body class="psb psb-max-w-full psb-overflow-hidden psb-bg-white dark:psb-bg-slate-900">
+  <body class="psb psb:max-w-full psb:overflow-hidden psb:bg-white psb:dark:bg-slate-900">
     {@inner_content}
   </body>
 </html>

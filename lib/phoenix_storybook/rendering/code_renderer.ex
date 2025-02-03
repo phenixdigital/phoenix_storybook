@@ -126,7 +126,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     assigns = assign(assigns, source: source)
 
     ~H"""
-    <pre class={[pre_class(), "dark:psb-border-slate-600"]}>
+    <pre class={[pre_class(), "psb:dark:border-slate-600"]}>
     <%= format_code(@source, :elixir) %>
     </pre>
     """
@@ -144,8 +144,8 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
 
   defp pre_class do
     """
-    psb highlight psb-p-2 md:psb-p-3 psb-border psb-border-slate-800 psb-text-xs md:psb-text-sm
-    psb-rounded-md psb-bg-slate-800 psb-whitespace-pre-wrap psb-break-normal
+    psb highlight psb:p-2 psb:md:p-3 psb:border psb:border-slate-800 psb:text-xs psb:md:text-sm
+    psb:rounded-md psb:bg-slate-800 psb:whitespace-pre-wrap psb:break-normal
     """
   end
 

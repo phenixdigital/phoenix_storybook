@@ -7,7 +7,7 @@ defmodule Storybook.Components.CoreComponents.Input do
 
   def template do
     """
-    <.form for={%{}} class="w-full space-y-6" psb-code-hidden>
+    <.form for={%{}} class="w-full space-y-6" psb:code-hidden>
       <.psb-variation-group />
     </.form>
     """

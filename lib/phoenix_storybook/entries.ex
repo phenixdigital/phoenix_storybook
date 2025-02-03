@@ -79,7 +79,7 @@ defmodule PhoenixStorybook.Entries do
       entries: content_tree,
       path: "",
       name: "Storybook",
-      icon: {:fa, "book-open", :light, "psb-mr-1"}
+      icon: {:fa, "book-open", :light, "psb:mr-1"}
     }
   end
 

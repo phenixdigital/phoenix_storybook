@@ -6,7 +6,7 @@ defmodule Storybook.Components.CoreComponents.List do
 
   def template do
     """
-    <div class="-mt-14 py-8" psb-code-hidden>
+    <div class="-mt-14 py-8" psb:code-hidden>
       <.psb-variation/>
     </div>
     """

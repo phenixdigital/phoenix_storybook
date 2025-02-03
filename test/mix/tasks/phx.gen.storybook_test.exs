@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       Storybook.run([])
 
       [{index, _}] = Code.compile_file("storybook/_root.index.exs")
-      assert index.folder_icon() == {:fa, "book-open", :light, "psb-mr-1"}
+      assert index.folder_icon() == {:fa, "book-open", :light, "psb:mr-1"}
 
       [{page, _}] = Code.compile_file("storybook/welcome.story.exs")
       assert page.storybook_type() == :page

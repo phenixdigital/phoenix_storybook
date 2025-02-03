@@ -8,7 +8,7 @@ defmodule Storybook.Components.CoreComponents.Table do
 
   def template do
     """
-    <div class="w-4/5 mb-4" psb-code-hidden>
+    <div class="w-4/5 mb-4" psb:code-hidden>
       <.psb-variation/>
     </div>
     """

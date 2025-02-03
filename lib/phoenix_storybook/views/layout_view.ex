@@ -22,14 +22,14 @@ defmodule PhoenixStorybook.LayoutView do
         <.fa_icon
           style={:thin}
           name="angle-right"
-          class="psb-px-2 psb-text-slate-500 dark:psb-text-slate-300"
+          class="psb:px-2 psb:text-slate-500 psb:dark:text-slate-300"
           plan={@fa_plan}
         />
       </:separator>
       <span class={[
         "psb",
         @span_class,
-        "[&:not(:last-child)]:psb-truncate last:psb-whitespace-nowrap"
+        "psb:[&:not(:last-child)]:truncate psb:last:whitespace-nowrap"
       ]}>
         {item}
       </span>
@@ -173,13 +173,13 @@ defmodule PhoenixStorybook.LayoutView do
   defp color_mode_icon(_), do: "circle-half-stroke"
 
   defp show_dropdown_transition do
-    {"psb-ease-out psb-duration-200", "psb-opacity-0 psb-scale-95",
-     "psb-opacity-100 psb-scale-100"}
+    {"psb:ease-out psb:duration-200", "psb:opacity-0 psb:scale-95",
+     "psb:opacity-100 psb:scale-100"}
   end
 
   defp hide_dropdown_transition do
-    {"psb-ease-out psb-duration-200", "psb-opacity-100 psb-scale-100",
-     "psb-opacity-0 psb-scale-95"}
+    {"psb:ease-out psb:duration-200", "psb:opacity-100 psb:scale-100",
+     "psb:opacity-0 psb:scale-95"}
   end
 
   def sandbox_class(conn_or_socket, container, %{theme: nil}) do
@@ -210,7 +210,7 @@ defmodule PhoenixStorybook.LayoutView do
     end
   end
 
-  @default_div_class "psb-flex psb-flex-col psb-items-center psb-gap-y-[5px] psb-p-[5px]"
+  @default_div_class "psb:flex psb:flex-col psb:items-center psb:gap-y-[5px] psb:p-[5px]"
   def normalize_story_container(:div), do: {:div, class: @default_div_class}
 
   def normalize_story_container({:div, opts}),

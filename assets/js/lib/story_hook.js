@@ -27,8 +27,8 @@ export const StoryHook = {
     }
   },
   bindCopyCodeLinks() {
-    const buttonClasses = ["psb-text-slate-500", "hover:psb-text-slate-100"];
-    const buttonActiveClasses = ["psb-text-green-400", "hover:psb-text-green-400"];
+    const buttonClasses = ["psb:text-slate-500", "psb:hover:text-slate-100"];
+    const buttonActiveClasses = ["psb:text-green-400", "psb:hover:text-green-400"];
     const iconClass = "fa-copy";
     const iconActiveClass = "fa-check";
 

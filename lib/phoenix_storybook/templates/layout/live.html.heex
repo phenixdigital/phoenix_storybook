@@ -1,18 +1,18 @@
-<header class="psb psb-fixed psb-top-0 psb-w-full psb-z-10 psb-shadow-md psb-shadow-slate-900/5 psb-backdrop-blur-lg psb-bg-white/50 dark:psb-bg-slate-900/50">
-  <div class="psb psb-h-16 psb-w-full">
-    <div class="psb psb-absolute psb-top-5 psb-left-5 psb-z-20 psb-text-indigo-600 dark:psb-text-sky-400 psb-text-lg psb-font-bold psb-uppercase ">
+<header class="psb psb:fixed psb:top-0 psb:w-full psb:z-10 psb:shadow-md psb:shadow-slate-900/5 psb:backdrop-blur-lg psb:bg-white/50 psb:dark:bg-slate-900/50">
+  <div class="psb psb:h-16 psb:w-full">
+    <div class="psb psb:absolute psb:top-5 psb:left-5 psb:z-20 psb:text-indigo-600 psb:dark:text-sky-400 psb:text-lg psb:font-bold psb:uppercase ">
       <.link patch={@root_path} class="psb">
         <.fa_icon style={:regular} name="book-open" plan={@fa_plan} />
-        <span class="psb psb-ml-1">{title(@socket)}</span>
+        <span class="psb psb:ml-1">{title(@socket)}</span>
       </.link>
     </div>
 
     <%= if (themes = themes(@socket)) || color_mode?(@socket) do %>
-      <div class="psb psb-absolute psb-top-4 psb-right-14 lg:psb-right-5 psb-flex psb-gap-2">
+      <div class="psb psb:absolute psb:top-4 psb:right-14 psb:lg:right-5 psb:flex psb:gap-2">
         <%= if color_mode?(@socket) do %>
           <button
             type="button"
-            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
+            class="psb psb:relative psb:h-7 psb:w-7 psb:bg-gray-100 psb:dark:bg-gray-600 psb:rounded-full psb:flex psb:flex-row psb:justify-center psb:items-center psb:text-gray-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-gray-100 psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400"
             phx-click={
               JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())
             }
@@ -22,36 +22,36 @@
                 style={:regular}
                 name={color_mode_icon("light")}
                 plan={@fa_plan}
-                class="psb-inline-block dark:psb-hidden"
+                class="psb:inline-block! psb:dark:hidden!"
               />
               <.fa_icon
                 style={:regular}
                 name={color_mode_icon("dark")}
                 plan={@fa_plan}
-                class="psb-hidden dark:psb-inline-block"
+                class="psb:hidden! psb:dark:inline-block!"
               />
             </div>
 
             <div
               id="psb-colormode-dropdown"
-              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none psb-justify-start "
+              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-white psb:dark:bg-slate-800 psb:ring-1 psb:ring-black/5 psb:divide-y psb:divide-gray-100 psb:dark:divide-slate-600 psb:focus:outline-none psb:justify-start "
               phx-click-away={
                 JS.hide(to: "#psb-colormode-dropdown", transition: hide_dropdown_transition())
               }
               phx-hook="ColorModeHook"
               data-selected-mode={@selected_color_mode}
             >
-              <div class="psb psb-px-4 psb-py-3">
-                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-slate-300 psb-text-left">
+              <div class="psb psb:px-4 psb:py-3">
+                <p class="psb psb:text-sm psb:font-medium psb:text-indigo-600 psb:dark:text-slate-300 psb:text-left">
                   Pick a color mode
                 </p>
               </div>
 
-              <div class="psb psb-py-1">
+              <div class="psb psb:py-1">
                 <a
                   :for={mode <- ~w(light dark system)}
                   phx-click={
-                    JS.dispatch("psb:set-color-mode",
+                    JS.dispatch("psb-set-color-mode",
                       to: "#psb-colormode-dropdown",
                       detail: %{mode: mode}
                     )
@@ -60,24 +60,24 @@
                       transition: hide_dropdown_transition()
                     )
                   }
-                  class="psb psb-text-gray-700 dark:psb-text-slate-300 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
+                  class="psb psb:text-gray-700 psb:dark:text-slate-300 psb:hover:bg-gray-100 psb:dark:hover:bg-slate-800 psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
                 >
                   <%= if @selected_color_mode == mode do %>
-                    <span class="psb psb-text-indigo-600 dark:psb-text-sky-400">
-                      <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />
+                    <span class="psb psb:text-indigo-600 psb:dark:text-sky-400">
+                      <.fa_icon name="check" class="psb:pr-2" plan={@fa_plan} />
                       <.fa_icon
                         name={color_mode_icon(mode)}
-                        class="fa-fw psb-pr-2"
+                        class="fa-fw psb:pr-2"
                         plan={@fa_plan}
                         style={:regular}
                       />
                       {String.capitalize(mode)}
                     </span>
                   <% else %>
-                    <span class="psb psb-pl-6 ">
+                    <span class="psb psb:pl-6 ">
                       <.fa_icon
                         name={color_mode_icon(mode)}
-                        class="fa-fw psb-pr-2"
+                        class="fa-fw psb:pr-2"
                         plan={@fa_plan}
                         style={:regular}
                       />
@@ -93,7 +93,7 @@
         <%= if themes do %>
           <button
             type="button"
-            class="psb psb-relative psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-sky-400 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500 dark:focus:psb-ring-sky-400"
+            class="psb psb:relative psb:h-7 psb:w-7 psb:bg-gray-100 psb:dark:bg-gray-600 psb:rounded-full psb:flex psb:flex-row psb:justify-center psb:items-center psb:text-gray-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-gray-100 psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400"
             phx-click={JS.show(to: "#psb-theme-dropdown", transition: show_dropdown_transition())}
           >
             <.fa_icon
@@ -105,17 +105,17 @@
 
             <div
               id="psb-theme-dropdown"
-              class="psb psb-hidden psb-origin-top-right psb-absolute psb-right-0 psb-top-6 psb-mt-2 psb-w-52 psb-rounded-md psb-shadow-lg psb-bg-white dark:psb-bg-slate-800 psb-ring-1 psb-ring-black psb-ring-opacity-5 psb-divide-y psb-divide-gray-100 dark:psb-divide-slate-600 focus:psb-outline-none"
+              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-white psb:dark:bg-slate-800 psb:ring-1 psb:ring-black/5 psb:divide-y psb:divide-gray-100 psb:dark:divide-slate-600 psb:focus:outline-none"
               phx-click-away={
                 JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())
               }
             >
-              <div class="psb psb-px-4 psb-py-3">
-                <p class="psb psb-text-sm psb-font-medium psb-text-indigo-600 dark:psb-text-gray-200 psb-text-left">
+              <div class="psb psb:px-4 psb:py-3">
+                <p class="psb psb:text-sm psb:font-medium psb:text-indigo-600 psb:dark:text-gray-200 psb:text-left">
                   Pick a theme
                 </p>
               </div>
-              <div class="psb psb-py-1">
+              <div class="psb psb:py-1">
                 <%= for {theme, opts} <- themes do %>
                   <a
                     phx-click={
@@ -126,14 +126,14 @@
                       )
                     }
                     }
-                    class="psb psb-theme psb-text-gray-700 dark:psb-text-gray-500 hover:psb-bg-gray-100 dark:hover:psb-bg-slate-800 psb-block psb-px-4 psb-py-2 psb-text-sm psb-cursor-pointer psb-text-left"
+                    class="psb psb-theme psb:text-gray-700 psb:dark:text-gray-500 psb:hover:bg-gray-100 psb:dark:hover:bg-slate-800 psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
                   >
                     <%= if assigns[:theme] == theme do %>
-                      <span class="psb psb-text-indigo-600 dark:psb-text-gray-200">
-                        <.fa_icon name="check" class="psb-pr-2" plan={@fa_plan} />{opts[:name]}
+                      <span class="psb psb:text-indigo-600 psb:dark:text-gray-200">
+                        <.fa_icon name="check" class="psb:pr-2" plan={@fa_plan} />{opts[:name]}
                       </span>
                     <% else %>
-                      <span class="psb psb-pl-5">
+                      <span class="psb psb:pl-5">
                         {opts[:name]}
                       </span>
                     <% end %>
@@ -147,22 +147,22 @@
     <% end %>
   </div>
 
-  <div class="psb lg:psb-hidden psb-absolute psb-top-4 psb-right-5 psb-inline-block ">
+  <div class="psb psb:lg:hidden psb:absolute psb:top-4 psb:right-5 psb:inline-block ">
     <button
       type="button"
       phx-click={JS.dispatch("psb:open-search")}
-      class="psb psb-h-7 psb-w-7 psb-bg-gray-100 dark:psb-bg-gray-600 psb-rounded-full psb-flex psb-flex-row psb-justify-center psb-items-center psb-text-gray-400 hover:psb-text-indigo-600 dark:hover:psb-text-gray-200 focus:psb-outline-none focus:psb-ring-2 focus:psb-ring-offset-2 focus:psb-ring-offset-gray-100 focus:psb-ring-indigo-500"
+      class="psb psb:h-7 psb:w-7 psb:bg-gray-100 psb:dark:bg-gray-600 psb:rounded-full psb:flex psb:flex-row psb:justify-center psb:items-center psb:text-gray-400 psb:hover:text-indigo-600 psb:dark:hover:text-gray-200 psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-gray-100 psb:focus:ring-indigo-500"
     >
       <.fa_icon name="magnifying-glass" style={:light} plan={@fa_plan} />
     </button>
   </div>
 
-  <nav class="psb lg:psb-hidden psb-w-full psb-h-12 psb-border-slate-200 dark:psb-border-slate-600 psb-border-t psb-flex psb-text-gray-600 dark:psb-text-slate-300 psb-items-center psb-cursor-pointer psb-pr-2">
+  <nav class="psb psb:lg:hidden psb:w-full psb:h-12 psb:border-slate-200 psb:dark:border-slate-600 psb:border-t psb:flex psb:text-gray-600 psb:dark:text-slate-300 psb:items-center psb:cursor-pointer psb:pr-2">
     <span id="breadcrumb-icon" phx-update="ignore">
       <.fa_icon
         name="bars"
         style={:regular}
-        class="fa-lg psb-px-4"
+        class="fa-lg psb:px-4"
         plan={@fa_plan}
         phx-click={JS.dispatch("psb:open-sidebar")}
       />
@@ -173,12 +173,12 @@
   </nav>
 </header>
 
-<div class="psb psb-absolute psb-opacity-20 psb-top-0 psb-inset-x-0 psb-flex psb-justify-center psb-overflow-hidden psb-pointer-events-none">
-  <div class="psb psb-w-[108rem] psb-flex-none psb-flex psb-justify-end">
+<div class="psb psb:absolute psb:opacity-20 psb:top-0 psb:inset-x-0 psb:flex psb:justify-center psb:overflow-hidden psb:pointer-events-none">
+  <div class="psb psb:w-[108rem] psb:flex-none psb:flex psb:justify-end">
     <img
       nonce={csp_nonce(@csp_nonces, :img)}
       src={asset_path(@socket, "images/background.png")}
-      class="psb psb-w-[71.75rem] psb-flex-none psb-max-w-none"
+      class="psb psb:w-[71.75rem] psb:flex-none psb:max-w-none"
     />
   </div>
 </div>
@@ -186,11 +186,11 @@
 <div
   id="sidebar-overlay"
   phx-click={JS.dispatch("psb:close-sidebar")}
-  class="psb psb-fixed psb-hidden lg:psb-hidden psb-inset-0 psb-z-10 psb-backdrop-blur-sm psb-bg-black/20"
+  class="psb psb:fixed psb:hidden psb:lg:hidden psb:inset-0 psb:z-10 psb:backdrop-blur-sm psb:bg-black/20"
 >
 </div>
 
-<div id="sidebar-container" class="psb psb-hidden lg:psb-block">
+<div id="sidebar-container" class="psb psb:hidden psb:lg:block">
   <.live_component
     id="sidebar"
     module={PhoenixStorybook.Sidebar}
@@ -212,10 +212,10 @@
 <div
   id="live-container"
   class={[
-    "psb psb-pt-28 lg:psb-pt-16 psb-left-0 lg:psb-left-60 psb-absolute psb-h-[calc(100vh_-_7rem)]",
-    "md:psb-h-screen psb-w-full lg:psb-w-[calc(100%_-_15rem)] psb-px-4 lg:psb-px-12 psb-overflow-auto",
-    "psb-bg-white dark:psb-bg-slate-900",
-    "psb-overflow-x-hidden"
+    "psb psb:pt-28 psb:lg:pt-16 psb:left-0 psb:lg:left-60 psb:absolute psb:h-[calc(100vh_-_7rem)]",
+    "psb:md:h-screen psb:w-full psb:lg:w-[calc(100%_-_15rem)] psb:px-4 psb:lg:px-12 psb:overflow-auto",
+    "psb:bg-white psb:dark:bg-slate-900",
+    "psb:overflow-x-hidden"
   ]}
 >
   {@inner_content}
