@@ -4,6 +4,7 @@ import { StoryHook } from "./lib/story_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
 import { ColorModeHook } from "./lib/color_mode_hook";
+import { MaintainAttrsHook } from "./lib/maintain_attrs_hook";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -31,6 +32,7 @@ let liveSocket = new LiveSocket(socketPath, Socket, {
     SearchHook,
     SidebarHook,
     ColorModeHook,
+    MaintainAttrsHook,
   },
   uploaders: window.storybook.Uploaders,
   params: (liveViewName) => {
