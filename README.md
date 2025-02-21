@@ -192,6 +192,7 @@ A few storybooks running in production:
 - [Doggo](https://woylie-doggo.fly.dev/)
 - [Tremorx](https://tremorx.fly.dev/)
 - [Bloom](https://bloom-ui.fly.dev/)
+- [DaisyUI Components](https://daisy-ui-components-site.fly.dev/storybook/welcome)
 
 ## Contributing
 
