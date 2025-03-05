@@ -16,15 +16,9 @@ export const SearchHook = {
       lastStory = searchList.lastElementChild;
 
       if (allStories.length > 0) {
-        this.liveSocket.execJS(
-          activeStory,
-          activeStory.getAttribute("phx-baseline")
-        );
+        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
         activeStory = firstStory;
-        this.liveSocket.execJS(
-          activeStory,
-          activeStory.getAttribute("phx-highlight")
-        );
+        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
       }
     });
 
@@ -33,24 +27,15 @@ export const SearchHook = {
     });
 
     window.addEventListener("psb:open-search", () => {
-      this.liveSocket.execJS(
-        searchContainer,
-        searchContainer.getAttribute("phx-show")
-      );
+      this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"));
       this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-show"));
       setTimeout(() => searchInput.focus(), 50);
-      this.liveSocket.execJS(
-        activeStory,
-        activeStory.getAttribute("phx-highlight")
-      );
+      this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
     });
 
     window.addEventListener("psb:close-search", () => {
       this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-hide"));
-      this.liveSocket.execJS(
-        searchContainer,
-        searchContainer.getAttribute("phx-hide")
-      );
+      this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"));
     });
 
     window.addEventListener("keydown", (e) => {
@@ -66,15 +51,9 @@ export const SearchHook = {
           // This prevents clipping when switching back and forth
           // between mouse navigation and keyboard navigation
 
-          this.liveSocket.execJS(
-            activeStory,
-            activeStory.getAttribute("phx-baseline")
-          );
+          this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
           activeStory = e.target;
-          this.liveSocket.execJS(
-            activeStory,
-            activeStory.getAttribute("phx-highlight")
-          );
+          this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
         }
       });
     });
@@ -102,10 +81,7 @@ export const SearchHook = {
       }
 
       if (e.key === "ArrowUp") {
-        this.liveSocket.execJS(
-          activeStory,
-          activeStory.getAttribute("phx-baseline")
-        );
+        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
 
         if (activeStory == firstStory) {
           activeStory = lastStory;
@@ -113,18 +89,12 @@ export const SearchHook = {
           activeStory = activeStory.previousElementSibling;
         }
 
-        this.liveSocket.execJS(
-          activeStory,
-          activeStory.getAttribute("phx-highlight")
-        );
+        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
         activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
 
       if (e.key === "ArrowDown") {
-        this.liveSocket.execJS(
-          activeStory,
-          activeStory.getAttribute("phx-baseline")
-        );
+        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
 
         if (activeStory == lastStory) {
           activeStory = firstStory;
@@ -132,10 +102,7 @@ export const SearchHook = {
           activeStory = activeStory.nextElementSibling;
         }
 
-        this.liveSocket.execJS(
-          activeStory,
-          activeStory.getAttribute("phx-highlight")
-        );
+        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
         activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
     });

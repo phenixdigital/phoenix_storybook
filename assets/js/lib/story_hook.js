@@ -28,18 +28,13 @@ export const StoryHook = {
   },
   bindCopyCodeLinks() {
     const buttonClasses = ["psb-text-slate-500", "hover:psb-text-slate-100"];
-    const buttonActiveClasses = [
-      "psb-text-green-400",
-      "hover:psb-text-green-400",
-    ];
+    const buttonActiveClasses = ["psb-text-green-400", "hover:psb-text-green-400"];
     const iconClass = "fa-copy";
     const iconActiveClass = "fa-check";
 
     window.addEventListener("psb:copy-code", (e) => {
       let button = e.target;
-      let icon =
-        button.querySelector(".svg-inline--fa") ||
-        button.querySelector(".fa-copy");
+      let icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
       button.classList.add(...buttonActiveClasses);
       button.classList.remove(...buttonClasses);
       icon.classList.add(iconActiveClass);
@@ -48,9 +43,7 @@ export const StoryHook = {
       this.copyToClipboard(button.nextElementSibling.textContent);
 
       setTimeout(() => {
-        let icon =
-          button.querySelector(".svg-inline--fa") ||
-          button.querySelector(".fa-copy");
+        let icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
         icon.classList.add(iconClass);
         icon.classList.remove(iconActiveClass);
         button.classList.add(...buttonClasses);
