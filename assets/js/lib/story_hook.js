@@ -19,27 +19,22 @@ export const StoryHook = {
     this.bindAnchorLinks();
   },
   bindAnchorLinks() {
-    document.querySelectorAll(".variation-anchor-link").forEach((link) => {
+    for (const link of document.querySelectorAll(".variation-anchor-link")) {
       link.addEventListener("click", (event) => {
         event.preventDefault();
         window.history.replaceState({}, "", link.hash);
       });
-    });
+    }
   },
   bindCopyCodeLinks() {
     const buttonClasses = ["psb-text-slate-500", "hover:psb-text-slate-100"];
-    const buttonActiveClasses = [
-      "psb-text-green-400",
-      "hover:psb-text-green-400",
-    ];
+    const buttonActiveClasses = ["psb-text-green-400", "hover:psb-text-green-400"];
     const iconClass = "fa-copy";
     const iconActiveClass = "fa-check";
 
     window.addEventListener("psb:copy-code", (e) => {
-      let button = e.target;
-      let icon =
-        button.querySelector(".svg-inline--fa") ||
-        button.querySelector(".fa-copy");
+      const button = e.target;
+      const icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
       button.classList.add(...buttonActiveClasses);
       button.classList.remove(...buttonClasses);
       icon.classList.add(iconActiveClass);
@@ -48,9 +43,7 @@ export const StoryHook = {
       this.copyToClipboard(button.nextElementSibling.textContent);
 
       setTimeout(() => {
-        let icon =
-          button.querySelector(".svg-inline--fa") ||
-          button.querySelector(".fa-copy");
+        const icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
         icon.classList.add(iconClass);
         icon.classList.remove(iconActiveClass);
         button.classList.add(...buttonClasses);
@@ -59,7 +52,7 @@ export const StoryHook = {
     });
   },
   copyToClipboard(text) {
-    var textarea = document.createElement("textarea");
+    const textarea = document.createElement("textarea");
     textarea.textContent = text;
     textarea.style.position = "fixed"; // Prevent scrolling to bottom of page in Microsoft Edge.
     document.body.appendChild(textarea);
