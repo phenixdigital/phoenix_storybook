@@ -12,7 +12,7 @@
 :root,
 :host {
   --fa-style-family-classic: "Font Awesome 6 Pro";
-  --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Pro";
+  --fa-font-solid: normal 900 1em / 1 "Font Awesome 6 Pro";
 }
 
 @font-face {
@@ -20,8 +20,8 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
-  src: url("../fonts/fa-solid-900.woff2") format("woff2"),
-    url("../fonts/fa-solid-900.ttf") format("truetype");
+  src: url("../fonts/fa-solid-900.woff2") format("woff2"), url("../fonts/fa-solid-900.ttf")
+    format("truetype");
 }
 
 .fas,
@@ -39,7 +39,7 @@
 :root,
 :host {
   --fa-style-family-brands: "Font Awesome 6 Brands";
-  --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands";
+  --fa-font-brands: normal 400 1em / 1 "Font Awesome 6 Brands";
 }
 
 @font-face {
@@ -47,8 +47,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url("../fonts/fa-brands-400.woff2") format("woff2"),
-    url("../fonts/fa-brands-400.ttf") format("truetype");
+  src: url("../fonts/fa-brands-400.woff2") format("woff2"), url("../fonts/fa-brands-400.ttf")
+    format("truetype");
 }
 
 .fa-github {
@@ -341,10 +341,7 @@
   animation-direction: var(--fa-animation-direction, normal);
   animation-duration: var(--fa-animation-duration, 1s);
   animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-  animation-timing-function: var(
-    --fa-animation-timing,
-    cubic-bezier(0.28, 0.84, 0.42, 1)
-  );
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
 }
 
 .fa-fade {
@@ -353,10 +350,7 @@
   animation-direction: var(--fa-animation-direction, normal);
   animation-duration: var(--fa-animation-duration, 1s);
   animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-  animation-timing-function: var(
-    --fa-animation-timing,
-    cubic-bezier(0.4, 0, 0.6, 1)
-  );
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
 }
 
 .fa-beat-fade {
@@ -365,10 +359,7 @@
   animation-direction: var(--fa-animation-direction, normal);
   animation-duration: var(--fa-animation-duration, 1s);
   animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-  animation-timing-function: var(
-    --fa-animation-timing,
-    cubic-bezier(0.4, 0, 0.6, 1)
-  );
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
 }
 
 .fa-flip {
@@ -444,24 +435,15 @@
     transform: scale(1, 1) translateY(0);
   }
   10% {
-    transform: scale(
-        var(--fa-bounce-start-scale-x, 1.1),
-        var(--fa-bounce-start-scale-y, 0.9)
-      )
+    transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9))
       translateY(0);
   }
   30% {
-    transform: scale(
-        var(--fa-bounce-jump-scale-x, 0.9),
-        var(--fa-bounce-jump-scale-y, 1.1)
-      )
+    transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1))
       translateY(var(--fa-bounce-height, -0.5em));
   }
   50% {
-    transform: scale(
-        var(--fa-bounce-land-scale-x, 1.05),
-        var(--fa-bounce-land-scale-y, 0.95)
-      )
+    transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95))
       translateY(0);
   }
   57% {
