@@ -74,6 +74,14 @@ jobs:
       - name: Credo
         run: mix credo
 
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Run Biome
+        run: biome ci ./assets
+
       - name: Dialyzer
         run: mix dialyzer --format github
 
