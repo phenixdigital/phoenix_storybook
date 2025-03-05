@@ -10,7 +10,7 @@ export const SearchHook = {
     let lastStory = searchList.lastElementChild;
     let activeStory = firstStory;
 
-    let observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver((mutations) => {
       allStories = searchList.children;
       firstStory = searchList.firstElementChild;
       lastStory = searchList.lastElementChild;
@@ -45,9 +45,9 @@ export const SearchHook = {
       }
     });
 
-    [...allStories].forEach((story) => {
+    for (const story of allStories) {
       story.addEventListener("mouseover", (e) => {
-        if (e.movementX != 0 && e.movementY != 0 && e.target == story) {
+        if (e.movementX !== 0 && e.movementY !== 0 && e.target === story) {
           // This prevents clipping when switching back and forth
           // between mouse navigation and keyboard navigation
 
@@ -56,7 +56,7 @@ export const SearchHook = {
           this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
         }
       });
-    });
+    }
 
     searchContainer.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
@@ -83,7 +83,7 @@ export const SearchHook = {
       if (e.key === "ArrowUp") {
         this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
 
-        if (activeStory == firstStory) {
+        if (activeStory === firstStory) {
           activeStory = lastStory;
         } else {
           activeStory = activeStory.previousElementSibling;
@@ -96,7 +96,7 @@ export const SearchHook = {
       if (e.key === "ArrowDown") {
         this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
 
-        if (activeStory == lastStory) {
+        if (activeStory === lastStory) {
           activeStory = firstStory;
         } else {
           activeStory = activeStory.nextElementSibling;

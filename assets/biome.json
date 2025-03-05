@@ -24,6 +24,9 @@
       "recommended": true,
       "a11y": {
         "useGenericFontNames": "off"
+      },
+      "correctness": {
+        "noUnknownFunction": "off"
       }
     }
   },

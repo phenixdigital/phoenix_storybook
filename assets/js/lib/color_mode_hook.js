@@ -34,17 +34,17 @@ export const ColorModeHook = {
   },
 
   actualColorMode(selectedMode) {
-    if (selectedMode == "system" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    if (selectedMode === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
       return "dark";
-    } else if (selectedMode == "dark") {
-      return "dark";
-    } else {
-      return "light";
     }
+    if (selectedMode === "dark") {
+      return "dark";
+    }
+    return "light";
   },
   toggleColorModeClass: (mode) => {
     if ("colorMode" in document.documentElement.dataset) {
-      if (mode == "dark") {
+      if (mode === "dark") {
         document.documentElement.classList.add("psb-dark");
       } else {
         document.documentElement.classList.remove("psb-dark");
