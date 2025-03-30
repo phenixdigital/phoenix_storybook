@@ -189,7 +189,7 @@ A few storybooks running in production:
 
 - [Phenix Groupe](https://storybook.phenixgroupe.com/)
 - [SaladUI](https://salad-storybook.fly.dev/)
-- [Doggo](https://woylie-doggo.fly.dev/)
+- [Doggo](https://doggo.wlyx.dev/)
 - [Tremorx](https://tremorx.fly.dev/)
 - [Bloom](https://bloom-ui.fly.dev/)
 - [DaisyUI Components](https://daisy-ui-components-site.fly.dev/storybook/welcome)
