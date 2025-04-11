@@ -6,6 +6,7 @@ defmodule PhoenixStorybook.StoryLive do
 
   alias PhoenixStorybook.Events.EventLog
   alias PhoenixStorybook.ExtraAssignsHelpers
+  alias PhoenixStorybook.Helpers.ExampleHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.CodeRenderer
   alias PhoenixStorybook.Story.{ComponentDoc, Playground, PlaygroundPreviewLive, Variations}
@@ -415,7 +416,7 @@ defmodule PhoenixStorybook.StoryLive do
     ~H"""
     <div class="psb psb-flex-1 psb-flex psb-flex-col psb-overflow-auto psb-max-h-full">
       {@story.__source__()
-      |> remove_example_code()
+      |> ExampleHelpers.strip_example_source()
       |> CodeRenderer.render_source()
       |> to_raw_html()}
     </div>
@@ -436,17 +437,6 @@ defmodule PhoenixStorybook.StoryLive do
         </div>
         """
     end
-  end
-
-  # removing Storybook's specific not useful while reading example's source code.
-  defp remove_example_code(code) do
-    code
-    # removing specifc storybook use
-    |> String.replace(~r|use\s+PhoenixStorybook\.Story\s*,\s*:example|, "use Phoenix.LiveView")
-    # removing multiline doc and extra_sources definition
-    |> String.replace(~r/def\s+(doc|extra_sources)\s*,\s*do:((?!end).)*end\s*/s, "")
-    # removing inline doc and extra_sources definition
-    |> String.replace(~r/def\s+(doc|extra_sources)\s+do:((?!end|def).)*/s, "")
   end
 
   defp to_raw_html(heex) do
