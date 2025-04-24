@@ -1,6 +1,6 @@
 name: Elixir CI
 
-on: 
+on:
   push:
     branches:
       - main
@@ -23,8 +23,8 @@ jobs:
         uses: erlef/setup-beam@v1
         id: beam
         with:
-          otp-version: "27.0"
-          elixir-version: "1.17.0-otp-27"
+          otp-version: "27.3"
+          elixir-version: "1.18.3-otp-27"
 
       - name: Restore dependencies cache
         uses: actions/cache@v3
@@ -44,7 +44,6 @@ jobs:
             plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
-          
 
       - name: Install dependencies
         run: mix deps.get
@@ -66,7 +65,6 @@ jobs:
           path: .plts
           key: |
             plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
-            
 
       - name: Check formatting
         run: mix format --check-formatted
@@ -89,9 +87,7 @@ jobs:
         run: mix coveralls.json --warnings-as-errors --all-warnings
 
       - uses: codecov/codecov-action@v4
-        with: 
+        with:
           fail_ci_if_error: true
           files: coverage/excoveralls.json
           token: ${{ secrets.CODECOV_TOKEN }}
-
-
