@@ -9,9 +9,11 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
-## v0.8.2 (not released)
+## v0.8.2 (2025-04-24)
 
 - **bugfix**: [fixed support of non elixir code blocks](https://github.com/phenixdigital/phoenix_storybook/issues/570)
+- **bugfix**: [fixed example source code stripping](https://github.com/phenixdigital/phoenix_storybook/issues/605) - 🙏 [@xxdavid](https://github.com/xxdavid)
+- **improvement**: bumped to `phoenix_liveview 1.10.0`
 
 ## v0.8.1 (2025-01-20)
 
