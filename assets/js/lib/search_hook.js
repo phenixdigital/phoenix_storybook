@@ -94,8 +94,7 @@ export const SearchHook = {
         }
 
         this.execJS(activeStory, "phx-highlight");
-        activeStory &&
-          activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
+        activeStory?.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
 
       if (e.key === "ArrowDown") {
@@ -108,8 +107,7 @@ export const SearchHook = {
         }
 
         this.execJS(activeStory, "phx-highlight");
-        activeStory &&
-          activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
+        activeStory?.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
     });
 
