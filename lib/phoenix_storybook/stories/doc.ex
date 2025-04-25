@@ -16,7 +16,7 @@ defmodule PhoenixStorybook.Stories.Doc do
   - For a live_component, fetches @moduledoc content
   - For a function component, fetches @doc content of the relevant function
 
-  Output HTML is splitted in paragraphs and returned as a list of paragraphs.
+  Output HTML is split in paragraphs and returned as a list of paragraphs.
   """
   def fetch_doc_as_html(story, stripped? \\ true) do
     case fetch_component_doc(story.storybook_type(), story) do

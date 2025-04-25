@@ -3,7 +3,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   Responsible for rendering your components code snippet, for a given
   `PhoenixStorybook.Variation`.
 
-  Uses the `Makeup` libray for syntax highlighting.
+  Uses the `Makeup` library for syntax highlighting.
   """
 
   import Phoenix.Component
@@ -173,7 +173,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     """)
   end
 
-  @wrap_attributes_treshold 80
+  @wrap_attributes_threshold 80
   defp maybe_wrap_attributes(story, attributes, let, template, module \\ nil) do
     attrs =
       [
@@ -189,7 +189,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
 
     attrs_binary = Enum.join(attrs, " ")
 
-    if String.length(attrs_binary) > @wrap_attributes_treshold do
+    if String.length(attrs_binary) > @wrap_attributes_threshold do
       "\n  " <> Enum.join(attrs, "\n  ") <> "\n"
     else
       " " <> attrs_binary
@@ -221,7 +221,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
         name
 
       {name, val} ->
-        case find_attribute_definitition(attributes_definitions, name) do
+        case find_attribute_definition(attributes_definitions, name) do
           %Attr{type: :global} -> attributes_markup(val)
           _ -> ~s|#{name}={#{inspect_val(val)}}|
         end
@@ -229,7 +229,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     |> Enum.reject(&is_nil/1)
   end
 
-  defp find_attribute_definitition(attributes_definitions, attr_id) do
+  defp find_attribute_definition(attributes_definitions, attr_id) do
     Enum.find(attributes_definitions, fn %Attr{id: id} -> id == attr_id end)
   end
 

@@ -5,11 +5,11 @@ defmodule PhoenixStorybook.Stories.IndexValidatorTest do
     [path: Path.expand("../../fixtures/indexes", __DIR__)]
   end
 
-  test "with valid index it wont raise", %{path: path} do
+  test "with valid index it won't raise", %{path: path} do
     Code.compile_file("valid.index.exs", path)
   end
 
-  test "with empty index it wont raise", %{path: path} do
+  test "with empty index it won't raise", %{path: path} do
     Code.compile_file("empty.index.exs", path)
   end
 

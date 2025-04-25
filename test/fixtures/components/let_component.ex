@@ -7,7 +7,7 @@ defmodule LetComponent do
     doc: """
     slot documentation
 
-    is working multine
+    is working multiline
     """ do
     attr :optional_attr, :string, doc: "Optional attr"
   end

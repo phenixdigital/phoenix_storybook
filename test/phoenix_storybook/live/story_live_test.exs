@@ -42,7 +42,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       element(view, "#sidebar div", "A Folder") |> render_click()
       assert has_element?(view, "#sidebar a", "Component (a_folder)")
 
-      # B folder is alredy open (by its index.exs file)
+      # B folder is already open (by its index.exs file)
       assert has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
 
       # reaching items inside

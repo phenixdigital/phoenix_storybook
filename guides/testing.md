@@ -8,7 +8,7 @@ them pixel-per-pixel to notice any unwanted change.
 
 For this we recommend using a dedicated tool such as [percy.io](https://percy.io/).
 
-This library provides you a dedicated enpoint to output your stories (only components' stories)
+This library provides you a dedicated endpoint to output your stories (only components' stories)
 without the storybook main UI:
 
 - single story endpoint: `https://localhost:4000/storybook/visual_tests/buttons/button`

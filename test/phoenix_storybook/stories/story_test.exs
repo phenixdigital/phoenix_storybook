@@ -18,7 +18,7 @@ defmodule PhoenixStorybook.StoryTest do
       defmodule Component do
         use Phoenix.Component
         attr(:label, :string, required: true, doc: "documentation", examples: ["foo", "bar"])
-        attr(:type, :atom, required: true, doc: "overriden", values: [:foo, :bar])
+        attr(:type, :atom, required: true, doc: "overridden", values: [:foo, :bar])
         def my_component(_assigns), do: nil
       end
 
@@ -117,7 +117,7 @@ defmodule PhoenixStorybook.StoryTest do
       defmodule LiveComponent do
         use Phoenix.LiveComponent
         attr(:label, :string, required: true, doc: "documentation", examples: ["foo", "bar"])
-        attr(:type, :atom, required: true, doc: "overriden", values: [:foo, :bar])
+        attr(:type, :atom, required: true, doc: "overridden", values: [:foo, :bar])
         def render(_assigns), do: nil
       end
 

@@ -9,7 +9,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
 
   @doc """
   This validator ensures that all stories have their properties filled with proper datatypes
-  and that attribute declarations are consistent accross variations.
+  and that attribute declarations are consistent across variations.
   Returns either `{:ok, story}` or `{:error, message}`.
   """
   def validate(story) do

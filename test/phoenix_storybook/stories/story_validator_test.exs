@@ -43,7 +43,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "page navigation" do
-    test "with a valid navigation it wont raise" do
+    test "with a valid navigation it won't raise" do
       mock = page_stub(navigation: [{:tab, "label", {:fa, "icon"}}])
       assert validate!(mock) == mock
 
@@ -85,7 +85,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "example extra_sources" do
-    test "with valid extra_sources it wont raise" do
+    test "with valid extra_sources it won't raise" do
       mock = example_stub(extra_sources: [])
       assert validate!(mock) == mock
 
@@ -105,14 +105,14 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "component story base attributes" do
-    test "with default mock it wont raise" do
+    test "with default mock it won't raise" do
       mock = component_stub()
       assert validate!(mock)
     end
   end
 
   describe "story's component is a module" do
-    test "with proper type it wont raise" do
+    test "with proper type it won't raise" do
       mock = live_component_stub(component: MyComponent)
       assert validate!(mock)
     end
@@ -125,7 +125,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story's function is a function" do
-    test "with proper type it wont raise" do
+    test "with proper type it won't raise" do
       mock = component_stub(function: fn -> & &1 end)
       assert validate!(mock)
     end
@@ -138,7 +138,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story's aliases is a list of atoms" do
-    test "with proper aliases it wont raise" do
+    test "with proper aliases it won't raise" do
       mock = component_stub(aliases: [])
       assert validate!(mock)
 
@@ -154,7 +154,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story's imports is valid" do
-    test "with proper imports it wont raise" do
+    test "with proper imports it won't raise" do
       mock = component_stub(imports: [])
       assert validate!(mock)
 
@@ -174,7 +174,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story's container is either :div or :iframe" do
-    test "with proper type it wont raise" do
+    test "with proper type it won't raise" do
       mock = component_stub(container: :div)
       assert validate!(mock)
 
@@ -204,7 +204,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story template" do
-    test "with proper type it wont raise" do
+    test "with proper type it won't raise" do
       mock = component_stub(template: nil)
       assert validate!(mock)
 
@@ -220,7 +220,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story layout" do
-    test "with proper value it wont raise" do
+    test "with proper value it won't raise" do
       mock = component_stub(layout: :one_column)
       assert validate!(mock)
 
@@ -239,7 +239,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story render_source" do
-    test "with proper value it wont raise" do
+    test "with proper value it won't raise" do
       mock = component_stub(render_source: :module)
       assert validate!(mock)
 
@@ -258,7 +258,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "variation template" do
-    test "with proper type it wont raise" do
+    test "with proper type it won't raise" do
       mock = component_stub(variations: [%Variation{id: :foo, template: nil}])
       assert validate!(mock)
 
@@ -282,7 +282,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "variation_group template is a string" do
-    test "with proper type it wont raise" do
+    test "with proper type it won't raise" do
       mock =
         component_stub(variations: [%VariationGroup{id: :foo, variations: [], template: nil}])
 
@@ -327,12 +327,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story attributes are list of Attrs" do
-    test "with proper attr type it wont raise" do
+    test "with proper attr type it won't raise" do
       mock = component_stub(attributes: [%Attr{id: :foo, type: :string}])
       assert validate!(mock)
     end
 
-    test "with empty list it wont raise" do
+    test "with empty list it won't raise" do
       mock = component_stub(attributes: [])
       assert validate!(mock)
     end
@@ -345,7 +345,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "attributes ids" do
-    test "atom id wont raise" do
+    test "atom id won't raise" do
       mock = component_stub(attributes: [%Attr{id: :foo, type: :string}])
 
       assert validate!(mock)
@@ -358,7 +358,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert e.description =~ ~s|id for attribute "foo" must be an atom|
     end
 
-    test "unique attribute ids wont raise" do
+    test "unique attribute ids won't raise" do
       mock =
         component_stub(
           attributes: [
@@ -387,7 +387,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "attributes types" do
-    test "valid attribute types wont raise" do
+    test "valid attribute types won't raise" do
       mock =
         component_stub(
           attributes: [
@@ -404,7 +404,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert validate!(mock)
     end
 
-    test "valid atom types wont raise" do
+    test "valid atom types won't raise" do
       mock = component_stub_with_attr(id: :custom_struct, type: MyModuleStruct)
       assert validate!(mock)
     end
@@ -423,12 +423,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "attribute doc" do
-    test "nil doc wont raise" do
+    test "nil doc won't raise" do
       mock = component_stub_with_attr(type: :string, doc: nil)
       assert validate!(mock)
     end
 
-    test "binary doc wont raise" do
+    test "binary doc won't raise" do
       mock = component_stub_with_attr(type: :string, doc: "some documentation")
       assert validate!(mock)
     end
@@ -441,7 +441,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "attribute type and default do match" do
-    test "with correct defaults, it wont raise" do
+    test "with correct defaults, it won't raise" do
       mock = component_stub_with_attr(type: :integer, default: nil)
       assert validate!(mock)
 
@@ -503,7 +503,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "attribute required must be a boolean" do
-    test "with required true, it wont raise" do
+    test "with required true, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, required: true)
       assert validate!(mock)
     end
@@ -522,29 +522,29 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert e.description =~ "only one of :required or :default must be given for attr :attr"
     end
 
-    test "with required true and no default, it wont raise" do
+    test "with required true and no default, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, required: true)
       assert validate!(mock)
     end
 
-    test "with required false and a default, it wont raise" do
+    test "with required false and a default, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, default: :foo, required: false)
       assert validate!(mock)
     end
   end
 
   describe "attribute examples is a list and is matching declared type" do
-    test "with an empty list it wont raise" do
+    test "with an empty list it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, examples: [])
       assert validate!(mock)
     end
 
-    test "with a list of matching type, it wont raise" do
+    test "with a list of matching type, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, examples: [:foo, :bar])
       assert validate!(mock)
     end
 
-    test "with a list of integer and a range, it wont raise" do
+    test "with a list of integer and a range, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :integer, examples: 1..10)
       assert validate!(mock)
     end
@@ -563,17 +563,17 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "attribute values is a list and is matching declared type" do
-    test "with an empty list it wont raise" do
+    test "with an empty list it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, values: [])
       assert validate!(mock)
     end
 
-    test "with a list of matching type, it wont raise" do
+    test "with a list of matching type, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :atom, values: [:foo, :bar])
       assert validate!(mock)
     end
 
-    test "with a list of integer and a range, it wont raise" do
+    test "with a list of integer and a range, it won't raise" do
       mock = component_stub_with_attr(id: :attr, type: :integer, values: 1..10)
       assert validate!(mock)
     end
@@ -591,7 +591,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
   end
 
-  describe "attribute examples & values cant be set at the same time" do
+  describe "attribute examples & values can't be set at the same time" do
     test "it raises" do
       mock =
         component_stub_with_attr(
@@ -607,7 +607,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "global attributes" do
-    test "with valid options, it wont raise" do
+    test "with valid options, it won't raise" do
       mock = component_stub_with_attr(id: :rest, type: :global, default: %{foo: "bar"})
       assert validate!(mock)
     end
@@ -632,12 +632,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "story slots are list of Slot" do
-    test "with proper slot type it wont raise" do
+    test "with proper slot type it won't raise" do
       mock = component_stub(slots: [%Slot{id: :foo}])
       assert validate!(mock)
     end
 
-    test "with empty list it wont raise" do
+    test "with empty list it won't raise" do
       mock = component_stub(slots: [])
       assert validate!(mock)
     end
@@ -650,7 +650,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "slot ids" do
-    test "atom id wont raise" do
+    test "atom id won't raise" do
       mock = component_stub(slots: [%Slot{id: :foo}])
       assert validate!(mock)
     end
@@ -661,7 +661,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert e.description =~ ~s|id for slot "foo" must be an atom|
     end
 
-    test "unique slot ids wont raise" do
+    test "unique slot ids won't raise" do
       mock =
         component_stub(
           slots: [
@@ -690,12 +690,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "slot doc" do
-    test "nil doc wont raise" do
+    test "nil doc won't raise" do
       mock = component_stub_with_slot(id: :slot, doc: nil)
       assert validate!(mock)
     end
 
-    test "binary doc wont raise" do
+    test "binary doc won't raise" do
       mock = component_stub_with_slot(id: :slot, doc: "some documentation")
       assert validate!(mock)
     end
@@ -708,7 +708,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "slot required must be a boolean" do
-    test "with required true, it wont raise" do
+    test "with required true, it won't raise" do
       mock = component_stub_with_slot(id: :slot, required: true)
       assert validate!(mock)
     end
@@ -721,7 +721,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "variations id" do
-    test "atom id wont raise" do
+    test "atom id won't raise" do
       mock = component_stub_with_variation(id: :foo)
       assert validate!(mock)
     end
@@ -733,7 +733,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert e.description =~ "id for variation \"foo\" must be an atom"
     end
 
-    test "unique variation ids wont raise" do
+    test "unique variation ids won't raise" do
       mock =
         component_stub(
           variations: [
@@ -760,7 +760,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert e.description =~ "duplicate variation id: :foo"
     end
 
-    test "duplicate variation ids accross 2 groups wont raise" do
+    test "duplicate variation ids across 2 groups won't raise" do
       mock =
         component_stub(
           variations: [
@@ -790,12 +790,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "variation description is a binary" do
-    test "with a binary description it wont raise" do
+    test "with a binary description it won't raise" do
       mock = component_stub_with_variation(id: :variation_id, description: "valid")
       assert validate!(mock)
     end
 
-    test "with a binary description in a variation group, it wont raise" do
+    test "with a binary description in a variation group, it won't raise" do
       mock =
         component_stub_with_variation_group(:group_id, id: :variation_id, description: "valid")
 
@@ -823,12 +823,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "variation let is an atom" do
-    test "with an atom let it wont raise" do
+    test "with an atom let it won't raise" do
       mock = component_stub_with_variation(id: :variation_id, let: :valid)
       assert validate!(mock)
     end
 
-    test "with an atom let in a variation group, it wont raise" do
+    test "with an atom let in a variation group, it won't raise" do
       mock = component_stub_with_variation_group(:group_id, id: :variation_id, let: :valid)
       assert validate!(mock)
     end
@@ -942,7 +942,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "variation attributes match with their definition" do
-    test "variation attribute without definition wont raise" do
+    test "variation attribute without definition won't raise" do
       mock =
         component_stub(
           variations: [
@@ -957,7 +957,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert validate!(mock)
     end
 
-    test "variation attribute with correct definition wont raise" do
+    test "variation attribute with correct definition won't raise" do
       mock =
         component_stub(
           attributes: [
@@ -1003,7 +1003,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
                "attribute :bar in variation :foo, group :group must be of type: :atom"
     end
 
-    test "variation attribute value matching attribute values wont raise" do
+    test "variation attribute value matching attribute values won't raise" do
       mock =
         component_stub(
           attributes: [%Attr{id: :attr, type: :atom, values: [:foo, :bar]}],
@@ -1061,7 +1061,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
   end
 
   describe "required variation attributes" do
-    test "variation with all required attributes wont raise" do
+    test "variation with all required attributes won't raise" do
       mock =
         component_stub(
           attributes: [
@@ -1102,7 +1102,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert e.description =~ "required attribute :bar missing from variation :foo, group :group"
     end
 
-    test "variation with required slot wont raise" do
+    test "variation with required slot won't raise" do
       mock =
         component_stub(
           slots: [%Slot{id: :slot, required: true}],
@@ -1112,7 +1112,7 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
       assert validate!(mock)
     end
 
-    test "variation with required default slot wont raise" do
+    test "variation with required default slot won't raise" do
       mock =
         component_stub(
           slots: [%Slot{id: :inner_block, required: true}],
