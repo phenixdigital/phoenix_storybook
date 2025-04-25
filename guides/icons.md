@@ -7,7 +7,7 @@ PhoenixStorybook gives you the ability to render icons with 2 different provider
 
 - [FontAwesome](https://fontawesome.com) which offers a decent set of free icons and a lot of
   additional styles with paid plans
-- [HeroIcons](https://heroicons.com) wich offer hundreds of free high quality icons
+- [HeroIcons](https://heroicons.com) which offer hundreds of free high quality icons
 - **Local** which offers the ability to use locally defined icons within the application
 
 ## Declaring an icon

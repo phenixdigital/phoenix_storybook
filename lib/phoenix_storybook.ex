@@ -34,7 +34,7 @@ defmodule PhoenixStorybook.BackendBehaviour do
   @callback find_entry_by_path(String.t()) :: %FolderEntry{} | %StoryEntry{}
 
   @doc """
-  Retuns a storybook path from a story module.
+  Returns a storybook path from a story module.
   """
   @callback storybook_path(atom()) :: String.t()
 end

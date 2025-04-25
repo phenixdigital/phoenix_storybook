@@ -118,7 +118,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
   end
 
-  test "it raises with an unknow story", %{conn: conn} do
+  test "it raises with an unknown story", %{conn: conn} do
     assert_raise RuntimeError, fn ->
       live_with_params(conn, "/storybook/iframe/unknown", %{"variation_id" => "default"})
     end

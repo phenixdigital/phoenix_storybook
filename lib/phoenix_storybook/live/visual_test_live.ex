@@ -54,7 +54,7 @@ defmodule PhoenixStorybook.VisualTestLive do
         raise StoryNotFound, "unknown story #{inspect(story_path)}"
 
       {:error, _error, _exception} ->
-        raise StoryNotFound, "cant load story #{inspect(story_path)}"
+        raise StoryNotFound, "can't load story #{inspect(story_path)}"
     end
   end
 

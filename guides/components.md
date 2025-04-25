@@ -309,7 +309,7 @@ your variation.
 ## Late evaluation
 
 In some cases, you want to pass to your variation attributes a complex value which should be
-evaluated at runtime but not in code preview (where you rather want to see the orignal expression).
+evaluated at runtime but not in code preview (where you rather want to see the original expression).
 
 For instance with the following variation of a `Modal` component.
 
