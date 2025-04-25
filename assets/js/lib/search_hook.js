@@ -1,4 +1,8 @@
 export const SearchHook = {
+  execJS: (el, attr) => {
+    el && liveSocket.execJS(el, el.getAttribute(attr));
+  },
+
   mounted() {
     const searchContainer = document.querySelector("#search-container");
     const searchModal = document.querySelector("#search-modal");
@@ -16,9 +20,9 @@ export const SearchHook = {
       lastStory = searchList.lastElementChild;
 
       if (allStories.length > 0) {
-        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
+        this.execJS(activeStory, "phx-baseline");
         activeStory = firstStory;
-        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
+        this.execJS(activeStory, "phx-highlight");
       }
     });
 
@@ -27,15 +31,15 @@ export const SearchHook = {
     });
 
     window.addEventListener("psb:open-search", () => {
-      this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-show"));
-      this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-show"));
+      this.execJS(searchContainer, "phx-show");
+      this.execJS(searchModal, "phx-show");
       setTimeout(() => searchInput.focus(), 50);
-      this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
+      this.execJS(activeStory, "phx-highlight");
     });
 
     window.addEventListener("psb:close-search", () => {
-      this.liveSocket.execJS(searchModal, searchModal.getAttribute("phx-hide"));
-      this.liveSocket.execJS(searchContainer, searchContainer.getAttribute("phx-hide"));
+      this.execJS(searchModal, "phx-hide");
+      this.execJS(searchContainer, "phx-hide");
     });
 
     window.addEventListener("keydown", (e) => {
@@ -51,9 +55,9 @@ export const SearchHook = {
           // This prevents clipping when switching back and forth
           // between mouse navigation and keyboard navigation
 
-          this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
+          this.execJS(activeStory, "phx-baseline");
           activeStory = e.target;
-          this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
+          this.execJS(activeStory, "phx-highlight");
         }
       });
     }
@@ -81,7 +85,7 @@ export const SearchHook = {
       }
 
       if (e.key === "ArrowUp") {
-        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
+        this.execJS(activeStory, "phx-baseline");
 
         if (activeStory === firstStory) {
           activeStory = lastStory;
@@ -89,12 +93,13 @@ export const SearchHook = {
           activeStory = activeStory.previousElementSibling;
         }
 
-        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
-        activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
+        this.execJS(activeStory, "phx-highlight");
+        activeStory &&
+          activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
 
       if (e.key === "ArrowDown") {
-        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-baseline"));
+        this.execJS(activeStory, "phx-baseline");
 
         if (activeStory === lastStory) {
           activeStory = firstStory;
@@ -102,8 +107,9 @@ export const SearchHook = {
           activeStory = activeStory.nextElementSibling;
         }
 
-        this.liveSocket.execJS(activeStory, activeStory.getAttribute("phx-highlight"));
-        activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
+        this.execJS(activeStory, "phx-highlight");
+        activeStory &&
+          activeStory.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
     });
 
