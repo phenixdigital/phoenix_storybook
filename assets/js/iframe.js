@@ -20,7 +20,7 @@ const csrfToken = window.parent.document
 const liveSocket = new LiveSocket(socketPath, Socket, {
   hooks: { ...window.storybook.Hooks, ColorModeHook },
   uploaders: window.storybook.Uploaders,
-  params: (liveViewName) => {
+  params: (_liveViewName) => {
     return {
       _csrf_token: csrfToken,
     };
