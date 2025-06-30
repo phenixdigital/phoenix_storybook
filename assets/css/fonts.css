@@ -20,8 +20,9 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
-  src: url("../fonts/fa-solid-900.woff2") format("woff2"), url("../fonts/fa-solid-900.ttf")
-    format("truetype");
+  src:
+    url("../fonts/fa-solid-900.woff2") format("woff2"),
+    url("../fonts/fa-solid-900.ttf") format("truetype");
 }
 
 .fas,
@@ -47,8 +48,9 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url("../fonts/fa-brands-400.woff2") format("woff2"), url("../fonts/fa-brands-400.ttf")
-    format("truetype");
+  src:
+    url("../fonts/fa-brands-400.woff2") format("woff2"),
+    url("../fonts/fa-brands-400.ttf") format("truetype");
 }
 
 .fa-github {

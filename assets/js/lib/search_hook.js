@@ -14,7 +14,7 @@ export const SearchHook = {
     let lastStory = searchList.lastElementChild;
     let activeStory = firstStory;
 
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver((_mutations) => {
       allStories = searchList.children;
       firstStory = searchList.firstElementChild;
       lastStory = searchList.lastElementChild;
@@ -111,7 +111,7 @@ export const SearchHook = {
       }
     });
 
-    searchList.addEventListener("click", (e) => {
+    searchList.addEventListener("click", (_e) => {
       const link = activeStory.firstElementChild;
 
       this.resetInput(searchInput);

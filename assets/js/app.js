@@ -30,7 +30,7 @@ const liveSocket = new LiveSocket(socketPath, Socket, {
     ColorModeHook,
   },
   uploaders: window.storybook.Uploaders,
-  params: (liveViewName) => {
+  params: (_liveViewName) => {
     return {
       _csrf_token: csrfToken,
       extra: window.storybook.Params,

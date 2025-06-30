@@ -78,7 +78,7 @@ jobs:
           version: latest
 
       - name: Run Biome
-        run: biome ci ./assets
+        run: cd assets && biome ci
 
       - name: Dialyzer
         run: mix dialyzer --format github
