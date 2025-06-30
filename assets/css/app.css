@@ -2,26 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-.psb {
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  @apply psb-antialiased psb-text-gray-600 psb-text-inherit;
-}
+@layer theme {
+  .psb {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    @apply psb-antialiased psb-text-gray-600 psb-text-inherit;
+  }
 
-.svg-inline--fa.psb {
-  display: var(--fa-display, inline-block);
-  height: 1em;
-  overflow: visible;
-  vertical-align: -0.125em;
-}
+  .psb-sandbox {
+    margin: 0;
+    font-family: serif, system-ui, sans-serif;
+    @apply psb-w-full;
+  }
 
-.svg-inline--fa.psb.psb-hidden {
-  display: none;
-}
+  .svg-inline--fa.psb {
+    display: var(--fa-display, inline-block);
+    height: 1em;
+    overflow: visible;
+    vertical-align: -0.125em;
+  }
 
-.psb-sandbox {
-  margin: 0;
-  font-family: serif, system-ui, sans-serif;
-  @apply psb-w-full;
+  .svg-inline--fa.psb.psb-hidden {
+    display: none;
+  }
 }
 
 .psb-variation-block:hover .psb-open-playground-link {
@@ -174,23 +176,7 @@
     -webkit-text-size-adjust: 100%; /* 2 */
     -moz-tab-size: 4; /* 3 */
     tab-size: 4; /* 3 */
-    font-family: theme(
-      "fontFamily.sans",
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      "Helvetica Neue",
-      Arial,
-      "Noto Sans",
-      sans-serif,
-      "Apple Color Emoji",
-      "Segoe UI Emoji",
-      "Segoe UI Symbol",
-      "Noto Color Emoji"
-    ); /* 4 */
+    @apply psb-font-sans;
   }
 
   /*
@@ -227,16 +213,6 @@
   Remove the default font size and weight for headings.
   */
 
-  h1.psb,
-  h2.psb,
-  h3.psb,
-  h4.psb,
-  h5.psb,
-  h6.psb {
-    font-size: inherit;
-    font-weight: inherit;
-  }
-
   /*
   Reset links to optimize for opt-in styling instead of opt-out.
   */
@@ -264,17 +240,7 @@
   kbd.psb,
   samp.psb,
   pre.psb {
-    font-family: theme(
-      "fontFamily.mono",
-      ui-monospace,
-      SFMono-Regular,
-      Menlo,
-      Monaco,
-      Consolas,
-      "Liberation Mono",
-      "Courier New",
-      monospace
-    ); /* 1 */
+    @apply psb-font-mono;
     font-size: 1em; /* 2 */
   }
 

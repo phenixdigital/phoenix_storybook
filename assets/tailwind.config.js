@@ -13,6 +13,10 @@ module.exports = {
     },
   ],
   theme: {
+    fontFamily: {
+      mono: ["Menlo", "Monaco", "Consolas", "SFMono-Regular", "ui-monospace", "monospace"],
+      sans: ["Roboto", "Helvetica Neue", "ui-sans-serif", "Arial"],
+    },
     extend: {
       minHeight: (theme) => ({
         ...theme("spacing"),
