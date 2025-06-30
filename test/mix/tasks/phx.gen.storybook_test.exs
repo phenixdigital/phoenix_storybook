@@ -53,22 +53,22 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
 
       assert_shell_receive(
         :yes?,
-        ~r|Add a new Tailwind build profile for.*css/storybook.css.*in.*config/config.exs.*|
+        ~r|Add a new Tailwind build profile for.*css/storybook.css.*in.*config/config.exs|
       )
 
       assert_shell_receive(
         :yes?,
-        ~r|Set.*important.*option in your Tailwind config in.*assets/tailwind.config.js.*:|
-      )
-
-      assert_shell_receive(
-        :yes?,
-        ~r|Add your.*storybook content.* in your Tailwind config in.*assets/tailwind.config.js.*:|
+        ~r|Add your.*storybook content.*in your application CSS|
       )
 
       assert_shell_receive(
         :yes?,
         ~r|Add the CSS sandbox class to your layout in.*lib/phoenix_storybook_web/components/layouts/root.html.heex.*:|
+      )
+
+      assert_shell_receive(
+        :yes?,
+        ~r|Make sure your application styling is nested under your CSS sandbox class|
       )
 
       assert_shell_receive(

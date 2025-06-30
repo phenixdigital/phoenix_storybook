@@ -218,7 +218,6 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
           ],
           #{IO.ANSI.bright()}storybook: [
             args: ~w(
-              --config=tailwind.config.js
               --input=css/storybook.css
               --output=../priv/static/assets/storybook.css
             ),
@@ -227,30 +226,26 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
 
     print_instructions("""
-      Set #{IO.ANSI.bright()}important#{IO.ANSI.reset()} option in your Tailwind config in #{IO.ANSI.bright()}assets/tailwind.config.js#{IO.ANSI.reset()}:
+      Add your #{IO.ANSI.bright()}storybook content#{IO.ANSI.reset()} in your application CSS in #{IO.ANSI.bright()}assets/storybook.css#{IO.ANSI.reset()}:
 
-        module.exports = {
-          #{IO.ANSI.bright()}important: ".#{schema.sandbox_class}",#{IO.ANSI.reset()}
-          ...
-        }
-    """)
-
-    print_instructions("""
-      Add your #{IO.ANSI.bright()}storybook content#{IO.ANSI.reset()} in your Tailwind config in #{IO.ANSI.bright()}assets/tailwind.config.js#{IO.ANSI.reset()}:
-
-        module.exports = {
-          content: [
-            ...,
-            #{IO.ANSI.bright()}"../storybook/**/*.*exs"#{IO.ANSI.reset()}
-          ]
-          ...
-        }
+        @source #{IO.ANSI.bright()}"../storybook/**/*.*exs"#{IO.ANSI.reset()}
     """)
 
     print_instructions("""
       Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
 
         <body class="bg-white #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
+        ...
+    """)
+
+    print_instructions("""
+      Make sure your application styling is nested under your CSS sandbox class in #{IO.ANSI.bright()}assets/storybook.css#{IO.ANSI.reset()}:
+
+        .#{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()} {
+          h1, h2, h3 {
+            // my custom application styling
+          }
+        }
         ...
     """)
   end

@@ -72,7 +72,7 @@ All containers rendering your components in the storybook (`stories`, `playgroun
 carry the `.psb-sandbox` CSS class and a **custom sandboxing class of your choice**.
 
 You can leverage this to scope your styles with this class. Here is how you can do it with
-`TailwindCSS`:
+`TailwindCSS` (instructions provided for Tailwind 4.x):
 
 - configure `phoenix_storybook` with a custom `sandbox_class`:
 
@@ -84,44 +84,38 @@ defmodule MyAppWeb.Storybook do
     sandbox_class: "my-app-sandbox",
 ```
 
-- use Tailwind [important selector strategy](https://tailwindcss.com/docs/configuration#selector-strategy)
-  with this class. It will prefix all your tailwind classes increasing their specificity, hence
-  their priority.
-
-```javascript
-// assets/tailwind.config.js
-module.exports = {
-  // ...
-  important: ".my-app-sandbox",
-};
-```
-
-- nest your custom styles under Tailwind `@layer utilities`. This way, your styling will also
-  benefit from sandboxing.
+- nest your custom styles under your sandbox CSS class.
 
 ```css
 /* assets/css/storybook.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer utilities {
-  /* this style will be generated as .my-app-sandbox * { ... } */
+.my-app-sandbox {
   * {
     font-family: "MyComponentsFont";
     @apply text-slate-600;
   }
 
-  /* this style will be generated as .my-app-sandbox h1 { ... } */
   h1 {
     @apply text-2xl font-bold text-slate-700 mt-2 mb-6;
   }
 
-  /* this style will be generated as .my-app-sandbox h2 { ... } */
   h2 {
     @apply text-xl font-bold text-slate-700 mt-2 mb-4;
   }
 }
+```
+
+- set your sandbox CSS class to the body element of your main application.
+
+```html
+<!-- lib/my_app/templates/layout/root.html.heex -->
+
+<html>
+  <body class="my-app-sandbox">
+    <!-- ... -->
+  </body>
+</html>
 ```
 
 ## Enabling iframe rendering
