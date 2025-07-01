@@ -18,7 +18,7 @@ defmodule Storybook.MyPage do
   # This is a dummy function that you should replace with your own HEEx content.
   def render(assigns = %{tab: :welcome}) do
     ~H"""
-    <div class="psb:welcome-page">
+    <div class="psb-welcome-page">
       <p>
         We generated your storybook with an example of a page and a component.
         Explore the generated <code class="psb:inline">*.story.exs</code>
