@@ -43,8 +43,8 @@
     @apply psb:w-full;
   }
 
-  .psb-variation-block:hover .psb:open-playground-link {
-    display: block;
+  .psb-variation-block:hover .psb-open-playground-link {
+    display: block !important;
   }
 }
 
