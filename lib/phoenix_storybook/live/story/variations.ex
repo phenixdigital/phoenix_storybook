@@ -75,7 +75,7 @@ defmodule PhoenixStorybook.Story.Variations do
                   theme: @theme
                 })
               }
-              class="psb psb:hidden psb:open-playground-link"
+              class="psb psb:hidden psb-open-playground-link"
             >
               <span class="psb psb:text-base psb:font-light psb:text-gray-500 psb:dark:text-slate-300 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-medium ">
                 Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
