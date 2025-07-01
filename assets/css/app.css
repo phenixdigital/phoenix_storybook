@@ -1,11 +1,11 @@
-@layer base, reset, theme, app, storybook, components, utilities;
+@layer reset, theme, base, app, components, utilities;
 @import "tailwindcss/theme.css" layer(theme) prefix(psb);
 @import "./reset.css" layer(reset) prefix(psb);
 
 @source "../css/**/*.css";
 @source "../js/**/*.js";
 @source "../../lib/**/*.{ex,heex}";
-@source "../../priv/templates/**/*.eex";
+@source "../../priv/templates/**/*.{eex,exs}";
 
 @plugin '@tailwindcss/forms' {
   strategy: class;
@@ -19,7 +19,7 @@
   }
 }
 
-@layer storybook {
+@layer theme {
   .psb {
     font-family: ui-sans-serif, system-ui, sans-serif;
     @apply psb:antialiased;
@@ -50,7 +50,9 @@
   .psb-variation-block:hover .psb:open-playground-link {
     display: block;
   }
+}
 
+@layer app {
   .psb-sandbox .psb-welcome-page {
     @apply psb:w-full;
   }
