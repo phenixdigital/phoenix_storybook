@@ -9,7 +9,13 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v0.9.0 (not released yet)
+
+- **change**: `phoenix_storybook` has been considerably refactored to use
+  the latest Tailwind 4.x.
+
 ## v0.8.3 (2025-06-30)
+
 - **improvement**: [improved compatibility with Tailwind 4.x applications](https://github.com/phenixdigital/phoenix_storybook/pull/636)
 
 ## v0.8.2 (2025-04-24)
