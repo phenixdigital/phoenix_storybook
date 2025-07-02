@@ -175,7 +175,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
   end
 
-  def handle_event("psb:toggle", assign_params, socket = %{assigns: assigns}) do
+  def handle_event("psb-toggle", assign_params, socket = %{assigns: assigns}) do
     {variation_id, extra_assigns} =
       ExtraAssignsHelpers.handle_toggle_variation_assign(
         assign_params,
