@@ -1,0 +1,58 @@
+.psb-doc p {
+  @apply psb:mb-4;
+}
+
+.psb-doc p:last-child {
+  @apply psb:mb-0;
+}
+
+.psb-doc a {
+  @apply psb:underline psb:underline-offset-2 psb:decoration-slate-400 psb:dark:decoration-slate-600
+  psb:hover:text-indigo-700 psb:hover:decoration-indigo-700 psb:dark:hover:text-sky-400 
+  psb:dark:hover:decoration-sky-400;
+}
+
+.psb-doc h1,
+.psb-doc h2,
+.psb-doc h3,
+.psb-doc h4 {
+  @apply psb:font-bold psb:mt-4 psb:mb-2;
+}
+
+.psb-doc h1 {
+  @apply psb:text-xl;
+}
+
+.psb-doc h2 {
+  @apply psb:text-lg;
+}
+
+.psb-doc h3 {
+  @apply psb:text-base;
+}
+.psb-doc h4 {
+  @apply psb:text-base;
+}
+
+.psb-doc ul {
+  @apply psb:list-disc psb:my-4;
+}
+
+.psb-doc li {
+  @apply psb:ml-8 psb:mb-1;
+}
+
+.psb-doc pre {
+  @apply psb:my-4;
+}
+
+.psb-doc pre code {
+  @apply psb:border psb:bg-slate-800 psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600;
+  @apply psb:rounded-md psb:px-4 psb:py-4 psb:text-gray-300 psb:text-xs psb:md:text-sm psb:block;
+  @apply psb:overflow-x-auto;
+}
+
+.psb-doc code.inline {
+  @apply psb:border psb:bg-slate-100 psb:dark:bg-slate-800 psb:border-slate-200 psb:dark:border-slate-600;
+  @apply psb:rounded-md psb:p-0.5 psb:m-0.5 psb:text-indigo-700 psb:dark:text-sky-400 psb:text-sm;
+}

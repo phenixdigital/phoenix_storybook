@@ -59,7 +59,7 @@
     />
     <%= if path = storybook_css_path(@conn) do %>
       <style nonce={csp_nonce(@conn, :style)}>
-      @import "<%= path %>" layer(app);
+        @import "<%= path %>" layer(app);
       </style>
     <% end %>
     <style nonce={csp_nonce(@conn, :style)}>
