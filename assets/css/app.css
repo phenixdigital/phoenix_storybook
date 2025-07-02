@@ -1,6 +1,9 @@
-@layer reset, theme, app, components, utilities;
+@layer reset, theme, app, utilities;
+
 @import "tailwindcss/theme.css" layer(theme) prefix(psb);
 @import "./reset.css" layer(reset) prefix(psb);
+@import "./welcome_page.css" layer(app);
+@import "./docs.css" layer(app);
 
 @source "../css/**/*.css";
 @source "../js/**/*.js";
@@ -22,8 +25,9 @@
   }
 
   pre.psb {
-    font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
-    font-size: 1em
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      Liberation Mono, Courier New, monospace;
+    font-size: 1em;
   }
 
   .svg-inline--fa.psb {
@@ -33,7 +37,7 @@
     vertical-align: -0.125em;
   }
 
-  .svg-inline--fa.psb.psb:hidden {
+  .svg-inline--fa.psb.psb\:hidden {
     display: none;
   }
 
@@ -46,120 +50,12 @@
   .psb-variation-block:hover .psb-open-playground-link {
     display: block !important;
   }
-}
 
-@layer app {
-  .psb-sandbox .psb-welcome-page {
-    @apply psb:w-full;
-  }
-
-  .psb-sandbox .psb-welcome-page h1 {
-    @apply psb:text-indigo-700 psb:text-2xl psb:pt-4 psb:mb-2;
-  }
-
-  .psb-sandbox .psb-welcome-page h2 {
-    @apply psb:text-indigo-700 psb:text-xl psb:pt-4 psb:mb-2;
-  }
-
-  .psb-sandbox .psb-welcome-page h3 {
-    @apply psb:text-slate-500 psb:text-lg psb:pt-4 psb:mb-2 psb:font-bold;
-  }
-
-  .psb-sandbox .psb-welcome-page p {
-    @apply psb:md:text-lg psb:leading-6 psb:md:leading-8 psb:text-slate-500 psb:w-full psb:text-left psb:mb-4 psb:mt-2;
-  }
-
-  .psb-sandbox .psb-welcome-page strong {
-    @apply psb:text-indigo-700;
-  }
-
-  .psb-sandbox .psb-welcome-page ul {
-    @apply psb:list-disc psb:ml-12 psb:space-y-2;
-  }
-
-  .psb-sandbox .psb-welcome-page ul li {
-    @apply psb:text-lg psb:text-slate-500;
-  }
-
-  .psb-sandbox .psb-welcome-page code.inline {
-    @apply psb:border psb:bg-slate-100 psb:dark:bg-slate-800 psb:border-slate-200 psb:dark:border-slate-600;
-    @apply psb:rounded-md psb:p-0.5 psb:m-0.5 psb:text-indigo-700 psb:dark:text-sky-400;
-    @apply psb:font-mono psb:text-sm;
-  }
-
-  .psb-sandbox .psb-welcome-page pre {
-    @apply psb:bg-slate-800 psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600;
-    @apply psb:rounded-lg psb:px-4 psb:py-2 psb:my-4 psb:whitespace-pre-wrap psb:break-normal;
-  }
-
-  .psb-sandbox .psb-welcome-page pre code {
-    @apply psb:font-mono psb:text-sm psb:text-gray-300;
-  }
-
-  .psb:dark ::-webkit-scrollbar {
+  .psb\:dark ::-webkit-scrollbar {
     @apply psb:bg-slate-900 psb:w-[15px];
   }
 
-  .psb:dark ::-webkit-scrollbar-thumb {
+  .psb\:dark ::-webkit-scrollbar-thumb {
     @apply psb:bg-slate-700 psb:border-solid psb:border-4 psb:border-transparent psb:rounded-lg psb:bg-clip-content;
-  }
-
-  .psb-doc p {
-    @apply psb:mb-4;
-  }
-
-  .psb-doc p:last-child {
-    @apply psb:mb-0;
-  }
-
-  .psb-doc a {
-    @apply psb:underline psb:underline-offset-2 psb:decoration-slate-400 psb:dark:decoration-slate-600
-   psb:hover:text-indigo-700 psb:hover:decoration-indigo-700 psb:dark:hover:text-sky-400 
-   psb:dark:hover:decoration-sky-400;
-  }
-
-  .psb-doc h1,
-  .psb-doc h2,
-  .psb-doc h3,
-  .psb-doc h4 {
-    @apply psb:font-bold psb:mt-4 psb:mb-2;
-  }
-
-  .psb-doc h1 {
-    @apply psb:text-xl;
-  }
-
-  .psb-doc h2 {
-    @apply psb:text-lg;
-  }
-
-  .psb-doc h3 {
-    @apply psb:text-base;
-  }
-  .psb-doc h4 {
-    @apply psb:text-base;
-  }
-
-  .psb-doc ul {
-    @apply psb:list-disc psb:my-4;
-  }
-
-  .psb-doc li {
-    @apply psb:ml-8 psb:mb-1;
-  }
-
-  .psb-doc pre {
-    @apply psb:my-4;
-  }
-
-  .psb-doc pre code {
-    @apply psb:border psb:bg-slate-800 psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600;
-    @apply psb:rounded-md psb:px-4 psb:py-4 psb:text-gray-300 psb:text-xs psb:md:text-sm psb:block;
-    @apply psb:overflow-x-auto;
-  }
-
-  .psb-doc code.inline {
-    @apply psb:border psb:bg-slate-100 psb:dark:bg-slate-800 psb:border-slate-200 psb:dark:border-slate-600;
-    @apply psb:rounded-md psb:p-0.5 psb:m-0.5 psb:text-indigo-700 psb:dark:text-sky-400 psb:text-sm;
   }
 }
