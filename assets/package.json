@@ -2,7 +2,7 @@
   "name": "phoenix_storybook",
   "version": "1.0.0",
   "description": "PhoenixStorybook assets",
-  "main": "./assets/js/phoenix_storybook.js",
+  "main": "./assets/js/app.js",
   "scripts": {
     "build:css": "npx @tailwindcss/cli --minify -i css/app.css -o ../priv/static/css/app.css",
     "build:fonts_css": "npx @tailwindcss/cli --minify -i css/fonts.css -o ../priv/static/css/fonts.css",
@@ -23,7 +23,6 @@
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "tailwindcss": "^4.1.11",
-    "tailwindcss-font-inter": "^4.0.0"
+    "tailwindcss": "^4.1.11"
   }
 }
