@@ -16,7 +16,7 @@ Add the following to your mix.exs and run mix deps.get:
 ```elixir
 def deps do
   [
-    {:phoenix_storybook, "~> 0.8.0"}
+    {:phoenix_storybook, "~> 0.9.0"}
   ]
 end
 ```
