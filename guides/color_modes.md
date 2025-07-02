@@ -40,22 +40,10 @@ use PhoenixStorybook,
 
 ## Tailwind setup
 
-If you use Tailwind for your components, update your `tailwind.config.js` file as follows:
+If you use Tailwind 4.x for your components, update your main CSS file as follows:
 
-```js
-module.exports = {
-  // ...
-  darkMode: "selector",
-};
-```
-
-To use a custom dark class, modify the configuration like this:
-
-```js
-module.exports = {
-  // ...
-  darkMode: ["selector", ".my-dark"],
-};
+```css
+@custom-variant dark (&:where(.dark, .dark *));
 ```
 
 In your application, ensure that the dark mode class is applied to your DOM element, particularly on or under your sandbox element:
