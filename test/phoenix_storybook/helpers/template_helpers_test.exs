@@ -9,7 +9,7 @@ defmodule PhoenixStorybook.TemplateHelpersTest do
         """
         <div id=":variation_id">
           <.psb-variation phx-click={JS.push("psb-assign", value: %{foo: "bar"})}/>
-          <.psb-variation phx-click={JS.push("psb:toggle", value: %{attr: :foo})}/>
+          <.psb-variation phx-click={JS.push("psb-toggle", value: %{attr: :foo})}/>
         </div>
         """,
         "component-hello-world"
@@ -19,7 +19,7 @@ defmodule PhoenixStorybook.TemplateHelpersTest do
     assert template == """
            <div id="component-hello-world">
              <.psb-variation phx-click={JS.push("psb-assign", value: %{foo: "bar", variation_id: [:single, :hello_world]})}/>
-             <.psb-variation phx-click={JS.push("psb:toggle", value: %{attr: :foo, variation_id: [:single, :hello_world]})}/>
+             <.psb-variation phx-click={JS.push("psb-toggle", value: %{attr: :foo, variation_id: [:single, :hello_world]})}/>
            </div>
            """
   end
@@ -124,7 +124,7 @@ defmodule PhoenixStorybook.TemplateHelpersTest do
   end
 
   test "code_hidden?/1" do
-    assert code_hidden?("<div psb:code-hidden><.psb-variation/></div>")
+    assert code_hidden?("<div psb-code-hidden><.psb-variation/></div>")
     refute code_hidden?("<div><.psb-variation/></div>")
   end
 

@@ -7,7 +7,7 @@ defmodule Storybook.Components.CoreComponents.Header do
 
   def template do
     """
-    <div class="w-full" psb:code-hidden>
+    <div class="w-full" psb-code-hidden>
       <.psb-variation/>
     </div>
     """

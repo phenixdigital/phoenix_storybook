@@ -368,7 +368,7 @@ defmodule PhoenixStorybook.Story.Playground do
           <.fa_icon style={:duotone} name="bomb" class="fa-xl psb:text-red-600" plan={@fa_plan} />
           <span class="psb psb:drop-shadow psb:font-medium">Ohoh, I just crashed!</span>
           <button
-            phx-click="psb:clear-playground-error"
+            phx-click="psb-clear-playground-error"
             class="psb psb:inline-flex psb:items-center psb:px-2 psb:py-1 psb:border psb:border-transparent psb:text-xs psb:font-medium psb:rounded psb:shadow-sm psb:text-white psb:bg-red-600 psb:hover:bg-red-700 psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-red-500"
           >
             Dismiss
