@@ -108,8 +108,10 @@ defmodule MyAppWeb.Storybook do
     js_path: "/assets/storybook.js",
 
     # Path to your components stylesheet.
-    # Remote path (not local file-system path) which means this file should be served
-    # by your own application endpoint.
+    # Remote path (not local file-system path) which means this file should be served by your own
+    # application endpoint.
+    # This stylesheet is loaded within the `app` CSS layer. Layer ordering is:
+    # @layer reset, theme, app, utilities;
     css_path: "/assets/storybook.css",
 
     # This CSS class will be put on storybook container elements where your own styles should

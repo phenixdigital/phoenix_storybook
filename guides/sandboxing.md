@@ -48,7 +48,7 @@ There is currently no way to access them in component or live component stories.
 
 ## How is the storybook styled?
 
-`PhoenixStorybook` is using [TailwindCSS](https://tailwindcss.com) with
+`PhoenixStorybook` is using [TailwindCSS 4.x](https://tailwindcss.com) with
 [preflight](https://tailwindcss.com/docs/preflight) (which means all default HTML styles from your
 browser are removed) and a [custom prefix](https://tailwindcss.com/docs/configuration#prefix):
 `psb:` (which means that instead of using `bg-blue-400` the storybook uses `psb:bg-blue-400`).
@@ -64,6 +64,12 @@ You need to inject your component's stylesheets into the storybook. Set the
 `css_path: "/assets/storybook.css"` option in `storybook.ex`. This is a remote path (not a local
 file-system path) which means this file should be served by your own application endpoint with the
 given path.
+
+Please note that your stylesheet is loaded within the `app` CSS layer. Layer are applied with the following order, giving your stylesheet priority over the storybook 
+styles.
+```css
+@layer reset, theme, app, utilities;
+```
 
 The previous part was about storybook styles not leaking into your components. This part is
 about the opposite: don't accidentally mess up Storybook styling with your styles.
