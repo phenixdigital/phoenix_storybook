@@ -536,10 +536,18 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       form_label_selector = "#tree_storybook_template_component-playground-form_label"
       form_toggle_selector = "#tree_storybook_template_component-playground-form_status"
 
-      assert view |> element(form_label_selector) |> render() |> Floki.attribute("disabled") ==
+      assert view
+             |> element(form_label_selector)
+             |> render()
+             |> Floki.parse_fragment!()
+             |> Floki.attribute("disabled") ==
                ["disabled"]
 
-      assert view |> element(form_toggle_selector) |> render() |> Floki.attribute("disabled") ==
+      assert view
+             |> element(form_toggle_selector)
+             |> render()
+             |> Floki.parse_fragment!()
+             |> Floki.attribute("disabled") ==
                ["disabled"]
     end
 
