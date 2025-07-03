@@ -14,6 +14,7 @@
 - **change**: `phoenix_storybook` has been considerably refactored to use
   the latest Tailwind 4.x.
 - **bugfix**: [color mode is propagated to example stories](https://github.com/phenixdigital/phoenix_storybook/issues/624)
+- **bugfix**: [fixed warnings when generating mix docs](https://github.com/phenixdigital/phoenix_storybook/issues/595)
 
 ## v0.8.3 (2025-06-30)
 

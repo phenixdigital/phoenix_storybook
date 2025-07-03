@@ -1,5 +1,10 @@
 defmodule PhoenixStorybook.Components.Icon do
-  @moduledoc false
+  @moduledoc """
+  Unified interface for rendering FontAwesome, HeroIcons, and local icons in Phoenix Storybook.
+  Supports multiple icon styles and customization through CSS classes.
+  Main function user_icon/1 handles all providers, with individual provider functions also available.
+  """
+
   use PhoenixStorybook.Web, :component
 
   @type icon_provider :: :fa | :hero | :local
