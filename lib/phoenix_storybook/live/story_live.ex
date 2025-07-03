@@ -408,7 +408,12 @@ defmodule PhoenixStorybook.StoryLive do
       session: %{"theme" => theme},
       container:
         {:div,
-         class: LayoutView.sandbox_class(assigns.socket, {:div, class: "psb psb:pb-12"}, assigns)}
+         class:
+           LayoutView.sandbox_class(
+             assigns.socket,
+             {:div, class: ["psb psb:pb-12", assigns[:color_mode_class]]},
+             assigns
+           )}
     )
   end
 
