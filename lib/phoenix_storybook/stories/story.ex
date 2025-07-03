@@ -134,7 +134,9 @@ defmodule PhoenixStorybook.Story do
   end
 
   defmodule ComponentBehaviour do
-    @moduledoc false
+    @moduledoc """
+    Behaviour implemented by any component story
+    """
 
     @callback function() :: function()
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
@@ -150,7 +152,9 @@ defmodule PhoenixStorybook.Story do
   end
 
   defmodule LiveComponentBehaviour do
-    @moduledoc false
+    @moduledoc """
+    Behaviour implemented by any live component story
+    """
 
     @callback component() :: atom()
     @callback imports() :: [{atom(), [{atom(), integer()}]}]
@@ -165,14 +169,18 @@ defmodule PhoenixStorybook.Story do
   end
 
   defmodule PageBehaviour do
-    @moduledoc false
+    @moduledoc """
+    Behaviour implemented by any page story
+    """
 
     @callback navigation() :: [{atom(), String.t(), Icon.t()} | {atom(), String.t()}]
     @callback render(map()) :: %Phoenix.LiveView.Rendered{}
   end
 
   defmodule ExampleBehaviour do
-    @moduledoc false
+    @moduledoc """
+    Behaviour implemented by any example story
+    """
 
     @callback extra_sources() :: [String.t()]
   end

@@ -4,8 +4,6 @@ defmodule PhoenixStorybook.Web do
   @doc false
   def controller do
     quote do
-      @moduledoc false
-
       use Phoenix.Controller, namespace: PhoenixStorybook
       import Plug.Conn
       unquote(view_helpers())
@@ -15,8 +13,6 @@ defmodule PhoenixStorybook.Web do
   @doc false
   def view do
     quote do
-      @moduledoc false
-
       use Phoenix.View,
         namespace: PhoenixStorybook,
         root: "lib/phoenix_storybook/templates"
@@ -30,7 +26,6 @@ defmodule PhoenixStorybook.Web do
   @doc false
   def live_view do
     quote do
-      @moduledoc false
       use Phoenix.LiveView,
         layout: {PhoenixStorybook.LayoutView, :live}
 
@@ -43,7 +38,6 @@ defmodule PhoenixStorybook.Web do
   @doc false
   def component do
     quote do
-      @moduledoc false
       use Phoenix.Component
       alias Phoenix.LiveView.JS
       unquote(view_helpers())
