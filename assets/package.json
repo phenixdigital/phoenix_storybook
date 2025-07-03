@@ -2,7 +2,7 @@
   "name": "phoenix_storybook",
   "version": "1.0.0",
   "description": "PhoenixStorybook assets",
-  "main": "./assets/js/app.js",
+  "main": "./assets/js/phoenix_storybook.js",
   "scripts": {
     "build:css": "npx @tailwindcss/cli --minify -i css/phoenix_storybook.css -o ../priv/static/css/phoenix_storybook.css",
     "build:fonts_css": "npx @tailwindcss/cli --minify -i css/fonts.css -o ../priv/static/css/fonts.css",
