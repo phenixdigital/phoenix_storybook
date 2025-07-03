@@ -50,8 +50,8 @@ defmodule PhoenixStorybook.RouterTest do
 
   describe "storybook_assets/1" do
     test "generates helper for any asset" do
-      assert Routes.storybook_asset_path(build_conn(), :asset, ["js", "app.js"]) ==
-               "/storybook/assets/js/app.js"
+      assert Routes.storybook_asset_path(build_conn(), :asset, ["js", "phoenix_storybook.js"]) ==
+               "/storybook/assets/js/phoenix_storybook.js"
     end
   end
 end
