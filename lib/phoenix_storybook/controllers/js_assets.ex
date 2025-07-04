@@ -10,6 +10,12 @@ defmodule PhoenixStorybook.JSAssets do
       _ ->
         ""
     end
+
+    if Application.compile_env(:phoenix_storybook, :gzip_assets, false) do
+      def maybe_gzip(content), do: :zlib.gzip(content)
+    else
+      def maybe_gzip(content), do: content
+    end
   end
 
   import Plug.Conn
@@ -35,15 +41,15 @@ defmodule PhoenixStorybook.JSAssets do
   iframe_js = JSFile.read(iframe_js_path)
   @external_resource iframe_js_path
 
-  @js_bundle """
-  #{phoenix_js}
-  #{js}
-  """
+  @js_bundle JSFile.maybe_gzip("""
+             #{phoenix_js}
+             #{js}
+             """)
 
-  @iframe_js_bundle """
-  #{phoenix_js}
-  #{iframe_js}
-  """
+  @iframe_js_bundle JSFile.maybe_gzip("""
+                    #{phoenix_js}
+                    #{iframe_js}
+                    """)
 
   @hashes %{
     js: Base.encode16(:crypto.hash(:md5, @js_bundle), case: :lower),
@@ -56,6 +62,7 @@ defmodule PhoenixStorybook.JSAssets do
     conn
     |> put_resp_header("content-type", "text/javascript")
     |> put_resp_header("cache-control", "public, max-age=31536000, immutable")
+    |> maybe_put_gzip_header()
     |> put_private(:plug_skip_csrf_protection, true)
     |> send_resp(200, content(asset))
     |> halt()
@@ -70,6 +77,12 @@ defmodule PhoenixStorybook.JSAssets do
 
   defp content(:js), do: @js_bundle
   defp content(:iframejs), do: @iframe_js_bundle
+
+  if Application.compile_env(:phoenix_storybook, :gzip_assets, false) do
+    defp maybe_put_gzip_header(conn), do: put_resp_header(conn, "content-encoding", "gzip")
+  else
+    defp maybe_put_gzip_header(conn), do: conn
+  end
 
   @doc """
   Returns the current hash for the given `asset`.
