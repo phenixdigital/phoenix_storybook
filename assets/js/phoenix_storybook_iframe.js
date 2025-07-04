@@ -1,5 +1,5 @@
-import { Socket } from "phoenix";
-import { LiveSocket } from "phoenix_live_view";
+// import { Socket } from "phoenix";
+// import { LiveSocket } from "phoenix_live_view";
 import { ColorModeHook } from "./lib/color_mode_hook";
 
 if (window.storybook === undefined) {
@@ -17,7 +17,7 @@ const csrfToken = window.parent.document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");
 
-const liveSocket = new LiveSocket(socketPath, Socket, {
+const liveSocket = new LiveView.LiveSocket(socketPath, Phoenix.Socket, {
   hooks: { ...window.storybook.Hooks, ColorModeHook },
   uploaders: window.storybook.Uploaders,
   params: (_liveViewName) => {

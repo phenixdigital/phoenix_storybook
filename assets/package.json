@@ -5,11 +5,11 @@
   "main": "./assets/js/phoenix_storybook.js",
   "scripts": {
     "build:css": "npx @tailwindcss/cli --minify -i css/phoenix_storybook.css -o ../priv/static/css/phoenix_storybook.css",
-    "build:fonts_css": "npx @tailwindcss/cli --minify -i css/fonts.css -o ../priv/static/css/fonts.css",
+    "build:fonts_css": "npx @tailwindcss/cli --minify -i css/phoenix_storybook_fonts.css -o ../priv/static/css/phoenix_storybook_fonts.css",
     "build:js": "esbuild js/*.js --minify --bundle --outdir=../priv/static/js",
     "build": "npm-run-all build:*",
     "watch:css": "npx @tailwindcss/cli -i css/phoenix_storybook.css -o ../priv/static/css/phoenix_storybook.css --watch",
-    "watch:fonts_css": "npx @tailwindcss/cli -i css/fonts.css -o ../priv/static/css/fonts.css --watch",
+    "watch:fonts_css": "npx @tailwindcss/cli -i css/phoenix_storybook_fonts.css -o ../priv/static/css/phoenix_storybook_fonts.css --watch",
     "watch:js": "esbuild js/*.js --bundle --outdir=../priv/static/js --watch",
     "watch": "npm-run-all --parallel watch:*"
   },

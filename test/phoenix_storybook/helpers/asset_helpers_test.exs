@@ -32,18 +32,14 @@ defmodule PhoenixStorybook.AssetHelpersTest do
     end
 
     test "it returns fingerprinted asset name", %{manifest: manifest} do
-      assert asset_file_name(manifest, "js/phoenix_storybook.js", :prod) ==
+      assert asset_file_name(manifest, "js/phoenix_storybook.js") ==
                "js/phoenix_storybook-95f46e7cf239d376ab8ff27958ffab1a.js"
     end
 
     test "it raises nil with wrong asset", %{manifest: manifest} do
       assert_raise RuntimeError, "cannot find asset js/wrong.js in manifest", fn ->
-        asset_file_name(manifest, "js/wrong.js", :prod)
+        asset_file_name(manifest, "js/wrong.js")
       end
-    end
-
-    test "it returns nil when not in production", %{manifest: manifest} do
-      assert is_nil(asset_file_name(manifest, "js/phoenix_storybook.js", :dev))
     end
   end
 

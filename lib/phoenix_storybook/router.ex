@@ -218,11 +218,14 @@ defmodule PhoenixStorybook.Router do
             plug Plug.Static,
               at: path,
               from: :phoenix_storybook,
-              only: ~w(css js images fonts favicon),
+              only: ~w(css images fonts favicon),
               gzip: gzip_assets?
           end
 
           pipe_through :storybook_assets
+
+          get "#{path}/js-:md5", JSAssets, :js, as: :storybook_asset
+          get "#{path}/iframejs-:md5", JSAssets, :iframe_js, as: :storybook_asset
           get "#{path}/*asset", AssetNotFoundController, :asset, as: :storybook_asset
         end
       end
