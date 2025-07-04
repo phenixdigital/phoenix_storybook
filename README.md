@@ -173,11 +173,19 @@ config :my_app, MyAppWeb.Storybook,
   compilation_debug: :true
 ```
 
-`phoenix_storybook` can also be completely disabled, per environment, with the following settings:
+Following configuration can also be set directly on the `:phoenix_storybook` application
 
 ```elixir
 # config/config.exs
+
+# default: `true`
 config :phoenix_storybook, enabled: false
+
+# default: `false`
+config :phoenix_storybook, gzip_assets: true
+
+# default: `false`
+config :phoenix_storybook, fingerprint_assets: true
 ```
 
 ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), icons in the

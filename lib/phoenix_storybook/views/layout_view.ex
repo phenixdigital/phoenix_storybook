@@ -122,7 +122,7 @@ defmodule PhoenixStorybook.LayoutView do
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phoenix_storybook))
   @external_resource @manifest_path
 
-  if Application.compile_env(:phoenix_storybook, :env) == :prod do
+  if Application.compile_env(:phoenix_storybook, :fingerprint_assets, false) do
     @manifest AssetHelpers.parse_manifest(@manifest_path)
     defp asset_file_name(asset), do: AssetHelpers.asset_file_name(@manifest, asset)
   else
