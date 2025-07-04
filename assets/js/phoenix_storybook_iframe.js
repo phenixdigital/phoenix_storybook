@@ -1,5 +1,4 @@
-// import { Socket } from "phoenix";
-// import { LiveSocket } from "phoenix_live_view";
+// phoenix and phoenix_live_view are loaded from host app dependencies (see JSAssets module)
 import { ColorModeHook } from "./lib/color_mode_hook";
 
 if (window.storybook === undefined) {
