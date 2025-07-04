@@ -13,6 +13,7 @@ export const ColorModeHook = {
   mounted() {
     self = this;
     window.addEventListener("psb-set-color-mode", this.onSetColorMode);
+    document.documentElement.setAttribute('data-theme', this.selectedColorMode());
 
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
       const selectedMode = this.selectedColorMode();
@@ -53,6 +54,7 @@ export const ColorModeHook = {
   },
   onSetColorMode: (e) => {
     const selectedMode = e.detail.mode || "system";
+    document.documentElement.setAttribute('data-theme', selectedMode);
     localStorage.setItem("psb_selected_color_mode", selectedMode);
     const actualMode = self.actualColorMode(selectedMode);
     self.pushEvent("psb-set-color-mode", {
