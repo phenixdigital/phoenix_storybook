@@ -9,7 +9,7 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
-## v0.9.0 (not released yet)
+## v0.9.0 (2025-07-04)
 
 - **change**: [`phoenix_storybook` has been considerably refactored to use the latest Tailwind 4.x.](https://github.com/phenixdigital/phoenix_storybook/issues/522)
 - **bugfix**: [`phoenix` & `phoenix_live_view` are no longer bundled in the storybook JS file](https://github.com/phenixdigital/phoenix_storybook/issues/609)
