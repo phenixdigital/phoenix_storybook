@@ -11,9 +11,8 @@
 
 ## v0.9.0 (not released yet)
 
-- **change**: `phoenix_storybook` has been considerably refactored to use
-  the latest Tailwind 4.x.
-- **bugfix**: [phoenix & phoenix_live_view are no longer bundled in the storybook JS file](https://github.com/phenixdigital/phoenix_storybook/issues/609)
+- **change**: [`phoenix_storybook` has been considerably refactored to use the latest Tailwind 4.x.](https://github.com/phenixdigital/phoenix_storybook/issues/522)
+- **bugfix**: [`phoenix` & `phoenix_live_view` are no longer bundled in the storybook JS file](https://github.com/phenixdigital/phoenix_storybook/issues/609)
 - **bugfix**: [JSS and CSS assets are served with their MD5 fingerprint](https://github.com/phenixdigital/phoenix_storybook/issues/606)
 - **bugfix**: [color mode is propagated to example stories](https://github.com/phenixdigital/phoenix_storybook/issues/624)
 - **bugfix**: [fixed warnings when generating mix docs](https://github.com/phenixdigital/phoenix_storybook/issues/595)
