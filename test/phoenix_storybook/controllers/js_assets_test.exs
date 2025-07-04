@@ -12,13 +12,13 @@ defmodule PhoenixStorybook.JSAssetsTest do
   test "plug can serve JS bundle" do
     conn = build_conn() |> JSAssets.call(:js)
     assert conn.status == 200
-    assert conn.resp_body =~ "js bundle"
+    assert conn.resp_body =~ "LiveSocket"
   end
 
   test "plug can serve iframe JS bundle" do
     conn = build_conn() |> JSAssets.call(:iframejs)
     assert conn.status == 200
-    assert conn.resp_body =~ "iframejs bundle"
+    assert conn.resp_body =~ "LiveSocket"
   end
 
   test "renders 404 for unknown asset" do

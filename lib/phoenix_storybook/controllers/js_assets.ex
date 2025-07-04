@@ -1,7 +1,19 @@
 defmodule PhoenixStorybook.JSAssets do
   # Plug to serve dependency-specific assets for the dashboard.
   @moduledoc false
+
+  defmodule JSFile do
+    @moduledoc false
+    def read(path) do
+      File.read!(path)
+    rescue
+      _ ->
+        ""
+    end
+  end
+
   import Plug.Conn
+  alias PhoenixStorybook.JSAssets.JSFile
 
   phoenix_js_paths =
     for app <- [:phoenix, :phoenix_live_view] do
@@ -12,21 +24,16 @@ defmodule PhoenixStorybook.JSAssets do
 
   phoenix_js =
     for path <- phoenix_js_paths do
-      path |> File.read!() |> String.replace("//# sourceMappingURL=", "// ")
+      path |> JSFile.read() |> String.replace("//# sourceMappingURL=", "// ")
     end
 
-  {js, iframe_js} =
-    if Application.compile_env(:phoenix_storybook, :env) == :test do
-      {"js bundle", "iframejs bundle"}
-    else
-      js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook.js")
-      @external_resource js_path
+  js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook.js")
+  js = JSFile.read(js_path)
+  @external_resource js_path
 
-      iframe_js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook_iframe.js")
-      @external_resource iframe_js_path
-
-      {File.read!(js_path), File.read!(iframe_js_path)}
-    end
+  iframe_js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook_iframe.js")
+  iframe_js = JSFile.read(iframe_js_path)
+  @external_resource iframe_js_path
 
   @js_bundle """
   #{phoenix_js}
