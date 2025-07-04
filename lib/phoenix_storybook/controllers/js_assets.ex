@@ -10,28 +10,40 @@ defmodule PhoenixStorybook.JSAssets do
       path
     end
 
-  js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook.js")
-  @external_resource js_path
+  phoenix_js =
+    for path <- phoenix_js_paths do
+      path |> File.read!() |> String.replace("//# sourceMappingURL=", "// ")
+    end
 
-  iframe_js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook_iframe.js")
-  @external_resource iframe_js_path
+  {js, iframe_js} =
+    if Application.compile_env(:phoenix_storybook, :env) == :test do
+      {"", ""}
+    else
+      js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook.js")
+      @external_resource js_path
 
-  @js """
-  #{for path <- phoenix_js_paths, do: path |> File.read!() |> String.replace("//# sourceMappingURL=", "// ")}
-  #{File.read!(js_path)}
+      iframe_js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook_iframe.js")
+      @external_resource iframe_js_path
+
+      {File.read!(js_path), File.read!(iframe_js_path)}
+    end
+
+  @js_bundle """
+  #{phoenix_js}
+  #{js}
   """
 
-  @iframe_js """
-  #{for path <- phoenix_js_paths, do: path |> File.read!() |> String.replace("//# sourceMappingURL=", "// ")}
-  #{File.read!(iframe_js_path)}
+  @iframe_js_bundle """
+  #{phoenix_js}
+  #{iframe_js}
   """
 
   @hashes %{
-    :js => Base.encode16(:crypto.hash(:md5, @js), case: :lower),
-    :iframe_js => Base.encode16(:crypto.hash(:md5, @iframe_js), case: :lower)
+    js: Base.encode16(:crypto.hash(:md5, @js_bundle), case: :lower),
+    iframejs: Base.encode16(:crypto.hash(:md5, @iframe_js_bundle), case: :lower)
   }
 
-  def init(asset) when asset in [:css, :fontscss, :js, :iframejs], do: asset
+  def init(asset) when asset in [:js, :iframejs], do: asset
 
   def call(conn, asset) do
     conn
@@ -42,12 +54,12 @@ defmodule PhoenixStorybook.JSAssets do
     |> halt()
   end
 
-  defp content(:js), do: @js
-  defp content(:iframejs), do: @iframe_js
+  defp content(:js), do: @js_bundle
+  defp content(:iframejs), do: @iframe_js_bundle
 
   @doc """
   Returns the current hash for the given `asset`.
   """
   def current_hash(:js), do: @hashes.js
-  def current_hash(:iframe_js), do: @hashes.iframe_js
+  def current_hash(:iframejs), do: @hashes.iframejs
 end
