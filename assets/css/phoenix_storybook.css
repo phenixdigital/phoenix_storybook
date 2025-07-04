@@ -1,9 +1,9 @@
 @layer reset, theme, app, utilities;
 
 @import "tailwindcss/theme.css" layer(theme) prefix(psb);
-@import "./reset.css" layer(reset) prefix(psb);
-@import "./welcome_page.css" layer(app);
-@import "./docs.css" layer(app);
+@import "./imports/reset.css" layer(reset) prefix(psb);
+@import "./imports/welcome_page.css" layer(app);
+@import "./imports/docs.css" layer(app);
 
 @source "../css/**/*.css";
 @source "../js/**/*.js";

@@ -5,7 +5,7 @@ defmodule PhoenixStorybook.LayoutView do
 
   alias Makeup.Styles.HTML.StyleMap
   alias Phoenix.LiveView.{JS, Socket}
-  alias PhoenixStorybook.AssetHelpers
+  alias PhoenixStorybook.{AssetHelpers, JSAssets}
   alias PhoenixStorybook.{FolderEntry, StoryEntry}
   alias PhoenixStorybook.ThemeHelpers
 
@@ -108,9 +108,15 @@ defmodule PhoenixStorybook.LayoutView do
 
   def application_static_path(path), do: Path.join("/", path)
 
-  def asset_path(conn_or_socket, path) do
+  def asset_path(conn_or_socket, asset) when asset in ~w(js iframe_js)a do
+    hash = JSAssets.current_hash(asset)
     assets_path = assets_path(conn_or_socket)
-    Path.join(assets_path, asset_file_name(path))
+    Path.join(assets_path, "#{asset}-#{hash}")
+  end
+
+  def asset_path(conn_or_socket, asset) do
+    assets_path = assets_path(conn_or_socket)
+    Path.join(assets_path, asset_file_name(asset))
   end
 
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phoenix_storybook))
@@ -118,14 +124,7 @@ defmodule PhoenixStorybook.LayoutView do
 
   if Application.compile_env(:phoenix_storybook, :env) == :prod do
     @manifest AssetHelpers.parse_manifest(@manifest_path)
-
-    defp asset_file_name(asset) do
-      if String.ends_with?(asset, [".js", ".css"]) do
-        @manifest |> AssetHelpers.asset_file_name(asset, :prod)
-      else
-        asset
-      end
-    end
+    defp asset_file_name(asset), do: AssetHelpers.asset_file_name(@manifest, asset)
   else
     defp asset_file_name(path), do: path
   end

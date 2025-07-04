@@ -1,5 +1,5 @@
-import { Socket } from "phoenix";
-import { LiveSocket } from "phoenix_live_view";
+// import { Socket } from "phoenix";
+// import { LiveSocket } from "phoenix_live_view";
 import { ColorModeHook } from "./lib/color_mode_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
@@ -21,7 +21,7 @@ const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribut
 const selectedColorMode = ColorModeHook.selectedColorMode();
 const actualColorMode = ColorModeHook.actualColorMode(selectedColorMode);
 
-const liveSocket = new LiveSocket(socketPath, Socket, {
+const liveSocket = new LiveView.LiveSocket(socketPath, Phoenix.Socket, {
   hooks: {
     ...window.storybook.Hooks,
     StoryHook,
