@@ -17,7 +17,7 @@ defmodule PhoenixStorybook.JSAssets do
 
   {js, iframe_js} =
     if Application.compile_env(:phoenix_storybook, :env) == :test do
-      {"", ""}
+      {"js bundle", "iframejs bundle"}
     else
       js_path = Path.join(__DIR__, "../../../priv/static/js/phoenix_storybook.js")
       @external_resource js_path
@@ -43,14 +43,21 @@ defmodule PhoenixStorybook.JSAssets do
     iframejs: Base.encode16(:crypto.hash(:md5, @iframe_js_bundle), case: :lower)
   }
 
-  def init(asset) when asset in [:js, :iframejs], do: asset
+  def init(default), do: default
 
-  def call(conn, asset) do
+  def call(conn, asset) when asset in [:js, :iframejs] do
     conn
     |> put_resp_header("content-type", "text/javascript")
     |> put_resp_header("cache-control", "public, max-age=31536000, immutable")
     |> put_private(:plug_skip_csrf_protection, true)
     |> send_resp(200, content(asset))
+    |> halt()
+  end
+
+  def call(conn, asset) do
+    conn
+    |> put_private(:plug_skip_csrf_protection, true)
+    |> send_resp(404, "unknown asset #{asset}")
     |> halt()
   end
 
