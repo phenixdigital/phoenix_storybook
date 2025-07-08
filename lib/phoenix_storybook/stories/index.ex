@@ -4,8 +4,11 @@ defmodule PhoenixStorybook.Index do
   improve rendering of the storybook sidebar.
 
   The index files can be used:
-    - to customize the folder itself: name, icon and opening status.
-    - to customize folder direct children (only stories): name and icon.
+    - to customize the folder itself: name, icon, index and opening status.
+    - to customize folder direct children (only stories): name, icon and index.
+
+  Sidebar entries are sorted alphabetically unless a numerical index is specified in the index file,
+  either for the folder itself or for its entries.
 
   Indexes must be created as `index.exs` files.
 
@@ -21,9 +24,10 @@ defmodule PhoenixStorybook.Index do
     def folder_name, do: "My Components"
     def folder_icon, do: {:fa, "icon"}
     def folder_open?, do: true
+    def index, do: 0
 
-    def entry("a_component"), do: [name: "My Component"]
-    def entry("other_component"), do: [name: "Another Component", icon: {:fa, "icon", :thin}]
+    def entry("a_component"), do: [name: "My Component", index: 1]
+    def entry("other_component"), do: [name: "Another Component", icon: {:fa, "icon", :thin}, index: 0]
   end
   ```
   """
