@@ -5,7 +5,7 @@ end
 
 defmodule PhoenixStorybook.IndexEntry do
   @moduledoc false
-  defstruct [:path, :folder_name, :folder_icon, :folder_open?, :entry, :index]
+  defstruct [:path, :folder_name, :folder_icon, :folder_open?, :entry, :folder_index]
 end
 
 defmodule PhoenixStorybook.FolderEntry do
@@ -105,7 +105,7 @@ defmodule PhoenixStorybook.Entries do
       folder_name: module.folder_name(),
       folder_icon: module.folder_icon(),
       folder_open?: module.folder_open?(),
-      index: module.index(),
+      folder_index: module.folder_index(),
       entry: &module.entry/1
     }
   end
@@ -123,7 +123,7 @@ defmodule PhoenixStorybook.Entries do
         folder = if index.folder_name, do: %{folder | name: index.folder_name}, else: folder
         folder = if index.folder_icon, do: %{folder | icon: index.folder_icon}, else: folder
         folder = if index.folder_open?, do: %{folder | open?: index.folder_open?}, else: folder
-        folder = if index.index, do: %{folder | index: index.index}, else: folder
+        folder = if index.folder_index, do: %{folder | index: index.folder_index}, else: folder
 
         other_entries =
           for entry <- other_entries do

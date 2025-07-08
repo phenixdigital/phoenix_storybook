@@ -24,7 +24,7 @@ defmodule PhoenixStorybook.Index do
     def folder_name, do: "My Components"
     def folder_icon, do: {:fa, "icon"}
     def folder_open?, do: true
-    def index, do: 0
+    def folder_index, do: 0
 
     def entry("a_component"), do: [name: "My Component", index: 1]
     def entry("other_component"), do: [name: "Another Component", icon: {:fa, "icon", :thin}, index: 0]
@@ -39,7 +39,7 @@ defmodule PhoenixStorybook.Index do
     @callback folder_name() :: nil | String.t()
     @callback folder_icon() :: nil | Icon.t()
     @callback folder_open?() :: boolean()
-    @callback index() :: integer()
+    @callback folder_index() :: integer()
     @callback entry(String.t()) :: keyword(String.t() | Icon.t())
   end
 
@@ -62,12 +62,12 @@ defmodule PhoenixStorybook.Index do
       def folder_open?, do: false
 
       @impl IndexBehaviour
-      def index, do: nil
+      def folder_index, do: nil
 
       @impl IndexBehaviour
       def entry(_), do: []
 
-      defoverridable folder_name: 0, folder_icon: 0, folder_open?: 0, index: 0, entry: 1
+      defoverridable folder_name: 0, folder_icon: 0, folder_open?: 0, folder_index: 0, entry: 1
     end
   end
 end

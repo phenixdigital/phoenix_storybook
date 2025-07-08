@@ -8,7 +8,7 @@ defmodule PhoenixStorybook.Stories.IndexValidator do
     validate_type!(env.file, term, :string, "folder_name must return a binary")
   end
 
-  def on_definition(env, :def, :index, [], _guards, body) do
+  def on_definition(env, :def, :folder_index, [], _guards, body) do
     {[do: term], _} = Code.eval_quoted(body, [], env)
     validate_type!(env.file, term, :integer, "index must return an integer")
   end
