@@ -183,7 +183,6 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp sort_entries(entries) do
     Enum.sort_by(entries, &{&1.index, &1.name}, fn
-      {nil, a_name}, {nil, b_name} -> a_name <= b_name
       {same, a_name}, {same, b_name} -> a_name <= b_name
       {nil, _}, {_, _} -> false
       {_, _}, {nil, _} -> true
