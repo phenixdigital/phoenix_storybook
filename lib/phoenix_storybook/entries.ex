@@ -1,16 +1,16 @@
 defmodule PhoenixStorybook.StoryEntry do
   @moduledoc false
-  defstruct [:path, :name, :icon]
+  defstruct [:path, :name, :icon, :index]
 end
 
 defmodule PhoenixStorybook.IndexEntry do
   @moduledoc false
-  defstruct [:path, :folder_name, :folder_icon, :folder_open?, :entry]
+  defstruct [:path, :folder_name, :folder_icon, :folder_open?, :entry, :index]
 end
 
 defmodule PhoenixStorybook.FolderEntry do
   @moduledoc false
-  defstruct [:name, :entries, :path, :icon, open?: false]
+  defstruct [:name, :entries, :path, :icon, :index, open?: false]
 end
 
 # This module performs a recursive scan of all files/folders under :content_path
@@ -105,6 +105,7 @@ defmodule PhoenixStorybook.Entries do
       folder_name: module.folder_name(),
       folder_icon: module.folder_icon(),
       folder_open?: module.folder_open?(),
+      index: module.index(),
       entry: &module.entry/1
     }
   end
@@ -122,6 +123,7 @@ defmodule PhoenixStorybook.Entries do
         folder = if index.folder_name, do: %{folder | name: index.folder_name}, else: folder
         folder = if index.folder_icon, do: %{folder | icon: index.folder_icon}, else: folder
         folder = if index.folder_open?, do: %{folder | open?: index.folder_open?}, else: folder
+        folder = if index.index, do: %{folder | index: index.index}, else: folder
 
         other_entries =
           for entry <- other_entries do
@@ -132,6 +134,7 @@ defmodule PhoenixStorybook.Entries do
                 opts = index.entry.(file_name)
                 entry = if opts[:name], do: %{entry | name: opts[:name]}, else: entry
                 entry = if opts[:icon], do: %{entry | icon: opts[:icon]}, else: entry
+                entry = if opts[:index], do: %{entry | index: opts[:index]}, else: entry
                 entry
               rescue
                 FunctionClauseError -> entry

@@ -35,6 +35,7 @@ defmodule PhoenixStorybook.Index do
     @callback folder_name() :: nil | String.t()
     @callback folder_icon() :: nil | Icon.t()
     @callback folder_open?() :: boolean()
+    @callback index() :: integer()
     @callback entry(String.t()) :: keyword(String.t() | Icon.t())
   end
 
@@ -57,9 +58,12 @@ defmodule PhoenixStorybook.Index do
       def folder_open?, do: false
 
       @impl IndexBehaviour
+      def index, do: nil
+
+      @impl IndexBehaviour
       def entry(_), do: []
 
-      defoverridable folder_name: 0, folder_icon: 0, folder_open?: 0, entry: 1
+      defoverridable folder_name: 0, folder_icon: 0, folder_open?: 0, index: 0, entry: 1
     end
   end
 end
