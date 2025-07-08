@@ -97,7 +97,7 @@ defmodule PhoenixStorybook.Sidebar do
       </div>
 
       <nav class="psb psb:flex-1 psb:xl:sticky">
-        {render_stories(assign(assigns, stories: @content_tree, folder_path: @root_path, root: true))}
+        {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
       </nav>
 
       <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:hover:font-bold">
@@ -111,13 +111,13 @@ defmodule PhoenixStorybook.Sidebar do
     """
   end
 
-  defp render_stories(assigns) do
+  defp render_entries(assigns) do
     ~H"""
     <ul class="psb psb:ml-3 psb:-mt-1.5 psb:lg:mt-auto">
-      <%= for story <- @stories do %>
+      <%= for entry <- sort_entries(@entries) do %>
         <li class="psb">
-          <%= case story do %>
-            <% %FolderEntry{name: name, path: path, entries: entries, icon: folder_icon} -> %>
+          <%= case entry do %>
+            <% %FolderEntry{name: name, path: path, entries: folder_entries, icon: folder_icon} -> %>
               <% folder_path = Path.join(@root_path, path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div
@@ -148,9 +148,9 @@ defmodule PhoenixStorybook.Sidebar do
               </div>
 
               <%= if open_folder? or @root do %>
-                {render_stories(
+                {render_entries(
                   assign(assigns,
-                    stories: entries,
+                    entries: folder_entries,
                     folder_path: Path.join(@folder_path, path),
                     root: false
                   )
@@ -179,6 +179,16 @@ defmodule PhoenixStorybook.Sidebar do
       <% end %>
     </ul>
     """
+  end
+
+  defp sort_entries(entries) do
+    Enum.sort_by(entries, &{&1.index, &1.name}, fn
+      {nil, a_name}, {nil, b_name} -> a_name <= b_name
+      {same, a_name}, {same, b_name} -> a_name <= b_name
+      {nil, _}, {_, _} -> false
+      {_, _}, {nil, _} -> true
+      {a, _}, {b, _} -> a <= b
+    end)
   end
 
   defp story_class(current_path, story_path) do

@@ -31,6 +31,12 @@ defmodule PhoenixStorybook.Stories.IndexValidatorTest do
     end
   end
 
+  test "with bad entry index it will raise", %{path: path} do
+    assert_raise CompileError, ~r/entry\("colors"\) index is invalid/, fn ->
+      Code.compile_file("bad_entry_index.index.exs", path)
+    end
+  end
+
   test "with bad entry icon it will raise", %{path: path} do
     assert_raise CompileError, ~r/icon provider must be either :fa, :hero, or :local/, fn ->
       Code.compile_file("bad_entry_icon_provider.index.exs", path)
@@ -46,6 +52,12 @@ defmodule PhoenixStorybook.Stories.IndexValidatorTest do
   test "with bad local icon tuple it will raise", %{path: path} do
     assert_raise CompileError, ~r/local icons only support 2 or 3 elem tuples/, fn ->
       Code.compile_file("bad_local_icon_tuple.index.exs", path)
+    end
+  end
+
+  test "with bad index it will raise", %{path: path} do
+    assert_raise CompileError, ~r/index must return an integer/, fn ->
+      Code.compile_file("bad_index.index.exs", path)
     end
   end
 end
