@@ -9,6 +9,8 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v0.9.2 (not released)
+- **feature**: [sidebar entries can be sorted](https://github.com/phenixdigital/phoenix_storybook/issues/517) (read `Index` module doc for details)
 
 ## v0.9.1 (2025-07-04)
 - **bugfix**: asset finger-printing is now an opt-in config var (see [README](README.md))
