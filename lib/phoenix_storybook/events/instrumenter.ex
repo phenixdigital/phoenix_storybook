@@ -3,6 +3,7 @@ defmodule PhoenixStorybook.Events.Instrumenter do
   # Event handlers for LiveView exposed telemetry events
   alias Phoenix.PubSub
   alias PhoenixStorybook.Events.EventLog
+  alias PhoenixStorybook.Story.PlaygroundPreviewLive
 
   def setup do
     events = [
@@ -14,11 +15,13 @@ defmodule PhoenixStorybook.Events.Instrumenter do
   end
 
   def handle_event([:phoenix, :live_view, :handle_event, :stop], _measurements, metadata, _config) do
-    PubSub.broadcast!(
-      PhoenixStorybook.PubSub,
-      "event_logs:#{inspect(metadata.socket.root_pid)}",
-      %{metadata_to_event_log(metadata) | type: :live_view}
-    )
+    if metadata.socket.view == PlaygroundPreviewLive do
+      PubSub.broadcast!(
+        PhoenixStorybook.PubSub,
+        "event_logs:#{inspect(metadata.socket.root_pid)}",
+        %{metadata_to_event_log(metadata) | type: :live_view}
+      )
+    end
   end
 
   def handle_event(
@@ -27,11 +30,13 @@ defmodule PhoenixStorybook.Events.Instrumenter do
         metadata,
         _config
       ) do
-    PubSub.broadcast!(
-      PhoenixStorybook.PubSub,
-      "event_logs:#{inspect(metadata.socket.root_pid)}",
-      %{metadata_to_event_log(metadata) | type: :component}
-    )
+    if metadata.socket.view == PlaygroundPreviewLive do
+      PubSub.broadcast!(
+        PhoenixStorybook.PubSub,
+        "event_logs:#{inspect(metadata.socket.root_pid)}",
+        %{metadata_to_event_log(metadata) | type: :component}
+      )
+    end
   end
 
   defp metadata_to_event_log(metadata) do
