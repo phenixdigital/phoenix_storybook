@@ -11,6 +11,8 @@
 
 ## v0.9.2 (not released)
 - **feature**: [sidebar entries can be sorted](https://github.com/phenixdigital/phoenix_storybook/issues/517) (read `Index` module doc for details)
+- **bugfix**: events in the playground couldn't be unfolded
+- **bugfix**: the storybook JS bundle wasn't loaded within iframes
 
 ## v0.9.1 (2025-07-04)
 - **bugfix**: asset finger-printing is now an opt-in config var (see [README](README.md))
