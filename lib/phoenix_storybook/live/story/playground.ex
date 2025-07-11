@@ -741,11 +741,11 @@ defmodule PhoenixStorybook.Story.Playground do
         class="psb:flex psb:items-center psb:group psb:cursor-pointer"
         phx-click={toggle_event_details(@id)}
       >
-        <span class="psb:uncollapse psb:mr-1 psb:text-gray-400 psb:group-hover:font-bold">
+        <span class="psb-uncollapse psb:mr-1 psb:text-gray-400 psb:group-hover:font-bold">
           <.fa_icon style={:thin} name="caret-right" class="fa-fw" plan={@fa_plan} />
         </span>
 
-        <span class="psb:collapse psb:mr-1 psb:hidden psb:text-gray-400 psb:group-hover:font-bold">
+        <span class="psb-collapse psb:mr-1 psb:hidden psb:text-gray-400 psb:group-hover:font-bold">
           <.fa_icon style={:thin} name="caret-down" class="fa-fw" plan={@fa_plan} />
         </span>
 
@@ -760,7 +760,7 @@ defmodule PhoenixStorybook.Story.Playground do
         </div>
       </div>
 
-      <div class="psb:details psb:hidden psb:pl-4">
+      <div class="psb-details psb:hidden psb:pl-4">
         <%= for {key, value} <- Map.from_struct(@event_log) do %>
           <div>
             <span class="psb:text-indigo-500">{key}:</span>
@@ -774,9 +774,9 @@ defmodule PhoenixStorybook.Story.Playground do
 
   defp toggle_event_details(id) do
     %JS{}
-    |> JS.toggle(to: "##{id} .psb:collapse")
-    |> JS.toggle(to: "##{id} .psb:uncollapse")
-    |> JS.toggle(to: "##{id} .psb:details")
+    |> JS.toggle(to: "##{id} .psb-collapse")
+    |> JS.toggle(to: "##{id} .psb-uncollapse")
+    |> JS.toggle(to: "##{id} .psb-details")
   end
 
   defp required_badge(assigns) do
