@@ -225,7 +225,7 @@ defmodule PhoenixStorybook.Router do
           pipe_through :storybook_assets
 
           get "#{path}/js-:md5", JSAssets, :js, as: :storybook_asset
-          get "#{path}/iframejs-:md5", JSAssets, :iframe_js, as: :storybook_asset
+          get "#{path}/iframejs-:md5", JSAssets, :iframejs, as: :storybook_asset
           get "#{path}/*asset", AssetNotFoundController, :asset, as: :storybook_asset
         end
       end

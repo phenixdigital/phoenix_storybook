@@ -108,7 +108,7 @@ defmodule PhoenixStorybook.LayoutView do
 
   def application_static_path(path), do: Path.join("/", path)
 
-  def asset_path(conn_or_socket, asset) when asset in ~w(js iframe_js)a do
+  def asset_path(conn_or_socket, asset) when asset in ~w(js iframejs)a do
     hash = JSAssets.current_hash(asset)
     assets_path = assets_path(conn_or_socket)
     Path.join(assets_path, "#{asset}-#{hash}")
