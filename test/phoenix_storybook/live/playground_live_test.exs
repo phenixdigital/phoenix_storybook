@@ -319,10 +319,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       assert view |> element(events_tab_selector) |> render_click()
 
-      event_log =
-        view
-        |> element("#tree_storybook_event_event_component-playground-event-log-0")
-        |> render()
+      event_log = view |> element("#event_logs-0") |> render()
 
       assert event_log =~ "<code"
       assert event_log =~ ~r|<span class=".*">live_view</span>|
@@ -348,7 +345,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       event_log =
         view
-        |> element("#tree_storybook_event_event_live_component-playground-event-log-0")
+        |> element("#event_logs-0")
         |> render()
 
       assert event_log =~ "<code"
@@ -375,7 +372,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       event_log =
         view
-        |> element("#tree_storybook_event_event_live_component-playground-event-log-0")
+        |> element("#event_logs-0")
         |> render()
 
       assert event_log =~ "<code"

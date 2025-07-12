@@ -15,17 +15,22 @@ defmodule PhoenixStorybook.Story.Playground do
   import PhoenixStorybook.NavigationHelpers
 
   def mount(socket) do
-    {:ok, assign(socket, event_logs: [], event_logs_unread: 0)}
+    {:ok,
+     socket
+     |> stream(:event_logs, [])
+     |> assign(event_logs_unread: 0)
+     |> assign(current_log_id: 0)}
   end
 
   def update(%{new_event: event}, socket) do
     {:ok,
      socket
-     |> update(:event_logs, &[event | &1])
+     |> stream_insert(:event_logs, %{event | id: socket.assigns.current_log_id}, at: 0)
      |> update(:event_logs_unread, fn
        _unread, %{lower_tab: :events} -> 0
        unread, _assigns -> unread + 1
-     end)}
+     end)
+     |> update(:current_log_id, &(&1 + 1))}
   end
 
   def update(assigns, socket) do
@@ -431,306 +436,329 @@ defmodule PhoenixStorybook.Story.Playground do
     """
   end
 
-  defp render_lower_tab_content(assigns = %{lower_tab: :events}) do
+  defp render_lower_tab_content(assigns = %{lower_tab: _tab}) do
     ~H"""
-    <div
-      id={playground_event_logs_id(@story)}
-      class="psb psb:flex psb:flex-col psb:grow psb:py-2 psb:relative"
-    >
-      <div class="psb psb:absolute psb:w-full psb:h-full psb:max-h-full psb:overflow-y-scroll psb:p-2 psb:border psb:border-slate-100 psb:dark:border-slate-600 psb:bg-slate-800 psb:rounded-md">
-        <%= for {event_log, index} <- Enum.with_index(@event_logs) do %>
-          <.event_log
-            id={playground_event_log_id(@story, index)}
-            event_log={event_log}
-            fa_plan={@fa_plan}
-          />
-        <% end %>
-      </div>
-    </div>
+    <.render_attributes_tab {assigns} />
+    <.render_event_logs_tab {assigns} />
     """
   end
 
-  defp render_lower_tab_content(assigns = %{lower_tab: :attributes}) do
+  defp render_attributes_tab(assigns) do
     ~H"""
-    <.form
-      :let={f}
-      for={%{}}
-      as={:playground}
-      id={form_id(@story)}
-      phx-change="playground-change"
-      phx-target={@myself}
-      class="psb:text-gray-600 "
-    >
-      <div class="psb psb:flex psb:flex-col psb:mb-2">
-        <div class="psb psb:overflow-x-auto psb:md:-mx-8">
-          <div class="psb psb:inline-block psb:min-w-full psb:py-2 psb:align-middle psb:md:px-8">
-            <div class="psb psb:overflow-hidden psb:shadow psb:ring-1 psb:ring-black/5 psb:md:rounded-lg psb:dark:border psb:dark:border-slate-600">
-              <table class="psb psb:min-w-full psb:divide-y psb:divide-gray-300 psb:dark:divide-slate-600">
-                <thead class="psb psb:bg-gray-50 psb:dark:bg-slate-800">
-                  <tr>
-                    <%= for {header, th_style, span_style} <- [{"Attribute", "psb:pl-3 psb:md:pl-9", "psb:w-8 psb:md:w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "psb:hidden psb:md:table-cell", ""}, {"Value", "", ""}] do %>
-                      <th
-                        scope="col"
-                        class={"psb #{th_style} psb:py-3.5 psb:text-left psb:text-xs psb:md:text-sm psb:font-semibold psb:text-gray-900 psb:dark:text-slate-300"}
-                      >
-                        <span class={"psb #{span_style} psb:truncate psb:inline-block"}>
-                          {header}
-                        </span>
-                      </th>
-                    <% end %>
-                  </tr>
-                </thead>
-                <tbody class="psb psb:divide-y psb:divide-gray-200 psb:dark:divide-slate-600 psb:bg-white psb:dark:bg-slate-800">
-                  <%= if Enum.empty?(@story.merged_attributes()) do %>
+    <div class={@lower_tab != :attributes && "psb:hidden"}>
+      <.form
+        :let={f}
+        for={%{}}
+        as={:playground}
+        id={form_id(@story)}
+        phx-change="playground-change"
+        phx-target={@myself}
+        class="psb:text-gray-600"
+      >
+        <div class="psb psb:flex psb:flex-col psb:mb-2">
+          <div class="psb psb:overflow-x-auto psb:md:-mx-8">
+            <div class="psb psb:inline-block psb:min-w-full psb:py-2 psb:align-middle psb:md:px-8">
+              <div class="psb psb:overflow-hidden psb:shadow psb:ring-1 psb:ring-black/5 psb:md:rounded-lg psb:dark:border psb:dark:border-slate-600">
+                <table class="psb psb:min-w-full psb:divide-y psb:divide-gray-300 psb:dark:divide-slate-600">
+                  <thead class="psb psb:bg-gray-50 psb:dark:bg-slate-800">
                     <tr>
-                      <td
-                        colspan="5"
-                        class="psb psb:md:px-3 psb:md:px-6 psb:py-4 psb:text-md psb:md:text-lg psb:font-medium psb:text-gray-500 psb:sm:pl-6 psb:pt-2 psb:md:pb-6 psb:md:pt-4 psb:md:pb-12 psb:text-center"
-                      >
-                        <.fa_icon
-                          style={:duotone}
-                          name="circle-question"
-                          class="fa-xl psb:text-indigo-400 psb:dark:text-sky-400 psb:py-4 psb:md:py-6"
-                          plan={@fa_plan}
-                        />
-                        <p>In order to use playground, you must define your component attributes.</p>
-                      </td>
+                      <%= for {header, th_style, span_style} <- [{"Attribute", "psb:pl-3 psb:md:pl-9", "psb:w-8 psb:md:w-auto"}, {"Type", "", ""}, {"Documentation", "", ""}, {"Default", "psb:hidden psb:md:table-cell", ""}, {"Value", "", ""}] do %>
+                        <th
+                          scope="col"
+                          class={"psb #{th_style} psb:py-3.5 psb:text-left psb:text-xs psb:md:text-sm psb:font-semibold psb:text-gray-900 psb:dark:text-slate-300"}
+                        >
+                          <span class={"psb #{span_style} psb:truncate psb:inline-block"}>
+                            {header}
+                          </span>
+                        </th>
+                      <% end %>
                     </tr>
-                  <% else %>
-                    <%= for attr <- @story.merged_attributes(), !is_nil(@variation)  do %>
-                      <% [doc_head | doc_tail] =
-                        if(attr.doc, do: String.split(attr.doc, "\n"), else: [nil]) %>
+                  </thead>
+                  <tbody class="psb psb:divide-y psb:divide-gray-200 psb:dark:divide-slate-600 psb:bg-white psb:dark:bg-slate-800">
+                    <%= if Enum.empty?(@story.merged_attributes()) do %>
                       <tr>
-                        <td class="psb psb:whitespace-nowrap  psb:md:pr-6 psb:pl-3 psb:sm:pl-6 psb:md:pl-9 psb:py-4 psb:text-xs psb:md:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300">
-                          <%= if attr.required do %>
-                            <.required_badge fa_plan={@fa_plan} />
-                          <% end %>
-                          {attr.id}
-                          <%= if attr.required do %>
-                            <span class="psb psb:inline psb:md:hidden psb:text-indigo-600 psb:dark:text-sky-400 psb:text-sm psb:font-bold psb:-ml-0.5">
+                        <td
+                          colspan="5"
+                          class="psb psb:md:px-6 psb:py-4 psb:text-md psb:md:text-lg psb:font-medium psb:text-gray-500 psb:sm:pl-6 psb:pt-2 psb:md:pt-4 psb:md:pb-12 psb:text-center"
+                        >
+                          <.fa_icon
+                            style={:duotone}
+                            name="circle-question"
+                            class="fa-xl psb:text-indigo-400 psb:dark:text-sky-400 psb:py-4 psb:md:py-6"
+                            plan={@fa_plan}
+                          />
+                          <p>
+                            In order to use playground, you must define your component attributes.
+                          </p>
+                        </td>
+                      </tr>
+                    <% else %>
+                      <%= for attr <- @story.merged_attributes(), !is_nil(@variation)  do %>
+                        <% [doc_head | doc_tail] =
+                          if(attr.doc, do: String.split(attr.doc, "\n"), else: [nil]) %>
+                        <tr>
+                          <td class="psb psb:whitespace-nowrap  psb:md:pr-6 psb:pl-3 psb:sm:pl-6 psb:md:pl-9 psb:py-4 psb:text-xs psb:md:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300">
+                            <%= if attr.required do %>
+                              <.required_badge fa_plan={@fa_plan} />
+                            <% end %>
+                            {attr.id}
+                            <%= if attr.required do %>
+                              <span class="psb psb:inline psb:md:hidden psb:text-indigo-600 psb:dark:text-sky-400 psb:text-sm psb:font-bold psb:-ml-0.5">
+                                *
+                              </span>
+                            <% end %>
+                          </td>
+                          <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500">
+                            <.type_badge type={attr.type} />
+                          </td>
+                          <td class="psb psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300 psb:max-w-[16rem]">
+                            <div :if={doc_head}>
+                              <span>
+                                {doc_head |> Earmark.as_html() |> elem(1) |> raw()}
+                              </span>
+                              <a
+                                :if={Enum.any?(doc_tail)}
+                                phx-click={
+                                  JS.show(to: "#attr-#{attr.id}-doc-next")
+                                  |> JS.hide()
+                                  |> JS.show(
+                                    to: "#attr-#{attr.id}-read-less",
+                                    display: "inline-block"
+                                  )
+                                }
+                                id={"attr-#{attr.id}-read-more"}
+                                class={[
+                                  "psb psb:py-2 psb:inline-block psb:text-slate-400 psb:hover:text-indigo-700",
+                                  "psb:dark:hover:text-sky-400 psb:cursor-pointer psb:h-4"
+                                ]}
+                              >
+                                <.fa_icon
+                                  name="caret-right"
+                                  style={:thin}
+                                  plan={@fa_plan}
+                                  class="psb:mr-1 psb:h-2"
+                                /> Read more
+                              </a>
+                              <a
+                                :if={Enum.any?(doc_tail)}
+                                phx-click={
+                                  JS.hide(to: "#attr-#{attr.id}-doc-next")
+                                  |> JS.hide()
+                                  |> JS.show(
+                                    to: "#attr-#{attr.id}-read-more",
+                                    display: "inline-block"
+                                  )
+                                }
+                                id={"attr-#{attr.id}-read-less"}
+                                class={[
+                                  "psb psb:py-2 psb:pb-4 psb:hidden psb:text-slate-400",
+                                  "psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer psb:h-4"
+                                ]}
+                              >
+                                <.fa_icon
+                                  name="caret-down"
+                                  style={:thin}
+                                  plan={@fa_plan}
+                                  class="psb:mr-1 psb:h-2"
+                                /> Read less
+                              </a>
+                            </div>
+                          </td>
+                          <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-sm psb:text-gray-500 psb:dark:text-slate-300 psb:hidden psb:md:table-cell">
+                            <span class="psb psb:rounded psb:px-2 psb:py-1 psb:font-mono psb:text-xs psb:md:text-sm">
+                              {unless is_nil(attr.default), do: inspect(attr.default)}
+                            </span>
+                          </td>
+                          <td class="psb psb:whitespace-nowrap psb:pr-3 psb:py-4 psb:text-sm psb:font-medium">
+                            <.maybe_locked_attr_input
+                              form={f}
+                              attr_id={attr.id}
+                              type={attr.type}
+                              fields={@fields}
+                              values={attr.values}
+                              myself={@myself}
+                              template_attributes={Map.get(@template_attributes, @variation_id, %{})}
+                            />
+                          </td>
+                        </tr>
+                        <tr
+                          :if={Enum.any?(doc_tail)}
+                          id={"attr-#{attr.id}-doc-next"}
+                          class="psb:hidden psb:relative"
+                        >
+                          <td
+                            colspan="5"
+                            class="psb psb-doc psb:text-sm psb:text-gray-500 psb:dark:text-slate-400 psb:bg-slate-50 psb:dark:bg-slate-800 psb:px-3 psb:md:px-8 psb:py-4"
+                          >
+                            <.fa_icon
+                              style={:regular}
+                              name="xmark"
+                              phx-click={
+                                JS.hide(to: "#attr-#{attr.id}-doc-next")
+                                |> JS.hide(to: "#attr-#{attr.id}-read-less")
+                                |> JS.show(to: "#attr-#{attr.id}-read-more", display: "inline-block")
+                              }
+                              plan={@fa_plan}
+                              class={[
+                                "psb:absolute psb:right-2 psb:top-2 ",
+                                "psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:cursor-pointer"
+                              ]}
+                            /> {doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw()}
+                          </td>
+                        </tr>
+                      <% end %>
+                      <%= for slot <- @story.merged_slots() do %>
+                        <tr>
+                          <td class="psb psb:whitespace-nowrap psb:md:pr-6 psb:sm:pl-6 psb:pl-3 psb:md:pl-9 psb:py-4 psb:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300">
+                            <.required_badge :if={slot.required} fa_plan={@fa_plan} /> {slot.id}
+                            <span
+                              :if={slot.required}
+                              class="psb psb:inline psb:md:hidden psb:text-indigo-600 psb:dark:text-sky-400 psb:text-sm psb:font-bold psb:-ml-0.5"
+                            >
                               *
                             </span>
-                          <% end %>
-                        </td>
-                        <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500">
-                          <.type_badge type={attr.type} />
-                        </td>
-                        <td class="psb psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300 psb:max-w-[16rem]">
-                          <div :if={doc_head}>
-                            <span>
-                              {doc_head |> Earmark.as_html() |> elem(1) |> raw()}
-                            </span>
+                          </td>
+                          <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm  psb:text-gray-500">
+                            <.type_badge type={:slot} />
+                          </td>
+                          <td
+                            colspan="3"
+                            class="psb psb-doc psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300"
+                          >
+                            <div :if={slot.doc}>
+                              {slot.doc |> Earmark.as_html() |> elem(1) |> raw()}
+                            </div>
+                          </td>
+                        </tr>
+                        <tr :if={Enum.any?(slot.attrs)}>
+                          <td
+                            colspan="5"
+                            class="psb psb:whitespace-nowrap psb:md:pr-6 psb:sm:pl-6 psb:pl-3 psb:md:pl-10 psb:py-4 psb:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300"
+                          >
                             <a
-                              :if={Enum.any?(doc_tail)}
+                              id={"slot-#{slot.id}-attrs-show"}
                               phx-click={
-                                JS.show(to: "#attr-#{attr.id}-doc-next")
+                                JS.show(to: "#slot-#{slot.id}-attrs")
                                 |> JS.hide()
-                                |> JS.show(to: "#attr-#{attr.id}-read-less", display: "inline-block")
+                                |> JS.show(to: "#slot-#{slot.id}-attrs-hide")
                               }
-                              id={"attr-#{attr.id}-read-more"}
-                              class={[
-                                "psb psb:py-2 psb:inline-block psb:text-slate-400 psb:hover:text-indigo-700",
-                                "psb:dark:hover:text-sky-400 psb:cursor-pointer psb:h-4"
-                              ]}
+                              class="psb psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
                             >
                               <.fa_icon
                                 name="caret-right"
                                 style={:thin}
                                 plan={@fa_plan}
-                                class="psb:mr-1 psb:h-2"
-                              /> Read more
+                                class="psb:pr-2"
+                              /> Show slot attributes
                             </a>
                             <a
-                              :if={Enum.any?(doc_tail)}
+                              id={"slot-#{slot.id}-attrs-hide"}
                               phx-click={
-                                JS.hide(to: "#attr-#{attr.id}-doc-next")
+                                JS.hide(to: "#slot-#{slot.id}-attrs")
                                 |> JS.hide()
-                                |> JS.show(to: "#attr-#{attr.id}-read-more", display: "inline-block")
+                                |> JS.show(to: "#slot-#{slot.id}-attrs-show")
                               }
-                              id={"attr-#{attr.id}-read-less"}
-                              class={[
-                                "psb psb:py-2 psb:pb-4 psb:hidden psb:text-slate-400",
-                                "psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer psb:h-4"
-                              ]}
+                              class="psb psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer psb:hidden"
                             >
                               <.fa_icon
                                 name="caret-down"
                                 style={:thin}
                                 plan={@fa_plan}
-                                class="psb:mr-1 psb:h-2"
-                              /> Read less
+                                class="psb:pr-2"
+                              /> Hide slot attributes
                             </a>
-                          </div>
-                        </td>
-                        <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-sm psb:text-gray-500 psb:dark:text-slate-300 psb:hidden psb:md:table-cell">
-                          <span class="psb psb:rounded psb:px-2 psb:py-1 psb:font-mono psb:text-xs psb:md:text-sm">
-                            {unless is_nil(attr.default), do: inspect(attr.default)}
-                          </span>
-                        </td>
-                        <td class="psb psb:whitespace-nowrap psb:pr-3 psb:py-4 psb:text-sm psb:font-medium">
-                          <.maybe_locked_attr_input
-                            form={f}
-                            attr_id={attr.id}
-                            type={attr.type}
-                            fields={@fields}
-                            values={attr.values}
-                            myself={@myself}
-                            template_attributes={Map.get(@template_attributes, @variation_id, %{})}
-                          />
-                        </td>
-                      </tr>
-                      <tr
-                        :if={Enum.any?(doc_tail)}
-                        id={"attr-#{attr.id}-doc-next"}
-                        class="psb:hidden psb:relative"
-                      >
-                        <td
-                          colspan="5"
-                          class="psb psb-doc psb:text-sm psb:text-gray-500 psb:dark:text-slate-400 psb:bg-slate-50 psb:dark:bg-slate-800 psb:px-3 psb:md:px-8 psb:py-4"
+                          </td>
+                        </tr>
+                        <tr
+                          :for={attr <- slot.attrs}
+                          :if={Enum.any?(slot.attrs)}
+                          id={"slot-#{slot.id}-attrs"}
+                          class="psb:hidden psb:bg-slate-50 psb:dark:bg-slate-800"
                         >
-                          <.fa_icon
-                            style={:regular}
-                            name="xmark"
-                            phx-click={
-                              JS.hide(to: "#attr-#{attr.id}-doc-next")
-                              |> JS.hide(to: "#attr-#{attr.id}-read-less")
-                              |> JS.show(to: "#attr-#{attr.id}-read-more", display: "inline-block")
-                            }
-                            plan={@fa_plan}
-                            class={[
-                              "psb:absolute psb:right-2 psb:top-2 ",
-                              "psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:cursor-pointer"
-                            ]}
-                          /> {doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw()}
-                        </td>
-                      </tr>
+                          <td class="psb psb:whitespace-nowrap psb:pl-3 psb:sm:pl-6 psb:md:pl-20 psb:py-4 psb:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300">
+                            <.required_badge :if={attr.required} fa_plan={@fa_plan} /> {attr.id}
+                            <span
+                              :if={attr.required}
+                              class="psb psb:inline psb:md:hidden psb:text-indigo-600 psb:dark:text-sky-400 psb:text-sm psb:font-bold psb:-ml-0.5"
+                            >
+                              *
+                            </span>
+                          </td>
+                          <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm  psb:text-gray-500">
+                            <.type_badge type={attr.type} />
+                          </td>
+                          <td
+                            colspan="3"
+                            class="psb psb-doc psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300"
+                          >
+                            <div :if={attr.doc}>
+                              {attr.doc |> Earmark.as_html() |> elem(1) |> raw()}
+                            </div>
+                          </td>
+                        </tr>
+                        <tr
+                          :if={slot?(assigns, slot)}
+                          class="psb psb:bg-slate-50 psb:dark:bg-slate-800"
+                        >
+                          <td
+                            colspan="5"
+                            class="psb psb:whitespace-nowrap psb:pl-3 psb:md:pl-9 psb:pr-3 psb:py-3 psb:text-xs psb:md:text-sm psb:font-medium psb:text-gray-900"
+                          >
+                            <pre class="psb psb:text-slate-600 psb:dark:text-slate-300 psb:p-2 psb:border psb:border-slate-100 psb:dark:border-slate-600 psb:rounded-md psb:bg-slate-100 psb:dark:bg-slate-900 psb:whitespace-pre-wrap psb:break-normal psb:flex-1"><%= do_render_slot(assigns, slot) %></pre>
+                          </td>
+                        </tr>
+                      <% end %>
                     <% end %>
-                    <%= for slot <- @story.merged_slots() do %>
-                      <tr>
-                        <td class="psb psb:whitespace-nowrap psb:md:pr-6 psb:sm:pl-6 psb:pl-3 psb:md:pl-9 psb:py-4 psb:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300">
-                          <.required_badge :if={slot.required} fa_plan={@fa_plan} /> {slot.id}
-                          <span
-                            :if={slot.required}
-                            class="psb psb:inline psb:md:hidden psb:text-indigo-600 psb:dark:text-sky-400 psb:text-sm psb:font-bold psb:-ml-0.5"
-                          >
-                            *
-                          </span>
-                        </td>
-                        <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm  psb:text-gray-500">
-                          <.type_badge type={:slot} />
-                        </td>
-                        <td
-                          colspan="3"
-                          class="psb psb-doc psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300"
-                        >
-                          <div :if={slot.doc}>
-                            {slot.doc |> Earmark.as_html() |> elem(1) |> raw()}
-                          </div>
-                        </td>
-                      </tr>
-                      <tr :if={Enum.any?(slot.attrs)}>
-                        <td
-                          colspan="5"
-                          class="psb psb:whitespace-nowrap psb:md:pr-6 psb:sm:pl-6 psb:pl-3 psb:md:pl-10 psb:py-4 psb:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300"
-                        >
-                          <a
-                            id={"slot-#{slot.id}-attrs-show"}
-                            phx-click={
-                              JS.show(to: "#slot-#{slot.id}-attrs")
-                              |> JS.hide()
-                              |> JS.show(to: "#slot-#{slot.id}-attrs-hide")
-                            }
-                            class="psb psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
-                          >
-                            <.fa_icon
-                              name="caret-right"
-                              style={:thin}
-                              plan={@fa_plan}
-                              class="psb:pr-2"
-                            /> Show slot attributes
-                          </a>
-                          <a
-                            id={"slot-#{slot.id}-attrs-hide"}
-                            phx-click={
-                              JS.hide(to: "#slot-#{slot.id}-attrs")
-                              |> JS.hide()
-                              |> JS.show(to: "#slot-#{slot.id}-attrs-show")
-                            }
-                            class="psb psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer psb:hidden"
-                          >
-                            <.fa_icon
-                              name="caret-down"
-                              style={:thin}
-                              plan={@fa_plan}
-                              class="psb:pr-2"
-                            /> Hide slot attributes
-                          </a>
-                        </td>
-                      </tr>
-                      <tr
-                        :for={attr <- slot.attrs}
-                        :if={Enum.any?(slot.attrs)}
-                        id={"slot-#{slot.id}-attrs"}
-                        class="psb:hidden psb:bg-slate-50 psb:dark:bg-slate-800"
-                      >
-                        <td class="psb psb:whitespace-nowrap psb:pl-3 psb:sm:pl-6 psb:md:pl-20 psb:py-4 psb:text-sm psb:font-medium psb:text-gray-900 psb:dark:text-slate-300">
-                          <.required_badge :if={attr.required} fa_plan={@fa_plan} /> {attr.id}
-                          <span
-                            :if={attr.required}
-                            class="psb psb:inline psb:md:hidden psb:text-indigo-600 psb:dark:text-sky-400 psb:text-sm psb:font-bold psb:-ml-0.5"
-                          >
-                            *
-                          </span>
-                        </td>
-                        <td class="psb psb:whitespace-nowrap psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm  psb:text-gray-500">
-                          <.type_badge type={attr.type} />
-                        </td>
-                        <td
-                          colspan="3"
-                          class="psb psb-doc psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300"
-                        >
-                          <div :if={attr.doc}>
-                            {attr.doc |> Earmark.as_html() |> elem(1) |> raw()}
-                          </div>
-                        </td>
-                      </tr>
-                      <tr :if={slot?(assigns, slot)} class="psb psb:bg-slate-50 psb:dark:bg-slate-800">
-                        <td
-                          colspan="5"
-                          class="psb psb:whitespace-nowrap psb:pl-3 psb:md:pl-9 psb:pr-3 psb:py-3 psb:text-xs psb:md:text-sm psb:font-medium psb:text-gray-900"
-                        >
-                          <pre class="psb psb:text-slate-600 psb:dark:text-slate-300 psb:p-2 psb:border psb:border-slate-100 psb:dark:border-slate-600 psb:rounded-md psb:bg-slate-100 psb:dark:bg-slate-900 psb:whitespace-pre-wrap psb:break-normal psb:flex-1"><%= do_render_slot(assigns, slot) %></pre>
-                        </td>
-                      </tr>
-                    <% end %>
-                  <% end %>
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
+      </.form>
+      <.form
+        :let={f}
+        :if={Enum.any?(@story.merged_attributes())}
+        for={%{}}
+        as={:variation}
+        id="variation-selection-form"
+        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-6"
+      >
+        {label(f, :variation_id, "Open a variation",
+          class:
+            "psb psb:text-gray-400 psb:dark:text-slate-300 psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
+        )}
+        {select(f, :variation_id, variation_options(@story),
+          "phx-change": "set-variation",
+          "phx-target": @myself,
+          class:
+            "psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:pr-10 psb:py-1 psb:border-gray-300 psb:dark:border-slate-600 psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:rounded-md",
+          value: @variation_id
+        )}
+      </.form>
+    </div>
+    """
+  end
+
+  defp render_event_logs_tab(assigns) do
+    ~H"""
+    <div class={[
+      "psb psb:flex psb:flex-col psb:grow psb:py-2 psb:relative",
+      @lower_tab != :events && "psb:hidden"
+    ]}>
+      <div
+        phx-update="stream"
+        id={playground_event_logs_id(@story)}
+        class="psb psb:absolute psb:w-full psb:h-full psb:max-h-full psb:overflow-y-scroll psb:p-2 psb:border psb:border-slate-100 psb:dark:border-slate-600 psb:bg-slate-800 psb:rounded-md"
+      >
+        <.event_log
+          :for={{dom_id, event_log} <- @streams.event_logs}
+          id={dom_id}
+          event_log={event_log}
+          fa_plan={@fa_plan}
+        />
       </div>
-    </.form>
-    <.form
-      :let={f}
-      :if={Enum.any?(@story.merged_attributes())}
-      for={%{}}
-      as={:variation}
-      id="variation-selection-form"
-      class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-6"
-    >
-      {label(f, :variation_id, "Open a variation",
-        class:
-          "psb psb:text-gray-400 psb:dark:text-slate-300 psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
-      )}
-      {select(f, :variation_id, variation_options(@story),
-        "phx-change": "set-variation",
-        "phx-target": @myself,
-        class:
-          "psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:pr-10 psb:py-1 psb:border-gray-300 psb:dark:border-slate-600 psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:rounded-md",
-        value: @variation_id
-      )}
-    </.form>
+    </div>
     """
   end
 
@@ -761,10 +789,10 @@ defmodule PhoenixStorybook.Story.Playground do
       </div>
 
       <div class="psb-details psb:hidden psb:pl-4">
-        <%= for {key, value} <- Map.from_struct(@event_log) do %>
+        <%= for {k, v} <- @event_log |> Map.from_struct() |> Map.take([:params, :assigns, :parent_pid, :event]) do %>
           <div>
-            <span class="psb:text-indigo-500">{key}:</span>
-            <span class="psb:text-gray-400">{inspect(value)}</span>
+            <span class="psb:text-indigo-500">{k}:</span>
+            <span class="psb:text-gray-400">{inspect(v)}</span>
           </div>
         <% end %>
       </div>
@@ -823,11 +851,6 @@ defmodule PhoenixStorybook.Story.Playground do
   defp playground_event_logs_id(story) do
     module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-event-logs"
-  end
-
-  defp playground_event_log_id(story, index) do
-    module = story |> Macro.underscore() |> String.replace("/", "_")
-    "#{module}-playground-event-log-#{index}"
   end
 
   defp variation_options(story) do

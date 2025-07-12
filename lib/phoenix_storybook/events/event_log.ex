@@ -12,5 +12,5 @@ defmodule PhoenixStorybook.Events.EventLog do
           time: Time.t()
         }
 
-  defstruct [:type, :parent_pid, :view, :event, :params, :assigns, :time]
+  defstruct [:type, :parent_pid, :view, :event, :params, :assigns, :time, id: nil]
 end
