@@ -64,6 +64,26 @@ defmodule PhoenixStorybook.LayoutView do
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
   def storybook_js_type(conn), do: storybook_setting(conn, :js_script_type, "text/javascript")
 
+  # We append a hash of the CSS file contents to the URL used in the @import
+  # at-rule to ensure cache busting in the development environment.
+  def storybook_css_hash(conn, path) do
+    content =
+      conn
+      |> storybook_setting(:otp_app)
+      |> :code.priv_dir()
+      |> Path.join("/static")
+      |> Path.join(path)
+      |> File.read()
+
+    case content do
+      {:ok, content} ->
+        :md5 |> :crypto.hash(content) |> Base.url_encode64(padding: false)
+
+      {:error, _} ->
+        ""
+    end
+  end
+
   defp title(conn_or_socket), do: storybook_setting(conn_or_socket, :title, "Live Storybook")
 
   defp title_prefix(conn_or_socket) do
