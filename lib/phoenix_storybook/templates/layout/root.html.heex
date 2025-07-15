@@ -56,7 +56,6 @@
       nonce={csp_nonce(@conn, :style)}
       rel="stylesheet"
       href={asset_path(@conn, "css/phoenix_storybook.css")}
-      }
     />
     <%= if path = storybook_css_path(@conn) do %>
       <style nonce={csp_nonce(@conn, :style)}>
