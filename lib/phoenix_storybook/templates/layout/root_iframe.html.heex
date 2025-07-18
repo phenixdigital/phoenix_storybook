@@ -9,7 +9,7 @@
         nonce={csp_nonce(@conn, :script)}
         phx-track-static
         type={storybook_js_type(@conn)}
-        src={application_static_path(path)}
+        src={application_static_path(path) <> storybook_js_hash(@conn)}
       >
       </script>
     <% end %>
@@ -41,7 +41,7 @@
     />
     <%= if path = storybook_css_path(@conn) do %>
       <style nonce={csp_nonce(@conn, :style)}>
-        @import "<%= path %>" layer(app);
+        @import "<%= path %><%= storybook_css_hash(@conn) %>" layer(app);
       </style>
     <% end %>
   </head>

@@ -119,6 +119,14 @@ defmodule PhoenixStorybook.LayoutView do
     Path.join(assets_path, asset_file_name(asset))
   end
 
+  def storybook_css_hash(conn_or_socket) do
+    "?vsn=" <> backend_module(conn_or_socket).asset_hash(:css_path)
+  end
+
+  def storybook_js_hash(conn_or_socket) do
+    "?vsn=" <> backend_module(conn_or_socket).asset_hash(:js_path)
+  end
+
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phoenix_storybook))
   @external_resource @manifest_path
 
