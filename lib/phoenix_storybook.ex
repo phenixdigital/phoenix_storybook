@@ -64,7 +64,8 @@ defmodule PhoenixStorybook do
         recompilation_quotes(opts),
         story_compilation_quotes(opts, content_tree),
         config_quotes(opts),
-        stories_quotes(opts, content_tree)
+        stories_quotes(opts, content_tree),
+        assets_quotes(opts)
       ]
     end
   end
@@ -216,6 +217,46 @@ defmodule PhoenixStorybook do
       def config(key, default \\ nil) do
         Keyword.get(unquote(opts), key, default)
       end
+    end
+  end
+
+  # This quote triggers MD5 calculation for js/css assets provided by the user
+  defp assets_quotes(opts) do
+    case opts |> Keyword.get(:otp_app) |> :code.priv_dir() do
+      {:error, :bad_name} ->
+        []
+
+      priv_dir ->
+        assets_path = Path.join(priv_dir, "/static")
+
+        for asset <- [:css_path, :js_path] do
+          case Keyword.get(opts, asset) do
+            nil ->
+              quote do
+                def asset_hash(unquote(asset)) do
+                  nil
+                end
+              end
+
+            asset_path ->
+              path = Path.join(assets_path, asset_path)
+
+              case File.read(path) do
+                {:ok, content} ->
+                  hash = Base.encode16(:crypto.hash(:md5, content), case: :lower)
+
+                  quote do
+                    @external_resource unquote(path)
+                    def asset_hash(unquote(asset)) do
+                      unquote(hash)
+                    end
+                  end
+
+                _ ->
+                  raise "Can't read #{path}"
+              end
+          end
+        end
     end
   end
 
