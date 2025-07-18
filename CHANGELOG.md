@@ -10,15 +10,19 @@
 >   more of my free time to fixing bugs and developing new features 🤗
 
 ## v0.9.2 (not released)
+
 - **feature**: [sidebar entries can be sorted](https://github.com/phenixdigital/phoenix_storybook/issues/517) (read `Index` module doc for details)
+- **improvement**: [fingerprinting of user assets](https://github.com/phenixdigital/phoenix_storybook/issues/646)
 - **bugfix**: [performance impact of event logs](https://github.com/phenixdigital/phoenix_storybook/issues/647)
 - **bugfix**: events in the playground couldn't be unfolded
 - **bugfix**: the storybook JS bundle wasn't loaded within iframes
 
 ## v0.9.1 (2025-07-04)
+
 - **bugfix**: asset finger-printing is now an opt-in config var (see [README](README.md))
 
 ## v0.9.0 (2025-07-04)
+
 - **change**: [`phoenix_storybook` has been considerably refactored to use the latest Tailwind 4.x.](https://github.com/phenixdigital/phoenix_storybook/issues/522)
 - **bugfix**: [`phoenix` & `phoenix_live_view` are no longer bundled in the storybook JS file](https://github.com/phenixdigital/phoenix_storybook/issues/609)
 - **bugfix**: [JSS and CSS assets are served with their MD5 fingerprint](https://github.com/phenixdigital/phoenix_storybook/issues/606)
