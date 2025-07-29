@@ -38,7 +38,6 @@
       <script
         nonce={csp_nonce(@conn, :script)}
         phx-track-static
-        defer={storybook_js_type(@conn) == "module"}
         type={storybook_js_type(@conn)}
         src={application_static_path(path) <> storybook_js_hash(@conn)}
       >
