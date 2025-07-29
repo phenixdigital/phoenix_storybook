@@ -7,7 +7,6 @@
     <%= if path = storybook_js_path(@conn) do %>
       <script
         nonce={csp_nonce(@conn, :script)}
-        defer={storybook_js_type(@conn) == "module"}
         phx-track-static
         type={storybook_js_type(@conn)}
         src={application_static_path(path) <> storybook_js_hash(@conn)}
