@@ -53,12 +53,12 @@ defmodule PhoenixStorybook.Story.Variations do
           class="psb psb-variation-block psb:gap-x-4 psb:grid psb:grid-cols-5"
         >
           <!-- Variation description -->
-          <div class="psb psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-6 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
+          <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-6 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
               <.fa_icon
                 style={:light}
                 name="link"
-                class="psb:hidden psb:-ml-8 psb:pr-1 psb:text-slate-400"
+                class="psb:hidden! psb:group-hover:inline-block! psb:-ml-8 psb:pr-1 psb:text-slate-400"
                 plan={@fa_plan}
               />
               <%= if description do %>

@@ -16,6 +16,7 @@
 - **bugfix**: [performance impact of event logs](https://github.com/phenixdigital/phoenix_storybook/issues/647)
 - **bugfix**: events in the playground couldn't be unfolded
 - **bugfix**: the storybook JS bundle wasn't loaded within iframes
+- **bugfix**: [anchor icon should appear on hover](https://github.com/phenixdigital/phoenix_storybook/issues/656)
 
 ## v0.9.1 (2025-07-04)
 
