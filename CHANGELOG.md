@@ -13,6 +13,7 @@
 
 - **feature**: [sidebar entries can be sorted](https://github.com/phenixdigital/phoenix_storybook/issues/517) (read `Index` module doc for details)
 - **improvement**: [fingerprinting of user assets](https://github.com/phenixdigital/phoenix_storybook/issues/646)
+- **change**: [updated generator with correct otp_app and updated tailwind instructions](https://github.com/phenixdigital/phoenix_storybook/issues/660)
 - **bugfix**: [performance impact of event logs](https://github.com/phenixdigital/phoenix_storybook/issues/647)
 - **bugfix**: events in the playground couldn't be unfolded
 - **bugfix**: the storybook JS bundle wasn't loaded within iframes
