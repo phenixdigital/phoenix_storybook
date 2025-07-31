@@ -26,8 +26,8 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert page.storybook_type() == :page
 
       [{backend, _}] = Code.compile_file("lib/phoenix_storybook_web/storybook.ex")
-      assert backend.config(:otp_app) == :phoenix_storybook_web
-      assert backend.config(:sandbox_class) == "phoenix-storybook-web"
+      assert backend.config(:otp_app) == :phoenix_storybook
+      assert backend.config(:sandbox_class) == "phoenix-storybook"
 
       assert_file("assets/js/storybook.js")
 

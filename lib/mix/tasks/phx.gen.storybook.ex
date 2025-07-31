@@ -36,11 +36,13 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     Mix.shell().info("Starting storybook generation")
 
+    base_module = Mix.Phoenix.base()
     web_module = web_module()
     core_components_module = Module.concat([web_module, :CoreComponents])
     core_components_module_name = Macro.to_string(core_components_module)
-    app_name = String.to_atom(Macro.underscore(web_module))
-    app_folder = Path.join("lib", to_string(app_name))
+    app_name = String.to_atom(Macro.underscore(base_module))
+    web_app_name = String.to_atom(Macro.underscore(web_module))
+    storybook_folder = Path.join("lib", web_module |> Macro.underscore() |> to_string())
     core_components_folder = "storybook/core_components"
     page_folder = "storybook"
     js_folder = "assets/js"
@@ -48,6 +50,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     schema = %{
       app_name: app_name,
+      web_app_name: web_app_name,
       sandbox_class: String.replace(to_string(app_name), "_", "-"),
       web_module: web_module,
       web_module_name: Macro.to_string(web_module),
@@ -57,7 +60,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
     mapping =
       [
-        {"storybook.ex.eex", Path.join(app_folder, "storybook.ex")},
+        {"storybook.ex.eex", Path.join(storybook_folder, "storybook.ex")},
         {"_root.index.exs", Path.join(page_folder, "_root.index.exs")},
         {"welcome.story.exs", Path.join(page_folder, "welcome.story.exs")}
       ] ++
@@ -77,7 +80,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
           _ -> File.read!(source)
         end
 
-      Mix.Generator.create_file(target, source_content)
+      Mix.Generator.create_file("./" <> target, source_content)
     end
 
     with true <- print_router_instructions(schema, opts),
@@ -179,15 +182,15 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       Add the following to your #{IO.ANSI.bright()}router.ex#{IO.ANSI.reset()}:
 
         use #{schema.web_module_name}, :router
-        import PhoenixStorybook.Router
+        #{IO.ANSI.bright()}import PhoenixStorybook.Router#{IO.ANSI.reset()}
 
-        scope "/" do
+        #{IO.ANSI.bright()}scope "/" do
           storybook_assets()
-        end
+        end#{IO.ANSI.reset()}
 
         scope "/", #{schema.web_module_name} do
           pipe_through(:browser)
-          live_storybook "/storybook", backend_module: #{schema.web_module_name}.Storybook
+          #{IO.ANSI.bright()}live_storybook "/storybook", backend_module: #{schema.web_module_name}.Storybook#{IO.ANSI.reset()}
         end
     """)
   end
@@ -228,11 +231,15 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     print_instructions("""
       Add your #{IO.ANSI.bright()}storybook content#{IO.ANSI.reset()} in your application CSS in #{IO.ANSI.bright()}assets/storybook.css#{IO.ANSI.reset()}:
 
-        @source #{IO.ANSI.bright()}"../storybook/**/*.*exs"#{IO.ANSI.reset()}
+        @import "tailwindcss";
+
+        #{IO.ANSI.bright()}@source "../../lib/#{schema.web_app_name}/**/*.{ex,heex}";
+        @source "../js/**.js";
+        @source "../storybook/**/*.*exs"#{IO.ANSI.reset()};
     """)
 
     print_instructions("""
-      Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
+      Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.web_app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
 
         <body class="bg-white #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
         ...
