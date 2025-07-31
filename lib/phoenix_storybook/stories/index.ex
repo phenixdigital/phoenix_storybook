@@ -40,7 +40,7 @@ defmodule PhoenixStorybook.Index do
     @callback folder_name() :: nil | String.t()
     @callback folder_icon() :: nil | Icon.t()
     @callback folder_open?() :: boolean()
-    @callback folder_index() :: integer()
+    @callback folder_index() :: nil | integer()
     @callback entry(String.t()) :: keyword(String.t() | Icon.t())
   end
 
