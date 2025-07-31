@@ -253,7 +253,11 @@ defmodule PhoenixStorybook do
                   end
 
                 _ ->
-                  raise "Can't read #{path}"
+                  Logger.warning("Can't resolve #{asset}: can't read #{path}")
+
+                  quote do
+                    @external_resource unquote(path)
+                  end
               end
           end
         end
