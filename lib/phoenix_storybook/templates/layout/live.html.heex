@@ -173,16 +173,6 @@
   </nav>
 </header>
 
-<div class="psb psb:absolute psb:opacity-20 psb:top-0 psb:inset-x-0 psb:flex psb:justify-center psb:overflow-hidden psb:pointer-events-none">
-  <div class="psb psb:w-[108rem] psb:flex-none psb:flex psb:justify-end">
-    <img
-      nonce={csp_nonce(@csp_nonces, :img)}
-      src={asset_path(@socket, "images/background.png")}
-      class="psb psb:w-[71.75rem] psb:flex-none psb:max-w-none"
-    />
-  </div>
-</div>
-
 <div
   id="sidebar-overlay"
   phx-click={JS.dispatch("psb:close-sidebar")}

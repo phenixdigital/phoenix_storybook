@@ -218,7 +218,7 @@ defmodule PhoenixStorybook.Router do
             plug Plug.Static,
               at: path,
               from: :phoenix_storybook,
-              only: ~w(css images fonts favicon),
+              only: ~w(css fonts favicon),
               gzip: gzip_assets?
           end
 
