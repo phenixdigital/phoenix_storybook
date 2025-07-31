@@ -9,6 +9,7 @@ defmodule PhoenixStorybook.Index do
 
   Sidebar entries are sorted alphabetically unless a numerical index is specified in the index file,
   either for the folder itself or for its entries.
+  If no index has been set, all folders are placed at the end, sorted in alphabetical order.
 
   Indexes must be created as `index.exs` files.
 

@@ -182,12 +182,20 @@ defmodule PhoenixStorybook.Sidebar do
   end
 
   defp sort_entries(entries) do
-    Enum.sort_by(entries, &{&1.index, &1.name}, fn
-      {same, a_name}, {same, b_name} -> a_name <= b_name
-      {nil, _}, {_, _} -> false
-      {_, _}, {nil, _} -> true
-      {a, _}, {b, _} -> a <= b
-    end)
+    if Enum.all?(entries, &is_nil(&1.index)) do
+      Enum.sort_by(entries, &{&1.__struct__, &1.name}, fn
+        {same, a_name}, {same, b_name} -> a_name <= b_name
+        {StoryEntry, _}, {_, _} -> true
+        {FolderEntry, _}, {_, _} -> false
+      end)
+    else
+      Enum.sort_by(entries, &{&1.index, &1.name}, fn
+        {same, a_name}, {same, b_name} -> a_name <= b_name
+        {nil, _}, {_, _} -> false
+        {_, _}, {nil, _} -> true
+        {a, _}, {b, _} -> a <= b
+      end)
+    end
   end
 
   defp story_class(current_path, story_path) do
