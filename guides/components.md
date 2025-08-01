@@ -306,6 +306,30 @@ your variation.
 }
 ```
 
+## Notes
+
+You can add a *note* to your variation or variation group to provide additional information about
+the variation. The note will be shown below the description (title). You can use Markdown to format
+the note. In case of a variation group, only the note of the group is used, notes of its variations
+are ignored.
+
+```elixir
+%Variation{
+  id: :some_special_case,
+  note: """
+  In some *rare cases*, you might want to use these special attributes to customize the component
+  to serve some specific use case.
+
+  The `primary_color` attribute allows you to make the component potentially look weird.
+  **Use with care!**
+  """,
+  attributes: %{
+    "primary_color" => "red"
+    "radius" => :very_large
+  }
+}
+```
+
 ## Late evaluation
 
 In some cases, you want to pass to your variation attributes a complex value which should be

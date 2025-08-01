@@ -19,6 +19,7 @@ defmodule PhoenixStorybook.Stories.Variation do
         %Variation{
           id: :default,
           description: "Default dropdown",
+          note: "This variation shows the most common use case.",
           attributes: %{
             label: "A dropdown",
           },
@@ -36,6 +37,7 @@ defmodule PhoenixStorybook.Stories.Variation do
   @type t :: %__MODULE__{
           id: atom,
           description: String.t() | nil,
+          note: String.t() | nil,
           let: atom | nil,
           slots: [String.t()],
           attributes: map,
@@ -43,7 +45,7 @@ defmodule PhoenixStorybook.Stories.Variation do
         }
 
   @enforce_keys [:id]
-  defstruct [:id, :description, :let, slots: [], attributes: %{}, template: :unset]
+  defstruct [:id, :description, :note, :let, slots: [], attributes: %{}, template: :unset]
 end
 
 defmodule PhoenixStorybook.Stories.VariationGroup do
@@ -58,6 +60,7 @@ defmodule PhoenixStorybook.Stories.VariationGroup do
         %VariationGroup{
           id: :colors,
           description: "Different color buttons",
+          note: "Note that every button has a different color.",
           variations: [
             %Variation{
               id: :blue_button,
@@ -83,10 +86,11 @@ defmodule PhoenixStorybook.Stories.VariationGroup do
   @type t :: %__MODULE__{
           id: atom,
           description: String.t() | nil,
+          note: String.t() | nil,
           variations: [Variation.t()],
           template: :unset | String.t() | nil | false
         }
 
   @enforce_keys [:id, :variations]
-  defstruct [:id, :description, :variations, template: :unset]
+  defstruct [:id, :description, :note, :variations, template: :unset]
 end

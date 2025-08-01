@@ -9,7 +9,14 @@ defmodule PhoenixStorybook.Story.Variations do
   alias Phoenix.HTML.Safe, as: HTMLSafe
   alias PhoenixStorybook.ExtraAssignsHelpers
   alias PhoenixStorybook.LayoutView
-  alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
+
+  alias PhoenixStorybook.Rendering.{
+    CodeRenderer,
+    ComponentRenderer,
+    MarkdownRenderer,
+    RenderingContext
+  }
+
   alias PhoenixStorybook.Story
 
   @doc """
@@ -45,7 +52,7 @@ defmodule PhoenixStorybook.Story.Variations do
 
     ~H"""
     <div class="psb psb:space-y-12 psb:pb-12" id={"story-variations-#{story_id(@story)}"}>
-      <%= for variation = %{id: variation_id, description: description} <- @story.variations(),
+      <%= for variation = %{id: variation_id, description: description, note: note} <- @story.variations(),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(assigns.backend_module, assigns.story, variation, extra_attributes) do %>
         <div
@@ -53,7 +60,7 @@ defmodule PhoenixStorybook.Story.Variations do
           class="psb psb-variation-block psb:gap-x-4 psb:grid psb:grid-cols-5"
         >
           <!-- Variation description -->
-          <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-6 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
+          <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-4 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
             <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
               <.fa_icon
                 style={:light}
@@ -82,11 +89,17 @@ defmodule PhoenixStorybook.Story.Variations do
               </span>
             </.link>
           </div>
+          <!-- Optional variation note -->
+          <%= if note do %>
+            <div class="psb psb:col-span-5 psb:mb-2 psb:text-sm psb:md:text-base psb:leading-7 psb:text-slate-700 psb:dark:text-slate-500 psb-doc">
+              {raw(MarkdownRenderer.markdown_to_html(note))}
+            </div>
+          <% end %>
           <!-- Variation component preview -->
           <div
             id={"#{anchor_id(variation)}-component"}
             class={[
-              "psb psb:border psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600 psb:rounded-md psb:col-span-5 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-white psb:shadow-sm",
+              "psb psb:border psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600 psb:rounded-md psb:col-span-5 psb:mt-2 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-white psb:shadow-sm",
               component_layout_class(@story)
             ]}
           >

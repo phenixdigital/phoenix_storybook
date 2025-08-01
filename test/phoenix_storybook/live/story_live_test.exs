@@ -70,6 +70,19 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert html =~ "World variation"
     end
 
+    test "renders variation notes with markdown formatting", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/storybook/component")
+
+      # Should render the hello variation note with markdown formatting
+      assert html =~ "This is a"
+      assert html =~ "<em>simple note</em>"
+      assert html =~ "<code"
+      assert html =~ "inline code"
+
+      # Should contain the doc styling class
+      assert html =~ "psb-doc"
+    end
+
     test "renders live component story from path", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/storybook/live_component")
       assert html =~ "Live Component"
@@ -82,6 +95,18 @@ defmodule PhoenixStorybook.StoryLiveTest do
       {:ok, _view, html} = live(conn, ~p"/storybook/a_folder/component")
       assert html =~ "Component"
       assert html =~ "Component first doc paragraph."
+    end
+
+    test "renders variation group notes with markdown formatting", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/storybook/a_folder/component")
+
+      # Should render the variation group note with markdown formatting
+      assert html =~ "This group shows"
+      assert html =~ "<strong>different component options</strong>"
+      assert html =~ "various attributes"
+
+      # Should contain the note styling class
+      assert html =~ "psb-doc"
     end
 
     test "no-ops events from an event component", %{conn: conn} do

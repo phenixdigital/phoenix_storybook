@@ -26,6 +26,7 @@ defmodule TreeStorybook.Component do
       %Variation{
         id: :hello,
         description: "Hello variation",
+        note: "This is a *simple note* with `inline code` to test note rendering.",
         attributes: %{label: "hello"}
       },
       %Variation{

@@ -8,6 +8,7 @@ defmodule TreeStorybook.AFolder.Component do
     [
       %VariationGroup{
         id: :group,
+        note: "This group shows **different component options** with various attributes.",
         variations: [
           %Variation{
             id: :hello,
