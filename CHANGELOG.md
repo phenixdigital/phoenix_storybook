@@ -9,8 +9,10 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
-## v0.9.2 (2025-07-31)
+## v0.9.3 (not released yet)
+- **feature**: [accommpany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)
 
+## v0.9.2 (2025-07-31)
 - **feature**: [sidebar entries can be sorted](https://github.com/phenixdigital/phoenix_storybook/issues/517) (read `Index` module doc for details)
 - **improvement**: [fingerprinting of user assets](https://github.com/phenixdigital/phoenix_storybook/issues/646)
 - **change**: [updated generator with correct otp_app and updated tailwind instructions](https://github.com/phenixdigital/phoenix_storybook/issues/660)
