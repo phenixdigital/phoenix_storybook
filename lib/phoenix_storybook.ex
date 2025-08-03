@@ -222,9 +222,16 @@ defmodule PhoenixStorybook do
 
   # This quote triggers MD5 calculation for js/css assets provided by the user
   defp assets_quotes(opts) do
-    case opts |> Keyword.get(:otp_app) |> :code.priv_dir() do
+    otp_app = Keyword.get(opts, :otp_app)
+
+    case :code.priv_dir(otp_app) do
       {:error, :bad_name} ->
-        []
+        if Mix.env() != :test,
+          do: Logger.warning("Can't resolve priv dir for application #{otp_app}")
+
+        quote do
+          def asset_hash(_), do: nil
+        end
 
       priv_dir ->
         assets_path = Path.join(priv_dir, "/static")
@@ -233,9 +240,7 @@ defmodule PhoenixStorybook do
           case Keyword.get(opts, asset) do
             nil ->
               quote do
-                def asset_hash(unquote(asset)) do
-                  nil
-                end
+                def asset_hash(unquote(asset)), do: nil
               end
 
             asset_path ->

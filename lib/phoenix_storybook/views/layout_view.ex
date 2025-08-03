@@ -120,11 +120,17 @@ defmodule PhoenixStorybook.LayoutView do
   end
 
   def storybook_css_hash(conn_or_socket) do
-    "?vsn=" <> backend_module(conn_or_socket).asset_hash(:css_path)
+    case backend_module(conn_or_socket).asset_hash(:css_path) do
+      nil -> ""
+      hash -> "?vsn=" <> hash
+    end
   end
 
   def storybook_js_hash(conn_or_socket) do
-    "?vsn=" <> backend_module(conn_or_socket).asset_hash(:js_path)
+    case backend_module(conn_or_socket).asset_hash(:js_path) do
+      nil -> ""
+      hash -> "?vsn=" <> hash
+    end
   end
 
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phoenix_storybook))
