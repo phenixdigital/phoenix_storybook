@@ -59,7 +59,6 @@ defmodule PhoenixStorybook.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
-      {:floki, "~> 0.38.0", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:mox, "~> 1.0", only: :test},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
