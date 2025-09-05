@@ -262,6 +262,7 @@ defmodule PhoenixStorybook do
 
                   quote do
                     @external_resource unquote(path)
+                    def asset_hash(unquote(asset)), do: nil
                   end
               end
           end
