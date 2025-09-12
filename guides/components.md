@@ -244,7 +244,7 @@ You can choose to render only the variation markup, without its surrounding temp
 
 ## Block, slots & let
 
-Liveview let you define blocks of HEEx content in your components, referred to as as slots.
+LiveView let you define blocks of HEEx content in your components, referred to as slots.
 They can be passed in your variations with the `:slots` keys :
 
 ```elixir

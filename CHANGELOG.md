@@ -10,7 +10,7 @@
 >   more of my free time to fixing bugs and developing new features 🤗
 
 ## v0.9.3 (not released yet)
-- **feature**: [accommpany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)
+- **feature**: [accompany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)
 - **bugfix**: [not resolving priv dir for assets hash calculation is now less punitive](https://github.com/phenixdigital/phoenix_storybook/issues/665)
 
 ## v0.9.2 (2025-07-31)

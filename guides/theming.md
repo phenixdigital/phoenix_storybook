@@ -67,7 +67,7 @@ end
 
 Then create a **LiveView Hook** that will fetch the theme from wherever it is relevant for your
 application: database, user session, URL params... and store it in the `Registry` (it's working
-because the Hook is running under the same pid than the Liveview).
+because the Hook is running under the same pid than the LiveView).
 
 ```elixir
 defmodule ThemeHook do
