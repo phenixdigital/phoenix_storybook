@@ -48,7 +48,7 @@ defmodule PhoenixStorybook.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.7.0"},
-      {:phoenix_live_view, "~> 1.0"},
+      {:phoenix_live_view, "~> 1.1.0"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
       {:makeup_eex, "~> 2.0.2"},
@@ -60,6 +60,7 @@ defmodule PhoenixStorybook.MixProject do
       {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:floki, "~> 0.38.0", only: :test},
+      {:lazy_html, ">= 0.1.0", only: :test},
       {:mox, "~> 1.0", only: :test},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
