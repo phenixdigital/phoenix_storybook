@@ -12,7 +12,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
   end
 
   describe "variation rendering" do
-    test "it renders an story with a variation", %{conn: conn} do
+    test "it renders a story with a variation", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
@@ -23,7 +23,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ "component: hello"
     end
 
-    test "it renders an story with a variation group", %{conn: conn} do
+    test "it renders a story with a variation group", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert render(view) =~ "template_component: bar / status: false"
     end
 
-    test "it renders an story with a color theme", %{conn: conn} do
+    test "it renders a story with a color theme", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
@@ -74,7 +74,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
           %{"variation_id" => "hello", "theme" => "default", "color_mode" => "dark"}
         )
 
-      assert html =~ ~s|class="dark"|
+      assert html =~ ~r|class="[^"]*dark[^"]*"|
       assert html =~ "component: hello"
     end
   end

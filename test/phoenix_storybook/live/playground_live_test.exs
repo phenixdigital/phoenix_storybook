@@ -537,15 +537,13 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
              |> element(form_label_selector)
              |> render()
              |> Floki.parse_fragment!()
-             |> Floki.attribute("disabled") ==
-               ["disabled"]
+             |> Floki.attribute("disabled") == [""]
 
       assert view
              |> element(form_toggle_selector)
              |> render()
              |> Floki.parse_fragment!()
-             |> Floki.attribute("disabled") ==
-               ["disabled"]
+             |> Floki.attribute("disabled") == [""]
     end
 
     test "playground with a variation_group, and an empty template", %{conn: conn} do

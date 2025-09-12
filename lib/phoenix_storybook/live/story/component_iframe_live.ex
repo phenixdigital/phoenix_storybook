@@ -113,7 +113,8 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
           container: {:div, style: "height: 100vh; width: 100wh;"}
         )}
       <% else %>
-        <div {@iframe_opts} class={@color_mode_class}>
+        <% {classes, iframe_opts} = Keyword.pop(@iframe_opts, :class) %>
+        <div {iframe_opts} class={[classes, @color_mode_class]}>
           {ComponentRenderer.render(@context)}
         </div>
       <% end %>
