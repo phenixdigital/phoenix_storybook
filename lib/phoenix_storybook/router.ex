@@ -215,6 +215,9 @@ defmodule PhoenixStorybook.Router do
       quote bind_quoted: binding() do
         scope "/", PhoenixStorybook do
           pipeline :storybook_assets do
+            plug :put_layout, html: false
+            plug :put_root_layout, html: false
+
             plug Plug.Static,
               at: path,
               from: :phoenix_storybook,
