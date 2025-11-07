@@ -66,20 +66,20 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
       html =
         render_variation(component, :hello)
         |> rendered_to_string()
-        |> Floki.parse_fragment!()
+        |> LazyHTML.from_fragment()
 
-      assert html |> Floki.attribute("id") |> hd() == "template-component-single-hello"
-      assert html |> Floki.find("span") |> length() == 1
+      assert html |> LazyHTML.attribute("id") |> hd() == "template-component-single-hello"
+      assert html |> LazyHTML.query("span") |> LazyHTML.to_tree() |> length() == 1
     end
 
     test "renders a variation with its own template", %{template_component: component} do
       html =
         render_variation(component, :variation_template)
         |> rendered_to_string()
-        |> Floki.parse_fragment!()
+        |> LazyHTML.from_fragment()
 
-      assert html |> Floki.attribute("class") |> hd() == "variation-template"
-      assert html |> Floki.find("span") |> length() == 1
+      assert html |> LazyHTML.attribute("class") |> hd() == "variation-template"
+      assert html |> LazyHTML.query("span") |> LazyHTML.to_tree() |> length() == 1
     end
 
     test "renders a variation with which disables story's template", %{
@@ -88,34 +88,34 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
       html =
         render_variation(component, :no_template)
         |> rendered_to_string()
-        |> Floki.parse_fragment!()
+        |> LazyHTML.from_fragment()
 
-      assert html |> Floki.attribute("id") == []
-      assert html |> Floki.find("span") |> length() == 1
+      assert html |> LazyHTML.attribute("id") == []
+      assert html |> LazyHTML.query("span") |> LazyHTML.to_tree() |> length() == 1
     end
 
     test "renders a variation group with story template", %{template_component: component} do
       html =
         render_variation(component, :group)
         |> rendered_to_string()
-        |> Floki.parse_fragment!()
+        |> LazyHTML.from_fragment()
 
-      assert html |> Floki.attribute("id") |> length() == 2
-      assert html |> Floki.attribute("id") |> Enum.at(0) == "template-component-group-one"
-      assert html |> Floki.attribute("id") |> Enum.at(1) == "template-component-group-two"
-      assert html |> Floki.find("span") |> length() == 2
+      assert html |> LazyHTML.attribute("id") |> length() == 2
+      assert html |> LazyHTML.attribute("id") |> Enum.at(0) == "template-component-group-one"
+      assert html |> LazyHTML.attribute("id") |> Enum.at(1) == "template-component-group-two"
+      assert html |> LazyHTML.query("span") |> LazyHTML.to_tree() |> length() == 2
     end
 
     test "renders a variation group with its own template", %{template_component: component} do
       html =
         render_variation(component, :group_template)
         |> rendered_to_string()
-        |> Floki.parse_fragment!()
+        |> LazyHTML.from_fragment()
 
-      assert html |> Floki.attribute("class") |> length() == 2
-      assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
-      assert html |> Floki.attribute("class") |> Enum.at(1) == "group-template"
-      assert html |> Floki.find("span") |> length() == 2
+      assert html |> LazyHTML.attribute("class") |> length() == 2
+      assert html |> LazyHTML.attribute("class") |> Enum.at(0) == "group-template"
+      assert html |> LazyHTML.attribute("class") |> Enum.at(1) == "group-template"
+      assert html |> LazyHTML.query("span") |> LazyHTML.to_tree() |> length() == 2
     end
 
     test "renders a variation group with a <.psb-variation-group/> placeholder template", %{
@@ -124,11 +124,11 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
       html =
         render_variation(component, :group_template_single)
         |> rendered_to_string()
-        |> Floki.parse_fragment!()
+        |> LazyHTML.from_fragment()
 
-      assert html |> Floki.attribute("class") |> length() == 1
-      assert html |> Floki.attribute("class") |> Enum.at(0) == "group-template"
-      assert html |> Floki.find("span") |> length() == 2
+      assert html |> LazyHTML.attribute("class") |> length() == 1
+      assert html |> LazyHTML.attribute("class") |> Enum.at(0) == "group-template"
+      assert html |> LazyHTML.query("span") |> LazyHTML.to_tree() |> length() == 2
     end
 
     test "renders a variation with a template, but no placeholder", %{

@@ -300,7 +300,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       wait_for_preview_lv(view)
       html = view |> element("#playground-preview-live .psb-sandbox") |> render()
-      [component_class] = html |> Floki.parse_fragment!() |> Floki.attribute("class")
+      [component_class] = html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
       assert component_class |> String.split(" ") |> Enum.member?("dark")
       assert html =~ ~r|component:\s*hello\s*default|
     end
@@ -536,14 +536,14 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       assert view
              |> element(form_label_selector)
              |> render()
-             |> Floki.parse_fragment!()
-             |> Floki.attribute("disabled") == [""]
+             |> LazyHTML.from_fragment()
+             |> LazyHTML.attribute("disabled") == [""]
 
       assert view
              |> element(form_toggle_selector)
              |> render()
-             |> Floki.parse_fragment!()
-             |> Floki.attribute("disabled") == [""]
+             |> LazyHTML.from_fragment()
+             |> LazyHTML.attribute("disabled") == [""]
     end
 
     test "playground with a variation_group, and an empty template", %{conn: conn} do
@@ -592,8 +592,8 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     view
     |> element(selector)
     |> render()
-    |> Floki.parse_fragment!()
-    |> Floki.attribute(attribute)
+    |> LazyHTML.from_fragment()
+    |> LazyHTML.attribute(attribute)
     |> Enum.at(0)
   end
 

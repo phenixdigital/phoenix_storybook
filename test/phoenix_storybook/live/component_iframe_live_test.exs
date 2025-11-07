@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert render(view) =~ "template_component: bar / status: false"
     end
 
-    test "it renders a story with a color theme", %{conn: conn} do
+    test "it renders an story with a color theme", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
           conn,
@@ -100,7 +100,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
         )
 
       html = view |> element(".psb-sandbox") |> render()
-      [class] = html |> Floki.parse_fragment!() |> Floki.attribute("class")
+      [class] = html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
       assert class |> String.split(" ") |> Enum.member?("dark")
       assert html =~ "component: hello"
     end

@@ -315,7 +315,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
     test "sandbox container is default flex div", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
-      html = view |> element("#hello .psb-sandbox") |> render() |> Floki.parse_fragment!()
+
+      html =
+        view
+        |> element("#hello .psb-sandbox")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
 
       assert [
                {"div",
@@ -328,7 +334,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
     test "sandbox container is customized div", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/component")
-      html = view |> element("#group .psb-sandbox") |> render() |> Floki.parse_fragment!()
+
+      html =
+        view
+        |> element("#group .psb-sandbox")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
 
       assert [
                {"div",
@@ -347,9 +359,10 @@ defmodule PhoenixStorybook.StoryLiveTest do
         view
         |> element("#iframe-tree_storybook_containers_components_iframe-variation-hello")
         |> render()
-        |> Floki.parse_fragment!(attributes_as_maps: true)
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
 
-      refute is_nil(attrs["srcdoc"])
+      refute is_nil(List.keyfind(attrs, "srcdoc", 0))
     end
 
     test "function component container is a srcdoc iframe with custom opts", %{conn: conn} do
@@ -361,10 +374,11 @@ defmodule PhoenixStorybook.StoryLiveTest do
           "#iframe-tree_storybook_containers_components_iframe_with_opts-variation-hello"
         )
         |> render()
-        |> Floki.parse_fragment!(attributes_as_maps: true)
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
 
-      refute is_nil(attrs["srcdoc"])
-      assert attrs["data-foo"] == "bar"
+      refute is_nil(List.keyfind(attrs, "srcdoc", 0))
+      assert List.keyfind(attrs, "data-foo", 0) |> elem(1) == "bar"
     end
 
     test "live component container is a regular iframe", %{conn: conn} do
@@ -374,32 +388,58 @@ defmodule PhoenixStorybook.StoryLiveTest do
         view
         |> element("#iframe-tree_storybook_containers_live_components_iframe-variation-hello")
         |> render()
-        |> Floki.parse_fragment!(attributes_as_maps: true)
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
 
-      assert attrs["src"] ==
-               ~p"/storybook/iframe/containers/live_components/iframe?theme=default&variation_id=hello"
+      assert List.keyfind(attrs, "src", 0) ==
+               {"src",
+                ~p"/storybook/iframe/containers/live_components/iframe?theme=default&variation_id=hello"}
 
-      assert is_nil(attrs["srcdoc"])
+      assert is_nil(List.keyfind(attrs, "srcdoc", 0))
     end
 
     test "renders with different layouts", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
-      component_html = view |> element("#hello-component") |> render() |> Floki.parse_fragment!()
+      component_html =
+        view
+        |> element("#hello-component")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
       [{"id", _id}, {"class", class}] = component_html |> Enum.at(0) |> elem(1)
       assert class =~ "psb:lg:col-span-2"
 
-      code_html = view |> element("#hello-code") |> render() |> Floki.parse_fragment!()
+      code_html =
+        view
+        |> element("#hello-code")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
       [{"id", _id}, {"class", class}] = code_html |> Enum.at(0) |> elem(1)
       assert class =~ "psb:lg:col-span-3"
 
       {:ok, view, _html} = live(conn, ~p"/storybook/live_component")
 
-      component_html = view |> element("#hello-component") |> render() |> Floki.parse_fragment!()
+      component_html =
+        view
+        |> element("#hello-component")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
       [{"id", _id}, {"class", class}] = component_html |> Enum.at(0) |> elem(1)
       refute class =~ "psb:lg:col-span-2"
 
-      code_html = view |> element("#hello-code") |> render() |> Floki.parse_fragment!()
+      code_html =
+        view
+        |> element("#hello-code")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
       [{"id", _id}, {"class", class}] = code_html |> Enum.at(0) |> elem(1)
       refute class =~ "psb:lg:col-span-3"
     end
@@ -500,7 +540,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
   describe "theme strategies" do
     test "theme is set on the sandbox with the default strategy", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
-      html = view |> element("#hello .psb-sandbox") |> render() |> Floki.parse_fragment!()
+
+      html =
+        view
+        |> element("#hello .psb-sandbox")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
 
       assert [{"div", [{"class", classes}], _}] = html
       assert classes =~ "theme-prefix-default"
@@ -513,7 +559,10 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
-      [component_class] = component_html |> Floki.parse_fragment!() |> Floki.attribute("class")
+
+      [component_class] =
+        component_html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
+
       refute component_class |> String.split(" ") |> Enum.member?("dark")
 
       view
@@ -523,7 +572,10 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
-      [component_class] = component_html |> Floki.parse_fragment!() |> Floki.attribute("class")
+
+      [component_class] =
+        component_html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
+
       assert component_class |> String.split(" ") |> Enum.member?("dark")
     end
   end
