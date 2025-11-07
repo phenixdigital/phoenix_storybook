@@ -1,7 +1,7 @@
 defmodule PhoenixStorybook.SearchTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
-  import Floki, only: [find: 2]
+  import LazyHTML, only: [query: 2]
 
   alias PhoenixStorybook.Search
   alias PhoenixStorybook.{EmptyFilesStorybook, FlatListStorybook}
@@ -15,7 +15,7 @@ defmodule PhoenixStorybook.SearchTest do
     test "contains all stories" do
       {document, html} = render_search(FlatListStorybook)
 
-      assert find(document, "ul>li") |> length() == 2
+      assert query(document, "ul>li") |> LazyHTML.to_tree() |> length() == 2
       assert String.contains?(html, "a_component")
       assert String.contains?(html, "b_component")
     end
@@ -29,7 +29,7 @@ defmodule PhoenixStorybook.SearchTest do
         backend_module: backend_module
       )
 
-    {:ok, document} = Floki.parse_document(html)
+    document = LazyHTML.from_document(html)
     {document, html}
   end
 end

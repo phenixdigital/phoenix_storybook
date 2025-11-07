@@ -25,12 +25,22 @@ defmodule PhoenixStorybook.VisualTestLiveTest do
     assert html =~ "component: hello default"
     assert html =~ "inner block"
     refute html =~ "A Page"
-    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 5
+
+    assert html
+           |> LazyHTML.from_document()
+           |> LazyHTML.query("h1")
+           |> LazyHTML.to_tree()
+           |> length() == 5
   end
 
   test "renders another component range", %{conn: conn} do
     {:ok, _view, html} = conn |> get("/storybook/visual_tests", start: "a", end: "z") |> live()
-    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 19
+
+    assert html
+           |> LazyHTML.from_document()
+           |> LazyHTML.query("h1")
+           |> LazyHTML.to_tree()
+           |> length() == 19
   end
 
   test "exclude components from the range", %{conn: conn} do
@@ -43,7 +53,11 @@ defmodule PhoenixStorybook.VisualTestLiveTest do
       )
       |> live()
 
-    assert html |> Floki.parse_document!() |> Floki.find("h1") |> length() == 17
+    assert html
+           |> LazyHTML.from_document()
+           |> LazyHTML.query("h1")
+           |> LazyHTML.to_tree()
+           |> length() == 17
   end
 
   @tag :capture_log
