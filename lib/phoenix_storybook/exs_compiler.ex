@@ -37,7 +37,10 @@ defmodule PhoenixStorybook.ExsCompiler do
       Enum.find(
         modules,
         Enum.at(modules, 0),
-        &function_exported?(&1, :storybook_type, 0)
+        fn module ->
+          Code.ensure_compiled!(module)
+          function_exported?(module, :storybook_type, 0)
+        end
       )
     after
       Code.put_compiler_option(:ignore_module_conflict, original_ignore_module_conflict)
