@@ -33,6 +33,13 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     def load_story(_story_path), do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.PageStory}
   end
 
+  defmodule HandleInfoStory do
+    def handle_info({:storybook_handle_info, from}, socket) do
+      send(from, :handled)
+      {:noreply, socket}
+    end
+  end
+
   defmodule DummyStory do
     use Phoenix.Component
 
@@ -257,6 +264,15 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       )
 
     assert %Phoenix.LiveView.Rendered{} = ComponentIframeLive.render(assigns)
+  end
+
+  test "handle_info delegates to story when defined" do
+    socket = %Socket{assigns: %{story: HandleInfoStory}}
+
+    assert {:noreply, ^socket} =
+             ComponentIframeLive.handle_info({:storybook_handle_info, self()}, socket)
+
+    assert_receive :handled
   end
 
   test "handle_event falls through for unknown events" do
