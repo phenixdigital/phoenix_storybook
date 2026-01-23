@@ -18,11 +18,6 @@ defmodule PhoenixStorybook.MixProject do
       package: package(),
       docs: docs(),
       test_coverage: [tool: ExCoveralls, export: "excoveralls"],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.lcov": :test,
-        coverage: :test
-      ],
       dialyzer: [
         plt_add_apps: [:mix],
         plt_local_path: ".plts",
@@ -31,6 +26,10 @@ defmodule PhoenixStorybook.MixProject do
       ],
       prune_code_paths: false
     ]
+  end
+
+  def cli do
+    [preferred_envs: [coveralls: :test, "coveralls.lcov": :test, coverage: :test]]
   end
 
   # Run "mix help compile.app" to learn about applications.
