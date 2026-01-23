@@ -4,9 +4,9 @@ defmodule PhoenixStorybook.Story.Playground do
 
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
+  alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhoenixStorybook.Story.PlaygroundPreviewLive
   alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers}
-  alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
 
   alias Makeup.Formatters.HTML.HTMLFormatter
   alias Makeup.Lexers.HTMLLexer

@@ -6,8 +6,8 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   alias PhoenixStorybook.ExtraAssignsHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.{ComponentRenderer, RenderingContext}
-  alias PhoenixStorybook.Story.PlaygroundPreviewLive
   alias PhoenixStorybook.Stories.{Variation, VariationGroup}
+  alias PhoenixStorybook.Story.PlaygroundPreviewLive
   alias PhoenixStorybook.StoryNotFound
   alias PhoenixStorybook.ThemeHelpers
 
