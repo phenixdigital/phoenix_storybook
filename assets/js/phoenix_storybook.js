@@ -13,6 +13,8 @@ if (window.storybook === undefined) {
   window.storybook = {};
 }
 
+const LiveView = window.storybook?.LiveView || window.LiveView;
+const Phoenix = window.storybook?.Phoenix || window.Phoenix;
 const socketPath = document.querySelector("html").getAttribute("phx-socket") || "/live";
 
 const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
