@@ -105,6 +105,20 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ "component: hello"
     end
 
+    test "it renders a playground with a light color_mode", %{conn: conn} do
+      {:ok, view, _html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/component",
+          %{"variation_id" => "hello", "playground" => true, "color_mode" => "light"}
+        )
+
+      html = view |> element(".psb-sandbox") |> render()
+      [class] = html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
+      assert class |> String.split(" ") |> Enum.member?("light")
+      assert html =~ "component: hello"
+    end
+
     test "it renders a playground with a variation group", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(

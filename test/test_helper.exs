@@ -43,6 +43,7 @@ defmodule PhoenixStorybook.TestStorybook do
       assign: :theme
     ],
     color_mode: true,
+    color_mode_sandbox_light_class: "light",
     strip_doc_attributes: false
 end
 

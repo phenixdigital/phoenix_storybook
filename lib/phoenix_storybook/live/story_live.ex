@@ -57,8 +57,12 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp assign_color_mode_class(socket = %{assigns: assigns}) do
     class =
-      if assigns.backend_module.config(:color_mode) && assigns.color_mode == "dark" do
-        assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+      if assigns.backend_module.config(:color_mode) do
+        case assigns.color_mode do
+          "dark" -> assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+          "light" -> assigns.backend_module.config(:color_mode_sandbox_light_class)
+          _ -> nil
+        end
       end
 
     assign(socket, :color_mode_class, class)
