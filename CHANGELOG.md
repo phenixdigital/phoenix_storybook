@@ -15,7 +15,6 @@
 
 ## v0.9.3 (2025-09-15)
 - **feature**: [accompany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)
-
 - **improvement**: bumped to `phoenix_live_view 1.1.x` and `phoenix 1.8.x`
 - **bugfix**: [not resolving priv dir for assets hash calculation is now less punitive](https://github.com/phenixdigital/phoenix_storybook/issues/665)
 
