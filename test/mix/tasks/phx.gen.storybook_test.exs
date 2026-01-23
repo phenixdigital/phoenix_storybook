@@ -177,7 +177,12 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
 
   defp assert_shell_receive(kind, pattern) do
     assert_receive {:mix_shell, ^kind, [msg]}
-    assert msg =~ pattern
+
+    if kind == :info and String.starts_with?(msg, "==> ") do
+      assert_shell_receive(kind, pattern)
+    else
+      assert msg =~ pattern
+    end
   end
 end
 
