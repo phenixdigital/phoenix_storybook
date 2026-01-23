@@ -13,6 +13,79 @@ defmodule PhoenixStorybook.LayoutViewTest do
           sandbox_class: "root-sandbox",
           themes_strategies: [sandbox_class: "theme"],
           css_path: "storybook.css",
+          js_path: "storybook.js",
+          font_awesome_css_path: "/vendor/fontawesome/css/all.css"
+        ],
+        key,
+        default
+      )
+    end
+
+    def asset_hash(:css_path), do: "abc123"
+    def asset_hash(:js_path), do: nil
+
+    def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
+    def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
+    def find_entry_by_path(_path), do: nil
+  end
+
+  defmodule TestBackendWithFontAwesome do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          font_awesome_plan: :free,
+          font_awesome_kit_id: "kit123",
+          font_awesome_css_path: "/vendor/fontawesome/css/all.css",
+          sandbox_class: "root-sandbox",
+          themes_strategies: [sandbox_class: "theme"],
+          css_path: "storybook.css",
+          js_path: "storybook.js"
+        ],
+        key,
+        default
+      )
+    end
+
+    def asset_hash(:css_path), do: "abc123"
+    def asset_hash(:js_path), do: nil
+
+    def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
+    def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
+    def find_entry_by_path(_path), do: nil
+  end
+
+  defmodule TestBackendWithKitOnly do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          font_awesome_plan: :free,
+          font_awesome_kit_id: "kit123",
+          sandbox_class: "root-sandbox",
+          themes_strategies: [sandbox_class: "theme"],
+          css_path: "storybook.css",
+          js_path: "storybook.js"
+        ],
+        key,
+        default
+      )
+    end
+
+    def asset_hash(:css_path), do: "abc123"
+    def asset_hash(:js_path), do: nil
+
+    def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
+    def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
+    def find_entry_by_path(_path), do: nil
+  end
+
+  defmodule TestBackendWithBundledFonts do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          font_awesome_plan: :free,
+          sandbox_class: "root-sandbox",
+          themes_strategies: [sandbox_class: "theme"],
+          css_path: "storybook.css",
           js_path: "storybook.js"
         ],
         key,
@@ -32,9 +105,9 @@ defmodule PhoenixStorybook.LayoutViewTest do
     def script_name, do: ["storybook"]
   end
 
-  defp build_test_conn do
+  defp build_test_conn(backend \\ TestBackend) do
     Phoenix.ConnTest.build_conn()
-    |> Plug.Conn.put_private(:backend_module, TestBackend)
+    |> Plug.Conn.put_private(:backend_module, backend)
     |> Plug.Conn.put_private(:assets_path, "/assets")
     |> Plug.Conn.put_private(:live_socket_path, "/live")
     |> Plug.Conn.put_private(:csrf, "csrf-token")
@@ -85,6 +158,93 @@ defmodule PhoenixStorybook.LayoutViewTest do
     assert LayoutView.storybook_css_path(conn) == "storybook.css"
     assert LayoutView.storybook_js_path(conn) == "storybook.js"
     assert LayoutView.storybook_js_type(conn) == "text/javascript"
+    assert LayoutView.font_awesome_css_path(conn) == "/vendor/fontawesome/css/all.css"
+  end
+
+  test "root layout prefers custom FontAwesome CSS over kit and bundled fonts" do
+    conn = build_test_conn(TestBackendWithFontAwesome)
+
+    html =
+      Phoenix.View.render_to_string(LayoutView, "root.html",
+        conn: conn,
+        inner_content: "",
+        page_title: "Storybook"
+      )
+
+    assert html =~ ~s(href="/vendor/fontawesome/css/all.css")
+    refute html =~ "kit.fontawesome.com"
+    refute html =~ "phoenix_storybook_fonts.css"
+  end
+
+  test "root_iframe layout prefers custom FontAwesome CSS over kit and bundled fonts" do
+    conn = build_test_conn(TestBackendWithFontAwesome)
+
+    html =
+      Phoenix.View.render_to_string(LayoutView, "root_iframe.html",
+        conn: conn,
+        inner_content: "",
+        theme: nil
+      )
+
+    assert html =~ ~s(href="/vendor/fontawesome/css/all.css")
+    refute html =~ "kit.fontawesome.com"
+    refute html =~ "phoenix_storybook_fonts.css"
+  end
+
+  test "root layout falls back to kit when custom FontAwesome CSS is missing" do
+    conn = build_test_conn(TestBackendWithKitOnly)
+
+    html =
+      Phoenix.View.render_to_string(LayoutView, "root.html",
+        conn: conn,
+        inner_content: "",
+        page_title: "Storybook"
+      )
+
+    assert html =~ "kit.fontawesome.com/kit123.css"
+    refute html =~ "phoenix_storybook_fonts.css"
+  end
+
+  test "root_iframe layout falls back to kit when custom FontAwesome CSS is missing" do
+    conn = build_test_conn(TestBackendWithKitOnly)
+
+    html =
+      Phoenix.View.render_to_string(LayoutView, "root_iframe.html",
+        conn: conn,
+        inner_content: "",
+        theme: nil
+      )
+
+    assert html =~ "kit.fontawesome.com/kit123.css"
+    refute html =~ "phoenix_storybook_fonts.css"
+  end
+
+  test "root layout falls back to bundled FontAwesome when kit and custom CSS are missing" do
+    conn = build_test_conn(TestBackendWithBundledFonts)
+
+    html =
+      Phoenix.View.render_to_string(LayoutView, "root.html",
+        conn: conn,
+        inner_content: "",
+        page_title: "Storybook"
+      )
+
+    assert html =~ "phoenix_storybook_fonts.css"
+    refute html =~ "kit.fontawesome.com"
+  end
+
+  test "root_iframe layout falls back to bundled FontAwesome when kit and custom CSS are missing" do
+    conn = build_test_conn(TestBackendWithBundledFonts)
+
+    html =
+      Phoenix.View.render_to_string(LayoutView, "root_iframe.html",
+        conn: conn,
+        inner_content: "",
+        theme: nil
+      )
+
+    assert html =~ "phoenix_storybook_fonts.css"
+    refute html =~ "kit.fontawesome.com"
   end
 
   test "asset_path uses hashed JS assets and raw asset names" do

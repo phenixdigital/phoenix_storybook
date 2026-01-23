@@ -54,6 +54,17 @@ defmodule MyAppWeb.Storybook do
 end
 ```
 
+If you already ship FontAwesome from your app (for example from `/vendor`), you can point
+storybook to the same CSS to avoid loading its default bundle:
+
+```elixir
+defmodule MyAppWeb.Storybook do
+  use PhoenixStorybook,
+    otp_app: :my_app,
+    font_awesome_css_path: "/vendor/fontawesome/css/all.css"
+end
+```
+
 ## HeroIcons
 
 HeroIcons are supported in two flavors: by using [heroicons_elixir](https://github.com/mveytsman/heroicons_elixir) or directly using [heroicons CSS](https://github.com/tailwindlabs/heroicons)
