@@ -9,6 +9,9 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v0.9.4 (not released yet)
+- **bugfix**: [storybook asset hash query param renamed to avoid live reload URL rewriting](https://github.com/phenixdigital/phoenix_storybook/issues/699)
+
 ## v0.9.3 (2025-09-15)
 - **feature**: [accompany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)
 - **improvement**: bumped to `phoenix_live_view 1.1.x` and `phoenix 1.8.x`
