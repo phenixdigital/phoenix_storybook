@@ -96,7 +96,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
   test "storybook_css_hash and storybook_js_hash follow asset hash availability" do
     conn = build_test_conn()
-    assert LayoutView.storybook_css_hash(conn) == "?vsn=abc123"
+    assert LayoutView.storybook_css_hash(conn) == "?hash=abc123"
     assert LayoutView.storybook_js_hash(conn) == ""
   end
 
