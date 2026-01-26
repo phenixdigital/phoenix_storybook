@@ -25,6 +25,27 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
 
       assert is_nil(SourceFailStory.__module_source__())
     end
+
+    test "it returns nil when component definition has multiple clauses" do
+      module =
+        Module.concat(
+          __MODULE__,
+          "MultiClauseStory#{System.unique_integer([:positive])}"
+        )
+
+      Module.create(
+        module,
+        quote do
+          use PhoenixStorybook.Story, :component
+          def function(), do: &__MODULE__.render/1
+          def function(), do: &__MODULE__.render/1
+          def render(_assigns), do: "ok"
+        end,
+        Macro.Env.location(__ENV__)
+      )
+
+      assert is_nil(module.__module_source__())
+    end
   end
 
   describe "__source__/0" do
@@ -44,6 +65,30 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
                "./example_html.ex" => File.read!(path1),
                "./templates/example.html.heex" => File.read!(path2)
              }
+    end
+
+    test "it logs and returns an empty map when extra_sources fails" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          module =
+            Module.concat(
+              __MODULE__,
+              "ExtraSourcesFailStory#{System.unique_integer([:positive])}"
+            )
+
+          Module.create(
+            module,
+            quote do
+              use PhoenixStorybook.Story, :example
+              def extra_sources, do: raise("boom")
+            end,
+            Macro.Env.location(__ENV__)
+          )
+
+          assert module.__extra_sources__() == %{}
+        end)
+
+      assert log =~ "cannot load extra sources for story"
     end
   end
 
@@ -65,6 +110,25 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
       refute source =~ ~s|use Phoenix.Component|
       refute source =~ ~s|attr :index2|
       refute source =~ ~s|should not appear|
+    end
+
+    test "it handles the last function in a module" do
+      source_path = PhoenixStorybook.Mount.__info__(:compile)[:source] |> to_string()
+      module_source = File.read!(source_path)
+
+      source =
+        StorySource.strip_function_source(module_source, &PhoenixStorybook.Mount.on_mount/4)
+
+      assert source =~ "def on_mount"
+    end
+
+    test "it raises when docs have non-integer locations" do
+      source_path = :telemetry.module_info(:compile)[:source] |> to_string()
+      module_source = File.read!(source_path)
+
+      assert_raise FunctionClauseError, fn ->
+        StorySource.strip_function_source(module_source, &:telemetry.execute/3)
+      end
     end
   end
 

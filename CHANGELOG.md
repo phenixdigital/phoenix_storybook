@@ -12,6 +12,7 @@
 ## v0.9.4 (not released)
 - **bugfix**: [Error when using hooks defined as a subclass of LiveView's v1.1 new ViewHook](https://github.com/phenixdigital/phoenix_storybook/issues/663)
 - **feature**: [support custom light class in color mode sandbox](https://github.com/phenixdigital/phoenix_storybook/issues/722)
+- **bugfix**: [storybook asset hash query param renamed to avoid live reload URL rewriting](https://github.com/phenixdigital/phoenix_storybook/issues/699)
 
 ## v0.9.3 (2025-09-15)
 - **feature**: [accompany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)

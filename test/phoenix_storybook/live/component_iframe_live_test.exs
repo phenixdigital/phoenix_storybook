@@ -3,8 +3,57 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
+  alias Phoenix.LiveView.Socket
+  alias PhoenixStorybook.Stories.{Variation, VariationGroup}
+  alias PhoenixStorybook.Story.ComponentIframeLive
+
   @endpoint PhoenixStorybook.ComponentIframeLiveEndpoint
   @moduletag :capture_log
+
+  defmodule BackendNoTheme do
+    def config(_key, default \\ nil), do: default
+
+    def load_story(_story_path), do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.DummyStory}
+  end
+
+  defmodule BackendNotFound do
+    def config(_key, default \\ nil), do: default
+    def load_story(_story_path), do: {:error, :not_found}
+  end
+
+  defmodule BackendComponentEmpty do
+    def config(_key, default \\ nil), do: default
+
+    def load_story(_story_path),
+      do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.EmptyVariationsStory}
+  end
+
+  defmodule BackendPage do
+    def config(_key, default \\ nil), do: default
+    def load_story(_story_path), do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.PageStory}
+  end
+
+  defmodule DummyStory do
+    use Phoenix.Component
+
+    def storybook_type, do: :component
+    def variations, do: [%Variation{id: :one}]
+    def container, do: :div
+    def template, do: nil
+    def imports, do: []
+    def aliases, do: []
+    def function, do: &__MODULE__.render/1
+    def render(assigns), do: ~H"<div>dummy</div>"
+  end
+
+  defmodule EmptyVariationsStory do
+    def storybook_type, do: :component
+    def variations, do: []
+  end
+
+  defmodule PageStory do
+    def storybook_type, do: :page
+  end
 
   setup_all do
     start_supervised!(@endpoint)
@@ -138,7 +187,102 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
   end
 
+  test "broadcasts iframe pid when topic is provided", %{conn: conn} do
+    topic = "psb-component-iframe-#{System.unique_integer([:positive])}"
+    Phoenix.PubSub.subscribe(PhoenixStorybook.PubSub, topic)
+
+    {:ok, _view, _html} =
+      live_with_params(conn, "/storybook/iframe/component", %{
+        "variation_id" => "hello",
+        "topic" => topic
+      })
+
+    assert_receive {:component_iframe_pid, pid}
+    assert is_pid(pid)
+  end
+
+  test "handle_params raises StoryNotFound for not_found backend" do
+    socket = base_socket(BackendNotFound)
+
+    assert_raise PhoenixStorybook.StoryNotFound, fn ->
+      ComponentIframeLive.handle_params(%{"story" => ["missing"]}, "/", socket)
+    end
+  end
+
+  test "handle_params assigns empty extra_assigns when variation is nil" do
+    socket = base_socket(BackendComponentEmpty)
+
+    {:noreply, socket} =
+      ComponentIframeLive.handle_params(%{"story" => ["empty"]}, "/", socket)
+
+    assert socket.assigns.variation == nil
+    assert socket.assigns.extra_assigns == %{}
+  end
+
+  test "handle_params returns nil variation for non-component stories" do
+    socket = base_socket(BackendPage)
+
+    {:noreply, socket} =
+      ComponentIframeLive.handle_params(%{"story" => ["page"]}, "/", socket)
+
+    assert socket.assigns.variation == nil
+  end
+
+  test "variation_extra_attributes ignores theme when no strategy configured" do
+    assigns =
+      Map.put(
+        %{
+          backend_module: BackendNoTheme,
+          story: DummyStory,
+          variation: %Variation{id: :one},
+          variation_id: nil,
+          extra_assigns: %{{:single, :one} => %{foo: "bar"}},
+          theme: nil,
+          playground: false,
+          color_mode: nil,
+          topic: nil
+        },
+        :__changed__,
+        %{}
+      )
+
+    assert %Phoenix.LiveView.Rendered{} = ComponentIframeLive.render(assigns)
+  end
+
+  test "variation_extra_attributes keeps group assigns when no theme strategy configured" do
+    assigns =
+      Map.put(
+        %{
+          backend_module: BackendNoTheme,
+          story: DummyStory,
+          variation: %VariationGroup{
+            id: :group,
+            variations: [%Variation{id: :one}]
+          },
+          variation_id: nil,
+          extra_assigns: %{{:group, :one} => %{foo: "bar"}},
+          theme: nil,
+          playground: false,
+          color_mode: nil,
+          topic: nil
+        },
+        :__changed__,
+        %{}
+      )
+
+    assert %Phoenix.LiveView.Rendered{} = ComponentIframeLive.render(assigns)
+  end
+
+  test "handle_event falls through for unknown events" do
+    socket = %Socket{assigns: %{}}
+    assert {:noreply, ^socket} = ComponentIframeLive.handle_event("unknown", %{}, socket)
+  end
+
   defp live_with_params(conn, path, params) do
     live(conn, "#{path}?#{URI.encode_query(params)}")
+  end
+
+  defp base_socket(backend_module) do
+    %Socket{assigns: %{backend_module: backend_module, __changed__: %{}}}
   end
 end
