@@ -11,6 +11,7 @@
 
 ## 0.9.4 (not released yet)
 - **feature**: allow live_component stories to implement `handle_info/2` for parent message handling (e.g. `send_update/2`)
+- **bugfix**: [storybook asset hash query param renamed to avoid live reload URL rewriting](https://github.com/phenixdigital/phoenix_storybook/issues/699)
 
 ## v0.9.3 (2025-09-15)
 - **feature**: [accompany variations with optional notes](https://github.com/phenixdigital/phoenix_storybook/issues/571) - 🙏 [@xxdavid](https://github.com/xxdavid)
