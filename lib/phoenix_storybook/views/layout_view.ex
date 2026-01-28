@@ -123,14 +123,14 @@ defmodule PhoenixStorybook.LayoutView do
   def storybook_css_hash(conn_or_socket) do
     case backend_module(conn_or_socket).asset_hash(:css_path) do
       nil -> ""
-      hash -> "?vsn=" <> hash
+      hash -> "?hash=" <> hash
     end
   end
 
   def storybook_js_hash(conn_or_socket) do
     case backend_module(conn_or_socket).asset_hash(:js_path) do
       nil -> ""
-      hash -> "?vsn=" <> hash
+      hash -> "?hash=" <> hash
     end
   end
 
