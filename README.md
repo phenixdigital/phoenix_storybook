@@ -142,6 +142,7 @@ defmodule MyAppWeb.Storybook do
     # Color mode settings. Defaults to false and 'dark'.
     color_mode: true,
     color_mode_sandbox_dark_class: "dark",
+    color_mode_sandbox_light_class: "light",
 
     # If you want to use custom FontAwesome icons.
     font_awesome_plan: :pro, # default value is :free

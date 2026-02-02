@@ -8,7 +8,7 @@ The storybook supports three color modes: _dark_, _light_ and _system_.
 The different modes are handled as follows:
 
 - `dark`: the `dark` class (or custom dark class) is applied to your component's sandbox
-- `light`: no class is applied
+- `light`: no class is applied by default (optional light class support below)
 - `system`: The `dark` class is added if your system prefers dark mode (as determined by the `prefers-color-scheme` media query).
 
 ## Setup
@@ -28,7 +28,7 @@ This configuration adds a color theme picker to the Storybook header, allowing y
 When your components are rendered in Storybook, they are wrapped in a sandbox element (read [sandboxing guide](sandboxing.md)).
 
 - If the current color mode is dark (or system mode with dark preference), the sandbox will have a `dark` CSS class.
-- In light mode, no class is applied.
+- In light mode, no class is applied by default.
 
 You can customize the default dark class by specifying it in your configuration:
 
@@ -36,6 +36,14 @@ You can customize the default dark class by specifying it in your configuration:
 use PhoenixStorybook,
   # ...
   color_mode_sandbox_dark_class: "my-dark",
+```
+
+If your app requires an explicit light class, configure it as well:
+
+```elixir
+use PhoenixStorybook,
+  # ...
+  color_mode_sandbox_light_class: "my-light",
 ```
 
 ## Tailwind setup
