@@ -21,18 +21,26 @@
     >
     </script>
 
-    <%= if fa_kit_id = fa_kit_id(@conn) do %>
-      <link
-        rel="stylesheet"
-        href={"https://kit.fontawesome.com/#{fa_kit_id}.css"}
-        crossorigin="anonymous"
-      />
-    <% else %>
+    <%= if fa_css_path = font_awesome_css_path(@conn) do %>
       <link
         rel="stylesheet"
         nonce={csp_nonce(@conn, :style)}
-        href={asset_path(@conn, "css/phoenix_storybook_fonts.css")}
+        href={application_static_path(fa_css_path)}
       />
+    <% else %>
+      <%= if fa_kit_id = fa_kit_id(@conn) do %>
+        <link
+          rel="stylesheet"
+          href={"https://kit.fontawesome.com/#{fa_kit_id}.css"}
+          crossorigin="anonymous"
+        />
+      <% else %>
+        <link
+          rel="stylesheet"
+          nonce={csp_nonce(@conn, :style)}
+          href={asset_path(@conn, "css/phoenix_storybook_fonts.css")}
+        />
+      <% end %>
     <% end %>
 
     <link

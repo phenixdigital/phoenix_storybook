@@ -12,6 +12,7 @@
 ## v0.9.4 (not released)
 - **feature**: [support custom light class in color mode sandbox](https://github.com/phenixdigital/phoenix_storybook/issues/722)
 - **feature**: allow live_component stories to implement `handle_info/2` for parent message handling (e.g. `send_update/2`)
+- **improvement**: [allow overriding FontAwesome CSS path to use app-provided assets](https://github.com/phenixdigital/phoenix_storybook/issues/739)
 - **bugfix**: [storybook asset hash query param renamed to avoid live reload URL rewriting](https://github.com/phenixdigital/phoenix_storybook/issues/699)
 - **bugfix**: [Error when using hooks defined as a subclass of LiveView's v1.1 new ViewHook](https://github.com/phenixdigital/phoenix_storybook/issues/663)
 

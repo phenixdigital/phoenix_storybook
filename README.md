@@ -147,6 +147,8 @@ defmodule MyAppWeb.Storybook do
     # If you want to use custom FontAwesome icons.
     font_awesome_plan: :pro, # default value is :free
     font_awesome_kit_id: "foo8b41bar4625",
+    # Optional: use your own FontAwesome CSS (e.g. vendor path) instead of kit/default.
+    font_awesome_css_path: "/vendor/fontawesome/css/all.css",
     font_awesome_rendering: :webfont, # default value is :svg
 
     # Set to `false` if you want to keep attributes & slot documentations in component page header.
