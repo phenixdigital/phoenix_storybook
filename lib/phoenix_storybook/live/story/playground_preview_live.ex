@@ -42,8 +42,12 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
 
   defp assign_color_mode_class(socket = %{assigns: assigns}) do
     class =
-      if assigns.color_mode == "dark" do
-        assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+      if assigns.backend_module.config(:color_mode) do
+        case assigns.color_mode do
+          "dark" -> assigns.backend_module.config(:color_mode_sandbox_dark_class, "dark")
+          "light" -> assigns.backend_module.config(:color_mode_sandbox_light_class)
+          _ -> nil
+        end
       end
 
     assign(socket, :color_mode_class, class)
@@ -170,7 +174,15 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
     {:noreply, assign_variations_attributes(socket, variation)}
   end
 
-  def handle_info(_, socket), do: {:noreply, socket}
+  def handle_info(message, socket) do
+    story = socket.assigns[:story]
+
+    if is_atom(story) and function_exported?(story, :handle_info, 2) do
+      story.handle_info(message, socket)
+    else
+      {:noreply, socket}
+    end
+  end
 
   def handle_event("psb-assign", assign_params, socket = %{assigns: assigns}) do
     variation_attributes =

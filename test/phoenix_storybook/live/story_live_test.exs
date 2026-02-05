@@ -10,6 +10,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
   use Phoenix.VerifiedRoutes, endpoint: @endpoint, router: PhoenixStorybook.TestRouter
 
+  defmodule HandleInfoStory do
+    def handle_info({:storybook_handle_info, from}, socket) do
+      send(from, :handled)
+      {:noreply, socket}
+    end
+  end
+
   setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
@@ -58,6 +65,17 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert_raise PhoenixStorybook.StoryTabNotFound, fn ->
         get(conn, ~p"/storybook/component", tab: "unknown")
       end
+    end
+  end
+
+  describe "handle_info delegation" do
+    test "delegates unknown messages to story handle_info/2" do
+      socket = %Phoenix.LiveView.Socket{assigns: %{story: HandleInfoStory}}
+
+      assert {:noreply, ^socket} =
+               PhoenixStorybook.StoryLive.handle_info({:storybook_handle_info, self()}, socket)
+
+      assert_receive :handled
     end
   end
 
@@ -577,6 +595,23 @@ defmodule PhoenixStorybook.StoryLiveTest do
         component_html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
 
       assert component_class |> String.split(" ") |> Enum.member?("dark")
+    end
+
+    test "send psb-set-color-mode applies light sandbox class", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component")
+
+      view
+      |> element("#psb-colormode-dropdown")
+      |> render_hook("psb-set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
+
+      assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=light]")
+
+      component_html = view |> element("#hello-component .psb-sandbox") |> render()
+
+      [component_class] =
+        component_html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
+
+      assert component_class |> String.split(" ") |> Enum.member?("light")
     end
   end
 end

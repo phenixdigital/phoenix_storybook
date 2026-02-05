@@ -57,6 +57,9 @@ defmodule PhoenixStorybook.Story do
   end
   ```
 
+  You can also define an optional `handle_info/2` in your live component story. It will be called
+  by the storybook LiveView when your component sends messages to its parent (useful for `send_update/2`).
+
   ℹ️ Learn more on components in the [components guide](guides/components.md).
 
   ### Page
@@ -166,6 +169,9 @@ defmodule PhoenixStorybook.Story do
     @callback template() :: String.t()
     @callback layout() :: atom()
     @callback render_source() :: atom()
+    @callback handle_info(term(), Phoenix.LiveView.Socket.t()) ::
+                {:noreply, Phoenix.LiveView.Socket.t()}
+    @optional_callbacks handle_info: 2
   end
 
   defmodule PageBehaviour do

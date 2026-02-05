@@ -33,6 +33,13 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     def load_story(_story_path), do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.PageStory}
   end
 
+  defmodule HandleInfoStory do
+    def handle_info({:storybook_handle_info, from}, socket) do
+      send(from, :handled)
+      {:noreply, socket}
+    end
+  end
+
   defmodule DummyStory do
     use Phoenix.Component
 
@@ -154,6 +161,20 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ "component: hello"
     end
 
+    test "it renders a playground with a light color_mode", %{conn: conn} do
+      {:ok, view, _html} =
+        live_with_params(
+          conn,
+          "/storybook/iframe/component",
+          %{"variation_id" => "hello", "playground" => true, "color_mode" => "light"}
+        )
+
+      html = view |> element(".psb-sandbox") |> render()
+      [class] = html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
+      assert class |> String.split(" ") |> Enum.member?("light")
+      assert html =~ "component: hello"
+    end
+
     test "it renders a playground with a variation group", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(
@@ -257,6 +278,15 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       )
 
     assert %Phoenix.LiveView.Rendered{} = ComponentIframeLive.render(assigns)
+  end
+
+  test "handle_info delegates to story when defined" do
+    socket = %Socket{assigns: %{story: HandleInfoStory}}
+
+    assert {:noreply, ^socket} =
+             ComponentIframeLive.handle_info({:storybook_handle_info, self()}, socket)
+
+    assert_receive :handled
   end
 
   test "handle_event falls through for unknown events" do
