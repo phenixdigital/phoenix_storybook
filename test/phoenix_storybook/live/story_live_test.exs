@@ -10,6 +10,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
   use Phoenix.VerifiedRoutes, endpoint: @endpoint, router: PhoenixStorybook.TestRouter
 
+  defmodule HandleInfoStory do
+    def handle_info({:storybook_handle_info, from}, socket) do
+      send(from, :handled)
+      {:noreply, socket}
+    end
+  end
+
   setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
@@ -58,6 +65,17 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert_raise PhoenixStorybook.StoryTabNotFound, fn ->
         get(conn, ~p"/storybook/component", tab: "unknown")
       end
+    end
+  end
+
+  describe "handle_info delegation" do
+    test "delegates unknown messages to story handle_info/2" do
+      socket = %Phoenix.LiveView.Socket{assigns: %{story: HandleInfoStory}}
+
+      assert {:noreply, ^socket} =
+               PhoenixStorybook.StoryLive.handle_info({:storybook_handle_info, self()}, socket)
+
+      assert_receive :handled
     end
   end
 

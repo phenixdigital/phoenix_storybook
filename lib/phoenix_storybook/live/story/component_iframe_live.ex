@@ -192,4 +192,14 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}
+
+  def handle_info(message, socket) do
+    story = socket.assigns[:story]
+
+    if is_atom(story) and function_exported?(story, :handle_info, 2) do
+      story.handle_info(message, socket)
+    else
+      {:noreply, socket}
+    end
+  end
 end
