@@ -596,5 +596,22 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert component_class |> String.split(" ") |> Enum.member?("dark")
     end
+
+    test "send psb-set-color-mode applies light sandbox class", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component")
+
+      view
+      |> element("#psb-colormode-dropdown")
+      |> render_hook("psb-set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
+
+      assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=light]")
+
+      component_html = view |> element("#hello-component .psb-sandbox") |> render()
+
+      [component_class] =
+        component_html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
+
+      assert component_class |> String.split(" ") |> Enum.member?("light")
+    end
   end
 end
