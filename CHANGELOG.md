@@ -9,7 +9,7 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
-## v0.9.4 (not released)
+## v1.0.0 (2026-03-03)
 - **feature**: [support custom light class in color mode sandbox](https://github.com/phenixdigital/phoenix_storybook/issues/722)
 - **feature**: allow live_component stories to implement `handle_info/2` for parent message handling (e.g. `send_update/2`)
 - **improvement**: [allow overriding FontAwesome CSS path to use app-provided assets](https://github.com/phenixdigital/phoenix_storybook/issues/739)
