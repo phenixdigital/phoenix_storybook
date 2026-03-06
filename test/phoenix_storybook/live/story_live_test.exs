@@ -182,6 +182,8 @@ defmodule PhoenixStorybook.StoryLiveTest do
         )
 
       refute html =~ "defmodule"
+      refute html =~ "disabled-helper:"
+      refute html =~ "source-selection-form"
     end
 
     test "renders component, change theme and navigate", %{conn: conn} do
@@ -232,6 +234,51 @@ defmodule PhoenixStorybook.StoryLiveTest do
       )
 
       assert html =~ "defmodule"
+    end
+
+    test "renders component story extra source from source file select", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component")
+      view |> element("a", "Source") |> render_click()
+
+      html =
+        view
+        |> element("form[id$='-source-selection-form'] select")
+        |> render_change(%{source: %{file: "./component_helpers.ex"}})
+
+      assert_patched(
+        view,
+        ~p"/storybook/component?#{[file: "./component_helpers.ex", tab: :source, theme: :default, variation_id: :hello]}"
+      )
+
+      assert html =~ "TreeStorybook.ComponentHelpers"
+      assert html =~ "component-helper:"
+    end
+
+    test "falls back to component main source when source file is invalid", %{conn: conn} do
+      {:ok, _view, html} =
+        live(conn, ~p"/storybook/component?#{[tab: :source, file: "./missing.ex"]}")
+
+      assert html =~ "defmodule"
+      assert html =~ "component"
+      refute html =~ "component-helper:"
+    end
+
+    test "renders live_component story extra source from source file select", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/live_component")
+      view |> element("a", "Source") |> render_click()
+
+      html =
+        view
+        |> element("form[id$='-source-selection-form'] select")
+        |> render_change(%{source: %{file: "./live_component_helpers.ex"}})
+
+      assert_patched(
+        view,
+        ~p"/storybook/live_component?#{[file: "./live_component_helpers.ex", tab: :source, theme: :default, variation_id: :hello]}"
+      )
+
+      assert html =~ "TreeStorybook.LiveComponentHelpers"
+      assert html =~ "live-component-helper:"
     end
 
     test "component variation with template", %{conn: conn} do

@@ -2,6 +2,12 @@ defmodule TreeStorybook.Component do
   use PhoenixStorybook.Story, :component
   def function, do: &Component.component/1
 
+  def extra_sources do
+    [
+      "./component_helpers.ex"
+    ]
+  end
+
   def attributes do
     [
       %Attr{
@@ -38,11 +44,11 @@ defmodule TreeStorybook.Component do
         id: :lengthy,
         description: "Lengthy variation",
         attributes: %{
-          label: "Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt.",
+          label:
+            "Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt.",
           index: 37
         }
       },
-
       %Variation{
         id: :themed,
         description: "With a theme attribute",

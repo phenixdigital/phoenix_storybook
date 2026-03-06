@@ -165,7 +165,8 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp current_source_file(params, story) do
-    if story.storybook_type() == :example and Map.get(params, "tab") == "source" do
+    if story.storybook_type() in [:example, :component, :live_component] and
+         Map.get(params, "tab") == "source" do
       Map.get(params, "file")
     else
       nil
@@ -374,15 +375,24 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(t, assigns = %{tab: :source}) when t in [:component, :live_component] do
-    source =
-      assigns.story
-      |> CodeRenderer.render_component_source()
-      |> to_raw_html()
-
-    assigns = assign(assigns, :source, source)
+    assigns = assign_source_panel_values(assigns)
 
     ~H"""
-    <.source_panel source={@source} />
+    <.source_panel source={@source} class="relative">
+      <div class="absolute psb:top-3 psb:right-1 psb:opacity-75">
+        <SourceSelect.source_file_select
+          :if={story_source_select_enabled?(@story, @extra_sources)}
+          form_id={"#{Macro.underscore(@story)}-source-selection-form"}
+          as={:source}
+          field={:file}
+          options={source_select_options(@story, @extra_sources)}
+          value={@selected_source_file}
+          change_event="psb-set-source-file"
+          class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+          select_class="psb:dark"
+        />
+      </div>
+    </.source_panel>
     """
   end
 
@@ -436,35 +446,23 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns = %{tab: :source}) do
-    extra_sources = example_extra_sources(assigns.story)
-    selected_source_file = selected_source_file(assigns.story, assigns[:source_file])
-
-    source =
-      assigns.story
-      |> example_source(selected_source_file)
-      |> CodeRenderer.render_source()
-      |> to_raw_html()
-
-    assigns =
-      assign(assigns,
-        source: source,
-        extra_sources: extra_sources,
-        selected_source_file: selected_source_file
-      )
+    assigns = assign_source_panel_values(assigns)
 
     ~H"""
-    <.source_panel source={@source}>
-      <SourceSelect.source_file_select
-        :if={Enum.any?(@extra_sources)}
-        form_id={"#{Macro.underscore(@story)}-source-selection-form"}
-        as={:source}
-        field={:file}
-        label="Source file"
-        options={example_source_select_options(@story)}
-        value={@selected_source_file}
-        change_event="psb-set-source-file"
-        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
-      />
+    <.source_panel source={@source} class="relative">
+      <div class="absolute psb:top-3 psb:right-1 psb:opacity-85">
+        <SourceSelect.source_file_select
+          :if={story_source_select_enabled?(@story, @extra_sources)}
+          form_id={"#{Macro.underscore(@story)}-source-selection-form"}
+          as={:source}
+          field={:file}
+          options={source_select_options(@story, @extra_sources)}
+          value={@selected_source_file}
+          change_event="psb-set-source-file"
+          class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+          select_class="psb:dark"
+        />
+      </div>
     </.source_panel>
     """
   end
@@ -472,41 +470,80 @@ defmodule PhoenixStorybook.StoryLive do
   defp render_content(:example, assigns), do: ~H[]
 
   attr :source, :any, required: true
+  attr :class, :string, default: nil
   slot :inner_block
 
   defp source_panel(assigns) do
     ~H"""
-    <div class="psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full">
-      {@source}
-      <div :if={@inner_block != []} class="psb psb:flex psb:justify-end psb:mt-2">
+    <div class={["psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full", @class]}>
+      <div :if={@inner_block != []} class="psb psb:flex psb:justify-end psb:mb-2">
         {render_slot(@inner_block)}
       </div>
+      {@source}
     </div>
     """
   end
 
-  defp example_source_select_options(story) do
+  defp assign_source_panel_values(assigns) do
+    extra_sources = story_extra_sources(assigns.story)
+    selected_source_file = selected_source_file(assigns.story, assigns[:source_file])
+    source = rendered_story_source(assigns.story, extra_sources, selected_source_file)
+
+    assign(assigns,
+      source: source,
+      extra_sources: extra_sources,
+      selected_source_file: selected_source_file
+    )
+  end
+
+  defp source_select_options(story, extra_sources) do
     [{Path.basename(story.__file_path__()), ""}] ++
-      Enum.map(story.extra_sources(), fn source ->
+      Enum.map(Map.keys(extra_sources), fn source ->
         {Path.basename(source), source}
       end)
   end
 
-  defp example_extra_sources(story), do: story.__extra_sources__()
+  defp story_extra_sources(story), do: story.__extra_sources__()
+
+  defp story_source_select_enabled?(story, extra_sources) do
+    Enum.any?(extra_sources) and
+      case story.storybook_type() do
+        :example -> true
+        type when type in [:component, :live_component] -> story.render_source() != false
+        _ -> false
+      end
+  end
 
   defp selected_source_file(_story, source_file) do
     if source_file in [nil, ""], do: nil, else: source_file
   end
 
-  defp example_source(story, nil) do
-    story.__source__()
-    |> ExampleHelpers.strip_example_source()
+  defp rendered_story_source(story, _extra_sources, nil), do: rendered_story_primary_source(story)
+
+  defp rendered_story_source(story, extra_sources, source_path) do
+    case Map.get(extra_sources, source_path) do
+      nil ->
+        rendered_story_primary_source(story)
+
+      source ->
+        source
+        |> CodeRenderer.render_source()
+        |> to_raw_html()
+    end
   end
 
-  defp example_source(story, source_path) do
-    case Map.get(example_extra_sources(story), source_path) do
-      nil -> example_source(story, nil)
-      source -> source
+  defp rendered_story_primary_source(story) do
+    case story.storybook_type() do
+      :example ->
+        story.__source__()
+        |> ExampleHelpers.strip_example_source()
+        |> CodeRenderer.render_source()
+        |> to_raw_html()
+
+      type when type in [:component, :live_component] ->
+        story
+        |> CodeRenderer.render_component_source()
+        |> to_raw_html()
     end
   end
 

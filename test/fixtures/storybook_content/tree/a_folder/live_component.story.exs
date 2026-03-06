@@ -3,6 +3,12 @@ defmodule TreeStorybook.AFolder.LiveComponent do
   def component, do: LiveComponent
   def render_source, do: false
 
+  def extra_sources do
+    [
+      "./live_component_disabled_helpers.ex"
+    ]
+  end
+
   def attributes do
     [
       %Attr{id: :label, type: :string, required: true}

@@ -104,6 +104,46 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "component extra_sources" do
+    test "with valid extra_sources it won't raise" do
+      mock = component_stub(extra_sources: [])
+      assert validate!(mock) == mock
+
+      mock = component_stub(extra_sources: ["foo", "bar"])
+      assert validate!(mock) == mock
+    end
+
+    test "with invalid extra_sources it will raise" do
+      mock = component_stub(extra_sources: "foo")
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "component extra_sources must be a list of binary"
+
+      mock = component_stub(extra_sources: [:foo, :bar])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "component extra_sources must be a list of binary"
+    end
+  end
+
+  describe "live_component extra_sources" do
+    test "with valid extra_sources it won't raise" do
+      mock = live_component_stub(extra_sources: [])
+      assert validate!(mock) == mock
+
+      mock = live_component_stub(extra_sources: ["foo", "bar"])
+      assert validate!(mock) == mock
+    end
+
+    test "with invalid extra_sources it will raise" do
+      mock = live_component_stub(extra_sources: "foo")
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "live_component extra_sources must be a list of binary"
+
+      mock = live_component_stub(extra_sources: [:foo, :bar])
+      e = assert_raise CompileError, fn -> validate!(mock) end
+      assert e.description =~ "live_component extra_sources must be a list of binary"
+    end
+  end
+
   describe "component story base attributes" do
     test "with default mock it won't raise" do
       mock = component_stub()

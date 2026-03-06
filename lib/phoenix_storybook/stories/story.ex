@@ -151,6 +151,7 @@ defmodule PhoenixStorybook.Story do
     @callback template() :: String.t()
     @callback layout() :: atom()
     @callback render_source() :: atom()
+    @callback extra_sources() :: [String.t()]
     @callback unstripped_doc() :: String.t() | [String.t()] | nil
   end
 
@@ -169,6 +170,7 @@ defmodule PhoenixStorybook.Story do
     @callback template() :: String.t()
     @callback layout() :: atom()
     @callback render_source() :: atom()
+    @callback extra_sources() :: [String.t()]
     @callback handle_info(term(), Phoenix.LiveView.Socket.t()) ::
                 {:noreply, Phoenix.LiveView.Socket.t()}
     @optional_callbacks handle_info: 2
@@ -241,6 +243,9 @@ defmodule PhoenixStorybook.Story do
       @impl unquote(component_behaviour(live?))
       def render_source, do: :module
 
+      @impl unquote(component_behaviour(live?))
+      def extra_sources, do: []
+
       if unquote(live?) do
         def merged_attributes, do: Attr.merge_attributes(component(), attributes())
         def merged_slots, do: Slot.merge_slots(component(), slots())
@@ -262,7 +267,8 @@ defmodule PhoenixStorybook.Story do
                      variations: 0,
                      template: 0,
                      layout: 0,
-                     render_source: 0
+                     render_source: 0,
+                     extra_sources: 0
     end
   end
 

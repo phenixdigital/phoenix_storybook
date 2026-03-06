@@ -5,6 +5,12 @@ defmodule TreeStorybook.LiveComponent do
 
   def container, do: :iframe
 
+  def extra_sources do
+    [
+      "./live_component_helpers.ex"
+    ]
+  end
+
   def variations do
     [
       %Variation{
@@ -21,9 +27,10 @@ defmodule TreeStorybook.LiveComponent do
         id: :lengthy,
         description: "Lengthy variation",
         attributes: %{
-          label: "Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt."
+          label:
+            "Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt."
         }
-      },
+      }
     ]
   end
 end

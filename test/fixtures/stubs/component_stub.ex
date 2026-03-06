@@ -43,4 +43,6 @@ defmodule PhoenixStorybook.ComponentStub do
   @impl ComponentBehaviour
   def render_source, do: :module
 
+  @impl ComponentBehaviour
+  def extra_sources, do: []
 end
