@@ -4,7 +4,7 @@ defmodule TreeStorybook.Component do
 
   def extra_sources do
     [
-      "./component_helpers.ex"
+      "../storybook_content/tree/component_helpers.ex"
     ]
   end
 

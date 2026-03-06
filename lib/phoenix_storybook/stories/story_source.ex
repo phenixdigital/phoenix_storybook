@@ -9,7 +9,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   defmacro __before_compile__(env) do
     if PhoenixStorybook.enabled?() do
       component_source_path = component_source_path(env)
-      story_extra_sources_path = story_extra_sources_path(env)
+      story_extra_sources_path = story_extra_sources_path(env, component_source_path)
 
       quote do
         def __source__ do
@@ -18,6 +18,10 @@ defmodule PhoenixStorybook.Stories.StorySource do
 
         def __module_source__ do
           unquote(read_source_file(component_source_path))
+        end
+
+        def __module_file_path__ do
+          unquote(component_source_path)
         end
 
         def __extra_sources__ do
@@ -52,12 +56,13 @@ defmodule PhoenixStorybook.Stories.StorySource do
     nil
   end
 
-  defp story_extra_sources_path(env) do
+  defp story_extra_sources_path(env, component_source_path) do
     case extra_sources_definition(env) do
       {source_paths, _} ->
+        base_dir = extra_sources_base_dir(env, component_source_path)
+
         for path <- source_paths do
-          dir = Path.dirname(env.file)
-          {path, Path.expand(path, dir)}
+          {path, Path.expand(path, base_dir)}
         end
 
       _ ->
@@ -70,6 +75,14 @@ defmodule PhoenixStorybook.Stories.StorySource do
   defp extra_sources_fail(env) do
     Logger.warning("cannot load extra sources for story #{env.file}")
     []
+  end
+
+  defp extra_sources_base_dir(env, nil), do: Path.dirname(env.file)
+
+  defp extra_sources_base_dir(_env, component_source_path) do
+    component_source_path
+    |> to_string()
+    |> Path.dirname()
   end
 
   defp component_definition(env) do

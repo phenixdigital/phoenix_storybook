@@ -5,7 +5,7 @@ defmodule TreeStorybook.AFolder.LiveComponent do
 
   def extra_sources do
     [
-      "./live_component_disabled_helpers.ex"
+      "../storybook_content/tree/a_folder/live_component_disabled_helpers.ex"
     ]
   end
 
