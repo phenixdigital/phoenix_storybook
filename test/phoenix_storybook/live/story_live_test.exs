@@ -490,22 +490,35 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
     test "renders an example story main source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
-      html = view |> element("a", "example.story.ex") |> render_click()
+      html = view |> element("a", "Source") |> render_click()
+
+      assert_patched(view, ~p"/storybook/examples/example?#{[tab: :source, theme: :default]}")
       assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
       refute html =~ ~r/extra_sources/
       refute html =~ ~r/doc/
       refute html =~ ~r/PhoenixStorybook/
     end
 
-    test "renders an example story extra source tab", %{conn: conn} do
+    test "renders an example story extra source from source file select", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
-      html = view |> element("a", "example.html.heex") |> render_click()
+      view |> element("a", "Source") |> render_click()
+
+      html =
+        view
+        |> element("form[id$='-source-selection-form'] select")
+        |> render_change(%{source: %{file: "./templates/example.html.heex"}})
+
+      assert_patched(
+        view,
+        ~p"/storybook/examples/example?#{[file: "./templates/example.html.heex", tab: :source, theme: :default]}"
+      )
+
       assert html =~ ~r/Example.*template/
     end
 
     test "renders an example story extra source content", %{conn: conn} do
       {:ok, _view, html} =
-        live(conn, ~p"/storybook/examples/example?#{%{tab: "./example_html.ex"}}")
+        live(conn, ~p"/storybook/examples/example?#{%{tab: "source", file: "./example_html.ex"}}")
 
       assert html =~ ~r/embed_templates/
     end

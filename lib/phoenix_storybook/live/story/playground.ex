@@ -5,7 +5,7 @@ defmodule PhoenixStorybook.Story.Playground do
   alias Phoenix.{LiveView.JS, PubSub}
   alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
   alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
-  alias PhoenixStorybook.Story.PlaygroundPreviewLive
+  alias PhoenixStorybook.Story.{PlaygroundPreviewLive, SourceSelect}
   alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers}
 
   alias Makeup.Formatters.HTML.HTMLFormatter
@@ -716,26 +716,17 @@ defmodule PhoenixStorybook.Story.Playground do
           </div>
         </div>
       </.form>
-      <.form
-        :let={f}
+      <SourceSelect.source_file_select
         :if={Enum.any?(@story.merged_attributes())}
-        for={%{}}
+        form_id="variation-selection-form"
         as={:variation}
-        id="variation-selection-form"
-        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-6"
-      >
-        {label(f, :variation_id, "Open a variation",
-          class:
-            "psb psb:text-gray-400 psb:dark:text-slate-300 psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
-        )}
-        {select(f, :variation_id, variation_options(@story),
-          "phx-change": "set-variation",
-          "phx-target": @myself,
-          class:
-            "psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:pr-10 psb:py-1 psb:border-gray-300 psb:dark:border-slate-600 psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:rounded-md",
-          value: @variation_id
-        )}
-      </.form>
+        field={:variation_id}
+        label="Open a variation"
+        options={variation_options(@story)}
+        value={@variation_id}
+        change_event="set-variation"
+        change_target={@myself}
+      />
     </div>
     """
   end

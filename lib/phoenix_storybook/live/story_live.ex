@@ -9,7 +9,15 @@ defmodule PhoenixStorybook.StoryLive do
   alias PhoenixStorybook.Helpers.ExampleHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.CodeRenderer
-  alias PhoenixStorybook.Story.{ComponentDoc, Playground, PlaygroundPreviewLive, Variations}
+
+  alias PhoenixStorybook.Story.{
+    ComponentDoc,
+    Playground,
+    PlaygroundPreviewLive,
+    SourceSelect,
+    Variations
+  }
+
   alias PhoenixStorybook.{StoryNotFound, StoryTabNotFound}
   alias PhoenixStorybook.ThemeHelpers
 
@@ -95,6 +103,7 @@ defmodule PhoenixStorybook.StoryLive do
            variation_id: if(variation, do: variation.id, else: nil),
            page_title: story_entry.name,
            tab: current_tab(params, story),
+           source_file: current_source_file(params, story),
            theme: theme,
            variation_extra_assigns:
              ExtraAssignsHelpers.init_variation_extra_assigns(story.storybook_type(), story),
@@ -152,6 +161,14 @@ defmodule PhoenixStorybook.StoryLive do
     case Map.get(params, "tab") do
       nil -> default_tab(story)
       tab -> String.to_atom(tab)
+    end
+  end
+
+  defp current_source_file(params, story) do
+    if story.storybook_type() == :example and Map.get(params, "tab") == "source" do
+      Map.get(params, "file")
+    else
+      nil
     end
   end
 
@@ -255,18 +272,10 @@ defmodule PhoenixStorybook.StoryLive do
         end)
 
       :example ->
-        navigation = [
+        [
           {:example, "Example", {:fa, "lightbulb", :regular}},
-          {:source, Path.basename(story.__file_path__()), source_icon()}
+          {:source, "Source", source_icon()}
         ]
-
-        source_tabs =
-          for source <- story.extra_sources() do
-            name = source |> Path.basename()
-            {String.to_atom(source), name, source_icon()}
-          end
-
-        navigation ++ source_tabs
 
       :page ->
         story.navigation()
@@ -365,10 +374,15 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(t, assigns = %{tab: :source}) when t in [:component, :live_component] do
+    source =
+      assigns.story
+      |> CodeRenderer.render_component_source()
+      |> to_raw_html()
+
+    assigns = assign(assigns, :source, source)
+
     ~H"""
-    <div class="psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full">
-      {@story |> CodeRenderer.render_component_source() |> to_raw_html()}
-    </div>
+    <.source_panel source={@source} />
     """
   end
 
@@ -422,29 +436,81 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns = %{tab: :source}) do
+    extra_sources = example_extra_sources(assigns.story)
+    selected_source_file = selected_source_file(assigns.story, assigns[:source_file])
+
+    source =
+      assigns.story
+      |> example_source(selected_source_file)
+      |> CodeRenderer.render_source()
+      |> to_raw_html()
+
+    assigns =
+      assign(assigns,
+        source: source,
+        extra_sources: extra_sources,
+        selected_source_file: selected_source_file
+      )
+
+    ~H"""
+    <.source_panel source={@source}>
+      <SourceSelect.source_file_select
+        :if={Enum.any?(@extra_sources)}
+        form_id={"#{Macro.underscore(@story)}-source-selection-form"}
+        as={:source}
+        field={:file}
+        label="Source file"
+        options={example_source_select_options(@story)}
+        value={@selected_source_file}
+        change_event="psb-set-source-file"
+        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+      />
+    </.source_panel>
+    """
+  end
+
+  defp render_content(:example, assigns), do: ~H[]
+
+  attr :source, :any, required: true
+  slot :inner_block
+
+  defp source_panel(assigns) do
     ~H"""
     <div class="psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full">
-      {@story.__source__()
-      |> ExampleHelpers.strip_example_source()
-      |> CodeRenderer.render_source()
-      |> to_raw_html()}
+      {@source}
+      <div :if={@inner_block != []} class="psb psb:flex psb:justify-end psb:mt-2">
+        {render_slot(@inner_block)}
+      </div>
     </div>
     """
   end
 
-  defp render_content(:example, assigns = %{story: story, tab: source_path}) do
-    case Map.get(story.__extra_sources__(), to_string(source_path)) do
-      nil ->
-        ~H[]
+  defp example_source_select_options(story) do
+    [{Path.basename(story.__file_path__()), ""}] ++
+      Enum.map(story.extra_sources(), fn source ->
+        {Path.basename(source), source}
+      end)
+  end
 
-      source ->
-        assigns = assign(assigns, :source, source)
+  defp example_extra_sources(story), do: story.__extra_sources__()
 
-        ~H"""
-        <div class="psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full">
-          {@source |> CodeRenderer.render_source() |> to_raw_html()}
-        </div>
-        """
+  defp selected_source_file(story, source_file) do
+    if source_file && Map.has_key?(example_extra_sources(story), source_file) do
+      source_file
+    else
+      nil
+    end
+  end
+
+  defp example_source(story, nil) do
+    story.__source__()
+    |> ExampleHelpers.strip_example_source()
+  end
+
+  defp example_source(story, source_path) do
+    case Map.get(example_extra_sources(story), source_path) do
+      nil -> example_source(story, nil)
+      source -> source
     end
   end
 
@@ -481,6 +547,20 @@ defmodule PhoenixStorybook.StoryLive do
 
   def handle_event("psb-set-tab", %{"navigation" => %{"tab" => tab}}, socket) do
     {:noreply, patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{tab: tab})}
+  end
+
+  def handle_event("psb-set-source-file", %{"source" => %{"file" => file}}, socket) do
+    file =
+      case file do
+        "" -> nil
+        value -> value
+      end
+
+    {:noreply,
+     patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{
+       tab: :source,
+       file: file
+     })}
   end
 
   def handle_event("psb-clear-playground-error", _, socket) do
