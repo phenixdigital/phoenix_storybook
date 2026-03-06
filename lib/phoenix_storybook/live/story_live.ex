@@ -497,10 +497,22 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp source_select_options(story, extra_sources) do
-    [{Path.basename(story.__file_path__()), ""}] ++
+    [{primary_source_label(story), ""}] ++
       Enum.map(Map.keys(extra_sources), fn source ->
         {Path.basename(source), source}
       end)
+  end
+
+  defp primary_source_label(story) do
+    case story.storybook_type() do
+      :example ->
+        Path.basename(story.__file_path__())
+
+      type when type in [:component, :live_component] ->
+        story.__module_file_path__()
+        |> to_string()
+        |> Path.basename()
+    end
   end
 
   defp story_extra_sources(story), do: story.__extra_sources__()

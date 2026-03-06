@@ -96,7 +96,7 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
       path = tree_fixture_path("component_helpers.ex")
 
       assert story.__extra_sources__() == %{
-               "./component_helpers.ex" => File.read!(path)
+               "../storybook_content/tree/component_helpers.ex" => File.read!(path)
              }
     end
 
@@ -105,7 +105,7 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
       path = tree_fixture_path("live_component_helpers.ex")
 
       assert story.__extra_sources__() == %{
-               "./live_component_helpers.ex" => File.read!(path)
+               "../storybook_content/tree/live_component_helpers.ex" => File.read!(path)
              }
     end
 
@@ -121,13 +121,14 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
         quote do
           use PhoenixStorybook.Story, :component
           def function(), do: &PhoenixStorybook.Mount.on_mount/4
-          def extra_sources, do: ["./story_source_test.exs"]
+          def extra_sources, do: ["../../test/phoenix_storybook/stories/story_source_test.exs"]
         end,
         Macro.Env.location(__ENV__)
       )
 
       assert module.__extra_sources__() == %{
-               "./story_source_test.exs" => File.read!(__ENV__.file)
+               "../../test/phoenix_storybook/stories/story_source_test.exs" =>
+                 File.read!(__ENV__.file)
              }
     end
 
@@ -143,13 +144,14 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
         quote do
           use PhoenixStorybook.Story, :live_component
           def component, do: PhoenixStorybook.Mount
-          def extra_sources, do: ["./story_source_test.exs"]
+          def extra_sources, do: ["../../test/phoenix_storybook/stories/story_source_test.exs"]
         end,
         Macro.Env.location(__ENV__)
       )
 
       assert module.__extra_sources__() == %{
-               "./story_source_test.exs" => File.read!(__ENV__.file)
+               "../../test/phoenix_storybook/stories/story_source_test.exs" =>
+                 File.read!(__ENV__.file)
              }
     end
   end

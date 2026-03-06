@@ -240,14 +240,20 @@ defmodule PhoenixStorybook.StoryLiveTest do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
       view |> element("a", "Source") |> render_click()
 
+      assert has_element?(
+               view,
+               "form[id$='-source-selection-form'] option[value='']",
+               "component.ex"
+             )
+
       html =
         view
         |> element("form[id$='-source-selection-form'] select")
-        |> render_change(%{source: %{file: "./component_helpers.ex"}})
+        |> render_change(%{source: %{file: "../storybook_content/tree/component_helpers.ex"}})
 
       assert_patched(
         view,
-        ~p"/storybook/component?#{[file: "./component_helpers.ex", tab: :source, theme: :default, variation_id: :hello]}"
+        ~p"/storybook/component?#{[file: "../storybook_content/tree/component_helpers.ex", tab: :source, theme: :default, variation_id: :hello]}"
       )
 
       assert html =~ "TreeStorybook.ComponentHelpers"
@@ -270,11 +276,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
       html =
         view
         |> element("form[id$='-source-selection-form'] select")
-        |> render_change(%{source: %{file: "./live_component_helpers.ex"}})
+        |> render_change(%{
+          source: %{file: "../storybook_content/tree/live_component_helpers.ex"}
+        })
 
       assert_patched(
         view,
-        ~p"/storybook/live_component?#{[file: "./live_component_helpers.ex", tab: :source, theme: :default, variation_id: :hello]}"
+        ~p"/storybook/live_component?#{[file: "../storybook_content/tree/live_component_helpers.ex", tab: :source, theme: :default, variation_id: :hello]}"
       )
 
       assert html =~ "TreeStorybook.LiveComponentHelpers"
