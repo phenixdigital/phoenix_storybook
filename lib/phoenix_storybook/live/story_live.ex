@@ -494,12 +494,8 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp example_extra_sources(story), do: story.__extra_sources__()
 
-  defp selected_source_file(story, source_file) do
-    if source_file && Map.has_key?(example_extra_sources(story), source_file) do
-      source_file
-    else
-      nil
-    end
+  defp selected_source_file(_story, source_file) do
+    if source_file in [nil, ""], do: nil, else: source_file
   end
 
   defp example_source(story, nil) do
