@@ -522,6 +522,37 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert html =~ ~r/embed_templates/
     end
+
+    test "falls back to main source when source file is invalid", %{conn: conn} do
+      {:ok, _view, html} =
+        live(
+          conn,
+          ~p"/storybook/examples/example?#{%{tab: "source", file: "./missing_source.ex"}}"
+        )
+
+      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
+      refute html =~ ~r/embed_templates/
+    end
+
+    test "source file select can reset to main source", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      html =
+        view
+        |> element("form[id$='-source-selection-form'] select")
+        |> render_change(%{source: %{file: ""}})
+
+      assert_patched(view, ~p"/storybook/examples/example?#{[tab: :source, theme: :default]}")
+      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
+    end
+
+    test "renders empty example content on unknown tab", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/storybook/examples/example?#{[tab: :unknown]}")
+
+      refute html =~ "Example template"
+      refute html =~ "defmodule TreeStorybook.Examples.Example"
+    end
   end
 
   describe "search modal" do
