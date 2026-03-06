@@ -60,6 +60,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
     validate_component_template!(file_path, story)
     validate_component_layout!(file_path, story)
     validate_component_render_source!(file_path, story)
+    validate_component_extra_sources!(file_path, story)
     validate_attribute_list_type!(file_path, attributes)
     validate_attribute_ids!(file_path, attributes)
     validate_attribute_types!(file_path, attributes)
@@ -203,6 +204,15 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
     case story.render_source() do
       s when s in ~w(module function false)a -> :ok
       _ -> compile_error!(file_path, "story render_source must be :module, :function or false")
+    end
+  end
+
+  defp validate_component_extra_sources!(file_path, story) do
+    msg = "#{story.storybook_type()} extra_sources must be a list of binary"
+    validate_type!(file_path, story.extra_sources(), :list, msg)
+
+    for source <- story.extra_sources() do
+      validate_type!(file_path, source, :string, msg)
     end
   end
 

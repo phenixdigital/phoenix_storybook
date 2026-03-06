@@ -90,6 +90,68 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
 
       assert log =~ "cannot load extra sources for story"
     end
+
+    test "it returns extra_sources for component fixture story" do
+      {:ok, story} = TreeStorybook.load_story("/component")
+      path = tree_fixture_path("component_helpers.ex")
+
+      assert story.__extra_sources__() == %{
+               "./component_helpers.ex" => File.read!(path)
+             }
+    end
+
+    test "it returns extra_sources for live_component fixture story" do
+      {:ok, story} = TreeStorybook.load_story("/live_component")
+      path = tree_fixture_path("live_component_helpers.ex")
+
+      assert story.__extra_sources__() == %{
+               "./live_component_helpers.ex" => File.read!(path)
+             }
+    end
+
+    test "it loads extra_sources for component stories" do
+      module =
+        Module.concat(
+          __MODULE__,
+          "ComponentExtraSourcesStory#{System.unique_integer([:positive])}"
+        )
+
+      Module.create(
+        module,
+        quote do
+          use PhoenixStorybook.Story, :component
+          def function(), do: &PhoenixStorybook.Mount.on_mount/4
+          def extra_sources, do: ["./story_source_test.exs"]
+        end,
+        Macro.Env.location(__ENV__)
+      )
+
+      assert module.__extra_sources__() == %{
+               "./story_source_test.exs" => File.read!(__ENV__.file)
+             }
+    end
+
+    test "it loads extra_sources for live_component stories" do
+      module =
+        Module.concat(
+          __MODULE__,
+          "LiveComponentExtraSourcesStory#{System.unique_integer([:positive])}"
+        )
+
+      Module.create(
+        module,
+        quote do
+          use PhoenixStorybook.Story, :live_component
+          def component, do: PhoenixStorybook.Mount
+          def extra_sources, do: ["./story_source_test.exs"]
+        end,
+        Macro.Env.location(__ENV__)
+      )
+
+      assert module.__extra_sources__() == %{
+               "./story_source_test.exs" => File.read!(__ENV__.file)
+             }
+    end
   end
 
   describe "__file_path__/0" do

@@ -39,4 +39,7 @@ defmodule PhoenixStorybook.LiveComponentStub do
 
   @impl LiveComponentBehaviour
   def render_source, do: :module
+
+  @impl LiveComponentBehaviour
+  def extra_sources, do: []
 end
