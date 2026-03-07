@@ -11,7 +11,7 @@ defmodule PhoenixStorybook.Story.SourceSelect do
   attr :change_event, :string, required: true
   attr :change_target, :any, default: nil
 
-  attr :class, :string,
+  attr :class, :any,
     default:
       "psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-6"
 

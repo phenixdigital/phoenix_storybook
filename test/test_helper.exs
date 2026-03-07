@@ -34,6 +34,7 @@ defmodule PhoenixStorybook.TestStorybook do
   use PhoenixStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
     compilation_mode: :lazy,
+    source_permalink_base_url: "https://github.com/phenixdigital/phoenix_storybook/blob/main",
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]

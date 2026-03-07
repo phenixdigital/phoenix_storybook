@@ -379,7 +379,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     ~H"""
     <.source_panel source={@source} class="relative">
-      <div class="absolute psb:top-3 psb:right-1 psb:opacity-75">
+      <div class="absolute psb:top-3 psb:right-1 psb:flex psb:items-start psb:gap-1 psb:opacity-75">
         <SourceSelect.source_file_select
           :if={story_source_select_enabled?(@story, @extra_sources)}
           form_id={"#{Macro.underscore(@story)}-source-selection-form"}
@@ -388,9 +388,24 @@ defmodule PhoenixStorybook.StoryLive do
           options={source_select_options(@story, @extra_sources)}
           value={@selected_source_file}
           change_event="psb-set-source-file"
-          class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+          class={[
+            "psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2",
+            "psb:justify-end psb:w-full psb:mb-2"
+          ]}
           select_class="psb:dark"
         />
+        <a
+          :if={@source_permalink_url}
+          href={@source_permalink_url}
+          target="_blank"
+          rel="noreferrer noopener"
+          class={[
+            "psb psb:rounded psb:p-1",
+            "psb:text-slate-500 psb:hover:text-slate-200 psb:dark:text-slate-300 psb:hover:dark:text-slate-100"
+          ]}
+        >
+          <i class="fa-brands fa-github"></i>
+        </a>
       </div>
     </.source_panel>
     """
@@ -450,7 +465,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     ~H"""
     <.source_panel source={@source} class="relative">
-      <div class="absolute psb:top-3 psb:right-1 psb:opacity-85">
+      <div class="absolute psb:top-3 psb:right-1 psb:flex psb:items-start psb:gap-2 psb:opacity-85">
         <SourceSelect.source_file_select
           :if={story_source_select_enabled?(@story, @extra_sources)}
           form_id={"#{Macro.underscore(@story)}-source-selection-form"}
@@ -462,6 +477,15 @@ defmodule PhoenixStorybook.StoryLive do
           class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
           select_class="psb:dark"
         />
+        <a
+          :if={@source_permalink_url}
+          href={@source_permalink_url}
+          target="_blank"
+          rel="noreferrer noopener"
+          class="psb psb:rounded psb:p-1 psb:text-slate-500 psb:hover:text-slate-700 psb:dark:text-slate-300 hover:psb:dark:text-slate-100"
+        >
+          <i class="fa-brands fa-github"></i>
+        </a>
       </div>
     </.source_panel>
     """
@@ -486,13 +510,23 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp assign_source_panel_values(assigns) do
     extra_sources = story_extra_sources(assigns.story)
+    extra_sources_file_paths = story_extra_sources_file_paths(assigns.story)
     selected_source_file = selected_source_file(assigns.story, assigns[:source_file])
     source = rendered_story_source(assigns.story, extra_sources, selected_source_file)
+
+    source_permalink_url =
+      source_permalink_url(
+        assigns.backend_module.config(:source_permalink_base_url),
+        assigns.story,
+        selected_source_file,
+        extra_sources_file_paths
+      )
 
     assign(assigns,
       source: source,
       extra_sources: extra_sources,
-      selected_source_file: selected_source_file
+      selected_source_file: selected_source_file,
+      source_permalink_url: source_permalink_url
     )
   end
 
@@ -516,6 +550,14 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp story_extra_sources(story), do: story.__extra_sources__()
+
+  defp story_extra_sources_file_paths(story) do
+    if function_exported?(story, :__extra_sources_file_paths__, 0) do
+      story.__extra_sources_file_paths__()
+    else
+      %{}
+    end
+  end
 
   defp story_source_select_enabled?(story, extra_sources) do
     Enum.any?(extra_sources) and
@@ -556,6 +598,96 @@ defmodule PhoenixStorybook.StoryLive do
         story
         |> CodeRenderer.render_component_source()
         |> to_raw_html()
+    end
+  end
+
+  defp source_permalink_url(nil, _story, _selected_source_file, _extra_sources_file_paths),
+    do: nil
+
+  defp source_permalink_url("", _story, _selected_source_file, _extra_sources_file_paths), do: nil
+
+  defp source_permalink_url(base_url, story, selected_source_file, extra_sources_file_paths) do
+    normalized_base_url = normalize_source_permalink_base_url(base_url)
+
+    story
+    |> selected_source_file_path(selected_source_file, extra_sources_file_paths)
+    |> relative_source_file_path(normalized_base_url)
+    |> case do
+      nil ->
+        nil
+
+      relative_path ->
+        normalized_base_url <> "/" <> relative_path
+    end
+  end
+
+  defp selected_source_file_path(story, nil, _extra_sources_file_paths),
+    do: primary_source_file_path(story)
+
+  defp selected_source_file_path(story, selected_source_file, extra_sources_file_paths) do
+    Map.get(extra_sources_file_paths, selected_source_file, primary_source_file_path(story))
+  end
+
+  defp primary_source_file_path(story) do
+    case story.storybook_type() do
+      :example ->
+        story.__file_path__()
+
+      type when type in [:component, :live_component] ->
+        story.__module_file_path__()
+    end
+  end
+
+  defp relative_source_file_path(nil, _normalized_base_url), do: nil
+
+  defp relative_source_file_path(source_file_path, normalized_base_url) do
+    source_file_path = to_string(source_file_path)
+
+    relative_path =
+      if Path.type(source_file_path) == :absolute do
+        source_file_path_from_repo_name(source_file_path, normalized_base_url)
+      else
+        source_file_path
+      end
+
+    case relative_path do
+      nil ->
+        nil
+
+      path ->
+        path
+        |> String.trim_leading("./")
+        |> String.split("/", trim: true)
+        |> Enum.map_join("/", &URI.encode/1)
+    end
+  end
+
+  defp normalize_source_permalink_base_url(base_url) do
+    base_url = String.trim_trailing(base_url, "/")
+
+    cond do
+      String.contains?(base_url, "/blob/") ->
+        base_url
+
+      String.contains?(base_url, "/-/blob/") ->
+        base_url
+
+      String.contains?(base_url, "gitlab") ->
+        base_url <> "/-/blob/main"
+
+      true ->
+        base_url <> "/blob/main"
+    end
+  end
+
+  defp source_file_path_from_repo_name(source_file_path, normalized_base_url) do
+    with %URI{path: base_path} <- URI.parse(normalized_base_url),
+         [_, repo_name | _] <- String.split(base_path || "", "/", trim: true),
+         [_, suffix] <- String.split(source_file_path, "/#{repo_name}/", parts: 2),
+         true <- suffix != "" do
+      suffix
+    else
+      _ -> nil
     end
   end
 
