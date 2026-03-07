@@ -34,6 +34,10 @@ defmodule PhoenixStorybook.Stories.StorySource do
           )
         end
 
+        def __extra_sources_file_paths__ do
+          unquote(Macro.escape(Map.new(story_extra_sources_path)))
+        end
+
         def __file_path__ do
           unquote(env.file)
         end

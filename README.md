@@ -118,6 +118,10 @@ defmodule MyAppWeb.Storybook do
     # prevail. See the `guides/sandboxing.md` guide for more details.
     sandbox_class: "my-app-sandbox",
 
+    # Base URL used to build source file permalinks in the source tab.
+    # Recommended value includes `/blob/<branch>` (GitHub) or `/-/blob/<branch>` (GitLab).
+    source_permalink_base_url: "https://github.com/my-org/my-app/blob/main",
+
     # Custom storybook title. Default is "Live Storybook".
     title: "My Live Storybook",
 
