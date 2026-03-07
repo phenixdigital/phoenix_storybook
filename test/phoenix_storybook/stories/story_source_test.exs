@@ -156,6 +156,18 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
     end
   end
 
+  describe "__extra_sources_file_paths__/0" do
+    test "it returns full paths for story's extra sources" do
+      {:ok, story} = TreeStorybook.load_story("/examples/example")
+
+      assert story.__extra_sources_file_paths__() == %{
+               "./example_html.ex" => tree_fixture_path("examples/example_html.ex"),
+               "./templates/example.html.heex" =>
+                 tree_fixture_path("examples/templates/example.html.heex")
+             }
+    end
+  end
+
   describe "__file_path__/0" do
     test "it returns story.exs file path" do
       {:ok, story} = TreeStorybook.load_story("/component")

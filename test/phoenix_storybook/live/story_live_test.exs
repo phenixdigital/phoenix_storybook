@@ -554,6 +554,16 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute html =~ ~r/PhoenixStorybook/
     end
 
+    test "renders source permalink icon for main source file", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      assert has_element?(
+               view,
+               "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/example.story.exs'] i.fa-brands.fa-github"
+             )
+    end
+
     test "renders an example story extra source from source file select", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
       view |> element("a", "Source") |> render_click()
@@ -569,6 +579,20 @@ defmodule PhoenixStorybook.StoryLiveTest do
       )
 
       assert html =~ ~r/Example.*template/
+    end
+
+    test "updates source permalink icon when selecting an extra source", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      view
+      |> element("form[id$='-source-selection-form'] select")
+      |> render_change(%{source: %{file: "./templates/example.html.heex"}})
+
+      assert has_element?(
+               view,
+               "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/templates/example.html.heex'] i.fa-brands.fa-github"
+             )
     end
 
     test "renders an example story extra source content", %{conn: conn} do
