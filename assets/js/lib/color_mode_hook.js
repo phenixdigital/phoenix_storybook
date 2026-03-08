@@ -49,7 +49,7 @@ export const ColorModeHook = {
         document.documentElement.setAttribute("data-theme", "dark");
       } else {
         document.documentElement.classList.remove("psb:dark");
-        document.documentElement.removeAttribute("data-theme");
+        document.documentElement.setAttribute("data-theme", "light");
       }
     }
   },
