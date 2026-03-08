@@ -46,8 +46,10 @@ export const ColorModeHook = {
     if ("colorMode" in document.documentElement.dataset) {
       if (mode === "dark") {
         document.documentElement.classList.add("psb:dark");
+        document.documentElement.setAttribute("data-theme", "dark");
       } else {
         document.documentElement.classList.remove("psb:dark");
+        document.documentElement.removeAttribute("data-theme");
       }
     }
   },
