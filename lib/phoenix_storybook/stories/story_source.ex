@@ -164,6 +164,23 @@ defmodule PhoenixStorybook.Stories.StorySource do
     )
   end
 
+  @doc """
+  Returns a 1-based `{start_line, end_line}` tuple for a function source range.
+  Returns `nil` when the range cannot be resolved.
+  """
+  def function_source_line_range(function) when is_function(function) do
+    with source_path when not is_nil(source_path) <- source_path(function),
+         module_source when is_binary(module_source) <- read_source_file(source_path),
+         [start_line, end_line] <- function_source_location(function, module_source),
+         true <-
+           is_integer(start_line) and is_integer(end_line) and start_line >= 0 and
+             end_line >= start_line do
+      {start_line + 1, end_line + 1}
+    else
+      _ -> nil
+    end
+  end
+
   # Code.fetch_docs/1 does only return the line number for the start of each function.
   # We guess the last line number as being the start of the following function (-1)
   # Returns [start, stop]
@@ -202,7 +219,14 @@ defmodule PhoenixStorybook.Stories.StorySource do
   end
 
   defp header({header, _, _, _, _}), do: header
-  defp location({_, [generated: _, location: loc], _, _, _}), do: loc
-  defp location({_, loc, _, _, _}) when is_integer(loc), do: loc
-  defp location(_), do: nil
+
+  defp location(item) do
+    {_, loc, _, _, _} = item
+
+    cond do
+      is_integer(loc) -> loc
+      is_list(loc) -> Keyword.get(loc, :location, loc[:line])
+      true -> nil
+    end
+  end
 end

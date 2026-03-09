@@ -9,6 +9,7 @@ defmodule PhoenixStorybook.StoryLive do
   alias PhoenixStorybook.Helpers.ExampleHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.CodeRenderer
+  alias PhoenixStorybook.Stories.StorySource
 
   alias PhoenixStorybook.Story.{
     ComponentDoc,
@@ -388,7 +389,6 @@ defmodule PhoenixStorybook.StoryLive do
         value={@selected_source_file}
         change_event="psb-set-source-file"
         class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
-        select_class="psb:dark"
       />
       <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
@@ -474,7 +474,7 @@ defmodule PhoenixStorybook.StoryLive do
     <div class="psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full psb:relative">
       <div
         :if={@inner_block != []}
-        class="psb psb:flex psb:justify-end psb:items-center psb:mb-2 psb:absolute psb:top-1 psb:right-1"
+        class="psb psb:flex psb:justify-end psb:items-center psb:mb-2 psb:absolute psb:top-1 psb:right-1.5"
       >
         <div class="psb:flex psb:items-center psb:gap-2 psb:opacity-85 psb:dark">
           {render_slot(@inner_block)}
@@ -610,6 +610,9 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_permalink_url(base_url, story, selected_source_file, extra_sources_file_paths) do
     normalized_base_url = normalize_source_permalink_base_url(base_url)
 
+    line_fragment =
+      source_permalink_line_fragment(normalized_base_url, story, selected_source_file)
+
     story
     |> selected_source_file_path(selected_source_file, extra_sources_file_paths)
     |> relative_source_file_path(normalized_base_url)
@@ -618,7 +621,7 @@ defmodule PhoenixStorybook.StoryLive do
         nil
 
       relative_path ->
-        normalized_base_url <> "/" <> relative_path
+        normalized_base_url <> "/" <> relative_path <> line_fragment
     end
   end
 
@@ -689,6 +692,30 @@ defmodule PhoenixStorybook.StoryLive do
       suffix
     else
       _ -> nil
+    end
+  end
+
+  defp source_permalink_line_fragment(normalized_base_url, story, selected_source_file) do
+    if selected_source_file in [nil, ""] and story.storybook_type() == :component and
+         story.render_source() == :function do
+      with {start_line, end_line} <- StorySource.function_source_line_range(story.function()) do
+        line_range_fragment(start_line, end_line, normalized_base_url)
+      end || ""
+    else
+      ""
+    end
+  end
+
+  defp line_range_fragment(start_line, end_line, normalized_base_url) do
+    cond do
+      String.contains?(normalized_base_url, "github.com") ->
+        "#L#{start_line}-L#{end_line}"
+
+      String.contains?(normalized_base_url, "gitlab") ->
+        "#L#{start_line}-L#{end_line}"
+
+      true ->
+        ""
     end
   end
 

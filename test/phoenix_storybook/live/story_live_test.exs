@@ -356,6 +356,50 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute html =~ "unrelated_function"
     end
 
+    test "adds line fragment to permalink when component render_source is :function", %{
+      conn: conn
+    } do
+      {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/component")
+      html = view |> element("a", "Source") |> render_click()
+
+      permalink = extract_permalink_for(html, "github.com")
+      assert permalink =~ ~r|^https://github\.com/|
+      assert permalink =~ ~r|/component\.ex#L\d+-L\d+$|
+    end
+
+    test "uses gitlab line range format when component render_source is :function", %{
+      conn: conn
+    } do
+      {:ok, view, _html} = live(conn, ~p"/storybook_gitlab_permalink/a_folder/component")
+      html = view |> element("a", "Source") |> render_click()
+
+      permalink = extract_permalink_for(html, "gitlab.com")
+      assert permalink =~ ~r|^https://gitlab\.com/|
+      assert permalink =~ ~r|/component\.ex#L\d+-L\d+$|
+    end
+
+    test "does not add line range fragment on unknown hosts", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_unknown_host_permalink/a_folder/component")
+      html = view |> element("a", "Source") |> render_click()
+
+      permalink = extract_permalink_for(html, "bitbucket.org")
+      assert permalink =~ ~r|^https://bitbucket\.org/|
+      assert permalink =~ ~r|/component\.ex$|
+      refute permalink =~ ~r/#L\d+-(L)?\d+/
+    end
+
+    test "does not add line fragment to permalink when component render_source is :module", %{
+      conn: conn
+    } do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component")
+      html = view |> element("a", "Source") |> render_click()
+
+      permalink = extract_permalink_for(html, "github.com")
+      assert permalink =~ ~r|^https://github\.com/|
+      assert permalink =~ ~r|/component\.ex$|
+      refute permalink =~ "#L"
+    end
+
     test "renders component story, navigation to source has been disabled", %{
       conn: conn
     } do
@@ -445,6 +489,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert html =~ "TreeStorybook.ComponentHelpers"
       assert html =~ "component-helper:"
+      refute html =~ "#L"
     end
 
     test "falls back to component main source when source file is invalid", %{conn: conn} do
@@ -983,5 +1028,11 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert component_class |> String.split(" ") |> Enum.member?("light")
     end
+  end
+
+  defp extract_permalink_for(html, host) do
+    regex = ~r/href="(https:\/\/[^"]*#{Regex.escape(host)}[^"]*component\.ex[^"]*)"/
+    [_, href] = Regex.run(regex, html)
+    href
   end
 end
