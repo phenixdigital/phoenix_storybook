@@ -208,6 +208,15 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
     end
   end
 
+  describe "function_source_line_range/1" do
+    test "returns a 1-based range for a component function" do
+      {:ok, story} = TreeStorybook.load_story("/component")
+      assert {start_line, end_line} = StorySource.function_source_line_range(story.function())
+      assert is_integer(start_line) and start_line > 0
+      assert is_integer(end_line) and end_line >= start_line
+    end
+  end
+
   defp tree_fixture_path(path) do
     Path.expand("../../fixtures/storybook_content/tree/" <> path, __DIR__)
   end
