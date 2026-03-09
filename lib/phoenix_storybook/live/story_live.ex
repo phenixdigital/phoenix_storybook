@@ -378,35 +378,19 @@ defmodule PhoenixStorybook.StoryLive do
     assigns = assign_source_panel_values(assigns)
 
     ~H"""
-    <.source_panel source={@source} class="relative">
-      <div class="absolute psb:top-3 psb:right-1 psb:flex psb:items-start psb:gap-1 psb:opacity-75">
-        <SourceSelect.source_file_select
-          :if={story_source_select_enabled?(@story, @extra_sources)}
-          form_id={"#{Macro.underscore(@story)}-source-selection-form"}
-          as={:source}
-          field={:file}
-          options={source_select_options(@story, @extra_sources)}
-          value={@selected_source_file}
-          change_event="psb-set-source-file"
-          class={[
-            "psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2",
-            "psb:justify-end psb:w-full psb:mb-2"
-          ]}
-          select_class="psb:dark"
-        />
-        <a
-          :if={@source_permalink_url}
-          href={@source_permalink_url}
-          target="_blank"
-          rel="noreferrer noopener"
-          class={[
-            "psb psb:rounded psb:p-1",
-            "psb:text-slate-500 psb:hover:text-slate-200 psb:dark:text-slate-300 psb:hover:dark:text-slate-100"
-          ]}
-        >
-          <i class="fa-brands fa-github"></i>
-        </a>
-      </div>
+    <.source_panel source={@source}>
+      <SourceSelect.source_file_select
+        :if={story_source_select_enabled?(@story, @extra_sources)}
+        form_id={"#{Macro.underscore(@story)}-source-selection-form"}
+        as={:source}
+        field={:file}
+        options={source_select_options(@story, @extra_sources)}
+        value={@selected_source_file}
+        change_event="psb-set-source-file"
+        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+        select_class="psb:dark"
+      />
+      <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
   end
@@ -464,29 +448,18 @@ defmodule PhoenixStorybook.StoryLive do
     assigns = assign_source_panel_values(assigns)
 
     ~H"""
-    <.source_panel source={@source} class="relative">
-      <div class="absolute psb:top-3 psb:right-1 psb:flex psb:items-start psb:gap-2 psb:opacity-85">
-        <SourceSelect.source_file_select
-          :if={story_source_select_enabled?(@story, @extra_sources)}
-          form_id={"#{Macro.underscore(@story)}-source-selection-form"}
-          as={:source}
-          field={:file}
-          options={source_select_options(@story, @extra_sources)}
-          value={@selected_source_file}
-          change_event="psb-set-source-file"
-          class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
-          select_class="psb:dark"
-        />
-        <a
-          :if={@source_permalink_url}
-          href={@source_permalink_url}
-          target="_blank"
-          rel="noreferrer noopener"
-          class="psb psb:rounded psb:p-1 psb:text-slate-500 psb:hover:text-slate-700 psb:dark:text-slate-300 hover:psb:dark:text-slate-100"
-        >
-          <i class="fa-brands fa-github"></i>
-        </a>
-      </div>
+    <.source_panel source={@source}>
+      <SourceSelect.source_file_select
+        :if={story_source_select_enabled?(@story, @extra_sources)}
+        form_id={"#{Macro.underscore(@story)}-source-selection-form"}
+        as={:source}
+        field={:file}
+        options={source_select_options(@story, @extra_sources)}
+        value={@selected_source_file}
+        change_event="psb-set-source-file"
+        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+      />
+      <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
   end
@@ -494,18 +467,47 @@ defmodule PhoenixStorybook.StoryLive do
   defp render_content(:example, assigns), do: ~H[]
 
   attr :source, :any, required: true
-  attr :class, :string, default: nil
   slot :inner_block
 
   defp source_panel(assigns) do
     ~H"""
-    <div class={["psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full", @class]}>
-      <div :if={@inner_block != []} class="psb psb:flex psb:justify-end psb:mb-2">
-        {render_slot(@inner_block)}
+    <div class="psb psb:flex-1 psb:flex psb:flex-col psb:overflow-auto psb:max-h-full psb:relative">
+      <div
+        :if={@inner_block != []}
+        class="psb psb:flex psb:justify-end psb:items-center psb:mb-2 psb:absolute psb:top-1 psb:right-1"
+      >
+        <div class="psb:flex psb:items-center psb:gap-2 psb:opacity-85 psb:dark">
+          {render_slot(@inner_block)}
+        </div>
       </div>
       {@source}
     </div>
     """
+  end
+
+  attr :source_permalink_url, :string, required: true
+
+  defp git_buttons(assigns) do
+    assigns = assign(assigns, :git_icon, git_icon(assigns.source_permalink_url))
+
+    ~H"""
+    <a
+      href={@source_permalink_url}
+      target="_blank"
+      rel="noreferrer noopener"
+      class="psb psb:dark:text-slate-400 psb:dark:hover:text-slate-500"
+    >
+      <i class={"fa-brands #{@git_icon} fa-xl psb:h-5.5 psb:w-5.5"}></i>
+    </a>
+    """
+  end
+
+  defp git_icon(url) do
+    cond do
+      String.contains?(url, "github.com") -> "fa-github-square"
+      String.contains?(url, "gitlab.com") -> "fa-gitlab-square"
+      true -> "fa-git-square"
+    end
   end
 
   defp assign_source_panel_values(assigns) do
