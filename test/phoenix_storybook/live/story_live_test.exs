@@ -560,7 +560,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert has_element?(
                view,
-               "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/example.story.exs'] i.fa-brands.fa-github"
+               "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/example.story.exs'] i.fa-brands.fa-github-square"
              )
     end
 
@@ -591,7 +591,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert has_element?(
                view,
-               "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/templates/example.html.heex'] i.fa-brands.fa-github"
+               "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/templates/example.html.heex'] i.fa-brands.fa-github-square"
              )
     end
 
