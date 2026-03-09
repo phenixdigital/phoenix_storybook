@@ -48,6 +48,47 @@ defmodule PhoenixStorybook.TestStorybook do
     strip_doc_attributes: false
 end
 
+defmodule PhoenixStorybook.NoSourcePermalinkStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy
+end
+
+defmodule PhoenixStorybook.EmptySourcePermalinkStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
+    source_permalink_base_url: ""
+end
+
+defmodule PhoenixStorybook.GitlabSourcePermalinkStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
+    source_permalink_base_url: "https://gitlab.com/phenixdigital/phoenix_storybook"
+end
+
+defmodule PhoenixStorybook.GitlabBlobSourcePermalinkStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
+    source_permalink_base_url: "https://gitlab.com/phenixdigital/phoenix_storybook/-/blob/main"
+end
+
+defmodule PhoenixStorybook.UnknownHostSourcePermalinkStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
+    source_permalink_base_url: "https://bitbucket.org/phenixdigital/phoenix_storybook"
+end
+
+defmodule PhoenixStorybook.MismatchedRepoSourcePermalinkStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
+    source_permalink_base_url: "https://github.com/phenixdigital/another_repo/blob/main"
+end
+
 defmodule PhoenixStorybook.TestRouter do
   use Phoenix.Router
   import PhoenixStorybook.Router
@@ -63,6 +104,48 @@ defmodule PhoenixStorybook.TestRouter do
     otp_app: :phoenix_storybook,
     backend_module: PhoenixStorybook.TreeStorybook,
     session_name: :tree_storybook,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_no_permalink",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.NoSourcePermalinkStorybook,
+    session_name: :live_storybook_no_permalink,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_empty_permalink",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.EmptySourcePermalinkStorybook,
+    session_name: :live_storybook_empty_permalink,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_gitlab_permalink",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.GitlabSourcePermalinkStorybook,
+    session_name: :live_storybook_gitlab_permalink,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_gitlab_blob_permalink",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.GitlabBlobSourcePermalinkStorybook,
+    session_name: :live_storybook_gitlab_blob_permalink,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_unknown_host_permalink",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.UnknownHostSourcePermalinkStorybook,
+    session_name: :live_storybook_unknown_host_permalink,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_mismatched_repo_permalink",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.MismatchedRepoSourcePermalinkStorybook,
+    session_name: :live_storybook_mismatched_repo_permalink,
     pipeline: false
   )
 

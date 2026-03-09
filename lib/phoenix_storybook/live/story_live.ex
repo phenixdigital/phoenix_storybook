@@ -566,7 +566,6 @@ defmodule PhoenixStorybook.StoryLive do
       case story.storybook_type() do
         :example -> true
         type when type in [:component, :live_component] -> story.render_source() != false
-        _ -> false
       end
   end
 
@@ -668,10 +667,10 @@ defmodule PhoenixStorybook.StoryLive do
     base_url = String.trim_trailing(base_url, "/")
 
     cond do
-      String.contains?(base_url, "/blob/") ->
+      String.contains?(base_url, "/-/blob/") ->
         base_url
 
-      String.contains?(base_url, "/-/blob/") ->
+      String.contains?(base_url, "/blob/") ->
         base_url
 
       String.contains?(base_url, "gitlab") ->
