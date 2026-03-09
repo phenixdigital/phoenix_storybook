@@ -1,7 +1,7 @@
 /*!
  * This CSS file is a subset of free FontAwesome icons generated
  * on fontawesome.com from kit https://fontawesome.com/kits/38ee99204b
- * 
+ *
  * Font Awesome Pro 6.7.1 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license (Commercial License)
  * Copyright 2024 Fonticons, Inc.
@@ -53,9 +53,33 @@
     url("../fonts/fa-brands-400.ttf") format("truetype");
 }
 
+.fa-git-square {
+  --fa: "\f1d2";
+  --fa--fa: "\f1d2\f1d2";
+}
 .fa-github {
   --fa: "\f09b";
   --fa--fa: "\f09b\f09b";
+}
+.fa-github-square {
+  --fa: "\f092";
+  --fa--fa: "\f092\f092";
+}
+.fa-gitlab-square {
+  --fa: "\e5ae";
+  --fa--fa: "\e5ae\e5ae";
+}
+.fa-square-git {
+  --fa: "\f1d2";
+  --fa--fa: "\f1d2\f1d2";
+}
+.fa-square-github {
+  --fa: "\f092";
+  --fa--fa: "\f092\f092";
+}
+.fa-square-gitlab {
+  --fa: "\e5ae";
+  --fa--fa: "\e5ae\e5ae";
 }
 
 /* coming from downloaded fontawesome.css file */
@@ -343,7 +367,10 @@
   animation-direction: var(--fa-animation-direction, normal);
   animation-duration: var(--fa-animation-duration, 1s);
   animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+  animation-timing-function: var(
+    --fa-animation-timing,
+    cubic-bezier(0.28, 0.84, 0.42, 1)
+  );
 }
 
 .fa-fade {
@@ -352,7 +379,10 @@
   animation-direction: var(--fa-animation-direction, normal);
   animation-duration: var(--fa-animation-duration, 1s);
   animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+  animation-timing-function: var(
+    --fa-animation-timing,
+    cubic-bezier(0.4, 0, 0.6, 1)
+  );
 }
 
 .fa-beat-fade {
@@ -361,7 +391,10 @@
   animation-direction: var(--fa-animation-direction, normal);
   animation-duration: var(--fa-animation-duration, 1s);
   animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+  animation-timing-function: var(
+    --fa-animation-timing,
+    cubic-bezier(0.4, 0, 0.6, 1)
+  );
 }
 
 .fa-flip {
@@ -437,15 +470,24 @@
     transform: scale(1, 1) translateY(0);
   }
   10% {
-    transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9))
+    transform: scale(
+        var(--fa-bounce-start-scale-x, 1.1),
+        var(--fa-bounce-start-scale-y, 0.9)
+      )
       translateY(0);
   }
   30% {
-    transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1))
+    transform: scale(
+        var(--fa-bounce-jump-scale-x, 0.9),
+        var(--fa-bounce-jump-scale-y, 1.1)
+      )
       translateY(var(--fa-bounce-height, -0.5em));
   }
   50% {
-    transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95))
+    transform: scale(
+        var(--fa-bounce-land-scale-x, 1.05),
+        var(--fa-bounce-land-scale-y, 0.95)
+      )
       translateY(0);
   }
   57% {
