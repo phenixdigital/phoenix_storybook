@@ -17,6 +17,81 @@ defmodule PhoenixStorybook.StoryLiveTest do
     end
   end
 
+  defmodule ManualNoLeavesBackend do
+    @behaviour PhoenixStorybook.BackendBehaviour
+
+    def config(_key, default \\ nil), do: default
+    def content_tree, do: []
+    def leaves, do: []
+    def flat_list, do: []
+    def find_entry_by_path(_), do: nil
+    def storybook_path(_), do: "/"
+  end
+
+  defmodule TwoTuplePageStory do
+    def storybook_type, do: :page
+    def navigation, do: [{:main, "Main"}, {:secondary, "Secondary"}]
+    def render(_assigns), do: nil
+  end
+
+  defmodule ManualTwoTuplePageBackend do
+    @behaviour PhoenixStorybook.BackendBehaviour
+
+    alias PhoenixStorybook.StoryEntry
+
+    def config(_key, default \\ nil), do: default
+    def content_tree, do: []
+    def leaves, do: [%StoryEntry{path: "/two_tuple_page", name: "TwoTuplePage"}]
+    def flat_list, do: leaves()
+    def storybook_path(_), do: "/two_tuple_page"
+    def load_story("two_tuple_page"), do: {:ok, TwoTuplePageStory}
+    def load_story(_), do: {:error, :not_found}
+
+    def find_entry_by_path("/two_tuple_page"),
+      do: %StoryEntry{path: "/two_tuple_page", name: "TwoTuplePage"}
+
+    def find_entry_by_path(_), do: nil
+  end
+
+  defmodule ManualNotFoundBackend do
+    @behaviour PhoenixStorybook.BackendBehaviour
+
+    def config(_key, default \\ nil), do: default
+    def content_tree, do: []
+    def leaves, do: []
+    def flat_list, do: []
+    def load_story(_), do: {:error, :not_found}
+    def find_entry_by_path(_), do: nil
+    def storybook_path(_), do: "/"
+  end
+
+  defmodule ManualPermalinkBackend do
+    def config(:source_permalink_base_url),
+      do: "https://github.com/phenixdigital/phoenix_storybook"
+
+    def config(:source_permalink_base_url, _default),
+      do: "https://github.com/phenixdigital/phoenix_storybook"
+
+    def config(_key, default), do: default
+  end
+
+  defmodule ExampleNilFilePathStory do
+    def storybook_type, do: :example
+    def doc, do: nil
+    def __source__, do: "defmodule Demo do\n  def ok, do: :ok\nend\n"
+    def __extra_sources__, do: %{"./extra.ex" => "defmodule Extra do\n  def ok, do: :ok\nend\n"}
+    def __extra_sources_file_paths__, do: %{"./extra.ex" => nil}
+    def __file_path__, do: "./lib/primary.ex"
+  end
+
+  defmodule ExampleRelativeFilePathStory do
+    def storybook_type, do: :example
+    def doc, do: nil
+    def __source__, do: "defmodule Demo do\n  def ok, do: :ok\nend\n"
+    def __extra_sources__, do: %{}
+    def __file_path__, do: "./lib/demo source.ex"
+  end
+
   setup_all do
     start_supervised!(@endpoint)
     {:ok, conn: build_conn()}
@@ -76,6 +151,118 @@ defmodule PhoenixStorybook.StoryLiveTest do
                PhoenixStorybook.StoryLive.handle_info({:storybook_handle_info, self()}, socket)
 
       assert_receive :handled
+    end
+  end
+
+  describe "unit branches" do
+    test "handle_params with empty params and no leaves returns socket unchanged" do
+      socket = %Phoenix.LiveView.Socket{
+        assigns: %{backend_module: ManualNoLeavesBackend, root_path: "/storybook"}
+      }
+
+      assert {:noreply, ^socket} = PhoenixStorybook.StoryLive.handle_params(%{}, "", socket)
+    end
+
+    test "handle_params raises StoryNotFound on explicit not_found backend response" do
+      socket = %Phoenix.LiveView.Socket{
+        assigns: %{backend_module: ManualNotFoundBackend, root_path: "/storybook"}
+      }
+
+      assert_raise PhoenixStorybook.StoryNotFound, fn ->
+        PhoenixStorybook.StoryLive.handle_params(%{"story" => ["missing"]}, "", socket)
+      end
+    end
+
+    test "handle_params fallback clause returns socket unchanged" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      assert {:noreply, ^socket} =
+               PhoenixStorybook.StoryLive.handle_params(%{"other" => "value"}, "", socket)
+    end
+
+    test "handle_params on page story with 2-tuple navigation sets first tab" do
+      socket = %Phoenix.LiveView.Socket{
+        assigns: %{
+          backend_module: ManualTwoTuplePageBackend,
+          root_path: "/storybook",
+          __changed__: %{}
+        }
+      }
+
+      assert {:noreply, updated_socket} =
+               PhoenixStorybook.StoryLive.handle_params(
+                 %{"story" => ["two_tuple_page"]},
+                 "",
+                 socket
+               )
+
+      assert updated_socket.assigns.tab == :main
+    end
+
+    test "render fallback clause returns empty output" do
+      html = Phoenix.LiveViewTest.rendered_to_string(PhoenixStorybook.StoryLive.render(%{}))
+      assert html == ""
+    end
+
+    test "source panel permalink handles nil primary source path" do
+      html =
+        %{
+          __changed__: %{},
+          story: ExampleNilFilePathStory,
+          story_entry: %PhoenixStorybook.StoryEntry{name: "Demo", path: "/demo", icon: nil},
+          backend_module: ManualPermalinkBackend,
+          tab: :source,
+          source_file: "./extra.ex",
+          fa_plan: :free
+        }
+        |> PhoenixStorybook.StoryLive.render()
+        |> Phoenix.LiveViewTest.rendered_to_string()
+
+      refute html =~ "github.com/phenixdigital/phoenix_storybook"
+    end
+
+    test "source panel permalink accepts relative primary source path and URL-encodes it" do
+      html =
+        %{
+          __changed__: %{},
+          story: ExampleRelativeFilePathStory,
+          story_entry: %PhoenixStorybook.StoryEntry{name: "Demo", path: "/demo", icon: nil},
+          backend_module: ManualPermalinkBackend,
+          tab: :source,
+          source_file: nil,
+          fa_plan: :free
+        }
+        |> PhoenixStorybook.StoryLive.render()
+        |> Phoenix.LiveViewTest.rendered_to_string()
+
+      assert html =~
+               "https://github.com/phenixdigital/phoenix_storybook/blob/main/lib/demo%20source.ex"
+    end
+
+    test "psb-clear-playground-error clears playground_error assign" do
+      socket = %Phoenix.LiveView.Socket{assigns: %{playground_error: :boom, __changed__: %{}}}
+
+      assert {:noreply, updated_socket} =
+               PhoenixStorybook.StoryLive.handle_event("psb-clear-playground-error", %{}, socket)
+
+      assert updated_socket.assigns.playground_error == nil
+    end
+
+    test "component_iframe_pid handle_info subscribes and returns noreply" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      assert {:noreply, ^socket} =
+               PhoenixStorybook.StoryLive.handle_info({:component_iframe_pid, self()}, socket)
+    end
+
+    test "DOWN with closed shutdown is ignored" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      assert {:noreply, ^socket} =
+               PhoenixStorybook.StoryLive.handle_info(
+                 {:DOWN, make_ref(), :process, self(), {:shutdown, :closed}},
+                 socket
+               )
     end
   end
 
@@ -592,6 +779,66 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert has_element?(
                view,
                "a[href^='https://github.com/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/templates/example.html.heex'] i.fa-brands.fa-github-square"
+             )
+    end
+
+    test "does not render source permalink when base url is not configured", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_no_permalink/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      refute has_element?(
+               view,
+               "a[href*='/storybook_content/tree/examples/example.story.exs'] i.fa-brands"
+             )
+    end
+
+    test "does not render source permalink when base url is empty", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_empty_permalink/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      refute has_element?(
+               view,
+               "a[href*='/storybook_content/tree/examples/example.story.exs'] i.fa-brands"
+             )
+    end
+
+    test "normalizes gitlab permalink base url and renders gitlab icon", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_gitlab_permalink/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      assert has_element?(
+               view,
+               "a[href^='https://gitlab.com/phenixdigital/phoenix_storybook/-/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/example.story.exs'] i.fa-brands.fa-gitlab-square"
+             )
+    end
+
+    test "uses gitlab permalink base url when already normalized", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_gitlab_blob_permalink/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      assert has_element?(
+               view,
+               "a[href^='https://gitlab.com/phenixdigital/phoenix_storybook/-/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/example.story.exs'] i.fa-brands.fa-gitlab-square"
+             )
+    end
+
+    test "normalizes unknown hosts with default blob path and generic git icon", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_unknown_host_permalink/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      assert has_element?(
+               view,
+               "a[href^='https://bitbucket.org/phenixdigital/phoenix_storybook/blob/main/'][href$='/test/fixtures/storybook_content/tree/examples/example.story.exs'] i.fa-brands.fa-git-square"
+             )
+    end
+
+    test "does not render permalink when source path cannot be mapped to repo", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook_mismatched_repo_permalink/examples/example")
+      view |> element("a", "Source") |> render_click()
+
+      refute has_element?(
+               view,
+               "a[href*='/storybook_content/tree/examples/example.story.exs'] i.fa-brands"
              )
     end
 
