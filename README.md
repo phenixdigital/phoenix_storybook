@@ -4,15 +4,7 @@
 [![codecov](https://codecov.io/gh/phenixdigital/phoenix_storybook/branch/main/graph/badge.svg)](https://codecov.io/gh/phenixdigital/phoenix_storybook)
 [![GitHub release](https://img.shields.io/github/v/release/phenixdigital/phoenix_storybook.svg)](https://hex.pm/packages/phoenix_storybook)
 
-📚 [Documentation](https://hexdocs.pm/phoenix_storybook)
-&nbsp; - &nbsp;
-🔎 [Demo](https://phoenix-storybook-demo.fly.dev/)
-&nbsp; - &nbsp;
-🎓 [Sample app](https://github.com/phenixdigital/phoenix_storybook_sample)
-&nbsp; - &nbsp;
-🍿 [Getting started video](https://www.youtube.com/watch?v=MTE7dLhkQ8Q)
-&nbsp; - &nbsp;
-🦊 [ElixirCasts](https://elixircasts.io/phoenix-storybook)
+📚 [Documentation](https://hexdocs.pm/phoenix_storybook) - 🔎 [Demo](https://phoenix-storybook-demo.fly.dev/) - 🎓 [Sample app](https://github.com/phenixdigital/phoenix_storybook_sample) - 🍿 [Getting started video](https://www.youtube.com/watch?v=MTE7dLhkQ8Q) - 🦊 [ElixirCasts](https://elixircasts.io/phoenix-storybook)
 
 ---
 
