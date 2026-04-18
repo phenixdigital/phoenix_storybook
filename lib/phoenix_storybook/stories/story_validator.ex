@@ -45,6 +45,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
   defp validate_example!(story) do
     file_path = story.__info__(:compile)[:source]
     validate_page_doc!(file_path, story)
+    validate_example_container!(file_path, story)
     validate_example_extra_sources!(file_path, story)
     story
   end
@@ -132,6 +133,9 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
       validate_type!(file_path, source, :string, msg)
     end
   end
+
+  defp validate_example_container!(file_path, story),
+    do: validate_component_container!(file_path, story)
 
   defp validate_story_component!(file_path, story) do
     if story.storybook_type() == :live_component do

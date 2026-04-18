@@ -11,5 +11,8 @@ defmodule PhoenixStorybook.ExampleStub do
   def doc, do: "description"
 
   @impl ExampleBehaviour
+  def container, do: :div
+
+  @impl ExampleBehaviour
   def extra_sources, do: []
 end

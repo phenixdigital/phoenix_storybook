@@ -428,20 +428,39 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns = %{tab: :example}) do
-    theme = Map.get(assigns, :theme)
+    case LayoutView.normalize_story_container(assigns.story.container()) do
+      {:iframe, iframe_opts} ->
+        assigns =
+          assign(assigns, :iframe_attributes, assigns_to_attributes(iframe_opts, [:style]))
 
-    live_render(assigns.socket, assigns.story,
-      id: "example-#{story_id(assigns.story)}-#{theme}",
-      session: %{"theme" => theme},
-      container:
-        {:div,
-         class:
-           LayoutView.sandbox_class(
-             assigns.socket,
-             {:div, class: ["psb psb:pb-12", assigns[:color_mode_class]]},
-             assigns
-           )}
-    )
+        ~H"""
+        <iframe
+          phx-update="ignore"
+          id={"iframe-#{story_id(@story)}-example"}
+          class="psb:w-full psb:border-0"
+          src={path_to_iframe(@socket, @root_path, @story_path, theme: @theme, color_mode: @color_mode)}
+          height="0"
+          onload={iframe_onload_js()}
+          {@iframe_attributes}
+        />
+        """
+
+      {:div, _container_opts} ->
+        theme = Map.get(assigns, :theme)
+
+        live_render(assigns.socket, assigns.story,
+          id: "example-#{story_id(assigns.story)}-#{theme}",
+          session: %{"theme" => theme},
+          container:
+            {:div,
+             class:
+               LayoutView.sandbox_class(
+                 assigns.socket,
+                 {:div, class: ["psb psb:pb-12", assigns[:color_mode_class]]},
+                 assigns
+               )}
+        )
+    end
   end
 
   defp render_content(:example, assigns = %{tab: :source}) do
@@ -728,6 +747,17 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp story_id(story_module) do
     story_module |> Macro.underscore() |> String.replace("/", "_")
+  end
+
+  defp iframe_onload_js do
+    """
+    javascript:(function(o){
+      o.style.height=o.contentWindow.document.body.scrollHeight+'px';
+      setTimeout(function() {
+        o.style.height=o.contentWindow.document.body.scrollHeight+'px';
+      }, 100)
+    }(this));
+    """
   end
 
   def handle_event("psb-set-theme", %{"theme" => theme}, socket) do
