@@ -104,6 +104,36 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
   end
 
+  describe "example container" do
+    test "with valid container it won't raise" do
+      mock = example_stub(container: :div)
+      assert validate!(mock) == mock
+
+      mock = example_stub(container: {:div, class: "foo"})
+      assert validate!(mock) == mock
+
+      mock = example_stub(container: :iframe)
+      assert validate!(mock) == mock
+
+      mock = example_stub(container: {:iframe, style: "bar"})
+      assert validate!(mock) == mock
+    end
+
+    test "with invalid container it raises" do
+      mock = example_stub(container: :span)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+
+      assert e.description =~
+               "story container must be :div, {:div, opts}, :iframe or {:iframe, opts}"
+
+      mock = example_stub(container: "iframe")
+      e = assert_raise CompileError, fn -> validate!(mock) end
+
+      assert e.description =~
+               "story container must be :div, {:div, opts}, :iframe or {:iframe, opts}"
+    end
+  end
+
   describe "component extra_sources" do
     test "with valid extra_sources it won't raise" do
       mock = component_stub(extra_sources: [])

@@ -224,4 +224,16 @@ defmodule PhoenixStorybook.StoryTest do
       assert MyPageStory.render(%{}) == false
     end
   end
+
+  describe "example story" do
+    test "example story default behaviors" do
+      defmodule MyExampleStory do
+        use PhoenixStorybook.Story, :example
+      end
+
+      assert MyExampleStory.storybook_type() == :example
+      assert MyExampleStory.container() == :div
+      assert MyExampleStory.extra_sources() == []
+    end
+  end
 end
