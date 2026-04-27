@@ -87,6 +87,13 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   end
 
   def render(assigns) do
+    case assigns.story.storybook_type() do
+      :example -> render_example(assigns)
+      _ -> render_component(assigns)
+    end
+  end
+
+  defp render_component(assigns) do
     assigns =
       assign(
         assigns,
@@ -126,9 +133,28 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     """
   end
 
+  defp render_example(assigns) do
+    theme = Map.get(assigns, :theme)
+
+    assigns =
+      assign(assigns, :example_live_id, "example-#{story_id(assigns.story)}-#{theme}")
+
+    ~H"""
+    {live_render(@socket, @story,
+      id: @example_live_id,
+      session: %{"theme" => @theme},
+      container: {:div, class: @color_mode_class}
+    )}
+    """
+  end
+
   defp playground_preview_id(story) do
     module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
+  end
+
+  defp story_id(story) do
+    story |> Macro.underscore() |> String.replace("/", "_")
   end
 
   defp current_variation(type, story, %{"variation_id" => variation_id})

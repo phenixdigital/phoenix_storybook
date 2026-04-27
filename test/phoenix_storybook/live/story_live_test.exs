@@ -775,6 +775,22 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert html =~ "Example template"
     end
 
+    test "renders an iframe example story in an iframe", %{conn: conn} do
+      {:ok, view, html} = live(conn, ~p"/storybook/examples/iframe")
+
+      refute html =~ "Iframe example content"
+
+      [{"iframe", attrs, _}] =
+        view
+        |> element("#iframe-tree_storybook_examples_iframe-example")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
+      assert List.keyfind(attrs, "src", 0) ==
+               {"src", ~p"/storybook/iframe/examples/iframe?theme=default"}
+    end
+
     test "renders an example story main source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
       html = view |> element("a", "Source") |> render_click()
@@ -783,6 +799,16 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
       refute html =~ ~r/extra_sources/
       refute html =~ ~r/doc/
+      refute html =~ ~r/PhoenixStorybook/
+    end
+
+    test "renders an iframe example story main source tab", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/iframe")
+      html = view |> element("a", "Source") |> render_click()
+
+      assert_patched(view, ~p"/storybook/examples/iframe?#{[tab: :source, theme: :default]}")
+      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Iframe/
+      refute html =~ ~r/def container/
       refute html =~ ~r/PhoenixStorybook/
     end
 
