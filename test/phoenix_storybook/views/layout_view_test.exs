@@ -101,6 +101,33 @@ defmodule PhoenixStorybook.LayoutViewTest do
     def find_entry_by_path(_path), do: nil
   end
 
+  defmodule TestBackendWithSandboxDataAttribute do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          sandbox_class: "root-sandbox",
+          themes_strategies: [data_attribute: "test-theme"],
+          color_mode_sandbox_light_class: "light"
+        ],
+        key,
+        default
+      )
+    end
+  end
+
+  defmodule TestBackendWithSandboxCustomDataAttribute do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          sandbox_class: "root-sandbox",
+          themes_strategies: [data_attribute: "appearance"]
+        ],
+        key,
+        default
+      )
+    end
+  end
+
   defmodule DummyEndpoint do
     def script_name, do: ["storybook"]
   end
@@ -280,6 +307,52 @@ defmodule PhoenixStorybook.LayoutViewTest do
     refute Enum.member?(no_theme, "theme-default")
     assert Enum.member?(with_theme, "theme-default")
     assert Enum.member?(with_theme, "root-sandbox")
+  end
+
+  test "sandbox_attributes uses data_attribute strategy with configured key" do
+    conn = build_test_conn(TestBackendWithSandboxDataAttribute)
+
+    attrs =
+      LayoutView.sandbox_attributes(conn, {:div, [class: "container"]}, %{
+        theme: :default,
+        color_mode: nil
+      })
+
+    assert Keyword.get(attrs, :"data-test-theme") == "default"
+  end
+
+  test "sandbox_attributes returns empty list when theme is nil" do
+    conn = build_test_conn(TestBackendWithSandboxDataAttribute)
+
+    attrs =
+      LayoutView.sandbox_attributes(conn, {:div, [class: "container"]}, %{
+        theme: nil
+      })
+
+    assert attrs == []
+  end
+
+  test "sandbox_attributes returns empty list when data_attribute strategy is not configured" do
+    conn = build_test_conn(TestBackend)
+
+    attrs =
+      LayoutView.sandbox_attributes(conn, {:div, [class: "container"]}, %{
+        theme: :default
+      })
+
+    assert attrs == []
+  end
+
+  test "sandbox_attributes supports custom data attribute names for themes" do
+    conn = build_test_conn(TestBackendWithSandboxCustomDataAttribute)
+
+    attrs =
+      LayoutView.sandbox_attributes(conn, {:div, [class: "container"]}, %{
+        theme: :default,
+        color_mode: nil
+      })
+
+    assert Keyword.get(attrs, :"data-appearance") == "default"
   end
 
   test "normalize_story_container sets defaults for div and iframe" do

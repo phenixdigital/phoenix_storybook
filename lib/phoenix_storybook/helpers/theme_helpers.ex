@@ -8,6 +8,16 @@ defmodule PhoenixStorybook.ThemeHelpers do
     end
   end
 
+  def theme_sandbox_data_attribute(backend_module, theme) do
+    case theme_strategy(backend_module, :data_attribute) do
+      nil ->
+        nil
+
+      attribute_name when is_binary(attribute_name) ->
+        {String.to_atom("data-#{attribute_name}"), "#{theme}"}
+    end
+  end
+
   def theme_assign(backend_module, theme) do
     case theme_strategy(backend_module, :assign) do
       nil -> nil

@@ -118,7 +118,15 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         )}
       <% else %>
         <% {classes, iframe_opts} = Keyword.pop(@iframe_opts, :class) %>
-        <div {iframe_opts} class={[classes, @color_mode_class]}>
+        <div
+          {iframe_opts}
+          class={[classes, @color_mode_class]}
+          {LayoutView.sandbox_attributes(
+            @socket,
+            {:div, @iframe_opts},
+            assigns
+          )}
+        >
           {ComponentRenderer.render(@context)}
         </div>
       <% end %>

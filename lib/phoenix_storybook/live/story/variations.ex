@@ -136,6 +136,11 @@ defmodule PhoenixStorybook.Story.Variations do
                     LayoutView.sandbox_class(@socket, container_with_opts, assigns),
                     @color_mode_class
                   ]}
+                  {LayoutView.sandbox_attributes(
+                    @socket,
+                    container_with_opts,
+                    assigns
+                  )}
                   {@sandbox_attributes}
                 >
                   {ComponentRenderer.render(rendering_context)}

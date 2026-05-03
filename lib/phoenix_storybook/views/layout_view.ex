@@ -196,6 +196,13 @@ defmodule PhoenixStorybook.LayoutView do
      "psb:opacity-0 psb:scale-95"}
   end
 
+  def sandbox_attributes(_conn_or_socket, _container, %{theme: nil}), do: []
+
+  def sandbox_attributes(conn_or_socket, _container, %{theme: theme}) do
+    backend_module = backend_module(conn_or_socket)
+    List.wrap(ThemeHelpers.theme_sandbox_data_attribute(backend_module, theme))
+  end
+
   def sandbox_class(conn_or_socket, container, %{theme: nil}) do
     main_sandbox_class(conn_or_socket, container)
   end
