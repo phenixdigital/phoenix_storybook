@@ -119,8 +119,12 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
           ),
           @color_mode_class
         ]}
-        ,
         style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;"
+        {LayoutView.sandbox_attributes(
+          @socket,
+          LayoutView.normalize_story_container(@story.container()),
+          assigns
+        )}
       >
         {ComponentRenderer.render(@context)}
       </div>

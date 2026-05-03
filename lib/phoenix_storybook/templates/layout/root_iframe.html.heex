@@ -59,7 +59,11 @@
     if assigns[:story],
       do: normalize_story_container(assigns[:story].container()),
       else: {:div, []} %>
-  <body class={sandbox_class(@conn, container, assigns)} style="margin: 0;">
+  <body
+    class={sandbox_class(@conn, container, assigns)}
+    style="margin: 0;"
+    {sandbox_attributes(@conn, container, assigns)}
+  >
     {@inner_content}
   </body>
 </html>

@@ -15,6 +15,18 @@ defmodule PhoenixStorybook.ThemeHelpersTest do
     end
   end
 
+  defmodule DataAttributeBackend do
+    def config(:themes_strategies, default) do
+      Keyword.put(default, :data_attribute, "test-theme")
+    end
+  end
+
+  defmodule DataAttributeNilBackend do
+    def config(:themes_strategies, default) do
+      Keyword.put(default, :data_attribute, nil)
+    end
+  end
+
   defmodule AssignBinaryBackend do
     def config(:themes_strategies, default) do
       Keyword.put(default, :assign, "theme")
@@ -49,6 +61,15 @@ defmodule PhoenixStorybook.ThemeHelpersTest do
 
   test "theme_sandbox_class prefixes theme when strategy exists" do
     assert ThemeHelpers.theme_sandbox_class(SandboxPrefixBackend, :default) == "sandbox-default"
+  end
+
+  test "theme_sandbox_data_attribute nil when no sandbox strategy" do
+    assert ThemeHelpers.theme_sandbox_data_attribute(DataAttributeNilBackend, :default) == nil
+  end
+
+  test "theme_sandbox_data_attribute returns configured data attribute pair as tuple" do
+    assert ThemeHelpers.theme_sandbox_data_attribute(DataAttributeBackend, :default) ==
+             {:"data-test-theme", "default"}
   end
 
   test "theme_assign returns nil when no assign strategy" do
