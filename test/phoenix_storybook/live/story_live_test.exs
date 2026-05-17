@@ -114,26 +114,26 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "navigate in sidebar", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
-      assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
+      assert view |> element("#psb-sidebar a", "Live Component (root)") |> render_click() =~
                "LiveComponent first doc paragraph."
 
       # A folder is open
-      refute has_element?(view, "#sidebar a", "Component (a_folder)")
+      refute has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # Opening A folder
-      element(view, "#sidebar div", "A Folder") |> render_click()
-      assert has_element?(view, "#sidebar a", "Component (a_folder)")
+      element(view, "#psb-sidebar div", "A Folder") |> render_click()
+      assert has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # B folder is already open (by its index.exs file)
-      assert has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
+      assert has_element?(view, "#psb-sidebar a", "AllTypesComponent (b_folder)")
 
       # reaching items inside
-      assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
+      assert view |> element("#psb-sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
                "Component mixing any attribute possible types"
 
       # closing "B folder"
-      element(view, "#sidebar div", "Config Name") |> render_click()
-      refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
+      element(view, "#psb-sidebar div", "Config Name") |> render_click()
+      refute has_element?(view, "#psb-sidebar a", "AllTypesComponent (b_folder)")
     end
 
     test "navigate to unknown tab", %{conn: conn} do
@@ -604,7 +604,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
         ~p"/storybook/component?#{[tab: :playground, theme: :default, variation_id: :hello]}"
       )
 
-      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: hello"
 
       view |> element("a", "Stories") |> render_click()
 
@@ -615,7 +615,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
         ~p"/storybook/component?#{[tab: :playground, theme: :default, variation_id: :world]}"
       )
 
-      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: world"
     end
 
     test "sandbox container is default flex div", %{conn: conn} do
@@ -930,40 +930,40 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "filters the search list based on user input", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
-      assert has_element?(view, "#search-container a", "Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      assert has_element?(view, "#psb-search-container a", "Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
 
       view
-      |> with_target("#search-container")
+      |> with_target("#psb-search-container")
       |> render_change("search", %{"search" => %{"input" => "a_folder"}})
 
-      refute has_element?(view, "#search-container a", "Component (root)")
-      refute has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      refute has_element?(view, "#psb-search-container a", "Component (root)")
+      refute has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
     end
 
     test "returns everything on blank input", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
-      assert has_element?(view, "#search-container a", "Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      assert has_element?(view, "#psb-search-container a", "Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
 
       view
-      |> with_target("#search-container")
+      |> with_target("#psb-search-container")
       |> render_change("search", %{"search" => %{"input" => ""}})
 
-      assert has_element?(view, "#search-container a", "Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      assert has_element?(view, "#psb-search-container a", "Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
     end
 
     test "navigates to a specified story", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
       view
-      |> with_target("#search-container")
+      |> with_target("#psb-search-container")
       |> render_change("navigate", %{"path" => ~p"/storybook/component"})
 
       assert_patch(view, ~p"/storybook/component", 200)

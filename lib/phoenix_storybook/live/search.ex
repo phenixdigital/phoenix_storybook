@@ -38,7 +38,7 @@ defmodule PhoenixStorybook.Search do
   def render(assigns) do
     ~H"""
     <div
-      id="search-container"
+      id="psb-search-container"
       phx-hook="SearchHook"
       phx-show={show_container()}
       phx-hide={hide_container()}
@@ -49,7 +49,7 @@ defmodule PhoenixStorybook.Search do
 
       <div class="psb psb:fixed psb:inset-0 psb:z-10 psb:overflow-y-auto psb:p-4 psb:sm:p-6 psb:md:p-20">
         <div
-          id="search-modal"
+          id="psb-search-modal"
           phx-show={show_modal()}
           phx-hide={hide_modal()}
           phx-click-away={JS.dispatch("psb:close-search")}
@@ -62,7 +62,7 @@ defmodule PhoenixStorybook.Search do
             for={%{}}
             as={:search}
             phx-debounce={500}
-            id="search-form"
+            id="psb-search-form"
             class="psb psb:relative"
           >
             <.fa_icon
@@ -72,7 +72,7 @@ defmodule PhoenixStorybook.Search do
               class="psb:pointer-events-none psb:absolute psb:top-3.5 psb:left-4 psb:h-5 psb:w-5 psb:text-gray-400"
             />
             {text_input(f, :input,
-              id: "search-input",
+              id: "psb-search-input",
               "phx-change": "search",
               "phx-target": @myself,
               placeholder: "Search...",
@@ -89,7 +89,7 @@ defmodule PhoenixStorybook.Search do
           <% end %>
 
           <ul
-            id="search-list"
+            id="psb-search-list"
             class="psb psb:max-h-72 psb:scroll-py-2 psb:divide-y psb:divide-gray-200 psb:dark:divide-slate-600 psb:overflow-y-auto psb:pb-2 psb:text-sm psb:text-gray-800"
           >
             <%= for {story, i} <- Enum.with_index(@stories) do %>
@@ -133,7 +133,7 @@ defmodule PhoenixStorybook.Search do
     JS.show(
       js,
       transition: {"psb:ease-out psb:duration-300", "psb:opacity-0", "psb:opacity-100"},
-      to: "#search-container"
+      to: "#psb-search-container"
     )
   end
 
@@ -141,7 +141,7 @@ defmodule PhoenixStorybook.Search do
     JS.hide(
       js,
       transition: {"psb:ease-in psb:duration-200", "psb:opacity-100", "psb:opacity-0"},
-      to: "#search-container"
+      to: "#psb-search-container"
     )
   end
 
@@ -150,7 +150,7 @@ defmodule PhoenixStorybook.Search do
       js,
       {"psb:ease-out psb:duration-300", "psb:opacity-0 psb:scale-90",
        "psb:opacity-100 psb:scale-100"},
-      to: "#search-modal"
+      to: "#psb-search-modal"
     )
   end
 
@@ -159,7 +159,7 @@ defmodule PhoenixStorybook.Search do
       js,
       {"psb:ease-in psb:duration-200", "psb:opacity-100 psb:scale-100",
        "psb:opacity-0 psb:scale-90"},
-      to: "#search-modal"
+      to: "#psb-search-modal"
     )
   end
 end

@@ -46,8 +46,8 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
     </div>
     <div :if={@doc && @doc.body && @doc.body != ""}>
       <a
-        phx-click={JS.show(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-less")}
-        id="read-more"
+        phx-click={JS.show(to: "#psb-doc-next") |> JS.hide() |> JS.show(to: "#psb-read-less")}
+        id="psb-read-more"
         class="psb psb:py-2 psb:inline-block psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
       >
         <.fa_icon
@@ -58,13 +58,13 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
         /> Read more
       </a>
       <a
-        phx-click={JS.hide(to: "#doc-next") |> JS.hide() |> JS.show(to: "#read-more")}
-        id="read-less"
+        phx-click={JS.hide(to: "#psb-doc-next") |> JS.hide() |> JS.show(to: "#psb-read-more")}
+        id="psb-read-less"
         class="psb psb:pt-2 psb:pb-4 psb:hidden psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
       >
         <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb:mr-1" /> Read less
       </a>
-      <div id="doc-next" class="psb:hidden psb:space-y-4 ">
+      <div id="psb-doc-next" class="psb:hidden psb:space-y-4 ">
         <div class="psb psb-doc psb:text-sm psb:md:text-base psb:leading-7 psb:text-slate-700 psb:dark:text-slate-500">
           {raw(@doc.body)}
         </div>

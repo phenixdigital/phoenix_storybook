@@ -4,7 +4,7 @@ export const StoryHook = {
     if (window.location.hash) {
       const el = document.querySelector(window.location.hash);
       if (el) {
-        const liveContainer = document.querySelector("#live-container");
+        const liveContainer = document.querySelector("#psb-live-container");
         setTimeout(() => {
           liveContainer.scrollTop = el.offsetTop - 115;
         }, 100);

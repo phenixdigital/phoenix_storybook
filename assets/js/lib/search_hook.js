@@ -4,10 +4,10 @@ export const SearchHook = {
   },
 
   mounted() {
-    const searchContainer = document.querySelector("#search-container");
-    const searchModal = document.querySelector("#search-modal");
-    const searchList = document.querySelector("#search-list");
-    const searchInput = document.querySelector("#search-input");
+    const searchContainer = document.querySelector("#psb-search-container");
+    const searchModal = document.querySelector("#psb-search-modal");
+    const searchList = document.querySelector("#psb-search-list");
+    const searchInput = document.querySelector("#psb-search-input");
 
     let allStories = searchList.children;
     let firstStory = searchList.firstElementChild;
@@ -68,7 +68,7 @@ export const SearchHook = {
         const link = activeStory.firstElementChild;
 
         this.resetInput(searchInput);
-        this.pushEventTo("#search-container", "navigate", {
+        this.pushEventTo("#psb-search-container", "navigate", {
           path: link.pathname,
         });
         this.dispatchCloseSearch();
@@ -115,7 +115,7 @@ export const SearchHook = {
       const link = activeStory.firstElementChild;
 
       this.resetInput(searchInput);
-      this.pushEventTo("#search-container", "navigate", {
+      this.pushEventTo("#psb-search-container", "navigate", {
         path: link.pathname,
       });
       this.dispatchCloseSearch();
@@ -124,7 +124,7 @@ export const SearchHook = {
 
   resetInput(searchInput) {
     searchInput.value = "";
-    this.pushEventTo("#search-container", "search", { search: { input: "" } });
+    this.pushEventTo("#psb-search-container", "search", { search: { input: "" } });
   },
 
   dispatchOpenSearch() {

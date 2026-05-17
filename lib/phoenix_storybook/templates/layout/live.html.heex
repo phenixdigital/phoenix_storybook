@@ -17,7 +17,7 @@
               JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())
             }
           >
-            <div id="color-mode-icon" phx-update="ignore">
+            <div id="psb-color-mode-icon" phx-update="ignore">
               <.fa_icon
                 style={:regular}
                 name={color_mode_icon("light")}
@@ -158,7 +158,7 @@
   </div>
 
   <nav class="psb psb:lg:hidden psb:w-full psb:h-12 psb:border-slate-200 psb:dark:border-slate-600 psb:border-t psb:flex psb:text-gray-600 psb:dark:text-slate-300 psb:items-center psb:cursor-pointer psb:pr-2">
-    <span id="breadcrumb-icon" phx-update="ignore">
+    <span id="psb-breadcrumb-icon" phx-update="ignore">
       <.fa_icon
         name="bars"
         style={:regular}
@@ -174,15 +174,15 @@
 </header>
 
 <div
-  id="sidebar-overlay"
+  id="psb-sidebar-overlay"
   phx-click={JS.dispatch("psb:close-sidebar")}
   class="psb psb:fixed psb:hidden psb:lg:hidden psb:inset-0 psb:z-10 psb:backdrop-blur-sm psb:bg-black/20"
 >
 </div>
 
-<div id="sidebar-container" class="psb psb:hidden psb:lg:block">
+<div id="psb-sidebar-container" class="psb psb:hidden psb:lg:block">
   <.live_component
-    id="sidebar"
+    id="psb-sidebar"
     module={PhoenixStorybook.Sidebar}
     backend_module={@backend_module}
     root_path={@root_path}
@@ -193,14 +193,14 @@
 </div>
 
 <.live_component
-  id="search"
+  id="psb-search"
   module={PhoenixStorybook.Search}
   backend_module={@backend_module}
   root_path={@root_path}
 />
 
 <div
-  id="live-container"
+  id="psb-live-container"
   class={[
     "psb psb:pt-28 psb:lg:pt-16 psb:left-0 psb:lg:left-60 psb:absolute psb:h-[calc(100vh_-_7rem)]",
     "psb:md:h-screen psb:w-full psb:lg:w-[calc(100%_-_15rem)] psb:px-4 psb:lg:px-12 psb:overflow-auto",

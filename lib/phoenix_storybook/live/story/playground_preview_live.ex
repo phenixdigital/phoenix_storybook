@@ -107,9 +107,9 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       )
 
     ~H"""
-    <div id="playground-preview-live" style="width: 100%; height: 100%;">
+    <div id="psb-playground-preview-live" style="width: 100%; height: 100%;">
       <div
-        id="sandbox"
+        id="psb-playground-sandbox"
         class={[
           LayoutView.sandbox_class(
             @socket,

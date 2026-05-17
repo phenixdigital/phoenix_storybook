@@ -1,7 +1,7 @@
 export const SidebarHook = {
   mounted() {
-    const sidebarContainer = document.querySelector("#sidebar-container");
-    const overlay = document.querySelector("#sidebar-overlay");
+    const sidebarContainer = document.querySelector("#psb-sidebar-container");
+    const overlay = document.querySelector("#psb-sidebar-overlay");
 
     const openSidebar = () => {
       sidebarContainer.classList.remove("psb:hidden");
