@@ -226,7 +226,7 @@ defmodule PhoenixStorybook.StoryLive do
     <div
       class="psb psb:space-y-6 psb:pb-12 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
       id="story-live"
-      phx-hook="StoryHook"
+      phx-hook="PhoenixStorybook.StoryHook"
     >
       <div class="psb">
         <div class="psb psb:flex psb:my-6 psb:items-center">

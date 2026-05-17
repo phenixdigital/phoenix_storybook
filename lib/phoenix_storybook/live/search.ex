@@ -39,7 +39,7 @@ defmodule PhoenixStorybook.Search do
     ~H"""
     <div
       id="search-container"
-      phx-hook="SearchHook"
+      phx-hook="PhoenixStorybook.SearchHook"
       phx-show={show_container()}
       phx-hide={hide_container()}
       class="psb psb:hidden psb:opacity-0 psb:relative psb:z-10 psb:transition-all"
