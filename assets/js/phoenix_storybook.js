@@ -3,6 +3,7 @@ import { ColorModeHook } from "./lib/color_mode_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
 import { StoryHook } from "./lib/story_hook";
+import { warnReservedHooks } from "./lib/warn_reserved_hooks";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -22,14 +23,16 @@ const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribut
 const selectedColorMode = ColorModeHook.selectedColorMode();
 const actualColorMode = ColorModeHook.actualColorMode(selectedColorMode);
 
+const psbHooks = {
+  "PhoenixStorybook.StoryHook": StoryHook,
+  "PhoenixStorybook.SearchHook": SearchHook,
+  "PhoenixStorybook.SidebarHook": SidebarHook,
+  "PhoenixStorybook.ColorModeHook": ColorModeHook,
+};
+warnReservedHooks(Object.keys(psbHooks), window.storybook.Hooks);
+
 const liveSocket = new LiveView.LiveSocket(socketPath, Phoenix.Socket, {
-  hooks: {
-    ...window.storybook.Hooks,
-    StoryHook,
-    SearchHook,
-    SidebarHook,
-    ColorModeHook,
-  },
+  hooks: { ...window.storybook.Hooks, ...psbHooks },
   uploaders: window.storybook.Uploaders,
   params: (_liveViewName) => {
     return {

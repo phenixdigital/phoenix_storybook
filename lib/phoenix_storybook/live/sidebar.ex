@@ -65,7 +65,7 @@ defmodule PhoenixStorybook.Sidebar do
     ~H"""
     <section
       id="sidebar"
-      phx-hook="SidebarHook"
+      phx-hook="PhoenixStorybook.SidebarHook"
       class="psb psb:text-gray-600 psb:dark:text-slate-400 psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-slate-50 psb:dark:bg-slate-800 psb:lg:pt-20 psb:pb-32 psb:px-4 psb:overflow-y-auto"
     >
       <span id="close-sidebar-icon" phx-update="ignore">

@@ -1,5 +1,6 @@
 // phoenix and phoenix_live_view are loaded from host app dependencies (see JSAssets module)
 import { ColorModeHook } from "./lib/color_mode_hook";
+import { warnReservedHooks } from "./lib/warn_reserved_hooks";
 
 if (window.storybook === undefined) {
   console.warn("No storybook configuration detected.");
@@ -18,8 +19,13 @@ const csrfToken = window.parent.document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");
 
+const psbHooks = {
+  "PhoenixStorybook.ColorModeHook": ColorModeHook,
+};
+warnReservedHooks(Object.keys(psbHooks), window.storybook.Hooks);
+
 const liveSocket = new LiveView.LiveSocket(socketPath, Phoenix.Socket, {
-  hooks: { ...window.storybook.Hooks, ColorModeHook },
+  hooks: { ...window.storybook.Hooks, ...psbHooks },
   uploaders: window.storybook.Uploaders,
   params: (_liveViewName) => {
     return {
