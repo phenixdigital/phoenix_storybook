@@ -97,6 +97,14 @@ defmodule PhoenixStorybook.ExtraAssignsHelpersTest do
           story
         )
       end
+
+      assert_raise RuntimeError, ~r/unknown atom value in assign/, fn ->
+        handle_set_variation_assign(
+          %{"variation_id" => "variation_id", "atom" => "psb_unknown_atom_value"},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
     end
 
     test "with nil typed attributes", %{story: story} do
@@ -132,6 +140,29 @@ defmodule PhoenixStorybook.ExtraAssignsHelpersTest do
     test "with with invalid param", %{story: story} do
       assert_raise RuntimeError, ~r/missing variation_id in assign/, fn ->
         handle_set_variation_assign(%{}, %{}, story)
+      end
+    end
+
+    test "rejects unknown variation ids", %{story: story} do
+      assert_raise RuntimeError, ~r/unknown variation_id in assign/, fn ->
+        handle_set_variation_assign(
+          %{"variation_id" => "unknown", "attribute" => "foo"},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
+    end
+
+    test "rejects invalid attribute names", %{story: story} do
+      assert_raise RuntimeError, ~r/invalid attribute name in assign/, fn ->
+        handle_set_variation_assign(
+          %{
+            "variation_id" => "variation_id",
+            ~s|attribute" injected={send(self(), :rce)} bar| => "foo"
+          },
+          %{{:single, :variation_id} => %{}},
+          story
+        )
       end
     end
   end

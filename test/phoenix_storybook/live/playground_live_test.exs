@@ -30,6 +30,25 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       assert view |> element("#psb-playground-preview-live") |> render() =~ "component: world"
     end
 
+    test "playground psb-assign values are not evaluated as HEEx", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      assert [playground_preview_view] = live_children(view)
+
+      process_name = :"playground_rce_#{System.unique_integer([:positive])}"
+      Process.register(self(), process_name)
+
+      payload =
+        ~s|safe" injected={send(Process.whereis(#{inspect(process_name)}), :rce)} bar="|
+
+      render_hook(playground_preview_view, "psb-assign", %{
+        "variation_id" => "hello",
+        "label" => payload
+      })
+
+      refute_received :rce
+      Process.unregister(process_name)
+    end
+
     test "renders playground code a simple component", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       view |> element("a", "Code") |> render_click()

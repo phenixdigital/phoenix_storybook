@@ -162,6 +162,20 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
       assert render_variation(component, :with_eval) |> rendered_to_string() =~ ~s|index_i: 25|
     end
 
+    test "renders binary attributes without evaluating injected HEEx", %{component: component} do
+      process_name = :"component_renderer_rce_#{System.unique_integer([:positive])}"
+      Process.register(self(), process_name)
+
+      payload =
+        ~s|safe" injected={send(Process.whereis(#{inspect(process_name)}), :rce)} bar="|
+
+      assert render_variation(component, :hello, %{hello: %{label: payload}})
+             |> rendered_to_string() =~ "safe"
+
+      refute_received :rce
+      Process.unregister(process_name)
+    end
+
     test "it should not crash with a very large binary in a map" do
       defmodule LargeBinaryStory do
         use PhoenixStorybook.Story, :component
@@ -231,11 +245,11 @@ defmodule PhoenixStorybook.Rendering.ComponentRendererTest do
     end
   end
 
-  defp render_variation(story, variation_id) do
+  defp render_variation(story, variation_id, extra_attributes \\ %{}) do
     variation = Enum.find(story.variations(), &(&1.id == variation_id))
 
     TreeStorybook
-    |> RenderingContext.build(story, variation, %{})
+    |> RenderingContext.build(story, variation, extra_attributes)
     |> ComponentRenderer.render()
   end
 end
