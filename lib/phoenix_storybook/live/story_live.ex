@@ -688,11 +688,35 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_file_path_from_repo_name(source_file_path, normalized_base_url) do
     with %URI{path: base_path} <- URI.parse(normalized_base_url),
          [_, repo_name | _] <- String.split(base_path || "", "/", trim: true),
-         [_, suffix] <- String.split(source_file_path, "/#{repo_name}/", parts: 2),
+         suffix when not is_nil(suffix) <- source_file_path_suffix(source_file_path, repo_name),
          true <- suffix != "" do
       suffix
     else
       _ -> nil
+    end
+  end
+
+  defp source_file_path_suffix(source_file_path, repo_name) do
+    case String.split(source_file_path, "/#{repo_name}/", parts: 2) do
+      [_, suffix] ->
+        suffix
+
+      _ ->
+        source_file_path_from_cwd(source_file_path, repo_name)
+    end
+  end
+
+  defp source_file_path_from_cwd(source_file_path, repo_name) do
+    cwd = File.cwd!()
+
+    if Path.basename(cwd) |> String.starts_with?(repo_name) do
+      relative_path = Path.relative_to(source_file_path, cwd)
+
+      if String.starts_with?(relative_path, "..") do
+        nil
+      else
+        relative_path
+      end
     end
   end
 
