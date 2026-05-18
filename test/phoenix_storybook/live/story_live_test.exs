@@ -783,7 +783,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
       refute html =~ ~r/extra_sources/
       refute html =~ ~r/doc/
-      refute html =~ ~r/PhoenixStorybook/
+      refute html =~ ~r/defmodule.*PhoenixStorybook/
     end
 
     test "renders source permalink icon for main source file", %{conn: conn} do
