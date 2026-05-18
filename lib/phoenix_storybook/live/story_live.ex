@@ -204,7 +204,8 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp close_sidebar(socket), do: push_event(socket, "psb:close-sidebar", %{"id" => "#sidebar"})
+  defp close_sidebar(socket),
+    do: push_event(socket, "psb:close-sidebar", %{"id" => "#psb-sidebar"})
 
   def render(assigns = %{story_load_error: error})
       when not is_nil(error) do
@@ -225,7 +226,7 @@ defmodule PhoenixStorybook.StoryLive do
     ~H"""
     <div
       class="psb psb:space-y-6 psb:pb-12 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
-      id="story-live"
+      id="psb-story-live"
       phx-hook="PhoenixStorybook.StoryHook"
     >
       <div class="psb">
@@ -399,7 +400,7 @@ defmodule PhoenixStorybook.StoryLive do
     ~H"""
     <.live_component
       module={Playground}
-      id="playground"
+      id="psb-playground"
       story={@story}
       story_path={@story_path}
       backend_module={@backend_module}
@@ -737,7 +738,7 @@ defmodule PhoenixStorybook.StoryLive do
       {:set_theme, String.to_atom(theme)}
     )
 
-    send_update(Playground, id: "playground", new_theme: theme)
+    send_update(Playground, id: "psb-playground", new_theme: theme)
     ThemeHelpers.call_theme_function(socket.assigns.backend_module, theme)
 
     {:noreply,
@@ -838,7 +839,7 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_info(event_log = %EventLog{view: PlaygroundPreviewLive}, socket) do
-    send_update(Playground, id: "playground", new_event: event_log)
+    send_update(Playground, id: "psb-playground", new_event: event_log)
     {:noreply, socket}
   end
 
@@ -852,12 +853,16 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_info({:new_variations_attributes, variations_attributes}, socket) do
-    send_update(Playground, id: "playground", new_variations_attributes: variations_attributes)
+    send_update(Playground,
+      id: "psb-playground",
+      new_variations_attributes: variations_attributes
+    )
+
     {:noreply, socket}
   end
 
   def handle_info({:new_template_attributes, template_attributes}, socket) do
-    send_update(Playground, id: "playground", new_template_attributes: template_attributes)
+    send_update(Playground, id: "psb-playground", new_template_attributes: template_attributes)
     {:noreply, socket}
   end
 

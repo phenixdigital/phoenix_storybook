@@ -64,11 +64,11 @@ defmodule PhoenixStorybook.Sidebar do
   def render(assigns) do
     ~H"""
     <section
-      id="sidebar"
+      id="psb-sidebar"
       phx-hook="PhoenixStorybook.SidebarHook"
       class="psb psb:text-gray-600 psb:dark:text-slate-400 psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-slate-50 psb:dark:bg-slate-800 psb:lg:pt-20 psb:pb-32 psb:px-4 psb:overflow-y-auto"
     >
-      <span id="close-sidebar-icon" phx-update="ignore">
+      <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon
           style={:regular}
           name="xmark"
@@ -80,7 +80,7 @@ defmodule PhoenixStorybook.Sidebar do
 
       <div class="psb psb:bg-white psb:dark:bg-slate-900 psb:relative psb:pointer-events-auto psb:mb-4">
         <button
-          id="search-button"
+          id="psb-search-button"
           phx-click={JS.dispatch("psb:open-search")}
           class="psb psb:hidden psb:w-full psb:lg:flex psb:items-center psb:text-sm psb:leading-6 psb:text-slate-400 psb:rounded-md psb:border psb:border-1 psb:border-slate-100 psb:dark:border-slate-600 psb:hover:border-slate-200 psb:py-1.5 psb:pl-2 psb:pr-3"
         >

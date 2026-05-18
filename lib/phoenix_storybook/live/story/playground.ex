@@ -209,7 +209,7 @@ defmodule PhoenixStorybook.Story.Playground do
 
   def render(assigns) do
     ~H"""
-    <div id="playground" class="psb psb:flex psb:flex-col psb:flex-1">
+    <div id="psb-playground" class="psb psb:flex psb:flex-col psb:flex-1">
       {render_upper_navigation_tabs(assigns)}
       {render_upper_tab_content(assigns)}
       {render_lower_navigation_tabs(assigns)}
@@ -718,7 +718,7 @@ defmodule PhoenixStorybook.Story.Playground do
       </.form>
       <SourceSelect.source_file_select
         :if={Enum.any?(@story.merged_attributes())}
-        form_id="variation-selection-form"
+        form_id="psb-variation-selection-form"
         as={:variation}
         field={:variation_id}
         label="Open a variation"
