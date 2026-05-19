@@ -61,7 +61,7 @@ defmodule PhoenixStorybook.Story.Variations do
         >
           <!-- Variation description -->
           <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-4 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
-            <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
+            <%= link to: "##{anchor_id(variation)}", class: "psb psb-variation-anchor-link" do %>
               <.fa_icon
                 style={:light}
                 name="link"
