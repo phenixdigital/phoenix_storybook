@@ -12,6 +12,7 @@
 ## v1.1.0 (not released yet)
 - **feature**: [component's stories can have multiple source files](https://github.com/phenixdigital/phoenix_storybook/issues/767)
 - **feature**: [permalinks to component's source on Github](https://github.com/phenixdigital/phoenix_storybook/issues/769)
+- **change**: [improved namespacing of DOM ids, events, CSS classes...](https://github.com/phenixdigital/phoenix_storybook/issues/810) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
 
 ## v1.0.0 (2026-03-03)
 - **feature**: [support custom light class in color mode sandbox](https://github.com/phenixdigital/phoenix_storybook/issues/722)
