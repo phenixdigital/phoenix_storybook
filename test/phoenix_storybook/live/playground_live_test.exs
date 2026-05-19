@@ -296,7 +296,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       view
       |> element("#psb-colormode-dropdown")
-      |> render_hook("psb-set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
+      |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
       wait_for_preview_lv(view)
       html = view |> element("#psb-playground-preview-live .psb-sandbox") |> render()

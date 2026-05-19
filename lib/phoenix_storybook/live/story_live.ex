@@ -806,7 +806,7 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_event(
-        "psb-set-color-mode",
+        "psb:set-color-mode",
         %{"selected_mode" => selected_mode, "mode" => mode},
         socket
       ) do
