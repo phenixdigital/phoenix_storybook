@@ -19,7 +19,7 @@ export const StoryHook = {
     this.bindAnchorLinks();
   },
   bindAnchorLinks() {
-    for (const link of document.querySelectorAll(".variation-anchor-link")) {
+    for (const link of document.querySelectorAll(".psb-variation-anchor-link")) {
       link.addEventListener("click", (event) => {
         event.preventDefault();
         window.history.replaceState({}, "", link.hash);

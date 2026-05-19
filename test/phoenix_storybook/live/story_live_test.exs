@@ -456,7 +456,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       html =
         view
-        |> element(".story-nav-form select")
+        |> element(".psb-story-nav-form select")
         |> render_change(%{navigation: %{tab: "source"}})
 
       assert_patched(
@@ -754,13 +754,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "renders a page story", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/storybook/a_page")
       assert html =~ "A Page"
-      refute html =~ "story-tabs"
+      refute html =~ "psb-story-tabs"
     end
 
     test "renders a page story with tabs", %{conn: conn} do
       {:ok, view, html} = live(conn, ~p"/storybook/b_page")
       assert html =~ "B Page: tab_1"
-      assert html =~ "story-tabs"
+      assert html =~ "psb-story-tabs"
 
       html = view |> element("a", "Tab 2") |> render_click()
       assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")

@@ -300,7 +300,7 @@ defmodule PhoenixStorybook.StoryLive do
         for={%{}}
         as={:navigation}
         id={"#{Macro.underscore(@story)}-navigation-form"}
-        class="psb story-nav-form psb:lg:hidden"
+        class="psb psb-story-nav-form psb:lg:hidden"
       >
         {select(f, :tab, navigation_select_options(@tabs),
           "phx-change": "psb-set-tab",
@@ -310,7 +310,7 @@ defmodule PhoenixStorybook.StoryLive do
         )}
       </.form>
       <!-- :lg+ version of navigation tabs -->
-      <nav class="psb story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-gray-300 psb:dark:border-slate-600 psb:bg-slate-100 psb:dark:bg-slate-900 psb:h-10 psb:text-sm psb:font-medium">
+      <nav class="psb psb-story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-gray-300 psb:dark:border-slate-600 psb:bg-slate-100 psb:dark:bg-slate-900 psb:h-10 psb:text-sm psb:font-medium">
         <%= for tab <- @tabs do %>
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
           <a
