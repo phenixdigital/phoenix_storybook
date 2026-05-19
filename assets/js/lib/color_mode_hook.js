@@ -43,7 +43,7 @@ export const ColorModeHook = {
     return "light";
   },
   toggleColorModeClass: (mode) => {
-    if ("colorMode" in document.documentElement.dataset) {
+    if ("psbColorMode" in document.documentElement.dataset) {
       if (mode === "dark") {
         document.documentElement.classList.add("psb:dark");
       } else {

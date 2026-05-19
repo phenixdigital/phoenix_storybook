@@ -989,7 +989,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
   describe "color mode change" do
     test "send psb:set-color-mode will change color mode in picker", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
-      refute view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
+      refute view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
@@ -1002,7 +1002,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       |> element("#psb-colormode-dropdown")
       |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
-      assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
+      assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
@@ -1019,7 +1019,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       |> element("#psb-colormode-dropdown")
       |> render_hook("psb:set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
 
-      assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=light]")
+      assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=light]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
