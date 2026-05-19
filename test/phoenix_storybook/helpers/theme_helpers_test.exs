@@ -39,6 +39,10 @@ defmodule PhoenixStorybook.ThemeHelpersTest do
     def config(:themes_strategies, default), do: default
   end
 
+  defmodule ThemesBackend do
+    def config(:themes), do: [default: [name: "Default"], colorful: [name: "Colorful"]]
+  end
+
   test "theme_sandbox_class returns nil when no sandbox strategy" do
     assert ThemeHelpers.theme_sandbox_class(SandboxNilBackend, :default) == nil
   end
@@ -65,5 +69,20 @@ defmodule PhoenixStorybook.ThemeHelpersTest do
 
   test "call_theme_function applies configured function" do
     assert ThemeHelpers.call_theme_function(FunctionBackend, :default) == {:ok, :default}
+  end
+
+  test "theme_from_param resolves configured themes" do
+    assert ThemeHelpers.theme_from_param(ThemesBackend, "default") == :default
+    assert ThemeHelpers.theme_from_param(ThemesBackend, :colorful) == :colorful
+  end
+
+  test "theme_from_param rejects unknown binary themes without interning atoms" do
+    unknown_theme = "psb_unknown_#{System.unique_integer([:positive])}"
+
+    assert_raise RuntimeError, ~r/unknown theme/, fn ->
+      ThemeHelpers.theme_from_param(ThemesBackend, unknown_theme)
+    end
+
+    assert_raise ArgumentError, fn -> String.to_existing_atom(unknown_theme) end
   end
 end

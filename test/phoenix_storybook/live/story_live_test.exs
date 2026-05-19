@@ -137,9 +137,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
     end
 
     test "navigate to unknown tab", %{conn: conn} do
+      unknown_tab = "psb_unknown_#{System.unique_integer([:positive])}"
+
       assert_raise PhoenixStorybook.StoryTabNotFound, fn ->
-        get(conn, ~p"/storybook/component", tab: "unknown")
+        get(conn, ~p"/storybook/component", tab: unknown_tab)
       end
+
+      assert_raise ArgumentError, fn -> String.to_existing_atom(unknown_tab) end
     end
   end
 

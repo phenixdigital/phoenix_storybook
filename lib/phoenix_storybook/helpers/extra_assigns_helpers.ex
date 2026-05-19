@@ -172,12 +172,21 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
   defp to_value("nil", _attr_id, _attributes, _context), do: nil
 
   defp to_value(val, attr_id, attributes, context) when is_binary(val) do
-    case declared_attr_type(attr_id, attributes) do
-      :atom -> val |> existing_value_atom!(context) |> check_type!(:atom, context)
-      :boolean -> val |> parse_boolean!(context) |> check_type!(:boolean, context)
-      :integer -> val |> Integer.parse() |> check_type!(:integer, context)
-      :float -> val |> Float.parse() |> check_type!(:float, context)
-      _ -> val
+    case declared_attr(attr_id, attributes) do
+      %Attr{type: :atom, values: values} ->
+        val |> to_atom_value(values, context) |> check_type!(:atom, context)
+
+      %Attr{type: :boolean} ->
+        val |> to_boolean_value(context) |> check_type!(:boolean, context)
+
+      %Attr{type: :integer} ->
+        val |> Integer.parse() |> check_type!(:integer, context)
+
+      %Attr{type: :float} ->
+        val |> Float.parse() |> check_type!(:float, context)
+
+      _ ->
+        val
     end
   end
 
@@ -188,8 +197,30 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     end
   end
 
+  defp to_atom_value("nil", _values, _context), do: nil
+
+  defp to_atom_value(val, nil, context) do
+    existing_value_atom!(val, context)
+  end
+
+  defp to_atom_value(val, values, context) do
+    Enum.find(values, &(to_string(&1) == val)) ||
+      raise(RuntimeError, "unknown atom value in #{context}: #{val}")
+  end
+
+  defp to_boolean_value("true", _context), do: true
+  defp to_boolean_value("false", _context), do: false
+
+  defp to_boolean_value(val, context) do
+    raise(RuntimeError, "type mismatch in #{context}: #{val} is not a boolean")
+  end
+
+  defp declared_attr(attr_id, attributes) do
+    Enum.find(attributes, fn %Attr{id: id} -> id == attr_id end)
+  end
+
   defp declared_attr_type(attr_id, attributes) do
-    case Enum.find(attributes, fn %Attr{id: id} -> id == attr_id end) do
+    case declared_attr(attr_id, attributes) do
       %Attr{type: type} -> type
       _ -> nil
     end
@@ -207,22 +238,15 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     ArgumentError -> raise(RuntimeError, "unknown atom value in #{context}: #{val}")
   end
 
-  defp parse_boolean!("true", _context), do: true
-  defp parse_boolean!("false", _context), do: false
-
-  defp parse_boolean!(val, context) do
-    raise(RuntimeError, "type mismatch in #{context}: #{val} is not a boolean")
-  end
-
   defp check_type!(nil, _type, _context), do: nil
   defp check_type!(atom, :atom, _context) when is_atom(atom), do: atom
   defp check_type!(boolean, :boolean, _context) when is_boolean(boolean), do: boolean
-  defp check_type!({integer, _}, :integer, _context) when is_integer(integer), do: integer
+  defp check_type!({integer, ""}, :integer, _context) when is_integer(integer), do: integer
   defp check_type!(integer, :integer, _context) when is_integer(integer), do: integer
-  defp check_type!({float, _}, :float, _context) when is_float(float), do: float
+  defp check_type!({float, ""}, :float, _context) when is_float(float), do: float
   defp check_type!(float, :float, _context) when is_float(float), do: float
 
   defp check_type!(value, type, context) do
-    raise(RuntimeError, "type mismatch in #{context}: #{value} is not a #{type}")
+    raise(RuntimeError, "type mismatch in #{context}: #{inspect(value)} is not a #{type}")
   end
 end

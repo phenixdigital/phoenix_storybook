@@ -66,6 +66,13 @@ defmodule PhoenixStorybook.ExtraAssignsHelpersTest do
                {{:single, :variation_id}, %{atom: :foo}}
 
       assert handle_set_variation_assign(
+               %{"variation_id" => "variation_id", "atom_with_values" => "opt1"},
+               %{{:single, :variation_id} => %{}},
+               story
+             ) ==
+               {{:single, :variation_id}, %{atom_with_values: :opt1}}
+
+      assert handle_set_variation_assign(
                %{"variation_id" => "variation_id", "list" => ["foo", "bar"]},
                %{{:single, :variation_id} => %{}},
                story
@@ -100,11 +107,55 @@ defmodule PhoenixStorybook.ExtraAssignsHelpersTest do
 
       assert_raise RuntimeError, ~r/unknown atom value in assign/, fn ->
         handle_set_variation_assign(
-          %{"variation_id" => "variation_id", "atom" => "psb_unknown_atom_value"},
+          %{"variation_id" => "variation_id", "atom" => unknown_string()},
           %{{:single, :variation_id} => %{}},
           story
         )
       end
+
+      assert_raise RuntimeError, ~r/unknown atom value in assign/, fn ->
+        handle_set_variation_assign(
+          %{"variation_id" => "variation_id", "atom_with_values" => "unknown"},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
+    end
+
+    test "does not intern unknown assign params", %{story: story} do
+      unknown_attr = unknown_string()
+      unknown_variation = unknown_string()
+      unknown_atom_value = unknown_string()
+
+      assert_raise RuntimeError, ~r/unknown attribute in assign/, fn ->
+        handle_set_variation_assign(
+          %{"variation_id" => "variation_id", unknown_attr => "foo"},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
+
+      refute_existing_atom(unknown_attr)
+
+      assert_raise RuntimeError, ~r/unknown variation_id in assign/, fn ->
+        handle_set_variation_assign(
+          %{"variation_id" => unknown_variation, "attribute" => "foo"},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
+
+      refute_existing_atom(unknown_variation)
+
+      assert_raise RuntimeError, ~r/unknown atom value in assign/, fn ->
+        handle_set_variation_assign(
+          %{"variation_id" => "variation_id", "atom" => unknown_atom_value},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
+
+      refute_existing_atom(unknown_atom_value)
     end
 
     test "with nil typed attributes", %{story: story} do
@@ -191,6 +242,20 @@ defmodule PhoenixStorybook.ExtraAssignsHelpersTest do
         handle_toggle_variation_assign(%{}, %{}, story)
       end
     end
+
+    test "does not intern unknown toggle attr", %{story: story} do
+      unknown_attr = unknown_string()
+
+      assert_raise RuntimeError, ~r/unknown attribute in toggle/, fn ->
+        handle_toggle_variation_assign(
+          %{"variation_id" => "variation_id", "attr" => unknown_attr},
+          %{{:single, :variation_id} => %{}},
+          story
+        )
+      end
+
+      refute_existing_atom(unknown_attr)
+    end
   end
 
   defp story(_context) do
@@ -202,10 +267,19 @@ defmodule PhoenixStorybook.ExtraAssignsHelpersTest do
         %Attr{id: :integer, type: :integer},
         %Attr{id: :float, type: :float},
         %Attr{id: :atom, type: :atom},
+        %Attr{id: :atom_with_values, type: :atom, values: [:opt1, :opt2]},
         %Attr{id: :list, type: :list}
       ]
     end)
 
     [story: StoryMock]
+  end
+
+  defp unknown_string do
+    "psb_unknown_#{System.unique_integer([:positive])}"
+  end
+
+  defp refute_existing_atom(value) do
+    assert_raise ArgumentError, fn -> String.to_existing_atom(value) end
   end
 end

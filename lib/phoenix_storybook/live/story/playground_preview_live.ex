@@ -86,7 +86,8 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
   defp variation_id(%VariationGroup{id: group_id}, variation_id), do: {group_id, variation_id}
   defp variation_id(%Variation{}, variation_id), do: {:single, variation_id}
 
-  defp theme(theme) when is_binary(theme), do: String.to_atom(theme)
+  defp theme(theme) when theme in [nil, ""], do: nil
+  defp theme(theme) when is_binary(theme), do: String.to_existing_atom(theme)
   defp theme(theme) when is_atom(theme), do: theme
 
   def render(assigns = %{variation: nil}), do: ~H""

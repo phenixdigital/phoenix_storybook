@@ -161,7 +161,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp current_tab(params, story) do
     case Map.get(params, "tab") do
       nil -> default_tab(story)
-      tab -> String.to_atom(tab)
+      tab -> tab_from_param(story, tab) || built_in_tab_from_param(story, tab) || tab
     end
   end
 
@@ -193,7 +193,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp current_theme(params, socket) do
     case Map.get(params, "theme") do
       nil -> default_theme(socket)
-      theme -> String.to_atom(theme)
+      theme -> ThemeHelpers.theme_from_param(socket.assigns.backend_module, theme)
     end
   end
 
@@ -202,6 +202,26 @@ defmodule PhoenixStorybook.StoryLive do
       nil -> nil
       [{theme, _} | _] -> theme
     end
+  end
+
+  defp tab_from_param(story, tab) do
+    story
+    |> navigation_tabs()
+    |> Enum.find_value(fn
+      {tab_id, _label} -> if to_string(tab_id) == tab, do: tab_id
+      {tab_id, _label, _icon} -> if to_string(tab_id) == tab, do: tab_id
+    end)
+  end
+
+  defp built_in_tab_from_param(story, tab) do
+    tabs =
+      case story.storybook_type() do
+        type when type in [:component, :live_component] -> ~w(variations playground source)a
+        :example -> ~w(example source)a
+        _ -> []
+      end
+
+    Enum.find(tabs, &(to_string(&1) == tab))
   end
 
   defp close_sidebar(socket),
@@ -756,10 +776,12 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_event("psb-set-theme", %{"theme" => theme}, socket) do
+    theme = ThemeHelpers.theme_from_param(socket.assigns.backend_module, theme)
+
     PubSub.broadcast!(
       PhoenixStorybook.PubSub,
       socket.assigns.playground_topic,
-      {:set_theme, String.to_atom(theme)}
+      {:set_theme, theme}
     )
 
     send_update(Playground, id: "psb-playground", new_theme: theme)

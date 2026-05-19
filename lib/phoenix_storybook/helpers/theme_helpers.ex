@@ -16,6 +16,21 @@ defmodule PhoenixStorybook.ThemeHelpers do
     end
   end
 
+  def theme_from_param(_backend_module, theme) when theme in [nil, ""], do: nil
+  def theme_from_param(_backend_module, theme) when is_atom(theme), do: theme
+
+  def theme_from_param(backend_module, theme) when is_binary(theme) do
+    case backend_module.config(:themes) do
+      nil ->
+        raise(RuntimeError, "unknown theme: #{theme}")
+
+      themes ->
+        Enum.find_value(themes, fn {theme_id, _label} ->
+          if to_string(theme_id) == theme, do: theme_id
+        end) || raise(RuntimeError, "unknown theme: #{theme}")
+    end
+  end
+
   def call_theme_function(backend_module, theme) do
     case theme_strategy(backend_module, :function) do
       nil -> nil
