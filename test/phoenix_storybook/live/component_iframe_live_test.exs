@@ -8,6 +8,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
   alias PhoenixStorybook.Story.ComponentIframeLive
 
   @endpoint PhoenixStorybook.ComponentIframeLiveEndpoint
+  @playground_topic_salt "phoenix_storybook:playground_topic"
   @moduletag :capture_log
 
   defmodule BackendNoTheme do
@@ -194,7 +195,7 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
   end
 
-  test "broadcasts iframe pid when topic is provided", %{conn: conn} do
+  test "does not broadcast iframe pid when raw topic is provided", %{conn: conn} do
     topic = "psb-component-iframe-#{System.unique_integer([:positive])}"
     Phoenix.PubSub.subscribe(PhoenixStorybook.PubSub, topic)
 
@@ -204,8 +205,35 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
         "topic" => topic
       })
 
+    refute_receive {:component_iframe_pid, _pid}, 50
+  end
+
+  test "broadcasts iframe pid when valid playground token is provided", %{conn: conn} do
+    topic = "psb-component-iframe-#{System.unique_integer([:positive])}"
+    token = Phoenix.Token.sign(@endpoint, @playground_topic_salt, %{"topic" => topic})
+    Phoenix.PubSub.subscribe(PhoenixStorybook.PubSub, topic)
+
+    {:ok, _view, _html} =
+      live_with_params(conn, "/storybook/iframe/component", %{
+        "variation_id" => "hello",
+        "playground_token" => token
+      })
+
     assert_receive {:component_iframe_pid, pid}
     assert is_pid(pid)
+  end
+
+  test "does not broadcast iframe pid when playground token is invalid", %{conn: conn} do
+    topic = "psb-component-iframe-#{System.unique_integer([:positive])}"
+    Phoenix.PubSub.subscribe(PhoenixStorybook.PubSub, topic)
+
+    {:ok, _view, _html} =
+      live_with_params(conn, "/storybook/iframe/component", %{
+        "variation_id" => "hello",
+        "playground_token" => "bad-token"
+      })
+
+    refute_receive {:component_iframe_pid, _pid}, 50
   end
 
   test "handle_params raises StoryNotFound for not_found backend" do

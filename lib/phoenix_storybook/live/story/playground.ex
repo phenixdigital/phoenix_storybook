@@ -316,7 +316,7 @@ defmodule PhoenixStorybook.Story.Playground do
                 theme: to_string(@theme),
                 color_mode: to_string(@color_mode),
                 playground: true,
-                topic: @topic
+                playground_token: @playground_token
               )
             }
             height="128"

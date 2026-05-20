@@ -24,8 +24,14 @@ defmodule PhoenixStorybook.StoryLive do
 
   import PhoenixStorybook.NavigationHelpers
 
+  @playground_topic_salt "phoenix_storybook:playground_topic"
+
   def mount(_params, _session, socket) do
     playground_topic = "playground-#{inspect(self())}"
+
+    playground_token =
+      Phoenix.Token.sign(socket.endpoint, @playground_topic_salt, %{"topic" => playground_topic})
+
     event_logs_topic = "event_logs:#{inspect(self())}"
 
     if connected?(socket) do
@@ -41,6 +47,7 @@ defmodule PhoenixStorybook.StoryLive do
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,
+       playground_token: playground_token,
        fa_plan: backend_module.config(:font_awesome_plan, :free),
        selected_color_mode: get_selected_color_mode(socket),
        color_mode: get_color_mode(socket)
@@ -429,6 +436,7 @@ defmodule PhoenixStorybook.StoryLive do
       theme={@theme}
       color_mode={@color_mode}
       topic={@playground_topic}
+      playground_token={@playground_token}
       fa_plan={@fa_plan}
       root_path={@root_path}
     />

@@ -130,8 +130,21 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
   describe "component in an iframe" do
     test "renders the playground preview iframe", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/storybook/live_component?tab=playground")
+      {:ok, view, html} = live(conn, "/storybook/live_component?tab=playground")
       assert html =~ ~S|<iframe id="tree_storybook_live_component-playground-preview"|
+
+      [src] =
+        view
+        |> element("#tree_storybook_live_component-playground-preview")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.attribute("src")
+
+      query = src |> URI.parse() |> Map.fetch!(:query) |> URI.decode_query()
+
+      assert Map.has_key?(query, "playground_token")
+      refute Map.has_key?(query, "topic")
+      refute src =~ "topic=playground-"
     end
   end
 
