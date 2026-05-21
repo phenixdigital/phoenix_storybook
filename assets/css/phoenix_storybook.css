@@ -30,17 +30,6 @@
     font-size: 1em;
   }
 
-  .svg-inline--fa.psb {
-    display: var(--fa-display, inline-block);
-    height: 1em;
-    overflow: visible;
-    vertical-align: -0.125em;
-  }
-
-  .svg-inline--fa.psb.psb\:hidden {
-    display: none;
-  }
-
   .psb-sandbox {
     margin: 0;
     font-family: serif, system-ui, sans-serif;
