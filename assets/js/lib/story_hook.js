@@ -34,16 +34,17 @@ export const StoryHook = {
 
     window.addEventListener("psb:copy-code", (e) => {
       const button = e.target;
-      const icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
+      this.copyToClipboard(button.nextElementSibling.textContent);
+
+      const icon = button.querySelector(".fa-copy");
+      if (!icon) return;
+
       button.classList.add(...buttonActiveClasses);
       button.classList.remove(...buttonClasses);
       icon.classList.add(iconActiveClass);
       icon.classList.remove(iconClass);
 
-      this.copyToClipboard(button.nextElementSibling.textContent);
-
       setTimeout(() => {
-        const icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
         icon.classList.add(iconClass);
         icon.classList.remove(iconActiveClass);
         button.classList.add(...buttonClasses);
