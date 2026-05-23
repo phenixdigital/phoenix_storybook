@@ -3,23 +3,23 @@
 }
 
 .psb-sandbox .psb-welcome-page h1 {
-  @apply psb:text-indigo-700 psb:text-2xl psb:pt-4 psb:mb-2;
+  @apply psb:text-indigo-700 psb:dark:text-sky-400 psb:text-2xl psb:pt-4 psb:mb-2;
 }
 
 .psb-sandbox .psb-welcome-page h2 {
-  @apply psb:text-indigo-700 psb:text-xl psb:pt-4 psb:mb-2;
+  @apply psb:text-indigo-700 psb:dark:text-sky-400 psb:text-xl psb:pt-4 psb:mb-2;
 }
 
 .psb-sandbox .psb-welcome-page h3 {
-  @apply psb:text-slate-500 psb:text-lg psb:pt-4 psb:mb-2 psb:font-bold;
+  @apply psb:text-slate-500 psb:dark:text-slate-300 psb:text-lg psb:pt-4 psb:mb-2 psb:font-bold;
 }
 
 .psb-sandbox .psb-welcome-page p {
-  @apply psb:md:text-lg psb:leading-6 psb:md:leading-8 psb:text-slate-500 psb:w-full psb:text-left psb:mb-4 psb:mt-2;
+  @apply psb:md:text-lg psb:leading-6 psb:md:leading-8 psb:text-slate-500 psb:dark:text-slate-300 psb:w-full psb:text-left psb:mb-4 psb:mt-2;
 }
 
 .psb-sandbox .psb-welcome-page strong {
-  @apply psb:text-indigo-700;
+  @apply psb:text-indigo-700 psb:dark:text-sky-400;
 }
 
 .psb-sandbox .psb-welcome-page ul {
@@ -27,7 +27,7 @@
 }
 
 .psb-sandbox .psb-welcome-page ul li {
-  @apply psb:text-lg psb:text-slate-500;
+  @apply psb:text-lg psb:text-slate-500 psb:dark:text-slate-300;
 }
 
 .psb-sandbox .psb-welcome-page code.inline {

@@ -954,7 +954,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: "[Multiple values]",
   disabled: true,
   class:
-    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
+    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
 )}|
 
           {:eval, value} ->
@@ -972,7 +972,7 @@ defmodule PhoenixStorybook.Story.Playground do
   value: inspect(@value),
   disabled: true,
   class:
-    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
+    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
 )}|
     end
   end
@@ -1012,7 +1012,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value: @value,
       step: @step,
       class:
-        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
     )}
     """
   end
@@ -1026,7 +1026,7 @@ defmodule PhoenixStorybook.Story.Playground do
       min: @min,
       max: @max,
       class:
-        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
     )}
     """
   end
@@ -1036,7 +1036,7 @@ defmodule PhoenixStorybook.Story.Playground do
     {text_input(@form, @attr_id,
       value: @value,
       class:
-        "psb psb:form-input psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
+        "psb psb:form-input psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
     )}
     """
   end
@@ -1056,7 +1056,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value: @value,
       disabled: true,
       class:
-        "psb psb:cursor-not-allowed psb:bg-gray-100 psb:form-input psb:block psb:w-full psb:dark:text-slate-500 psb:dark:bg-slate-800 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
+        "psb psb:cursor-not-allowed psb:bg-gray-100 psb:form-input psb:block psb:w-full psb:dark:text-slate-500 psb:dark:bg-slate-800 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
     )}
     """
   end
@@ -1068,7 +1068,7 @@ defmodule PhoenixStorybook.Story.Playground do
     {select(@form, @attr_id, @values,
       value: @value,
       class:
-        "psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+        "psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
     )}
     """
   end

@@ -100,7 +100,7 @@ defmodule PhoenixStorybook.Sidebar do
         {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
       </nav>
 
-      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:hover:font-bold">
+      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-bold">
         <%= link to: "https://github.com/phenixdigital/phoenix_storybook", target: "_blank", class: "psb" do %>
           <.fa_icon style={:brands} name="github" plan={:pro} />
           - {Application.spec(:phoenix_storybook, :vsn)}
@@ -200,7 +200,7 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp story_class(current_path, story_path) do
     story_class =
-      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-indigo-600 psb:hover:text-indigo-600 psb:hover:border-l-1.5 psb:group"
+      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-indigo-600 psb:dark:hover:border-sky-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:border-l-1.5 psb:group"
 
     if current_path == story_path do
       story_class <>

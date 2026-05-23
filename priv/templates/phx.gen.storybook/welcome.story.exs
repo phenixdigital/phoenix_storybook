@@ -54,7 +54,7 @@ defmodule Storybook.MyPage do
     ~H"""
     <p class="psb:md:text-lg psb:leading-relaxed psb:text-slate-400 psb:w-full psb:text-left psb:mb-4 psb:mt-2 psb:italic">
       <a
-        class="psb:hover:text-indigo-700"
+        class="psb:hover:text-indigo-700 psb:dark:hover:text-sky-400"
         href={"https://hexdocs.pm/phoenix_storybook/#{@guide}.html"}
         target="_blank"
       >
@@ -74,12 +74,12 @@ defmodule Storybook.MyPage do
         <dl class="psb:sm:divide-y psb:sm:divide-gray-200">
           <%= for {dt, link} <- @items do %>
             <div class="psb:py-4 psb:sm:grid psb:sm:grid-cols-3 psb:sm:gap-4 psb:sm:py-5 psb:sm:px-6 psb:max-w-full">
-              <dt class="psb:text-base psb:font-medium psb:text-indigo-700">
+              <dt class="psb:text-base psb:font-medium psb:text-indigo-700 psb:dark:text-sky-400">
                 {dt}
               </dt>
               <dd class="psb:mt-1 psb:text-base psb:text-slate-400 psb:sm:col-span-2 psb:sm:mt-0 psb:group psb:cursor-pointer psb:max-w-full">
                 <a
-                  class="psb:group-hover:text-indigo-700 psb:max-w-full psb:inline-block psb:truncate"
+                  class="psb:group-hover:text-indigo-700 psb:dark:group-hover:text-sky-400 psb:max-w-full psb:inline-block psb:truncate"
                   href={link}
                   target="_blank"
                 >
