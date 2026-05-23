@@ -351,11 +351,11 @@ defmodule PhoenixStorybook.StoryLive do
               <%= if icon do %>
                 <.user_icon
                   icon={icon}
-                  class={"psb:lg:mr-2 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}
+                  class={"psb:lg:mr-2 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}
                   fa_plan={@fa_plan}
                 />
               <% end %>
-              <span class={"psb psb:whitespace-nowrap psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}>
+              <span class={"psb psb:whitespace-nowrap psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}>
                 {tab_label}
               </span>
             </span>

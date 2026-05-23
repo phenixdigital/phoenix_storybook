@@ -137,12 +137,12 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if folder_icon do %>
                   <.user_icon
                     icon={folder_icon}
-                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400"
+                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
 
-                <span class="psb psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400">
+                <span class="psb psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400">
                   {name}
                 </span>
               </div>
@@ -162,13 +162,13 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if icon do %>
                   <.user_icon
                     icon={icon}
-                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400"
+                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
                 <.link
                   patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
-                  class="psb psb:block psb:w-full psb:py-2 psb:lg:py-1 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400"
+                  class="psb psb:block psb:w-full psb:py-2 psb:lg:py-1 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
                 >
                   {name}
                 </.link>
