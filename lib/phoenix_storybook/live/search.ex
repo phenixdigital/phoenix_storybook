@@ -4,6 +4,7 @@ defmodule PhoenixStorybook.Search do
 
   alias Phoenix.LiveView.JS
   alias PhoenixStorybook.LayoutView
+  alias PhoenixStorybook.NavigationHelpers
   alias PhoenixStorybook.SearchHelpers
 
   def mount(socket) do
@@ -16,14 +17,11 @@ defmodule PhoenixStorybook.Search do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign_new(:theme, fn -> nil end)
      |> assign(:show, false)
      |> assign(:all_stories, stories)
      |> assign(:stories, stories)
      |> assign(:fa_plan, backend_module.config(:font_awesome_plan, :free))}
-  end
-
-  def handle_event("navigate", %{"path" => path}, socket) do
-    {:noreply, push_patch(socket, to: path)}
   end
 
   def handle_event("search", %{"search" => %{"input" => ""}}, socket) do
@@ -105,21 +103,22 @@ defmodule PhoenixStorybook.Search do
                     "psb:bg-slate-50 psb:dark:bg-slate-700 psb:text-indigo-600 psb:dark:text-sky-400"
                   )
                 }
-                class="psb psb:flex psb:justify-between psb:group psb:select-none psb:px-4 psb:py-4 psb:space-x-4 psb:cursor-pointer psb:hover:bg-slate-50 psb:dark:hover:bg-slate-700"
+                class="psb psb:group psb:select-none psb:cursor-pointer psb:hover:bg-slate-50 psb:dark:hover:bg-slate-700"
                 tabindex="-1"
-                phx-click={JS.navigate(Path.join(@root_path, story.path))}
               >
                 <.link
-                  patch={Path.join(@root_path, story.path)}
-                  class="psb psb:font-semibold psb:whitespace-nowrap psb:dark:text-slate-300"
+                  patch={NavigationHelpers.path_to_story(@root_path, story.path, %{theme: @theme})}
+                  class="psb psb:flex psb:justify-between psb:px-4 psb:py-4 psb:space-x-4"
                 >
-                  {story.name}
+                  <span class="psb psb:font-semibold psb:whitespace-nowrap psb:dark:text-slate-300">
+                    {story.name}
+                  </span>
+                  <div class="psb psb:truncate">
+                    {LayoutView.render_breadcrumb(@socket, story.path,
+                      span_class: "psb:text-xs psb:dark:text-slate-300"
+                    )}
+                  </div>
                 </.link>
-                <div class="psb psb:truncate">
-                  {LayoutView.render_breadcrumb(@socket, story.path,
-                    span_class: "psb:text-xs psb:dark:text-slate-300"
-                  )}
-                </div>
               </li>
             <% end %>
           </ul>
