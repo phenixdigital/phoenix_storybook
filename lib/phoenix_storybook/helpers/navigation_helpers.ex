@@ -18,6 +18,15 @@ defmodule PhoenixStorybook.NavigationHelpers do
     build_path(root_path, story_path, query)
   end
 
+  def path_to_story(root_path, story_path, params \\ %{}) do
+    query =
+      params
+      |> Map.new()
+      |> Enum.reject(fn {_k, v} -> v in [nil, ""] end)
+
+    build_path(root_path, story_path, query)
+  end
+
   def path_to_iframe(%{assigns: assigns}, root_path, story_path, params) do
     query = build_query(assigns, params)
 

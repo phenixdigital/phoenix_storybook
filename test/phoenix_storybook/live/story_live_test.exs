@@ -963,14 +963,22 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
     end
 
-    test "navigates to a specified story", %{conn: conn} do
+    test "links to a specified story carrying the default theme", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
-      view
-      |> with_target("#psb-search-container")
-      |> render_change("navigate", %{"path" => ~p"/storybook/component"})
+      assert has_element?(
+               view,
+               ~s|#psb-search-container a[href="/storybook/component?theme=default"]|
+             )
+    end
 
-      assert_patch(view, ~p"/storybook/component", 200)
+    test "search list links carry the active theme", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/a_page?#{[theme: :colorful]}")
+
+      assert has_element?(
+               view,
+               ~s|#psb-search-container a[href="/storybook/component?theme=colorful"]|
+             )
     end
   end
 
