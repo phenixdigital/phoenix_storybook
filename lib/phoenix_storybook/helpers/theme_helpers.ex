@@ -15,6 +15,13 @@ defmodule PhoenixStorybook.ThemeHelpers do
 
       attribute_name when is_binary(attribute_name) ->
         {String.to_atom("data-#{attribute_name}"), "#{theme}"}
+
+      attribute_name when is_atom(attribute_name) ->
+        {String.to_atom("data-#{Atom.to_string(attribute_name)}"), "#{theme}"}
+
+      attribute_name ->
+        raise ArgumentError,
+              "expected :data_attribute theme strategy to be a binary or atom, got: #{inspect(attribute_name)}"
     end
   end
 
