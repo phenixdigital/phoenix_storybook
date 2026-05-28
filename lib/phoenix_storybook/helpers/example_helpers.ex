@@ -14,10 +14,11 @@ defmodule PhoenixStorybook.Helpers.ExampleHelpers do
         # drop doc and extra_sources functions from the source code
         |> Enum.reject(fn
           {:def, _, [{:doc, _, _} | _]} -> true
+          {:def, _, [{:container, _, _} | _]} -> true
           {:def, _, [{:extra_sources, _, _} | _]} -> true
           _ -> false
         end)
-        # replace `use PhoenixStorybook.Story, :example` with `use Phoenix.LiveView`
+        # replace example storybook declarations with plain LiveView source
         |> Enum.map(fn
           {:use, m4, [{:__aliases__, _, [:PhoenixStorybook, :Story]}, _example]} ->
             {:use, m4, [{:__aliases__, [], [:Phoenix, :LiveView]}]}

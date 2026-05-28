@@ -98,6 +98,9 @@ defmodule PhoenixStorybook.Story do
   Examples are rendered as a child LiveView, so you can implement `mount/3`, `render/1` or any
   `handle_event/3` callback. Unfortunately `handle_params/3` cannot be defined in a child LiveView.
 
+  Examples render inline by default. If you need full document isolation, implement `container/0`
+  and return `:iframe` or `{:iframe, opts}` to render the example in a dedicated iframe.
+
   By default, your example story's source code will be shown in a dedicated tab. But you can show
   additional files source code by implementing the `extra_sources/0` function which should return a
   list of relative paths to your example related files.
@@ -108,6 +111,8 @@ defmodule PhoenixStorybook.Story do
     use PhoenixStorybook.Story, :example
 
     def doc, do: "My page description"
+
+    def container, do: :iframe
 
     def extra_sources do
       [
@@ -190,6 +195,7 @@ defmodule PhoenixStorybook.Story do
     Behaviour implemented by any example story
     """
 
+    @callback container() :: atom() | {atom(), [{atom(), String.t()}]}
     @callback extra_sources() :: [String.t()]
   end
 
@@ -313,9 +319,12 @@ defmodule PhoenixStorybook.Story do
       def doc, do: nil
 
       @impl ExampleBehaviour
+      def container, do: :div
+
+      @impl ExampleBehaviour
       def extra_sources, do: []
 
-      defoverridable doc: 0, extra_sources: 0
+      defoverridable doc: 0, container: 0, extra_sources: 0
     end
   end
 
