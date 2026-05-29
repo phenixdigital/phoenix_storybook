@@ -10,6 +10,10 @@
 @source "../../lib/**/*.{ex,heex}";
 @source "../../priv/templates/**/*.{eex,exs}";
 
+@plugin '@tailwindcss/forms' {
+  strategy: class;
+}
+
 @custom-variant dark (&:where(.psb\:dark, .psb\:dark *));
 
 @layer utilities {
