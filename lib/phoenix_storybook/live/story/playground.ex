@@ -950,12 +950,12 @@ defmodule PhoenixStorybook.Story.Playground do
       nil ->
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
-            ~H|{text_input(@form, @attr_id,
-  value: "[Multiple values]",
-  disabled: true,
-  class:
-    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
-)}|
+            ~H|<.input
+  field={@form[@attr_id]}
+  value="[Multiple values]"
+  disabled
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
+/>|
 
           {:eval, value} ->
             value = String.replace(value, ~s|"|, "")
@@ -968,12 +968,12 @@ defmodule PhoenixStorybook.Story.Playground do
       value ->
         assigns = assign(assigns, value: value)
 
-        ~H|{text_input(@form, @attr_id,
-  value: inspect(@value),
-  disabled: true,
-  class:
-    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
-)}|
+        ~H|<.input
+  field={@form[@attr_id]}
+  value={inspect(@value)}
+  disabled
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
+/>|
     end
   end
 
@@ -996,7 +996,7 @@ defmodule PhoenixStorybook.Story.Playground do
       phx-target={@myself}
       role="switch"
     >
-      {hidden_input(@form, @attr_id, value: "#{@value}")}
+      <.input field={@form[@attr_id]} type="hidden" value={"#{@value}"} />
       <span class={"psb #{@translate_class} psb:form-input psb:p-0 psb:border-0 psb:pointer-events-none psb:inline-block psb:h-5 psb:w-5 psb:rounded-full psb:bg-white psb:shadow psb:transform psb:ring-0 psb:transition psb:ease-in-out psb:duration-200"}>
       </span>
     </button>
@@ -1008,12 +1008,13 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
-    {number_input(@form, @attr_id,
-      value: @value,
-      step: @step,
-      class:
-        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      type="number"
+      value={@value}
+      step={@step}
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+    />
     """
   end
 
@@ -1021,23 +1022,24 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assigns |> assign(:min, min) |> assign(:max, max)
 
     ~H"""
-    {number_input(@form, @attr_id,
-      value: @value,
-      min: @min,
-      max: @max,
-      class:
-        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      type="number"
+      value={@value}
+      min={@min}
+      max={@max}
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+    />
     """
   end
 
   defp attr_input(assigns = %{type: :string, values: nil}) do
     ~H"""
-    {text_input(@form, @attr_id,
-      value: @value,
-      class:
-        "psb psb:form-input psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      value={@value}
+      class="psb psb:form-input psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
+    />
     """
   end
 
@@ -1052,12 +1054,12 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, value: value)
 
     ~H"""
-    {text_input(@form, @attr_id,
-      value: @value,
-      disabled: true,
-      class:
-        "psb psb:cursor-not-allowed psb:bg-gray-100 psb:form-input psb:block psb:w-full psb:dark:text-slate-500 psb:dark:bg-slate-800 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      value={@value}
+      disabled
+      class="psb psb:cursor-not-allowed psb:bg-gray-100 psb:form-input psb:block psb:w-full psb:dark:text-slate-500 psb:dark:bg-slate-800 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
+    />
     """
   end
 
@@ -1065,11 +1067,13 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
 
     ~H"""
-    {select(@form, @attr_id, @values,
-      value: @value,
-      class:
-        "psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      type="select"
+      options={@values}
+      value={@value}
+      class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+    />
     """
   end
 

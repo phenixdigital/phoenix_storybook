@@ -22,8 +22,8 @@ defmodule PhoenixStorybook.Story.SourceSelect do
   def source_file_select(assigns) do
     ~H"""
     <.form :let={f} for={%{}} as={@as} id={@form_id} class={@class}>
-      {if @label, do: label(f, @field, @label, class: @label_class)}
-      {select(f, @field, @options, select_options(assigns))}
+      <label :if={@label} for={f[@field].id} class={@label_class}>{@label}</label>
+      <.input field={f[@field]} type="select" options={@options} {select_options(assigns)} />
     </.form>
     """
   end

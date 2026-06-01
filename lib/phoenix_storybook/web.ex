@@ -18,6 +18,7 @@ defmodule PhoenixStorybook.Web do
         namespace: PhoenixStorybook,
         root: "lib/phoenix_storybook/templates"
 
+      import Phoenix.Controller, only: [get_csrf_token: 0]
       import PhoenixStorybook.Components.Icon
 
       unquote(view_helpers())
@@ -60,10 +61,10 @@ defmodule PhoenixStorybook.Web do
       # Use all HTML functionality (forms, tags, etc)
       import Phoenix.HTML
       import Phoenix.HTML.Form
-      use PhoenixHTMLHelpers
 
       # Import convenience functions for LiveView rendering
       import Phoenix.Component
+      import PhoenixStorybook.CoreComponents
 
       alias PhoenixStorybook.Router.Helpers, as: Routes
     end
