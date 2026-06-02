@@ -15,7 +15,7 @@ defmodule PhoenixStorybook.CoreComponents do
   attr :rest, :global,
     include: ~w(autocomplete disabled max min multiple placeholder readonly required step)
 
-  def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+  def input(assigns = %{field: field = %Phoenix.HTML.FormField{}}) do
     assigns
     |> assign(field: nil, id: assigns.id || field.id)
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
@@ -23,7 +23,7 @@ defmodule PhoenixStorybook.CoreComponents do
     |> input()
   end
 
-  def input(%{type: "select"} = assigns) do
+  def input(assigns = %{type: "select"}) do
     ~H"""
     <select id={@id} name={@name} multiple={@multiple} {@rest}>
       {options_for_select(@options, @value)}
@@ -31,7 +31,7 @@ defmodule PhoenixStorybook.CoreComponents do
     """
   end
 
-  def input(%{type: "hidden"} = assigns) do
+  def input(assigns = %{type: "hidden"}) do
     ~H"""
     <input type="hidden" id={@id} name={@name} value={@value} {@rest} />
     """
