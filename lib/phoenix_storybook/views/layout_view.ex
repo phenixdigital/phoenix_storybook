@@ -1,7 +1,9 @@
 defmodule PhoenixStorybook.LayoutView do
   @moduledoc false
-  use Phoenix.Component
-  use PhoenixStorybook.Web, :view
+  use PhoenixStorybook.Web, :component
+  import PhoenixStorybook.Components.Icon
+
+  embed_templates "../templates/layout/*"
 
   alias Makeup.Styles.HTML.StyleMap
   alias Phoenix.LiveView.{JS, Socket}

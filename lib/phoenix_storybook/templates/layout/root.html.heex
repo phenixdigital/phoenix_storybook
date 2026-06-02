@@ -16,7 +16,7 @@
       {csrf_meta_tag()}
     <% end %>
 
-    {render("_favicon.html", conn: @conn)}
+    <.favicon conn={@conn} />
     <.live_title prefix={title_prefix(@conn)}>
       {assigns[:page_title]}
     </.live_title>
