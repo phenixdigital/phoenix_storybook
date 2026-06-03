@@ -9,6 +9,12 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v1.2.0 (unreleased)
+- **feature**: [support data-* attribute for theme strategies](https://github.com/phenixdigital/phoenix_storybook/pull/802) - 🙏 [@georgemarshall](https://github.com/georgemarshall)
+- **change**: [removed `phoenix_view` dependency](https://github.com/phenixdigital/phoenix_storybook/pull/824) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+- **change**: [removed `phoenix_html_helpers` dependency](https://github.com/phenixdigital/phoenix_storybook/pull/823) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+- **bugfix**: [restored Tailwind forms styling for storybook form controls](https://github.com/phenixdigital/phoenix_storybook/issues/818) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+
 ## v1.1.0 (2026-05-20)
 - **feature**: [component's stories can have multiple source files](https://github.com/phenixdigital/phoenix_storybook/issues/767)
 - **feature**: [permalinks to component's source on Github](https://github.com/phenixdigital/phoenix_storybook/issues/769)
