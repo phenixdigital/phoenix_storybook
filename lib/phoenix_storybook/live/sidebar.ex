@@ -101,7 +101,12 @@ defmodule PhoenixStorybook.Sidebar do
       </nav>
 
       <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-bold">
-        <.link href="https://github.com/phenixdigital/phoenix_storybook" target="_blank" rel="noreferrer noopener" class="psb">
+        <.link
+          href="https://github.com/phenixdigital/phoenix_storybook"
+          target="_blank"
+          rel="noreferrer noopener"
+          class="psb"
+        >
           <.fa_icon style={:brands} name="github" plan={:pro} />
           - {Application.spec(:phoenix_storybook, :vsn)}
         </.link>
