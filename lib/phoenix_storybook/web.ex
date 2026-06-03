@@ -47,10 +47,10 @@ defmodule PhoenixStorybook.Web do
       # Use all HTML functionality (forms, tags, etc)
       import Phoenix.HTML
       import Phoenix.HTML.Form
-      use PhoenixHTMLHelpers
 
       # Import convenience functions for LiveView rendering
       import Phoenix.Component
+      import PhoenixStorybook.CoreComponents
 
       alias PhoenixStorybook.Router.Helpers, as: Routes
     end

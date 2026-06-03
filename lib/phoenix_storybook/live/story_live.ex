@@ -329,12 +329,14 @@ defmodule PhoenixStorybook.StoryLive do
         id={"#{Macro.underscore(@story)}-navigation-form"}
         class="psb psb-story-nav-form psb:lg:hidden"
       >
-        {select(f, :tab, navigation_select_options(@tabs),
-          "phx-change": "psb-set-tab",
-          class:
-            "psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:border-gray-300 psb:dark:border-slate-600 psb:w-full psb:pl-3 psb:pr-10 psb:py-1 psb:text-base psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:sm:text-sm psb:rounded-md",
-          value: @tab
-        )}
+        <.input
+          field={f[:tab]}
+          type="select"
+          options={navigation_select_options(@tabs)}
+          value={@tab}
+          phx-change="psb-set-tab"
+          class="psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:border-gray-300 psb:dark:border-slate-600 psb:w-full psb:pl-3 psb:pr-10 psb:py-1 psb:text-base psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:sm:text-sm psb:rounded-md"
+        />
       </.form>
       <!-- :lg+ version of navigation tabs -->
       <nav class="psb psb-story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-gray-300 psb:dark:border-slate-600 psb:bg-slate-100 psb:dark:bg-slate-900 psb:h-10 psb:text-sm psb:font-medium">

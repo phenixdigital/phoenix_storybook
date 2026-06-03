@@ -13,7 +13,7 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"
     />
     <%= if csrf?(@conn) do %>
-      {csrf_meta_tag()}
+      <meta name="csrf-token" content={get_csrf_token()} />
     <% end %>
 
     <.favicon conn={@conn} />

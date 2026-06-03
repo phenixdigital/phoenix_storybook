@@ -69,15 +69,15 @@ defmodule PhoenixStorybook.Search do
               plan={@fa_plan}
               class="psb:pointer-events-none psb:absolute psb:top-3.5 psb:left-4 psb:h-5 psb:w-5 psb:text-gray-400"
             />
-            {text_input(f, :input,
-              id: "psb-search-input",
-              "phx-change": "search",
-              "phx-target": @myself,
-              placeholder: "Search...",
-              autocomplete: "off",
-              class:
-                "psb psb:h-12 psb:w-full psb:border-0 psb:bg-transparent psb:pl-11 psb:pr-4 psb:text-gray-800 psb:dark:text-slate-300 psb:placeholder-gray-400 psb:dark:placeholder-slate-500 psb:outline-none psb:focus:ring-0 psb:sm:text-sm"
-            )}
+            <.input
+              field={f[:input]}
+              id="psb-search-input"
+              phx-change="search"
+              phx-target={@myself}
+              placeholder="Search..."
+              autocomplete="off"
+              class="psb psb:h-12 psb:w-full psb:border-0 psb:bg-transparent psb:pl-11 psb:pr-4 psb:text-gray-800 psb:dark:text-slate-300 psb:placeholder-gray-400 psb:dark:placeholder-slate-500 psb:outline-none psb:focus:ring-0 psb:sm:text-sm"
+            />
           </.form>
 
           <%= if Enum.empty?(@stories) do %>

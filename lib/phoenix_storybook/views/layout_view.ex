@@ -1,6 +1,7 @@
 defmodule PhoenixStorybook.LayoutView do
   @moduledoc false
   use PhoenixStorybook.Web, :component
+  import Phoenix.Controller, only: [get_csrf_token: 0]
   import PhoenixStorybook.Components.Icon
 
   embed_templates "../templates/layout/*"

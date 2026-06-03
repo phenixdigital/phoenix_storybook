@@ -2,7 +2,7 @@
 <html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
   <head>
     <%= if csrf?(@conn) do %>
-      {csrf_meta_tag()}
+      <meta name="csrf-token" content={get_csrf_token()} />
     <% end %>
     <%= if path = storybook_js_path(@conn) do %>
       <script
