@@ -12,20 +12,6 @@ defmodule PhoenixStorybook.Web do
   end
 
   @doc false
-  def view do
-    quote do
-      use Phoenix.View,
-        namespace: PhoenixStorybook,
-        root: "lib/phoenix_storybook/templates"
-
-      import Phoenix.Controller, only: [get_csrf_token: 0]
-      import PhoenixStorybook.Components.Icon
-
-      unquote(view_helpers())
-    end
-  end
-
-  @doc false
   def live_view do
     quote do
       use Phoenix.LiveView,

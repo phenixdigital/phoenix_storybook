@@ -16,7 +16,7 @@
       <meta name="csrf-token" content={get_csrf_token()} />
     <% end %>
 
-    {render("_favicon.html", conn: @conn)}
+    <.favicon conn={@conn} />
     <.live_title prefix={title_prefix(@conn)}>
       {assigns[:page_title]}
     </.live_title>

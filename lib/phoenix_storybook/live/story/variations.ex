@@ -207,13 +207,15 @@ defmodule PhoenixStorybook.Story.Variations do
         iframe_opts: iframe_opts
       )
 
-    ~H"""
-    <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
-      <div id="psb-iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
-        {ComponentRenderer.render(@rendering_context)}
-      </div>
-    <% end %>
+    inner_content = ~H"""
+    <div id="psb-iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
+      {ComponentRenderer.render(@rendering_context)}
+    </div>
     """
+
+    assigns
+    |> assign(:inner_content, inner_content)
+    |> LayoutView.root_iframe()
     |> HTMLSafe.to_iodata()
   end
 

@@ -1,6 +1,8 @@
 defmodule PhoenixStorybook.LayoutViewTest do
   use ExUnit.Case, async: true
 
+  import Phoenix.LiveViewTest
+
   alias Phoenix.LiveView.Socket
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.{FolderEntry, StoryEntry}
@@ -192,7 +194,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
     conn = build_test_conn(TestBackendWithFontAwesome)
 
     html =
-      Phoenix.View.render_to_string(LayoutView, "root.html",
+      render_component(&LayoutView.root/1,
         conn: conn,
         inner_content: "",
         page_title: "Storybook"
@@ -207,7 +209,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
     conn = build_test_conn(TestBackendWithFontAwesome)
 
     html =
-      Phoenix.View.render_to_string(LayoutView, "root_iframe.html",
+      render_component(&LayoutView.root_iframe/1,
         conn: conn,
         inner_content: "",
         theme: nil
@@ -222,7 +224,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
     conn = build_test_conn(TestBackendWithKitOnly)
 
     html =
-      Phoenix.View.render_to_string(LayoutView, "root.html",
+      render_component(&LayoutView.root/1,
         conn: conn,
         inner_content: "",
         page_title: "Storybook"
@@ -236,7 +238,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
     conn = build_test_conn(TestBackendWithKitOnly)
 
     html =
-      Phoenix.View.render_to_string(LayoutView, "root_iframe.html",
+      render_component(&LayoutView.root_iframe/1,
         conn: conn,
         inner_content: "",
         theme: nil
@@ -250,7 +252,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
     conn = build_test_conn(TestBackendWithBundledFonts)
 
     html =
-      Phoenix.View.render_to_string(LayoutView, "root.html",
+      render_component(&LayoutView.root/1,
         conn: conn,
         inner_content: "",
         page_title: "Storybook"
@@ -264,7 +266,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
     conn = build_test_conn(TestBackendWithBundledFonts)
 
     html =
-      Phoenix.View.render_to_string(LayoutView, "root_iframe.html",
+      render_component(&LayoutView.root_iframe/1,
         conn: conn,
         inner_content: "",
         theme: nil
