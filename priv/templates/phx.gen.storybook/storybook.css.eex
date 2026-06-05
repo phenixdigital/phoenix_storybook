@@ -1,9 +1,9 @@
 /*
  * This is your custom storybook stylesheet.
- * Put your component styling under .<%= inspect schema.sandbox_class %> scope.
+ * Put your component styling under .<%= schema.sandbox_class %> scope.
  * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
  */
 
-.psb-sandbox, .<%= schema.sandbox_class %> {
+.<%= schema.sandbox_class %> {
   font-family: system-ui;
 }

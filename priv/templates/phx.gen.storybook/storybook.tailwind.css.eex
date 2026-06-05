@@ -1,0 +1,30 @@
+/*
+ * Storybook stylesheet - companion to your application's assets/css/app.css.
+ *
+ * IMPORTANT: PhoenixStorybook does NOT load your app.css; it loads THIS file.
+ * Any plugin, theme, custom variant, font, or @source directive you've added
+ * to assets/css/app.css must also be mirrored here, or your components will
+ * render unstyled inside the storybook.
+ *
+ * Common things to copy over from your app.css when relevant:
+ *   - @plugin "../vendor/heroicons";           (for <.icon name="hero-..." />)
+ *   - @plugin "../vendor/daisyui" { ... };      (for daisyUI utility classes)
+ *   - @plugin "../vendor/daisyui-theme" { ... };(your theme tokens)
+ *   - @custom-variant phx-click-loading ... ;   (LiveView loading variants)
+ *   - @custom-variant dark ... ;                (dark-mode strategy)
+ *   - any custom fonts, @layer base rules, etc.
+ *
+ * If you'd rather not duplicate, an alternative is to append
+ *   @source "../../storybook";
+ * to assets/css/app.css and point `:css_path` at "/assets/css/app.css" in
+ * storybook.ex. This avoids drift but means the storybook bundle carries
+ * every utility class your main app uses - expect a larger CSS payload.
+ *
+ * See https://hexdocs.pm/phoenix_storybook/sandboxing.html for more.
+ */
+
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/<%= schema.web_app_name %>";
+@source "../../storybook";
