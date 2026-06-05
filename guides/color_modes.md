@@ -57,7 +57,7 @@ If you use Tailwind 4.x for your components, update your main CSS file as follow
 In your application, ensure that the dark mode class is applied to your DOM element, particularly on or under your sandbox element:
 
 ```html
-<html class="storybook-demo-sandbox dark">
+<html class="my-app dark">
   ...
 </html>
 ```

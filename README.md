@@ -91,24 +91,24 @@ defmodule MyAppWeb.Storybook do
     otp_app: :my_app,
 
     # Path to your storybook stories (required).
-    content_path: Path.expand("../storybook", __DIR__),
+    content_path: Path.expand("../../storybook", __DIR__),
 
     # Path to your JS asset, which will be loaded just before PhoenixStorybook's own
     # JS. It's mainly intended to define your LiveView Hooks in `window.storybook.Hooks`.
     # Remote path (not local file-system path) which means this file should be served
     # by your own application endpoint.
-    js_path: "/assets/storybook.js",
+    js_path: "/assets/js/storybook.js",
 
     # Path to your components stylesheet.
     # Remote path (not local file-system path) which means this file should be served by your own
     # application endpoint.
     # This stylesheet is loaded within the `app` CSS layer. Layer ordering is:
     # @layer reset, theme, app, utilities;
-    css_path: "/assets/storybook.css",
+    css_path: "/assets/css/storybook.css",
 
     # This CSS class will be put on storybook container elements where your own styles should
     # prevail. See the `guides/sandboxing.md` guide for more details.
-    sandbox_class: "my-app-sandbox",
+    sandbox_class: "my-app",
 
     # Base URL used to build source file permalinks in the source tab.
     # Recommended value includes `/blob/<branch>` (GitHub) or `/-/blob/<branch>` (GitLab).
@@ -169,7 +169,7 @@ All settings can be overridden from your config files.
 # config/config.exs
 config :my_app, MyAppWeb.Storybook,
   compilation_mode: :lazy,
-  compilation_debug: :true
+  compilation_debug: true
 ```
 
 Following configuration can also be set directly on the `:phoenix_storybook` application
