@@ -67,7 +67,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
         maybe_core_components(core_components_module, core_components_folder) ++
         maybe_core_components_index(core_components_module) ++
         maybe_core_components_example(core_components_module) ++
-        stylesheet(css_folder, opts[:tailwind]) ++
+        stylesheet(css_folder, opts) ++
         [{"storybook.js", Path.join(js_folder, "storybook.js")}]
 
     for {source_file_path, target} <- mapping do
@@ -86,6 +86,8 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     with true <- print_router_instructions(schema, opts),
          true <- print_esbuild_instructions(schema, opts),
          true <- print_tailwind_instructions(schema, opts),
+         true <- print_no_tailwind_css_instructions(schema, opts),
+         true <- print_sandbox_instructions(schema, opts),
          true <- print_watchers_instructions(schema, opts),
          true <- print_live_reload_instructions(schema, opts),
          true <- print_formatter_instructions(schema, opts),
@@ -94,7 +96,10 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       Mix.shell().info("You are all set! 🚀")
       Mix.shell().info("You can run mix phx.server and visit http://localhost:4000/storybook")
     else
-      _ -> Mix.shell().info("storybook setup aborted 🙁")
+      _ ->
+        Mix.shell().info(
+          "Storybook files were generated. Setup walkthrough stopped — the remaining instructions were skipped. Find them all in the setup guide: https://hexdocs.pm/phoenix_storybook/setup.html (or re-run mix phx.gen.storybook)."
+        )
     end
   end
 
@@ -145,11 +150,10 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     end
   end
 
-  defp stylesheet(css_folder, _tailwind = false),
-    do: [{"storybook.css.eex", Path.join(css_folder, "storybook.css")}]
-
-  defp stylesheet(css_folder, _tailwind),
-    do: [{"storybook.tailwind.css", Path.join(css_folder, "storybook.css")}]
+  defp stylesheet(css_folder, opts) do
+    template = if use_tailwind?(opts), do: "storybook.tailwind.css.eex", else: "storybook.css.eex"
+    [{template, Path.join(css_folder, "storybook.css")}]
+  end
 
   defp web_module do
     base = Mix.Phoenix.base()
@@ -189,77 +193,104 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
         end#{IO.ANSI.reset()}
 
         scope "/", #{schema.web_module_name} do
-          pipe_through(:browser)
+          pipe_through :browser
           #{IO.ANSI.bright()}live_storybook "/storybook", backend_module: #{schema.web_module_name}.Storybook#{IO.ANSI.reset()}
         end
     """)
   end
 
-  defp print_esbuild_instructions(_schema, _opts) do
+  defp print_esbuild_instructions(schema, _opts) do
     print_instructions("""
-      Add #{IO.ANSI.bright()}js/storybook.js#{IO.ANSI.reset()} as a new entry point to your esbuild args in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
+      Add #{IO.ANSI.bright()}js/storybook.js#{IO.ANSI.reset()} as a new entry point to your existing esbuild profile in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
 
         config :esbuild,
-        default: [
-          args:
-            ~w(js/app.js #{IO.ANSI.bright()}js/storybook.js#{IO.ANSI.reset()} --bundle --target=es2017 --outdir=../priv/static/assets ...),
-          ...
-        ]
+          #{schema.app_name}: [
+            args:
+              ~w(js/app.js #{IO.ANSI.bright()}js/storybook.js#{IO.ANSI.reset()} --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+            cd: Path.expand("../assets", __DIR__),
+            env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+          ]
     """)
   end
 
-  defp print_tailwind_instructions(_schema, _opts = [tailwind: false]), do: true
+  defp use_tailwind?(opts), do: opts[:tailwind] != false
 
-  defp print_tailwind_instructions(schema, _opts) do
+  defp print_tailwind_instructions(schema, opts) do
+    if use_tailwind?(opts), do: print_tailwind_instructions(schema), else: true
+  end
+
+  defp print_tailwind_instructions(schema) do
     print_instructions("""
-      Add a new Tailwind build profile for #{IO.ANSI.bright()}css/storybook.css#{IO.ANSI.reset()} in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
+      Add a new Tailwind build profile for #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()} in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
 
         config :tailwind,
           ...
-          default: [
+          #{schema.app_name}: [
             ...
           ],
           #{IO.ANSI.bright()}storybook: [
             args: ~w(
-              --input=css/storybook.css
-              --output=../priv/static/assets/storybook.css
+              --input=assets/css/storybook.css
+              --output=priv/static/assets/css/storybook.css
             ),
-            cd: Path.expand("../assets", __DIR__)
+            cd: Path.expand("..", __DIR__)
           ]#{IO.ANSI.reset()}
     """)
 
     print_instructions("""
-      Add your #{IO.ANSI.bright()}storybook content#{IO.ANSI.reset()} in your application CSS in #{IO.ANSI.bright()}assets/storybook.css#{IO.ANSI.reset()}:
+      Review the generated #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()}:
 
-        @import "tailwindcss";
-
-        #{IO.ANSI.bright()}@source "../../lib/#{schema.web_app_name}/**/*.{ex,heex}";
-        @source "../js/**.js";
-        @source "../storybook/**/*.*exs"#{IO.ANSI.reset()};
+        PhoenixStorybook loads this file instead of your app.css, so any
+        #{IO.ANSI.bright()}@plugin#{IO.ANSI.reset()}, theme, #{IO.ANSI.bright()}@custom-variant#{IO.ANSI.reset()} or font you added to
+        #{IO.ANSI.bright()}assets/css/app.css#{IO.ANSI.reset()} must be mirrored there too, or your components
+        render unstyled. See the comments at the top of the generated file.
     """)
 
     print_instructions("""
-      Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.web_app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
-
-        <body class="bg-white #{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
-        ...
-    """)
-
-    print_instructions("""
-      Make sure your application styling is nested under your CSS sandbox class in #{IO.ANSI.bright()}assets/storybook.css#{IO.ANSI.reset()}:
+      (Optional) If you have your own #{IO.ANSI.bright()}scoped component CSS#{IO.ANSI.reset()} (not daisyUI/plugin classes), nest it under your CSS sandbox class in #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()}. Global #{IO.ANSI.bright()}@plugin#{IO.ANSI.reset()} / #{IO.ANSI.bright()}@custom-variant#{IO.ANSI.reset()} / theme directives must stay at the top level:
 
         .#{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()} {
           h1, h2, h3 {
-            // my custom application styling
+            /* your custom component styling */
           }
         }
         ...
     """)
   end
 
-  defp print_watchers_instructions(_schema, _opts = [tailwind: false]), do: true
+  defp print_no_tailwind_css_instructions(_schema, opts) do
+    if use_tailwind?(opts), do: true, else: print_no_tailwind_css_instructions()
+  end
 
-  defp print_watchers_instructions(schema, _opts) do
+  defp print_no_tailwind_css_instructions do
+    print_instructions("""
+      Build and serve your storybook stylesheet #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()}:
+
+        You opted out of Tailwind, so no build step was added for it. Your
+        #{IO.ANSI.bright()}css_path#{IO.ANSI.reset()} is served from #{IO.ANSI.bright()}priv/static/assets/css/storybook.css#{IO.ANSI.reset()}, so add a
+        step to your asset pipeline that builds #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()} to
+        that path, plus a matching dev watcher so edits rebuild. Register that
+        build in your #{IO.ANSI.bright()}assets.build#{IO.ANSI.reset()} and #{IO.ANSI.bright()}assets.deploy#{IO.ANSI.reset()} aliases (mix.exs):
+
+          "assets.build": [..., #{IO.ANSI.bright()}"<your storybook css build>"#{IO.ANSI.reset()}],
+          "assets.deploy": [..., #{IO.ANSI.bright()}"<your storybook css build>"#{IO.ANSI.reset()}, "phx.digest"]
+    """)
+  end
+
+  defp print_sandbox_instructions(schema, _opts) do
+    print_instructions("""
+      Add the CSS sandbox class to your layout in #{IO.ANSI.bright()}lib/#{schema.web_app_name}/components/layouts/root.html.heex#{IO.ANSI.reset()}:
+
+        <body class="#{IO.ANSI.bright()}#{schema.sandbox_class}#{IO.ANSI.reset()}">
+        ...
+    """)
+  end
+
+  defp print_watchers_instructions(schema, opts) do
+    if use_tailwind?(opts), do: print_watchers_instructions(schema), else: true
+  end
+
+  defp print_watchers_instructions(schema) do
     print_instructions("""
       Add a new #{IO.ANSI.bright()}endpoint watcher#{IO.ANSI.reset()} for your new Tailwind build profile in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
 
@@ -280,7 +311,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
           live_reload: [
             patterns: [
               ...
-              #{IO.ANSI.bright()}~r"storybook/.*(exs)$"#{IO.ANSI.reset()}
+              #{IO.ANSI.bright()}~r"storybook/.*\\.exs$"#{IO.ANSI.reset()}
             ]
           ]
     """)
@@ -288,10 +319,10 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   defp print_formatter_instructions(_schema, _opts) do
     print_instructions("""
-      Add your storybook content to #{IO.ANSI.bright()}.formatter.exs#{IO.ANSI.reset()}
+      Add your storybook content to #{IO.ANSI.bright()}.formatter.exs#{IO.ANSI.reset()} (importing #{IO.ANSI.bright()}:phoenix_storybook#{IO.ANSI.reset()} keeps the storybook DSL paren-free):
 
         [
-          import_deps: [...],
+          import_deps: [..., #{IO.ANSI.bright()}:phoenix_storybook#{IO.ANSI.reset()}],
           inputs: [
             ...
             #{IO.ANSI.bright()}"storybook/**/*.exs"#{IO.ANSI.reset()}
@@ -300,15 +331,21 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     """)
   end
 
-  defp print_mixexs_instructions(_schema, _opts = [tailwind: false]), do: true
+  defp print_mixexs_instructions(_schema, opts) do
+    if use_tailwind?(opts), do: print_mixexs_instructions(), else: true
+  end
 
-  defp print_mixexs_instructions(_schema, _opts) do
+  defp print_mixexs_instructions do
     print_instructions("""
-      Add an alias to #{IO.ANSI.bright()}mix.exs#{IO.ANSI.reset()}
+      Add the storybook build to your asset aliases in #{IO.ANSI.bright()}mix.exs#{IO.ANSI.reset()}
 
       defp aliases do
         [
           ...,
+          "assets.build": [
+            ...
+            #{IO.ANSI.bright()}"tailwind storybook"#{IO.ANSI.reset()}
+          ],
           "assets.deploy": [
             ...
             #{IO.ANSI.bright()}"tailwind storybook --minify",#{IO.ANSI.reset()}
