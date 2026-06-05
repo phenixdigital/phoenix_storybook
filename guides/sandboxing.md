@@ -34,7 +34,7 @@ import * as Uploaders from "./uploaders";
 })();
 ```
 
-Then set the `js_path: "/assets/storybook.js"` option to the storybook within your `storybook.ex`
+Then set the `js_path: "/assets/js/storybook.js"` option to the storybook within your `storybook.ex`
 file. This is a remote path (not a local file-system path) which means this file should be served
 by your own application endpoint with the given path.
 
@@ -61,7 +61,7 @@ the storybook to you components.
 ## How should you provide the style of your components?
 
 You need to inject your component's stylesheets into the storybook. Set the
-`css_path: "/assets/storybook.css"` option in `storybook.ex`. This is a remote path (not a local
+`css_path: "/assets/css/storybook.css"` option in `storybook.ex`. This is a remote path (not a local
 file-system path) which means this file should be served by your own application endpoint with the
 given path.
 
@@ -87,16 +87,22 @@ You can leverage this to scope your styles with this class. Here is how you can 
 defmodule MyAppWeb.Storybook do
   use PhoenixStorybook,
     ...
-    sandbox_class: "my-app-sandbox",
+    sandbox_class: "my-app",
 ```
 
-- nest your custom styles under your sandbox CSS class.
+- nest your own scoped component styles under your sandbox CSS class. Global `@plugin` /
+  `@custom-variant` / theme directives (e.g. daisyUI) must stay at the top level — only your
+  bespoke component CSS goes under the sandbox class.
 
 ```css
 /* assets/css/storybook.css */
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/my_app_web";
+@source "../../storybook";
 
-.my-app-sandbox {
+.my-app {
   * {
     font-family: "MyComponentsFont";
     @apply text-slate-600;
@@ -115,10 +121,10 @@ defmodule MyAppWeb.Storybook do
 - set your sandbox CSS class to the body element of your main application.
 
 ```html
-<!-- lib/my_app/templates/layout/root.html.heex -->
+<!-- lib/my_app_web/components/layouts/root.html.heex -->
 
 <html>
-  <body class="my-app-sandbox">
+  <body class="my-app">
     <!-- ... -->
   </body>
 </html>

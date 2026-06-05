@@ -16,7 +16,7 @@ Add the following to your mix.exs and run mix deps.get:
 ```elixir
 def deps do
   [
-    {:phoenix_storybook, "~> 0.9.0"}
+    {:phoenix_storybook, "~> 1.1.0"}
   ]
 end
 ```
@@ -30,10 +30,11 @@ Create a new module under your application lib folder:
 defmodule MyAppWeb.Storybook do
   use PhoenixStorybook,
     otp_app: :my_app,
-    content_path: Path.expand("../storybook", __DIR__),
+    content_path: Path.expand("../../storybook", __DIR__),
     # assets path are remote path, not local file-system paths
-    css_path: "/assets/my_components.css",
-    js_path: "/assets/my_components.js"
+    css_path: "/assets/css/storybook.css",
+    js_path: "/assets/js/storybook.js",
+    sandbox_class: "my-app"
 end
 ```
 
@@ -51,8 +52,8 @@ scope "/" do
   storybook_assets()
 end
 
-scope "/", PhoenixStorybookSampleWeb do
-  pipe_through(:browser)
+scope "/", MyAppWeb do
+  pipe_through :browser
   ...
   live_storybook "/storybook", backend_module: MyAppWeb.Storybook
 end
@@ -60,13 +61,16 @@ end
 
 ## 4. Make your components' assets available
 
-Build a new CSS bundle dedicated to your live_view components: this bundle will be used both by your
-app and the storybook.
+PhoenixStorybook loads the `css_path` / `js_path` bundles you configured above — **not** your
+application's `app.css` / `app.js`. You need to build and serve those two bundles. The steps below
+assume a default Phoenix 1.8 app (Tailwind v4 + esbuild); adjust the paths if your asset pipeline
+differs. Sub-steps b, d and e are Tailwind-specific — on another pipeline, substitute your own CSS
+build, watcher, and deploy steps. This is exactly what `mix phx.gen.storybook` walks you through.
 
-In this README, we use `assets/css/storybook.css` as an example.
+### a. JS bundle
 
-If your components require any hooks or custom uploaders, or if your pages require connect parameters,
-declare them as such in a new JS bundle:
+This script is loaded immediately before PhoenixStorybook's own JS. Use it to declare your LiveView
+`Hooks`, `Params` and `Uploaders` on `window.storybook` — keep only the ones your components need:
 
 ```javascript
 // assets/js/storybook.js
@@ -80,10 +84,127 @@ import * as Uploaders from "./uploaders";
 })();
 ```
 
-Your application must bundle these assets and serve them. Our custom `mix phx.gen.storybook`
-generator may guide you through these steps.
+Add it as a new entry point to your existing esbuild profile in `config/config.exs`:
+
+```elixir
+config :esbuild,
+  my_app: [
+    args:
+      ~w(js/app.js js/storybook.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+### b. CSS bundle
+
+Create `assets/css/storybook.css`. Because PhoenixStorybook loads this file instead of your
+`app.css`, you must mirror any `@plugin`, theme, custom variant or font your components rely on —
+otherwise they render unstyled:
+
+```css
+/* assets/css/storybook.css */
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/my_app_web";
+@source "../../storybook";
+
+/* Mirror here any @plugin / @custom-variant / theme blocks from your app.css */
+```
+
+Add a `storybook` Tailwind build profile in `config/config.exs`:
+
+```elixir
+config :tailwind,
+  my_app: [
+    ...
+  ],
+  storybook: [
+    args: ~w(
+      --input=assets/css/storybook.css
+      --output=priv/static/assets/css/storybook.css
+    ),
+    cd: Path.expand("..", __DIR__)
+  ]
+```
+
+### c. Scope your styles to the sandbox
+
+All storybook containers carry your `sandbox_class`. Add it to your application layout body, and
+nest your component styling under it so your app and the storybook stay in sync:
+
+```heex
+<!-- lib/my_app_web/components/layouts/root.html.heex -->
+<body class="my-app">
+```
+
+Optionally, nest your own scoped component styles under that class in `assets/css/storybook.css`.
+Global `@plugin` / `@custom-variant` / theme directives (e.g. daisyUI) must stay at the top level —
+only your bespoke component CSS goes under the sandbox class:
+
+```css
+.my-app {
+  /* your custom component styling, e.g. */
+  h1 {
+    @apply text-2xl font-bold;
+  }
+}
+```
 
 ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
+
+### d. Dev watcher & live reload
+
+In `config/dev.exs`, add a watcher so the storybook CSS rebuilds on change, and a live-reload
+pattern for your stories:
+
+```elixir
+config :my_app, MyAppWeb.Endpoint,
+  watchers: [
+    ...
+    storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
+  ],
+  live_reload: [
+    patterns: [
+      ...
+      ~r"storybook/.*\.exs$"
+    ]
+  ]
+```
+
+### e. Formatter & build aliases
+
+Add your stories to `.formatter.exs` (importing `:phoenix_storybook` keeps the storybook DSL paren-free):
+
+```elixir
+[
+  import_deps: [..., :phoenix_storybook],
+  inputs: [
+    ...
+    "storybook/**/*.exs"
+  ]
+]
+```
+
+And make sure the storybook bundle is built with your other assets in `mix.exs`:
+
+```elixir
+defp aliases do
+  [
+    ...,
+    "assets.build": [
+      ...
+      "tailwind storybook"
+    ],
+    "assets.deploy": [
+      ...
+      "tailwind storybook --minify",
+      "phx.digest"
+    ]
+  ]
+end
+```
 
 ## 5. Update your Docker image
 
