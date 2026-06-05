@@ -28,7 +28,7 @@ defmodule PhoenixStorybook.Router do
        router. Defaults to `"/storybook/assets"`.
     * `:session_name` - Configures the live session name. Defaults to `:live_storybook`. Use this
        option if you want to mount multiple storybooks in the same router.
-    * `:as` - Allows you to set the route helper name. Defaults to`:live_storybook`.
+    * `:as` - Allows you to set the route helper name. Defaults to `:live_storybook`.
     * `:pipeline` - Set to `false` if you don't want a router pipeline to be created. This is useful
        if you want to define your own `:storybook_browser` pipeline, or if you mount multiple
        storybooks, in which case the pipeline only has to be defined once. Defaults to `true`.
