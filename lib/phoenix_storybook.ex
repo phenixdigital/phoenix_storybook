@@ -258,7 +258,9 @@ defmodule PhoenixStorybook do
                   end
 
                 _ ->
-                  Logger.warning("Can't resolve #{asset}: can't read #{path}")
+                  Logger.warning(
+                    "Can't resolve #{asset}: #{path} not found (storybook assets are built by `mix assets.build`)"
+                  )
 
                   quote do
                     @external_resource unquote(path)
