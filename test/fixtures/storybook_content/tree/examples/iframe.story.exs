@@ -2,7 +2,7 @@ defmodule TreeStorybook.Examples.Iframe do
   use PhoenixStorybook.Story, :example
 
   def doc, do: "Iframe example story"
-  def container, do: :iframe
+  def container, do: {:iframe, style: "padding: 16px;", "data-foo": "bar"}
 
   @impl true
   def render(assigns) do

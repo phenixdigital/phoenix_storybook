@@ -3,6 +3,9 @@ defmodule TreeStorybook.Examples.Example do
 
   def doc, do: "Example story"
 
+  def container,
+    do: {:div, id: "inline-example-container", class: "inline-example", "data-foo": "bar"}
+
   def extra_sources do
     [
       "./example_html.ex",

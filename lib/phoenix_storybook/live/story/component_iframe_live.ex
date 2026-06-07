@@ -135,17 +135,26 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
 
   defp render_example(assigns) do
     theme = Map.get(assigns, :theme)
+    {_container, container_opts} = LayoutView.normalize_story_container(assigns.story.container())
+    {id, container_opts} = Keyword.pop(container_opts, :id)
 
     assigns =
-      assign(assigns, :example_live_id, "example-#{story_id(assigns.story)}-#{theme}")
+      assigns
+      |> assign(:example_live_id, id || "example-#{story_id(assigns.story)}-#{theme}")
+      |> assign(:example_container, {:div, example_container_opts(assigns, container_opts)})
 
     ~H"""
     {live_render(@socket, @story,
       id: @example_live_id,
       session: %{"theme" => @theme},
-      container: {:div, class: @color_mode_class}
+      container: @example_container
     )}
     """
+  end
+
+  defp example_container_opts(assigns, container_opts) do
+    {classes, container_opts} = Keyword.pop(container_opts, :class)
+    Keyword.put(container_opts, :class, [classes, assigns[:color_mode_class]])
   end
 
   defp playground_preview_id(story) do

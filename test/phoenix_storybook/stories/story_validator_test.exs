@@ -120,6 +120,12 @@ defmodule PhoenixStorybook.Stories.StoryValidatorTest do
     end
 
     test "with invalid container it raises" do
+      mock = example_stub(container: nil)
+      e = assert_raise CompileError, fn -> validate!(mock) end
+
+      assert e.description =~
+               "story container must be :div, {:div, opts}, :iframe or {:iframe, opts}"
+
       mock = example_stub(container: :span)
       e = assert_raise CompileError, fn -> validate!(mock) end
 

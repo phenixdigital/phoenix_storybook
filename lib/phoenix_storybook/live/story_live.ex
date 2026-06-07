@@ -428,7 +428,7 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns = %{tab: :example}) do
-    case LayoutView.normalize_story_container(assigns.story.container()) do
+    case normalize_example_container(assigns.story.container()) do
       {:iframe, iframe_opts} ->
         assigns =
           assign(assigns, :iframe_attributes, assigns_to_attributes(iframe_opts, [:style]))
@@ -445,20 +445,14 @@ defmodule PhoenixStorybook.StoryLive do
         />
         """
 
-      {:div, _container_opts} ->
+      {:div, container_opts} ->
         theme = Map.get(assigns, :theme)
+        {id, container_opts} = Keyword.pop(container_opts, :id)
 
         live_render(assigns.socket, assigns.story,
-          id: "example-#{story_id(assigns.story)}-#{theme}",
+          id: id || "example-#{story_id(assigns.story)}-#{theme}",
           session: %{"theme" => theme},
-          container:
-            {:div,
-             class:
-               LayoutView.sandbox_class(
-                 assigns.socket,
-                 {:div, class: ["psb psb:pb-12", assigns[:color_mode_class]]},
-                 assigns
-               )}
+          container: {:div, example_container_opts(assigns, container_opts)}
         )
     end
   end
@@ -484,6 +478,28 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns), do: ~H[]
+
+  defp normalize_example_container(:div), do: {:div, []}
+  defp normalize_example_container({:div, opts}), do: {:div, opts}
+  defp normalize_example_container(container), do: LayoutView.normalize_story_container(container)
+
+  defp example_container_opts(assigns, container_opts) do
+    sandbox_container_opts =
+      Keyword.update(
+        container_opts,
+        :class,
+        ["psb psb:pb-12", assigns[:color_mode_class]],
+        fn class ->
+          ["psb psb:pb-12", assigns[:color_mode_class], class]
+        end
+      )
+
+    Keyword.put(
+      container_opts,
+      :class,
+      LayoutView.sandbox_class(assigns.socket, {:div, sandbox_container_opts}, assigns)
+    )
+  end
 
   attr :source, :any, required: true
   slot :inner_block
