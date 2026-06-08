@@ -789,6 +789,14 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert List.keyfind(attrs, "data-foo", 0) == {"data-foo", "bar"}
     end
 
+    test "renders an example story with the default div container", %{conn: conn} do
+      {:ok, view, html} = live(conn, ~p"/storybook/examples/default_container")
+
+      assert html =~ "Default container example story"
+      assert html =~ "Default container example content"
+      assert has_element?(view, ".psb-sandbox #default-container-example-story")
+    end
+
     test "renders an iframe example story in an iframe", %{conn: conn} do
       {:ok, view, html} = live(conn, ~p"/storybook/examples/iframe")
 
