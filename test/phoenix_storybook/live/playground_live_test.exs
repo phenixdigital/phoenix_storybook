@@ -659,13 +659,17 @@ defmodule PhoenixStorybook.PlaygroundLiveNonAsyncTest do
       wait_for_lv(view)
       Process.flag(:trap_exit, true)
 
-      view
-      |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
-        playground: %{label: "raise"}
-      })
-      |> render_change()
+      _ =
+        try do
+          view
+          |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
+            playground: %{label: "raise"}
+          })
+          |> render_change()
+        catch
+          :exit, _ -> :ok
+        end
 
-      wait_for_lv(view)
       assert_receive {:EXIT, _, {%RuntimeError{message: "booooom!"}, _}}, 200
     end
   end
