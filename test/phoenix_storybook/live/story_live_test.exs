@@ -796,7 +796,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       [{"iframe", attrs, _}] =
         view
-        |> element("#iframe-tree_storybook_examples_iframe-example")
+        |> element("#iframe-tree_storybook_examples_iframe-example-theme-default")
         |> render()
         |> LazyHTML.from_fragment()
         |> LazyHTML.to_tree()
@@ -806,6 +806,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert List.keyfind(attrs, "data-foo", 0) == {"data-foo", "bar"}
       assert is_nil(List.keyfind(attrs, "style", 0))
+    end
+
+    test "iframe example story id changes with iframe params", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/iframe")
+
+      assert has_element?(view, "#iframe-tree_storybook_examples_iframe-example-theme-default")
+
+      view
+      |> element("#psb-colormode-dropdown")
+      |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
+
+      assert has_element?(
+               view,
+               "#iframe-tree_storybook_examples_iframe-example-theme-default-color-mode-dark"
+             )
     end
 
     test "renders an example story main source tab", %{conn: conn} do

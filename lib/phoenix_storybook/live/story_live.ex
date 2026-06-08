@@ -470,7 +470,7 @@ defmodule PhoenixStorybook.StoryLive do
         ~H"""
         <iframe
           phx-update="ignore"
-          id={"iframe-#{story_id(@story)}-example"}
+          id={example_iframe_id(@story, @theme, @color_mode)}
           class="psb:w-full psb:border-0"
           src={path_to_iframe(@socket, @root_path, @story_path, theme: @theme, color_mode: @color_mode)}
           height="0"
@@ -822,6 +822,16 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp story_id(story_module) do
     story_module |> Macro.underscore() |> String.replace("/", "_")
+  end
+
+  defp example_iframe_id(story_module, theme, color_mode) do
+    [
+      "iframe-#{story_id(story_module)}-example",
+      if(theme, do: "theme-#{theme}"),
+      if(color_mode, do: "color-mode-#{color_mode}")
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("-")
   end
 
   defp iframe_onload_js do
