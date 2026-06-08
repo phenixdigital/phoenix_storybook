@@ -19,4 +19,9 @@ defmodule PhoenixStorybook.Guides.GuidesTest do
     guide = Guides.markup("icons.md")
     assert guide =~ "<h1>Custom Icons</h1>"
   end
+
+  test "code blocks in guides are syntax-highlighted via MarkdownRenderer" do
+    guide = Guides.markup("components.md")
+    assert guide =~ ~r/<pre.*psb highlight.*\/pre>/s
+  end
 end
