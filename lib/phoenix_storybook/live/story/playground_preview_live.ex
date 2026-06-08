@@ -94,8 +94,8 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
 
   def render(assigns) do
     assigns =
-      assign(
-        assigns,
+      assigns
+      |> assign(
         :context,
         RenderingContext.build(
           assigns.backend_module,
