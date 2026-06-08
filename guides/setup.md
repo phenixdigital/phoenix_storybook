@@ -152,7 +152,7 @@ only your bespoke component CSS goes under the sandbox class:
 }
 ```
 
-ℹ️ Learn more on this topic in the [sandboxing guide](guides/sandboxing.md).
+ℹ️ Learn more on this topic in the [sandboxing guide](sandboxing.md).
 
 ### d. Dev watcher & live reload
 
