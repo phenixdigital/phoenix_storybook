@@ -13,9 +13,9 @@ defmodule PhoenixStorybook.Helpers.ExampleHelpers do
         block
         # drop storybook-only functions from the displayed source code
         |> Enum.reject(fn
-          {:def, _, [{:doc, _, _} | _]} -> true
-          {:def, _, [{:container, _, _} | _]} -> true
-          {:def, _, [{:extra_sources, _, _} | _]} -> true
+          {:def, _, [{:doc, _, args} | _]} -> zero_arity?(args)
+          {:def, _, [{:container, _, args} | _]} -> zero_arity?(args)
+          {:def, _, [{:extra_sources, _, args} | _]} -> zero_arity?(args)
           _ -> false
         end)
         # replace example storybook declarations with plain LiveView source
@@ -37,4 +37,8 @@ defmodule PhoenixStorybook.Helpers.ExampleHelpers do
       _ -> code
     end
   end
+
+  defp zero_arity?(nil), do: true
+  defp zero_arity?([]), do: true
+  defp zero_arity?(_args), do: false
 end
