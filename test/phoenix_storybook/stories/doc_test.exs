@@ -8,33 +8,33 @@ defmodule PhoenixStorybook.Stories.DocTest do
 
   describe "fetch_doc_as_html/2" do
     test "it returns a function component documentation" do
-      assert %Doc{
-               header: "<p>\n  Component first doc paragraph.\nStill first paragraph.</p>\n",
-               body: "<p>\nSecond paragraph.</p>\n<h2>\nExamples</h2>" <> examples
-             } =
+      assert %Doc{header: header, body: body} =
                "component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html()
 
-      assert examples =~ ~s[<span class="nf">.component</span>]
-      assert examples =~ ~s[<span class="nc">Component</span>]
-      assert examples =~ ~s[<span class="ss">:cool</span>]
-      assert examples =~ ~s[<span class="ss">:boring</span>]
+      assert header == "<p>Component first doc paragraph.\nStill first paragraph.</p>"
+      assert body =~ "<p>Second paragraph.</p>"
+      assert body =~ "<h2>Examples</h2>"
+      assert body =~ ~s[<span class="nf">.component</span>]
+      assert body =~ ~s[<span class="nc">Component</span>]
+      assert body =~ ~s[&amp;lbrace;:cool&amp;rbrace;]
+      assert body =~ ~s[<span class="ss">:boring</span>]
     end
 
     test "it returns a live component documentation" do
-      assert "live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html() == %Doc{
-               header: "<p>\n  LiveComponent first doc paragraph.\nStill first paragraph.</p>\n",
-               body: "<p>\nSecond paragraph.</p>\n"
-             }
+      assert %Doc{header: header, body: body} =
+               "live_component.story.exs" |> compile_story() |> Doc.fetch_doc_as_html()
+
+      assert header == "<p>LiveComponent first doc paragraph.\nStill first paragraph.</p>"
+      assert body == "<p>Second paragraph.</p>"
     end
 
     test "returns no body for a single line documentation" do
-      assert "b_folder/all_types_component.story.exs"
-             |> compile_story()
-             |> Doc.fetch_doc_as_html() ==
-               %Doc{
-                 header: "<p>\n  Component mixing any attribute possible types.</p>\n",
-                 body: nil
-               }
+      assert %Doc{header: header, body: nil} =
+               "b_folder/all_types_component.story.exs"
+               |> compile_story()
+               |> Doc.fetch_doc_as_html()
+
+      assert header == "<p>Component mixing any attribute possible types.</p>"
     end
 
     test "it returns nil when there is no doc" do

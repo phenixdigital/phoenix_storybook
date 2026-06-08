@@ -3,7 +3,14 @@ defmodule PhoenixStorybook.Story.Playground do
   use PhoenixStorybook.Web, :live_component
 
   alias Phoenix.{LiveView.JS, PubSub}
-  alias PhoenixStorybook.Rendering.{CodeRenderer, ComponentRenderer, RenderingContext}
+
+  alias PhoenixStorybook.Rendering.{
+    CodeRenderer,
+    ComponentRenderer,
+    MarkdownRenderer,
+    RenderingContext
+  }
+
   alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhoenixStorybook.Story.{PlaygroundPreviewLive, SourceSelect}
   alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers}
@@ -519,7 +526,7 @@ defmodule PhoenixStorybook.Story.Playground do
                           <td class="psb psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300 psb:max-w-[16rem]">
                             <div :if={doc_head}>
                               <span>
-                                {doc_head |> Earmark.as_html() |> elem(1) |> raw()}
+                                {doc_head |> MarkdownRenderer.markdown_to_html() |> raw()}
                               </span>
                               <a
                                 :if={Enum.any?(doc_tail)}
@@ -608,7 +615,10 @@ defmodule PhoenixStorybook.Story.Playground do
                                 "psb:absolute psb:right-2 psb:top-2 ",
                                 "psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:cursor-pointer"
                               ]}
-                            /> {doc_tail |> Enum.join("\n") |> Earmark.as_html() |> elem(1) |> raw()}
+                            /> {doc_tail
+                            |> Enum.join("\n")
+                            |> MarkdownRenderer.markdown_to_html()
+                            |> raw()}
                           </td>
                         </tr>
                       <% end %>
@@ -631,7 +641,7 @@ defmodule PhoenixStorybook.Story.Playground do
                             class="psb psb-doc psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300"
                           >
                             <div :if={slot.doc}>
-                              {slot.doc |> Earmark.as_html() |> elem(1) |> raw()}
+                              {slot.doc |> MarkdownRenderer.markdown_to_html() |> raw()}
                             </div>
                           </td>
                         </tr>
@@ -697,7 +707,7 @@ defmodule PhoenixStorybook.Story.Playground do
                             class="psb psb-doc psb:py-4 psb:md:pr-3 psb:text-xs psb:md:text-sm psb:text-gray-500 psb:dark:text-slate-300"
                           >
                             <div :if={attr.doc}>
-                              {attr.doc |> Earmark.as_html() |> elem(1) |> raw()}
+                              {attr.doc |> MarkdownRenderer.markdown_to_html() |> raw()}
                             </div>
                           </td>
                         </tr>
