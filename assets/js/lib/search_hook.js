@@ -4,10 +4,10 @@ export const SearchHook = {
   },
 
   mounted() {
-    const searchContainer = document.querySelector("#search-container");
-    const searchModal = document.querySelector("#search-modal");
-    const searchList = document.querySelector("#search-list");
-    const searchInput = document.querySelector("#search-input");
+    const searchContainer = document.querySelector("#psb-search-container");
+    const searchModal = document.querySelector("#psb-search-modal");
+    const searchList = document.querySelector("#psb-search-list");
+    const searchInput = document.querySelector("#psb-search-input");
 
     let allStories = searchList.children;
     let firstStory = searchList.firstElementChild;
@@ -65,13 +65,9 @@ export const SearchHook = {
     searchContainer.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const link = activeStory.firstElementChild;
-
-        this.resetInput(searchInput);
-        this.pushEventTo("#search-container", "navigate", {
-          path: link.pathname,
-        });
-        this.dispatchCloseSearch();
+        // Navigation lives on the row's <a patch>; clicking it patches and
+        // bubbles to the cleanup listener below.
+        activeStory.querySelector("a")?.click();
       }
 
       if (e.key === "Escape") {
@@ -111,20 +107,19 @@ export const SearchHook = {
       }
     });
 
-    searchList.addEventListener("click", (_e) => {
-      const link = activeStory.firstElementChild;
+    searchList.addEventListener("click", (e) => {
+      // The row's <a patch> handles navigation itself; we only reset the input
+      // and close the palette once a story link is actually clicked.
+      if (!e.target.closest("a")) return;
 
       this.resetInput(searchInput);
-      this.pushEventTo("#search-container", "navigate", {
-        path: link.pathname,
-      });
       this.dispatchCloseSearch();
     });
   },
 
   resetInput(searchInput) {
     searchInput.value = "";
-    this.pushEventTo("#search-container", "search", { search: { input: "" } });
+    this.pushEventTo("#psb-search-container", "search", { search: { input: "" } });
   },
 
   dispatchOpenSearch() {

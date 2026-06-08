@@ -1,7 +1,7 @@
 defmodule PhoenixStorybook.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.1.0"
 
   def project do
     [
@@ -48,8 +48,6 @@ defmodule PhoenixStorybook.MixProject do
     [
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
-      {:phoenix_html_helpers, "~> 1.0"},
-      {:phoenix_view, "~> 2.0"},
       {:makeup_eex, "~> 2.0.2"},
       {:makeup_html, "~> 0.2.0"},
       {:heroicons, "~> 0.5", only: [:test]},

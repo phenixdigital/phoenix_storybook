@@ -64,11 +64,11 @@ defmodule PhoenixStorybook.Sidebar do
   def render(assigns) do
     ~H"""
     <section
-      id="sidebar"
-      phx-hook="SidebarHook"
+      id="psb-sidebar"
+      phx-hook="PhoenixStorybook.SidebarHook"
       class="psb psb:text-gray-600 psb:dark:text-slate-400 psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-slate-50 psb:dark:bg-slate-800 psb:lg:pt-20 psb:pb-32 psb:px-4 psb:overflow-y-auto"
     >
-      <span id="close-sidebar-icon" phx-update="ignore">
+      <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon
           style={:regular}
           name="xmark"
@@ -80,7 +80,7 @@ defmodule PhoenixStorybook.Sidebar do
 
       <div class="psb psb:bg-white psb:dark:bg-slate-900 psb:relative psb:pointer-events-auto psb:mb-4">
         <button
-          id="search-button"
+          id="psb-search-button"
           phx-click={JS.dispatch("psb:open-search")}
           class="psb psb:hidden psb:w-full psb:lg:flex psb:items-center psb:text-sm psb:leading-6 psb:text-slate-400 psb:rounded-md psb:border psb:border-1 psb:border-slate-100 psb:dark:border-slate-600 psb:hover:border-slate-200 psb:py-1.5 psb:pl-2 psb:pr-3"
         >
@@ -100,11 +100,16 @@ defmodule PhoenixStorybook.Sidebar do
         {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
       </nav>
 
-      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:hover:font-bold">
-        <%= link to: "https://github.com/phenixdigital/phoenix_storybook", target: "_blank", class: "psb" do %>
+      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-bold">
+        <.link
+          href="https://github.com/phenixdigital/phoenix_storybook"
+          target="_blank"
+          rel="noreferrer noopener"
+          class="psb"
+        >
           <.fa_icon style={:brands} name="github" plan={:pro} />
           - {Application.spec(:phoenix_storybook, :vsn)}
-        <% end %>
+        </.link>
       </div>
       <.hidden_icons fa_plan={@fa_plan} content_flat_list={@content_flat_list} />
     </section>
@@ -137,12 +142,12 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if folder_icon do %>
                   <.user_icon
                     icon={folder_icon}
-                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400"
+                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
 
-                <span class="psb psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400">
+                <span class="psb psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400">
                   {name}
                 </span>
               </div>
@@ -162,13 +167,13 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if icon do %>
                   <.user_icon
                     icon={icon}
-                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400"
+                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
                 <.link
                   patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
-                  class="psb psb:block psb:w-full psb:py-2 psb:lg:py-1 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400"
+                  class="psb psb:block psb:w-full psb:py-2 psb:lg:py-1 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
                 >
                   {name}
                 </.link>
@@ -200,7 +205,7 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp story_class(current_path, story_path) do
     story_class =
-      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-indigo-600 psb:hover:text-indigo-600 psb:hover:border-l-1.5 psb:group"
+      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-indigo-600 psb:dark:hover:border-sky-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:border-l-1.5 psb:group"
 
     if current_path == story_path do
       story_class <>

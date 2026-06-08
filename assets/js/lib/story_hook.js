@@ -4,7 +4,7 @@ export const StoryHook = {
     if (window.location.hash) {
       const el = document.querySelector(window.location.hash);
       if (el) {
-        const liveContainer = document.querySelector("#live-container");
+        const liveContainer = document.querySelector("#psb-live-container");
         setTimeout(() => {
           liveContainer.scrollTop = el.offsetTop - 115;
         }, 100);
@@ -19,7 +19,7 @@ export const StoryHook = {
     this.bindAnchorLinks();
   },
   bindAnchorLinks() {
-    for (const link of document.querySelectorAll(".variation-anchor-link")) {
+    for (const link of document.querySelectorAll(".psb-variation-anchor-link")) {
       link.addEventListener("click", (event) => {
         event.preventDefault();
         window.history.replaceState({}, "", link.hash);
@@ -34,16 +34,17 @@ export const StoryHook = {
 
     window.addEventListener("psb:copy-code", (e) => {
       const button = e.target;
-      const icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
+      this.copyToClipboard(button.nextElementSibling.textContent);
+
+      const icon = button.querySelector(".fa-copy");
+      if (!icon) return;
+
       button.classList.add(...buttonActiveClasses);
       button.classList.remove(...buttonClasses);
       icon.classList.add(iconActiveClass);
       icon.classList.remove(iconClass);
 
-      this.copyToClipboard(button.nextElementSibling.textContent);
-
       setTimeout(() => {
-        const icon = button.querySelector(".svg-inline--fa") || button.querySelector(".fa-copy");
         icon.classList.add(iconClass);
         icon.classList.remove(iconActiveClass);
         button.classList.add(...buttonClasses);

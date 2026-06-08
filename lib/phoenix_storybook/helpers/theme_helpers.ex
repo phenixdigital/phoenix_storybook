@@ -8,11 +8,43 @@ defmodule PhoenixStorybook.ThemeHelpers do
     end
   end
 
+  def theme_sandbox_data_attribute(backend_module, theme) do
+    case theme_strategy(backend_module, :data_attribute) do
+      nil ->
+        nil
+
+      attribute_name when is_binary(attribute_name) ->
+        {String.to_atom("data-#{attribute_name}"), "#{theme}"}
+
+      attribute_name when is_atom(attribute_name) ->
+        {String.to_atom("data-#{Atom.to_string(attribute_name)}"), "#{theme}"}
+
+      attribute_name ->
+        raise ArgumentError,
+              "expected :data_attribute theme strategy to be a binary or atom, got: #{inspect(attribute_name)}"
+    end
+  end
+
   def theme_assign(backend_module, theme) do
     case theme_strategy(backend_module, :assign) do
       nil -> nil
       assign_key when is_binary(assign_key) -> {String.to_atom(assign_key), theme}
       assign_key -> {assign_key, theme}
+    end
+  end
+
+  def theme_from_param(_backend_module, theme) when theme in [nil, ""], do: nil
+  def theme_from_param(_backend_module, theme) when is_atom(theme), do: theme
+
+  def theme_from_param(backend_module, theme) when is_binary(theme) do
+    case backend_module.config(:themes) do
+      nil ->
+        raise(RuntimeError, "unknown theme: #{theme}")
+
+      themes ->
+        Enum.find_value(themes, fn {theme_id, _label} ->
+          if to_string(theme_id) == theme, do: theme_id
+        end) || raise(RuntimeError, "unknown theme: #{theme}")
     end
   end
 

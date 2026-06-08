@@ -119,7 +119,7 @@ defmodule PhoenixStorybook.VisualTestLive do
   defp current_theme(params, socket) do
     case Map.get(params, "theme") do
       nil -> default_theme(socket)
-      theme -> String.to_atom(theme)
+      theme -> ThemeHelpers.theme_from_param(socket.assigns.backend_module, theme)
     end
   end
 

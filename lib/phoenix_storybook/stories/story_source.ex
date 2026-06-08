@@ -187,7 +187,7 @@ defmodule PhoenixStorybook.Stories.StorySource do
   defp function_source_location(function, module_source) do
     Function.info(function)
     [module: module, name: fun_name, arity: arity, env: _, type: _] = Function.info(function)
-    {_, _, _, _, _, _, functions} = Code.fetch_docs(module)
+    functions = functions_docs!(module)
 
     functions
     |> Enum.sort_by(&location/1)
@@ -216,6 +216,13 @@ defmodule PhoenixStorybook.Stories.StorySource do
       |> String.trim()
       |> Kernel.==("end")
     end)
+  end
+
+  defp functions_docs!(module) do
+    case Code.fetch_docs(module) do
+      {_, _, _, _, _, _, functions} -> functions
+      {:error, _reason} -> raise FunctionClauseError
+    end
   end
 
   defp header({header, _, _, _, _}), do: header

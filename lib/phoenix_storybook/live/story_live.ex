@@ -24,8 +24,14 @@ defmodule PhoenixStorybook.StoryLive do
 
   import PhoenixStorybook.NavigationHelpers
 
+  @playground_topic_salt "phoenix_storybook:playground_topic"
+
   def mount(_params, _session, socket) do
     playground_topic = "playground-#{inspect(self())}"
+
+    playground_token =
+      Phoenix.Token.sign(socket.endpoint, @playground_topic_salt, %{"topic" => playground_topic})
+
     event_logs_topic = "event_logs:#{inspect(self())}"
 
     if connected?(socket) do
@@ -41,6 +47,7 @@ defmodule PhoenixStorybook.StoryLive do
        playground_error: nil,
        playground_preview_pid: nil,
        playground_topic: playground_topic,
+       playground_token: playground_token,
        fa_plan: backend_module.config(:font_awesome_plan, :free),
        selected_color_mode: get_selected_color_mode(socket),
        color_mode: get_color_mode(socket)
@@ -161,7 +168,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp current_tab(params, story) do
     case Map.get(params, "tab") do
       nil -> default_tab(story)
-      tab -> String.to_atom(tab)
+      tab -> tab_from_param(story, tab) || built_in_tab_from_param(story, tab) || tab
     end
   end
 
@@ -193,7 +200,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp current_theme(params, socket) do
     case Map.get(params, "theme") do
       nil -> default_theme(socket)
-      theme -> String.to_atom(theme)
+      theme -> ThemeHelpers.theme_from_param(socket.assigns.backend_module, theme)
     end
   end
 
@@ -204,7 +211,28 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp close_sidebar(socket), do: push_event(socket, "psb:close-sidebar", %{"id" => "#sidebar"})
+  defp tab_from_param(story, tab) do
+    story
+    |> navigation_tabs()
+    |> Enum.find_value(fn
+      {tab_id, _label} -> if to_string(tab_id) == tab, do: tab_id
+      {tab_id, _label, _icon} -> if to_string(tab_id) == tab, do: tab_id
+    end)
+  end
+
+  defp built_in_tab_from_param(story, tab) do
+    tabs =
+      case story.storybook_type() do
+        type when type in [:component, :live_component] -> ~w(variations playground source)a
+        :example -> ~w(example source)a
+        _ -> []
+      end
+
+    Enum.find(tabs, &(to_string(&1) == tab))
+  end
+
+  defp close_sidebar(socket),
+    do: push_event(socket, "psb:close-sidebar", %{"id" => "#psb-sidebar"})
 
   def render(assigns = %{story_load_error: error})
       when not is_nil(error) do
@@ -225,8 +253,8 @@ defmodule PhoenixStorybook.StoryLive do
     ~H"""
     <div
       class="psb psb:space-y-6 psb:pb-12 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
-      id="story-live"
-      phx-hook="StoryHook"
+      id="psb-story-live"
+      phx-hook="PhoenixStorybook.StoryHook"
     >
       <div class="psb">
         <div class="psb psb:flex psb:my-6 psb:items-center">
@@ -299,17 +327,19 @@ defmodule PhoenixStorybook.StoryLive do
         for={%{}}
         as={:navigation}
         id={"#{Macro.underscore(@story)}-navigation-form"}
-        class="psb story-nav-form psb:lg:hidden"
+        class="psb psb-story-nav-form psb:lg:hidden"
       >
-        {select(f, :tab, navigation_select_options(@tabs),
-          "phx-change": "psb-set-tab",
-          class:
-            "psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:border-gray-300 psb:dark:border-slate-600 psb:w-full psb:pl-3 psb:pr-10 psb:py-1 psb:text-base psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:sm:text-sm psb:rounded-md",
-          value: @tab
-        )}
+        <.input
+          field={f[:tab]}
+          type="select"
+          options={navigation_select_options(@tabs)}
+          value={@tab}
+          phx-change="psb-set-tab"
+          class="psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:border-gray-300 psb:dark:border-slate-600 psb:w-full psb:pl-3 psb:pr-10 psb:py-1 psb:text-base psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:sm:text-sm psb:rounded-md"
+        />
       </.form>
       <!-- :lg+ version of navigation tabs -->
-      <nav class="psb story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-gray-300 psb:dark:border-slate-600 psb:bg-slate-100 psb:dark:bg-slate-900 psb:h-10 psb:text-sm psb:font-medium">
+      <nav class="psb psb-story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-gray-300 psb:dark:border-slate-600 psb:bg-slate-100 psb:dark:bg-slate-900 psb:h-10 psb:text-sm psb:font-medium">
         <%= for tab <- @tabs do %>
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
           <a
@@ -323,11 +353,11 @@ defmodule PhoenixStorybook.StoryLive do
               <%= if icon do %>
                 <.user_icon
                   icon={icon}
-                  class={"psb:lg:mr-2 psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}
+                  class={"psb:lg:mr-2 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}
                   fa_plan={@fa_plan}
                 />
               <% end %>
-              <span class={"psb psb:whitespace-nowrap psb:group-hover:text-indigo-600 dark:psb:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}>
+              <span class={"psb psb:whitespace-nowrap psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}>
                 {tab_label}
               </span>
             </span>
@@ -399,7 +429,7 @@ defmodule PhoenixStorybook.StoryLive do
     ~H"""
     <.live_component
       module={Playground}
-      id="playground"
+      id="psb-playground"
       story={@story}
       story_path={@story_path}
       backend_module={@backend_module}
@@ -408,6 +438,7 @@ defmodule PhoenixStorybook.StoryLive do
       theme={@theme}
       color_mode={@color_mode}
       topic={@playground_topic}
+      playground_token={@playground_token}
       fa_plan={@fa_plan}
       root_path={@root_path}
     />
@@ -420,7 +451,10 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp render_content(:page, assigns) do
     ~H"""
-    <div class={LayoutView.sandbox_class(@socket, {:div, class: "psb psb:pb-12"}, assigns)}>
+    <div
+      class={LayoutView.sandbox_class(@socket, {:div, class: "psb psb:pb-12"}, assigns)}
+      {LayoutView.sandbox_attributes(@socket, {:div, class: "psb psb:pb-12"}, assigns)}
+    >
       {@story.render(%{__changed__: %{}, tab: @tab, theme: @theme})
       |> to_raw_html()}
     </div>
@@ -498,7 +532,8 @@ defmodule PhoenixStorybook.StoryLive do
       container_opts,
       :class,
       LayoutView.sandbox_class(assigns.socket, {:div, sandbox_container_opts}, assigns)
-    )
+    ) ++
+      LayoutView.sandbox_attributes(assigns.socket, {:div, sandbox_container_opts}, assigns)
   end
 
   attr :source, :any, required: true
@@ -722,11 +757,35 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_file_path_from_repo_name(source_file_path, normalized_base_url) do
     with %URI{path: base_path} <- URI.parse(normalized_base_url),
          [_, repo_name | _] <- String.split(base_path || "", "/", trim: true),
-         [_, suffix] <- String.split(source_file_path, "/#{repo_name}/", parts: 2),
+         suffix when not is_nil(suffix) <- source_file_path_suffix(source_file_path, repo_name),
          true <- suffix != "" do
       suffix
     else
       _ -> nil
+    end
+  end
+
+  defp source_file_path_suffix(source_file_path, repo_name) do
+    case String.split(source_file_path, "/#{repo_name}/", parts: 2) do
+      [_, suffix] ->
+        suffix
+
+      _ ->
+        source_file_path_from_cwd(source_file_path, repo_name)
+    end
+  end
+
+  defp source_file_path_from_cwd(source_file_path, repo_name) do
+    cwd = File.cwd!()
+
+    if Path.basename(cwd) |> String.starts_with?(repo_name) do
+      relative_path = Path.relative_to(source_file_path, cwd)
+
+      if String.starts_with?(relative_path, "..") do
+        nil
+      else
+        relative_path
+      end
     end
   end
 
@@ -777,13 +836,15 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_event("psb-set-theme", %{"theme" => theme}, socket) do
+    theme = ThemeHelpers.theme_from_param(socket.assigns.backend_module, theme)
+
     PubSub.broadcast!(
       PhoenixStorybook.PubSub,
       socket.assigns.playground_topic,
-      {:set_theme, String.to_atom(theme)}
+      {:set_theme, theme}
     )
 
-    send_update(Playground, id: "playground", new_theme: theme)
+    send_update(Playground, id: "psb-playground", new_theme: theme)
     ThemeHelpers.call_theme_function(socket.assigns.backend_module, theme)
 
     {:noreply,
@@ -851,7 +912,7 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_event(
-        "psb-set-color-mode",
+        "psb:set-color-mode",
         %{"selected_mode" => selected_mode, "mode" => mode},
         socket
       ) do
@@ -884,7 +945,7 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_info(event_log = %EventLog{view: PlaygroundPreviewLive}, socket) do
-    send_update(Playground, id: "playground", new_event: event_log)
+    send_update(Playground, id: "psb-playground", new_event: event_log)
     {:noreply, socket}
   end
 
@@ -898,12 +959,16 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   def handle_info({:new_variations_attributes, variations_attributes}, socket) do
-    send_update(Playground, id: "playground", new_variations_attributes: variations_attributes)
+    send_update(Playground,
+      id: "psb-playground",
+      new_variations_attributes: variations_attributes
+    )
+
     {:noreply, socket}
   end
 
   def handle_info({:new_template_attributes, template_attributes}, socket) do
-    send_update(Playground, id: "playground", new_template_attributes: template_attributes)
+    send_update(Playground, id: "psb-playground", new_template_attributes: template_attributes)
     {:noreply, socket}
   end
 

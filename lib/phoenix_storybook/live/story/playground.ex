@@ -14,6 +14,9 @@ defmodule PhoenixStorybook.Story.Playground do
 
   import PhoenixStorybook.NavigationHelpers
 
+  @upper_tabs ~w(preview code html)a
+  @lower_tabs ~w(attributes events)a
+
   def mount(socket) do
     {:ok,
      socket
@@ -136,12 +139,14 @@ defmodule PhoenixStorybook.Story.Playground do
         socket
 
       theme ->
+        theme = ThemeHelpers.theme_from_param(socket.assigns.backend_module, theme)
+
         variations =
           for variation <- socket.assigns.variations do
             update_variation_attributes(variation, %{theme: theme})
           end
 
-        fields = Map.put(socket.assigns.fields, :theme, String.to_existing_atom(theme))
+        fields = Map.put(socket.assigns.fields, :theme, theme)
 
         socket
         |> assign(:fields, fields)
@@ -209,7 +214,7 @@ defmodule PhoenixStorybook.Story.Playground do
 
   def render(assigns) do
     ~H"""
-    <div id="playground" class="psb psb:flex psb:flex-col psb:flex-1">
+    <div id="psb-playground" class="psb psb:flex psb:flex-col psb:flex-1">
       {render_upper_navigation_tabs(assigns)}
       {render_upper_tab_content(assigns)}
       {render_lower_navigation_tabs(assigns)}
@@ -311,7 +316,7 @@ defmodule PhoenixStorybook.Story.Playground do
                 theme: to_string(@theme),
                 color_mode: to_string(@color_mode),
                 playground: true,
-                topic: @topic
+                playground_token: @playground_token
               )
             }
             height="128"
@@ -718,7 +723,7 @@ defmodule PhoenixStorybook.Story.Playground do
       </.form>
       <SourceSelect.source_file_select
         :if={Enum.any?(@story.merged_attributes())}
-        form_id="variation-selection-form"
+        form_id="psb-variation-selection-form"
         as={:variation}
         field={:variation_id}
         label="Open a variation"
@@ -945,12 +950,12 @@ defmodule PhoenixStorybook.Story.Playground do
       nil ->
         case Map.get(assigns.fields, assigns.attr_id) do
           :locked ->
-            ~H|{text_input(@form, @attr_id,
-  value: "[Multiple values]",
-  disabled: true,
-  class:
-    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
-)}|
+            ~H|<.input
+  field={@form[@attr_id]}
+  value="[Multiple values]"
+  disabled
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
+/>|
 
           {:eval, value} ->
             value = String.replace(value, ~s|"|, "")
@@ -963,12 +968,12 @@ defmodule PhoenixStorybook.Story.Playground do
       value ->
         assigns = assign(assigns, value: value)
 
-        ~H|{text_input(@form, @attr_id,
-  value: inspect(@value),
-  disabled: true,
-  class:
-    "psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
-)}|
+        ~H|<.input
+  field={@form[@attr_id]}
+  value={inspect(@value)}
+  disabled
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:text-xs psb:md:text-sm psb:bg-gray-100 psb:dark:bg-slate-800 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md psb:dark:text-slate-500"
+/>|
     end
   end
 
@@ -991,7 +996,7 @@ defmodule PhoenixStorybook.Story.Playground do
       phx-target={@myself}
       role="switch"
     >
-      {hidden_input(@form, @attr_id, value: "#{@value}")}
+      <.input field={@form[@attr_id]} type="hidden" value={"#{@value}"} />
       <span class={"psb #{@translate_class} psb:form-input psb:p-0 psb:border-0 psb:pointer-events-none psb:inline-block psb:h-5 psb:w-5 psb:rounded-full psb:bg-white psb:shadow psb:transform psb:ring-0 psb:transition psb:ease-in-out psb:duration-200"}>
       </span>
     </button>
@@ -1003,12 +1008,13 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, step: if(type == :integer, do: 1, else: 0.01))
 
     ~H"""
-    {number_input(@form, @attr_id,
-      value: @value,
-      step: @step,
-      class:
-        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      type="number"
+      value={@value}
+      step={@step}
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+    />
     """
   end
 
@@ -1016,23 +1022,24 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assigns |> assign(:min, min) |> assign(:max, max)
 
     ~H"""
-    {number_input(@form, @attr_id,
-      value: @value,
-      min: @min,
-      max: @max,
-      class:
-        "psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      type="number"
+      value={@value}
+      min={@min}
+      max={@max}
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+    />
     """
   end
 
   defp attr_input(assigns = %{type: :string, values: nil}) do
     ~H"""
-    {text_input(@form, @attr_id,
-      value: @value,
-      class:
-        "psb psb:form-input psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      value={@value}
+      class="psb psb:form-input psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
+    />
     """
   end
 
@@ -1047,12 +1054,12 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, value: value)
 
     ~H"""
-    {text_input(@form, @attr_id,
-      value: @value,
-      disabled: true,
-      class:
-        "psb psb:cursor-not-allowed psb:bg-gray-100 psb:form-input psb:block psb:w-full psb:dark:text-slate-500 psb:dark:bg-slate-800 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      value={@value}
+      disabled
+      class="psb psb:cursor-not-allowed psb:bg-gray-100 psb:form-input psb:block psb:w-full psb:dark:text-slate-500 psb:dark:bg-slate-800 psb:shadow-sm psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:text-xs psb:md:text-sm psb:rounded-md"
+    />
     """
   end
 
@@ -1060,11 +1067,13 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, values: [nil | Enum.map(values, &to_string/1)])
 
     ~H"""
-    {select(@form, @attr_id, @values,
-      value: @value,
-      class:
-        "psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:dark:focus:ring-sky-400 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
-    )}
+    <.input
+      field={@form[@attr_id]}
+      type="select"
+      options={@values}
+      value={@value}
+      class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
+    />
     """
   end
 
@@ -1077,18 +1086,25 @@ defmodule PhoenixStorybook.Story.Playground do
   end
 
   def handle_event("upper-tab-navigation", %{"tab" => tab}, socket) do
-    {:noreply, assign(socket, :upper_tab, String.to_atom(tab))}
+    case tab_from_param(tab, @upper_tabs) do
+      nil -> {:noreply, socket}
+      tab -> {:noreply, assign(socket, :upper_tab, tab)}
+    end
   end
 
   def handle_event("lower-tab-navigation", %{"tab" => tab}, socket) do
-    tab = String.to_atom(tab)
+    case tab_from_param(tab, @lower_tabs) do
+      nil ->
+        {:noreply, socket}
 
-    {:noreply,
-     socket
-     |> assign(:lower_tab, tab)
-     |> update(:event_logs_unread, fn current ->
-       if tab == :events, do: 0, else: current
-     end)}
+      tab ->
+        {:noreply,
+         socket
+         |> assign(:lower_tab, tab)
+         |> update(:event_logs_unread, fn current ->
+           if tab == :events, do: 0, else: current
+         end)}
+    end
   end
 
   def handle_event("playground-change", %{"playground" => params}, socket = %{assigns: assigns}) do
@@ -1097,15 +1113,18 @@ defmodule PhoenixStorybook.Story.Playground do
     fields =
       for {key, value} <- params,
           not String.starts_with?(key, "_unused_"),
-          key = String.to_atom(key),
           reduce: assigns.fields do
         acc ->
-          attr_definition = Enum.find(story.merged_attributes(), &(&1.id == key))
+          case attr_from_param(story, key) do
+            nil ->
+              acc
 
-          if (is_nil(value) || value == "") && !attr_definition.required do
-            Map.put(acc, key, nil)
-          else
-            Map.put(acc, key, cast_value(story, key, value))
+            attr_definition = %Attr{id: attr_id} ->
+              if (is_nil(value) || value == "") && !attr_definition.required do
+                Map.put(acc, attr_id, nil)
+              else
+                Map.put(acc, attr_id, cast_value(attr_definition, value))
+              end
           end
       end
 
@@ -1120,11 +1139,17 @@ defmodule PhoenixStorybook.Story.Playground do
         %{"toggled" => [key, value]},
         socket = %{assigns: assigns}
       ) do
-    fields = Map.put(assigns.fields, String.to_atom(key), value)
+    case attr_from_param(assigns.story, key) do
+      nil ->
+        {:noreply, socket}
 
-    variations = update_variations_attributes(assigns.variations, fields)
-    send_attributes(assigns.topic, fields)
-    {:noreply, assign(socket, variations: variations, fields: fields)}
+      %Attr{id: attr_id} ->
+        fields = Map.put(assigns.fields, attr_id, value)
+
+        variations = update_variations_attributes(assigns.variations, fields)
+        send_attributes(assigns.topic, fields)
+        {:noreply, assign(socket, variations: variations, fields: fields)}
+    end
   end
 
   def handle_event(
@@ -1169,12 +1194,18 @@ defmodule PhoenixStorybook.Story.Playground do
     PubSub.broadcast!(PhoenixStorybook.PubSub, topic, {:set_variation, variation})
   end
 
-  defp cast_value(story, attr_id, value) do
-    attr = story.merged_attributes() |> Enum.find(&(&1.id == attr_id))
+  defp tab_from_param(tab, allowed_tabs) do
+    Enum.find(allowed_tabs, &(to_string(&1) == tab))
+  end
 
+  defp attr_from_param(story, attr) do
+    Enum.find(story.merged_attributes(), &(to_string(&1.id) == attr))
+  end
+
+  defp cast_value(attr, value) do
     case attr.type do
-      :atom -> String.to_atom(value)
-      :boolean -> String.to_atom(value)
+      :atom -> atom_value(attr, value)
+      :boolean -> boolean_value(value)
       :integer -> String.to_integer(value)
       :float -> String.to_float(value)
       _ -> value
@@ -1182,4 +1213,21 @@ defmodule PhoenixStorybook.Story.Playground do
   rescue
     _ -> value
   end
+
+  defp atom_value(_attr, value) when is_atom(value), do: value
+
+  defp atom_value(%Attr{values: nil}, value) when is_binary(value) do
+    String.to_existing_atom(value)
+  end
+
+  defp atom_value(%Attr{values: values}, value) when is_binary(value) do
+    Enum.find(values, &(to_string(&1) == value)) || value
+  end
+
+  defp atom_value(_attr, value), do: value
+
+  defp boolean_value(value) when value in [true, false], do: value
+  defp boolean_value("true"), do: true
+  defp boolean_value("false"), do: false
+  defp boolean_value(value), do: value
 end

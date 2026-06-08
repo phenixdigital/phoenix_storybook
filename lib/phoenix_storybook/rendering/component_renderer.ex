@@ -23,22 +23,31 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
   end
 
   def render(fun_or_mod, context = %RenderingContext{}) do
-    heex =
+    {heex, attrs} =
       cond do
         TemplateHelpers.variation_template?(context.template) ->
-          for variation = %RenderingVariation{} <- context.variations, into: "" do
-            template_heex(
-              fun_or_mod,
-              {context.group_id, variation.id},
-              context.template,
-              variation,
-              context.options[:playground_topic]
-            )
-          end
+          context.variations
+          |> Enum.with_index()
+          |> Enum.map_reduce(%{}, fn {variation = %RenderingVariation{}, index}, attrs ->
+            {heex, runtime_attrs} =
+              template_heex(
+                fun_or_mod,
+                {context.group_id, variation.id},
+                context.template,
+                variation,
+                index,
+                context.options[:playground_topic]
+              )
+
+            {heex, Map.put(attrs, index, runtime_attrs)}
+          end)
+          |> then(fn {heex, attrs} -> {Enum.join(heex, ""), attrs} end)
 
         TemplateHelpers.variation_group_template?(context.template) ->
-          heex =
-            for variation = %RenderingVariation{} <- context.variations, into: "" do
+          {components_heex, attrs} =
+            context.variations
+            |> Enum.with_index()
+            |> Enum.map_reduce(%{}, fn {variation = %RenderingVariation{}, index}, attrs ->
               extra_attributes =
                 extract_placeholder_attributes(
                   context.template,
@@ -46,55 +55,70 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
                   context.options[:playground_topic]
                 )
 
-              component_heex(
-                fun_or_mod,
-                variation.attributes,
-                variation.let,
-                variation.slots,
-                extra_attributes
-              )
-            end
+              {heex, runtime_attrs} =
+                component_heex(
+                  fun_or_mod,
+                  variation.attributes,
+                  variation.let,
+                  variation.slots,
+                  index,
+                  extra_attributes
+                )
 
-          context.template
-          |> TemplateHelpers.set_variation_dom_id(context.dom_id)
-          |> TemplateHelpers.set_js_push_variation_id(context.group_id)
-          |> TemplateHelpers.replace_template_variation_group(heex)
+              {heex, Map.put(attrs, index, runtime_attrs)}
+            end)
+
+          heex =
+            context.template
+            |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+            |> TemplateHelpers.set_js_push_variation_id(context.group_id)
+            |> TemplateHelpers.replace_template_variation_group(Enum.join(components_heex, ""))
+
+          {heex, attrs}
 
         true ->
-          context.template
-          |> TemplateHelpers.set_variation_dom_id(context.dom_id)
-          |> TemplateHelpers.set_js_push_variation_id(context.group_id)
+          {context.template
+           |> TemplateHelpers.set_variation_dom_id(context.dom_id)
+           |> TemplateHelpers.set_js_push_variation_id(context.group_id), %{}}
       end
 
-    render_component_heex(fun_or_mod, heex, context.options)
+    render_component_heex(fun_or_mod, heex, context.options, attrs)
   end
 
-  defp component_heex(fun, assigns, _let, [], extra_attrs) when is_function(fun) do
-    """
-    <.#{function_name(fun)} #{attributes_markup(assigns)} #{extra_attrs}/>
-    """
+  defp component_heex(fun, assigns, _let, [], index, extra_attrs) when is_function(fun) do
+    {attributes_markup, runtime_attrs} = attributes_markup(assigns, index)
+
+    {"""
+     <.#{function_name(fun)} #{attributes_markup} #{extra_attrs}/>
+     """, runtime_attrs}
   end
 
-  defp component_heex(fun, assigns, let, slots, extra_attrs) when is_function(fun) do
-    """
-    <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup(assigns)} #{extra_attrs}>
-      #{slots}
-    </.#{function_name(fun)}>
-    """
+  defp component_heex(fun, assigns, let, slots, index, extra_attrs) when is_function(fun) do
+    {attributes_markup, runtime_attrs} = attributes_markup(assigns, index)
+
+    {"""
+     <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup} #{extra_attrs}>
+       #{slots}
+     </.#{function_name(fun)}>
+     """, runtime_attrs}
   end
 
-  defp component_heex(module, assigns, _let, [], extra_attrs) when is_atom(module) do
-    """
-    <.live_component module={#{inspect(module)}} #{attributes_markup(assigns)} #{extra_attrs}/>
-    """
+  defp component_heex(module, assigns, _let, [], index, extra_attrs) when is_atom(module) do
+    {attributes_markup, runtime_attrs} = attributes_markup(assigns, index, [:module])
+
+    {"""
+     <.live_component module={#{inspect(module)}} #{attributes_markup} #{extra_attrs}/>
+     """, runtime_attrs}
   end
 
-  defp component_heex(module, assigns, let, slots, extra_attrs) when is_atom(module) do
-    """
-    <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup(assigns)} #{extra_attrs}>
-      #{slots}
-    </.live_component>
-    """
+  defp component_heex(module, assigns, let, slots, index, extra_attrs) when is_atom(module) do
+    {attributes_markup, runtime_attrs} = attributes_markup(assigns, index, [:module])
+
+    {"""
+     <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup} #{extra_attrs}>
+       #{slots}
+     </.live_component>
+     """, runtime_attrs}
   end
 
   defp template_heex(
@@ -102,16 +126,21 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
          variation_id,
          template,
          %RenderingVariation{dom_id: dom_id, let: let, slots: slots, attributes: attributes},
+         index,
          playground_topic
        ) do
     extra_attributes = extract_placeholder_attributes(template, variation_id, playground_topic)
 
-    template
-    |> TemplateHelpers.set_variation_dom_id(dom_id)
-    |> TemplateHelpers.set_js_push_variation_id(variation_id)
-    |> TemplateHelpers.replace_template_variation(
-      component_heex(fun_or_mod, attributes, let, slots, extra_attributes)
-    )
+    {component_heex, runtime_attrs} =
+      component_heex(fun_or_mod, attributes, let, slots, index, extra_attributes)
+
+    heex =
+      template
+      |> TemplateHelpers.set_variation_dom_id(dom_id)
+      |> TemplateHelpers.set_js_push_variation_id(variation_id)
+      |> TemplateHelpers.replace_template_variation(component_heex)
+
+    {heex, runtime_attrs}
   end
 
   defp extract_placeholder_attributes(template, _variation_id, _topic = nil) do
@@ -125,20 +154,35 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
   defp let_markup(nil), do: ""
   defp let_markup(let), do: ":let={#{to_string(let)}}"
 
-  defp attributes_markup(attributes) do
-    Enum.map_join(attributes, " ", fn
-      {name, {:eval, val}} ->
+  defp attributes_markup(attributes, index, reserved_attrs \\ []) do
+    {eval_attrs, runtime_attrs} =
+      attributes
+      |> Enum.reject(fn {name, _val} -> name in reserved_attrs end)
+      |> Enum.split_with(fn
+        {_name, {:eval, _val}} -> true
+        _attr -> false
+      end)
+
+    eval_attrs_markup =
+      Enum.map_join(eval_attrs, " ", fn {name, {:eval, val}} ->
         ~s|#{name}={#{val}}|
+      end)
 
-      {name, val} when is_binary(val) ->
-        ~s|#{name}="#{val}"|
+    markup =
+      ["{Map.fetch!(@psb_variation_attrs, #{index})}", eval_attrs_markup]
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.join(" ")
 
-      {name, val} ->
-        ~s|#{name}={#{inspect(val, structs: false, limit: :infinity, printable_limit: :infinity)}}|
-    end)
+    {markup, Map.new(runtime_attrs)}
   end
 
-  defp render_component_heex(fun_or_mod, heex, opts) do
+  defp render_component_heex(fun_or_mod, heex, opts, attrs) do
+    assigns = %{psb_variation_attrs: attrs}
+
+    eval_component_heex(fun_or_mod, heex, opts, assigns)
+  end
+
+  defp eval_component_heex(fun_or_mod, heex, opts, assigns) do
     quoted_code =
       EEx.compile_string(heex,
         engine: TagEngine,
@@ -161,7 +205,7 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
     {evaluated, _, _} =
       Code.eval_quoted_with_env(
         quoted_code,
-        [assigns: %{}],
+        [assigns: assigns],
         env
       )
 

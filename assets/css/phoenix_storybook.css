@@ -10,6 +10,10 @@
 @source "../../lib/**/*.{ex,heex}";
 @source "../../priv/templates/**/*.{eex,exs}";
 
+@plugin '@tailwindcss/forms' {
+  strategy: class;
+}
+
 @custom-variant dark (&:where(.psb\:dark, .psb\:dark *));
 
 @layer utilities {
@@ -28,17 +32,6 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       Liberation Mono, Courier New, monospace;
     font-size: 1em;
-  }
-
-  .svg-inline--fa.psb {
-    display: var(--fa-display, inline-block);
-    height: 1em;
-    overflow: visible;
-    vertical-align: -0.125em;
-  }
-
-  .svg-inline--fa.psb.psb\:hidden {
-    display: none;
   }
 
   .psb-sandbox {

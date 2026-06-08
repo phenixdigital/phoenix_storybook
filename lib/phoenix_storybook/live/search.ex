@@ -4,6 +4,7 @@ defmodule PhoenixStorybook.Search do
 
   alias Phoenix.LiveView.JS
   alias PhoenixStorybook.LayoutView
+  alias PhoenixStorybook.NavigationHelpers
   alias PhoenixStorybook.SearchHelpers
 
   def mount(socket) do
@@ -16,14 +17,11 @@ defmodule PhoenixStorybook.Search do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign_new(:theme, fn -> nil end)
      |> assign(:show, false)
      |> assign(:all_stories, stories)
      |> assign(:stories, stories)
      |> assign(:fa_plan, backend_module.config(:font_awesome_plan, :free))}
-  end
-
-  def handle_event("navigate", %{"path" => path}, socket) do
-    {:noreply, push_patch(socket, to: path)}
   end
 
   def handle_event("search", %{"search" => %{"input" => ""}}, socket) do
@@ -38,8 +36,8 @@ defmodule PhoenixStorybook.Search do
   def render(assigns) do
     ~H"""
     <div
-      id="search-container"
-      phx-hook="SearchHook"
+      id="psb-search-container"
+      phx-hook="PhoenixStorybook.SearchHook"
       phx-show={show_container()}
       phx-hide={hide_container()}
       class="psb psb:hidden psb:opacity-0 psb:relative psb:z-10 psb:transition-all"
@@ -49,7 +47,7 @@ defmodule PhoenixStorybook.Search do
 
       <div class="psb psb:fixed psb:inset-0 psb:z-10 psb:overflow-y-auto psb:p-4 psb:sm:p-6 psb:md:p-20">
         <div
-          id="search-modal"
+          id="psb-search-modal"
           phx-show={show_modal()}
           phx-hide={hide_modal()}
           phx-click-away={JS.dispatch("psb:close-search")}
@@ -62,7 +60,7 @@ defmodule PhoenixStorybook.Search do
             for={%{}}
             as={:search}
             phx-debounce={500}
-            id="search-form"
+            id="psb-search-form"
             class="psb psb:relative"
           >
             <.fa_icon
@@ -71,15 +69,15 @@ defmodule PhoenixStorybook.Search do
               plan={@fa_plan}
               class="psb:pointer-events-none psb:absolute psb:top-3.5 psb:left-4 psb:h-5 psb:w-5 psb:text-gray-400"
             />
-            {text_input(f, :input,
-              id: "search-input",
-              "phx-change": "search",
-              "phx-target": @myself,
-              placeholder: "Search...",
-              autocomplete: "off",
-              class:
-                "psb psb:h-12 psb:w-full psb:border-0 psb:bg-transparent psb:pl-11 psb:pr-4 psb:text-gray-800 psb:dark:text-slate-300 psb:placeholder-gray-400 psb:dark:placeholder-slate-500 psb:outline-none psb:focus:ring-0 psb:sm:text-sm"
-            )}
+            <.input
+              field={f[:input]}
+              id="psb-search-input"
+              phx-change="search"
+              phx-target={@myself}
+              placeholder="Search..."
+              autocomplete="off"
+              class="psb psb:h-12 psb:w-full psb:border-0 psb:bg-transparent psb:pl-11 psb:pr-4 psb:text-gray-800 psb:dark:text-slate-300 psb:placeholder-gray-400 psb:dark:placeholder-slate-500 psb:outline-none psb:focus:ring-0 psb:sm:text-sm"
+            />
           </.form>
 
           <%= if Enum.empty?(@stories) do %>
@@ -89,7 +87,7 @@ defmodule PhoenixStorybook.Search do
           <% end %>
 
           <ul
-            id="search-list"
+            id="psb-search-list"
             class="psb psb:max-h-72 psb:scroll-py-2 psb:divide-y psb:divide-gray-200 psb:dark:divide-slate-600 psb:overflow-y-auto psb:pb-2 psb:text-sm psb:text-gray-800"
           >
             <%= for {story, i} <- Enum.with_index(@stories) do %>
@@ -105,21 +103,22 @@ defmodule PhoenixStorybook.Search do
                     "psb:bg-slate-50 psb:dark:bg-slate-700 psb:text-indigo-600 psb:dark:text-sky-400"
                   )
                 }
-                class="psb psb:flex psb:justify-between psb:group psb:select-none psb:px-4 psb:py-4 psb:space-x-4 psb:cursor-pointer psb:hover:bg-slate-50 psb:dark:hover:bg-slate-700"
+                class="psb psb:group psb:select-none psb:cursor-pointer psb:hover:bg-slate-50 psb:dark:hover:bg-slate-700"
                 tabindex="-1"
-                phx-click={JS.navigate(Path.join(@root_path, story.path))}
               >
                 <.link
-                  patch={Path.join(@root_path, story.path)}
-                  class="psb psb:font-semibold psb:whitespace-nowrap psb:dark:text-slate-300"
+                  patch={NavigationHelpers.path_to_story(@root_path, story.path, %{theme: @theme})}
+                  class="psb psb:flex psb:justify-between psb:px-4 psb:py-4 psb:space-x-4"
                 >
-                  {story.name}
+                  <span class="psb psb:font-semibold psb:whitespace-nowrap psb:dark:text-slate-300">
+                    {story.name}
+                  </span>
+                  <div class="psb psb:truncate">
+                    {LayoutView.render_breadcrumb(@socket, story.path,
+                      span_class: "psb:text-xs psb:dark:text-slate-300"
+                    )}
+                  </div>
                 </.link>
-                <div class="psb psb:truncate">
-                  {LayoutView.render_breadcrumb(@socket, story.path,
-                    span_class: "psb:text-xs psb:dark:text-slate-300"
-                  )}
-                </div>
               </li>
             <% end %>
           </ul>
@@ -133,7 +132,7 @@ defmodule PhoenixStorybook.Search do
     JS.show(
       js,
       transition: {"psb:ease-out psb:duration-300", "psb:opacity-0", "psb:opacity-100"},
-      to: "#search-container"
+      to: "#psb-search-container"
     )
   end
 
@@ -141,7 +140,7 @@ defmodule PhoenixStorybook.Search do
     JS.hide(
       js,
       transition: {"psb:ease-in psb:duration-200", "psb:opacity-100", "psb:opacity-0"},
-      to: "#search-container"
+      to: "#psb-search-container"
     )
   end
 
@@ -150,7 +149,7 @@ defmodule PhoenixStorybook.Search do
       js,
       {"psb:ease-out psb:duration-300", "psb:opacity-0 psb:scale-90",
        "psb:opacity-100 psb:scale-100"},
-      to: "#search-modal"
+      to: "#psb-search-modal"
     )
   end
 
@@ -159,7 +158,7 @@ defmodule PhoenixStorybook.Search do
       js,
       {"psb:ease-in psb:duration-200", "psb:opacity-100 psb:scale-100",
        "psb:opacity-0 psb:scale-90"},
-      to: "#search-modal"
+      to: "#psb-search-modal"
     )
   end
 end

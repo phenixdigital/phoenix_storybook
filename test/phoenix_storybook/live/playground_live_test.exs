@@ -16,7 +16,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
   describe "simple component with one field" do
     test "renders playground", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: hello"
     end
 
     test "playground preview is updated as form is changed", %{conn: conn} do
@@ -27,13 +27,32 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       |> render_change()
 
       wait_for_preview_lv(view)
-      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: world"
+    end
+
+    test "playground psb-assign values are not evaluated as HEEx", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
+      assert [playground_preview_view] = live_children(view)
+
+      process_name = :"playground_rce_#{System.unique_integer([:positive])}"
+      Process.register(self(), process_name)
+
+      payload =
+        ~s|safe" injected={send(Process.whereis(#{inspect(process_name)}), :rce)} bar="|
+
+      render_hook(playground_preview_view, "psb-assign", %{
+        "variation_id" => "hello",
+        "label" => payload
+      })
+
+      refute_received :rce
+      Process.unregister(process_name)
     end
 
     test "renders playground code a simple component", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
       view |> element("a", "Code") |> render_click()
-      assert view |> element("#playground pre") |> render() =~ "hello"
+      assert view |> element("#psb-playground pre") |> render() =~ "hello"
     end
 
     test "playground code is updated as form is changed", %{conn: conn} do
@@ -44,36 +63,36 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
-      assert view |> element("#playground pre") |> render() =~ "world"
+      assert view |> element("#psb-playground pre") |> render() =~ "world"
 
       view |> element("a", "Preview") |> render_click()
-      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: world"
     end
 
     test "we can switch to another variation from the playground", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: hello"
 
       {:ok, view, _html} =
         view
-        |> element("#variation-selection-form_variation_id")
+        |> element("#psb-variation-selection-form_variation_id")
         |> render_change(%{variation: %{variation_id: "world"}})
         |> follow_redirect(conn)
 
-      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: world"
     end
 
     test "we can switch to another variation group from the playground", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/live_component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: hello"
 
       {:ok, view, _html} =
         view
-        |> element("#variation-selection-form_variation_id")
+        |> element("#psb-variation-selection-form_variation_id")
         |> render_change(%{variation: %{variation_id: "default"}})
         |> follow_redirect(conn)
 
-      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: hello"
     end
 
     test "playground rendered HTML is available", %{conn: conn} do
@@ -84,7 +103,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
       |> form("#tree_storybook_component-playground-form", %{playground: %{label: "world"}})
       |> render_change()
 
-      assert view |> element("#playground pre") |> render() =~ "world"
+      assert view |> element("#psb-playground pre") |> render() =~ "world"
     end
 
     test "playground rendered HTML is unavailable for live_components", %{conn: conn} do
@@ -111,8 +130,21 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
   describe "component in an iframe" do
     test "renders the playground preview iframe", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/storybook/live_component?tab=playground")
+      {:ok, view, html} = live(conn, "/storybook/live_component?tab=playground")
       assert html =~ ~S|<iframe id="tree_storybook_live_component-playground-preview"|
+
+      [src] =
+        view
+        |> element("#tree_storybook_live_component-playground-preview")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.attribute("src")
+
+      query = src |> URI.parse() |> Map.fetch!(:query) |> URI.decode_query()
+
+      assert Map.has_key?(query, "playground_token")
+      refute Map.has_key?(query, "topic")
+      refute src =~ "topic=playground-"
     end
   end
 
@@ -132,7 +164,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "it shows the component preview", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
 
-      assert view |> element("#playground-preview-live") |> render() =~
+      assert view |> element("#psb-playground-preview-live") |> render() =~
                "all_types_component: default label"
     end
 
@@ -141,7 +173,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       view |> element("a", "Code") |> render_click()
 
-      assert view |> element("#playground-preview-live") |> render() =~
+      assert view |> element("#psb-playground-preview-live") |> render() =~
                "all_types_component: default label"
 
       assert view |> element("pre.highlight") |> render() =~ ".all_types_component"
@@ -149,14 +181,14 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
     test "component can be updated with a toggle switch", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "toggle: false"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "toggle: false"
       view |> element("button[role=switch]") |> render_click()
-      assert view |> element("#playground-preview-live") |> render() =~ "toggle: true"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "toggle: true"
     end
 
     test "component can be updated with a new integer value", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "index_i: 42"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "index_i: 42"
 
       view
       |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
@@ -166,12 +198,12 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       wait_for_preview_lv(view)
 
-      assert view |> element("#playground-preview-live") |> render() =~ "index_i: 37"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "index_i: 37"
     end
 
     test "component can be updated with a new float value", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "index_f: 37.2"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "index_f: 37.2"
 
       view
       |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
@@ -181,12 +213,12 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       wait_for_preview_lv(view)
 
-      assert view |> element("#playground-preview-live") |> render() =~ "index_f: 42.1"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "index_f: 42.1"
     end
 
     test "component can be updated with a invalid value", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/b_folder/all_types_component?tab=playground")
-      assert view |> element("#playground-preview-live") |> render() =~ "index_i: 42"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "index_i: 42"
 
       view
       |> form("#tree_storybook_b_folder_all_types_component-playground-form", %{
@@ -196,7 +228,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       wait_for_preview_lv(view)
 
-      assert view |> element("#playground-preview-live") |> render() =~ "index_i: wrong"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "index_i: wrong"
     end
 
     test "component can be updated by selecting an option", %{conn: conn} do
@@ -210,7 +242,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
       wait_for_preview_lv(view)
 
-      assert view |> element("#playground-preview-live") |> render() =~ "option: opt3"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "option: opt3"
     end
 
     test "required label is still defined in code when empty", %{conn: conn} do
@@ -243,7 +275,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "it shows the component preview", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/a_folder/live_component?tab=playground")
 
-      html = view |> element("#playground-preview-live") |> render()
+      html = view |> element("#psb-playground-preview-live") |> render()
       assert html =~ "component: hello"
       assert html =~ "inner block"
     end
@@ -258,12 +290,12 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
   describe "theme switch in playground" do
     test "component preview is updated as a different theme is selected", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
-      html = view |> element("#playground-preview-live") |> render()
+      html = view |> element("#psb-playground-preview-live") |> render()
       assert html =~ ~r|component:\s*hello\s*default|
 
       view |> element("a.psb-theme", "Colorful") |> render_click()
       wait_for_preview_lv(view)
-      html = view |> element("#playground-preview-live") |> render()
+      html = view |> element("#psb-playground-preview-live") |> render()
       assert html =~ ~r|component:\s*hello\s*colorful|
     end
 
@@ -280,7 +312,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
 
     test "it doees not fail with no theme strategies", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/tree_storybook/component?tab=playground")
-      html = view |> element("#playground-preview-live") |> render()
+      html = view |> element("#psb-playground-preview-live") |> render()
       assert html =~ ~r|component:\s*hello|
       refute html =~ ~r|default|
     end
@@ -290,16 +322,16 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "component preview is updated as a different color mode is selected", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/component?tab=playground")
 
-      html = view |> element("#playground-preview-live") |> render()
+      html = view |> element("#psb-playground-preview-live") |> render()
       refute html =~ ~s|class="dark"|
       assert html =~ ~r|component:\s*hello\s*default|
 
       view
       |> element("#psb-colormode-dropdown")
-      |> render_hook("psb-set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
+      |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
       wait_for_preview_lv(view)
-      html = view |> element("#playground-preview-live .psb-sandbox") |> render()
+      html = view |> element("#psb-playground-preview-live .psb-sandbox") |> render()
       [component_class] = html |> LazyHTML.from_fragment() |> LazyHTML.attribute("class")
       assert component_class |> String.split(" ") |> Enum.member?("dark")
       assert html =~ ~r|component:\s*hello\s*default|
@@ -386,7 +418,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "component rendering is updated as template buttons are clicked", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
       assert [playground_preview_view] = live_children(view)
-      playground_element = element(playground_preview_view, "#playground-preview-live")
+      playground_element = element(playground_preview_view, "#psb-playground-preview-live")
       assert render(playground_element) =~ "template_component: hello"
 
       playground_preview_view
@@ -429,7 +461,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
     test "playground form is in sync with variations assigns", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/storybook/templates/template_component?tab=playground")
       assert [playground_preview_view] = live_children(view)
-      playground_element = element(playground_preview_view, "#playground-preview-live")
+      playground_element = element(playground_preview_view, "#psb-playground-preview-live")
 
       assert render(playground_element) =~ "template_component: hello"
 
@@ -467,7 +499,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
         live(conn, "/storybook/templates/template_component?tab=playground&variation_id=group")
 
       assert [playground_preview_view] = live_children(view)
-      playground_element = element(playground_preview_view, "#playground-preview-live")
+      playground_element = element(playground_preview_view, "#psb-playground-preview-live")
 
       assert render(playground_element) =~ "template_component: one"
       assert render(playground_element) =~ "template_component: two"
@@ -525,7 +557,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
         )
 
       assert [playground_preview_view] = live_children(view)
-      playground_element = element(playground_preview_view, "#playground-preview-live")
+      playground_element = element(playground_preview_view, "#psb-playground-preview-live")
 
       assert render(playground_element) =~
                "<span>template_component: from_template / status: true</span>"
@@ -554,7 +586,7 @@ defmodule PhoenixStorybook.PlaygroundLiveTest do
         )
 
       assert [playground_preview_view] = live_children(view)
-      playground_element = element(playground_preview_view, "#playground-preview-live")
+      playground_element = element(playground_preview_view, "#psb-playground-preview-live")
       assert render(playground_element) =~ "<div></div>"
     end
 

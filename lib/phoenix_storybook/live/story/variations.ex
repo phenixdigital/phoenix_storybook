@@ -61,7 +61,7 @@ defmodule PhoenixStorybook.Story.Variations do
         >
           <!-- Variation description -->
           <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-4 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
-            <%= link to: "##{anchor_id(variation)}", class: "psb variation-anchor-link" do %>
+            <.link href={"##{anchor_id(variation)}"} class="psb psb-variation-anchor-link">
               <.fa_icon
                 style={:light}
                 name="link"
@@ -73,7 +73,7 @@ defmodule PhoenixStorybook.Story.Variations do
               <% else %>
                 {variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ")}
               <% end %>
-            <% end %>
+            </.link>
             <.link
               patch={
                 path_to(@socket, @root_path, @story_path, %{
@@ -136,6 +136,11 @@ defmodule PhoenixStorybook.Story.Variations do
                     LayoutView.sandbox_class(@socket, container_with_opts, assigns),
                     @color_mode_class
                   ]}
+                  {LayoutView.sandbox_attributes(
+                    @socket,
+                    container_with_opts,
+                    assigns
+                  )}
                   {@sandbox_attributes}
                 >
                   {ComponentRenderer.render(rendering_context)}
@@ -202,13 +207,15 @@ defmodule PhoenixStorybook.Story.Variations do
         iframe_opts: iframe_opts
       )
 
-    ~H"""
-    <%= Phoenix.View.render_layout LayoutView, "root_iframe.html", assigns do %>
-      <div id="iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
-        {ComponentRenderer.render(@rendering_context)}
-      </div>
-    <% end %>
+    inner_content = ~H"""
+    <div id="psb-iframe-container" style={@iframe_opts[:style]} class={@color_mode_class}>
+      {ComponentRenderer.render(@rendering_context)}
+    </div>
     """
+
+    assigns
+    |> assign(:inner_content, inner_content)
+    |> LayoutView.root_iframe()
     |> HTMLSafe.to_iodata()
   end
 

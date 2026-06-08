@@ -114,32 +114,36 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "navigate in sidebar", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
-      assert view |> element("#sidebar a", "Live Component (root)") |> render_click() =~
+      assert view |> element("#psb-sidebar a", "Live Component (root)") |> render_click() =~
                "LiveComponent first doc paragraph."
 
       # A folder is open
-      refute has_element?(view, "#sidebar a", "Component (a_folder)")
+      refute has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # Opening A folder
-      element(view, "#sidebar div", "A Folder") |> render_click()
-      assert has_element?(view, "#sidebar a", "Component (a_folder)")
+      element(view, "#psb-sidebar div", "A Folder") |> render_click()
+      assert has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # B folder is already open (by its index.exs file)
-      assert has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
+      assert has_element?(view, "#psb-sidebar a", "AllTypesComponent (b_folder)")
 
       # reaching items inside
-      assert view |> element("#sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
+      assert view |> element("#psb-sidebar a", "AllTypesComponent (b_folder)") |> render_click() =~
                "Component mixing any attribute possible types"
 
       # closing "B folder"
-      element(view, "#sidebar div", "Config Name") |> render_click()
-      refute has_element?(view, "#sidebar a", "AllTypesComponent (b_folder)")
+      element(view, "#psb-sidebar div", "Config Name") |> render_click()
+      refute has_element?(view, "#psb-sidebar a", "AllTypesComponent (b_folder)")
     end
 
     test "navigate to unknown tab", %{conn: conn} do
+      unknown_tab = "psb_unknown_#{System.unique_integer([:positive])}"
+
       assert_raise PhoenixStorybook.StoryTabNotFound, fn ->
-        get(conn, ~p"/storybook/component", tab: "unknown")
+        get(conn, ~p"/storybook/component", tab: unknown_tab)
       end
+
+      assert_raise ArgumentError, fn -> String.to_existing_atom(unknown_tab) end
     end
   end
 
@@ -456,7 +460,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       html =
         view
-        |> element(".story-nav-form select")
+        |> element(".psb-story-nav-form select")
         |> render_change(%{navigation: %{tab: "source"}})
 
       assert_patched(
@@ -604,7 +608,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
         ~p"/storybook/component?#{[tab: :playground, theme: :default, variation_id: :hello]}"
       )
 
-      assert view |> element("#playground-preview-live") |> render() =~ "component: hello"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: hello"
 
       view |> element("a", "Stories") |> render_click()
 
@@ -615,7 +619,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
         ~p"/storybook/component?#{[tab: :playground, theme: :default, variation_id: :world]}"
       )
 
-      assert view |> element("#playground-preview-live") |> render() =~ "component: world"
+      assert view |> element("#psb-playground-preview-live") |> render() =~ "component: world"
     end
 
     test "sandbox container is default flex div", %{conn: conn} do
@@ -754,13 +758,13 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "renders a page story", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/storybook/a_page")
       assert html =~ "A Page"
-      refute html =~ "story-tabs"
+      refute html =~ "psb-story-tabs"
     end
 
     test "renders a page story with tabs", %{conn: conn} do
       {:ok, view, html} = live(conn, ~p"/storybook/b_page")
       assert html =~ "B Page: tab_1"
-      assert html =~ "story-tabs"
+      assert html =~ "psb-story-tabs"
 
       html = view |> element("a", "Tab 2") |> render_click()
       assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")
@@ -806,24 +810,26 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
     test "renders an example story main source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
-      html = view |> element("a", "Source") |> render_click()
+      view |> element("a", "Source") |> render_click()
+      source_html = view |> element("pre.highlight") |> render()
 
       assert_patched(view, ~p"/storybook/examples/example?#{[tab: :source, theme: :default]}")
-      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
-      refute html =~ ~r/extra_sources/
-      refute html =~ ~r/def container/
-      refute html =~ ~r/doc/
-      refute html =~ ~r/PhoenixStorybook/
+      assert source_html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
+      refute source_html =~ ~r/extra_sources/
+      refute source_html =~ ~r/def container/
+      refute source_html =~ ~r/doc/
+      refute source_html =~ ~r/defmodule.*PhoenixStorybook/
     end
 
     test "renders an iframe example story main source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/iframe")
-      html = view |> element("a", "Source") |> render_click()
+      view |> element("a", "Source") |> render_click()
+      source_html = view |> element("pre.highlight") |> render()
 
       assert_patched(view, ~p"/storybook/examples/iframe?#{[tab: :source, theme: :default]}")
-      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Iframe/
-      refute html =~ ~r/def container/
-      refute html =~ ~r/PhoenixStorybook/
+      assert source_html =~ ~r/defmodule.*TreeStorybook\.Examples\.Iframe/
+      refute source_html =~ ~r/def container/
+      refute source_html =~ ~r/PhoenixStorybook/
     end
 
     test "renders source permalink icon for main source file", %{conn: conn} do
@@ -970,43 +976,51 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "filters the search list based on user input", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
-      assert has_element?(view, "#search-container a", "Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      assert has_element?(view, "#psb-search-container a", "Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
 
       view
-      |> with_target("#search-container")
+      |> with_target("#psb-search-container")
       |> render_change("search", %{"search" => %{"input" => "a_folder"}})
 
-      refute has_element?(view, "#search-container a", "Component (root)")
-      refute has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      refute has_element?(view, "#psb-search-container a", "Component (root)")
+      refute has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
     end
 
     test "returns everything on blank input", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
-      assert has_element?(view, "#search-container a", "Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      assert has_element?(view, "#psb-search-container a", "Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
 
       view
-      |> with_target("#search-container")
+      |> with_target("#psb-search-container")
       |> render_change("search", %{"search" => %{"input" => ""}})
 
-      assert has_element?(view, "#search-container a", "Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (root)")
-      assert has_element?(view, "#search-container a", "Live Component (a_folder)")
+      assert has_element?(view, "#psb-search-container a", "Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (root)")
+      assert has_element?(view, "#psb-search-container a", "Live Component (a_folder)")
     end
 
-    test "navigates to a specified story", %{conn: conn} do
+    test "links to a specified story carrying the default theme", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/a_page")
 
-      view
-      |> with_target("#search-container")
-      |> render_change("navigate", %{"path" => ~p"/storybook/component"})
+      assert has_element?(
+               view,
+               ~s|#psb-search-container a[href="/storybook/component?theme=default"]|
+             )
+    end
 
-      assert_patch(view, ~p"/storybook/component", 200)
+    test "search list links carry the active theme", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/a_page?#{[theme: :colorful]}")
+
+      assert has_element?(
+               view,
+               ~s|#psb-search-container a[href="/storybook/component?theme=colorful"]|
+             )
     end
   end
 
@@ -1027,9 +1041,9 @@ defmodule PhoenixStorybook.StoryLiveTest do
   end
 
   describe "color mode change" do
-    test "send psb-set-color-mode will change color mode in picker", %{conn: conn} do
+    test "send psb:set-color-mode will change color mode in picker", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
-      refute view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
+      refute view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
@@ -1040,9 +1054,9 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       view
       |> element("#psb-colormode-dropdown")
-      |> render_hook("psb-set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
+      |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
-      assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=dark]")
+      assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
@@ -1052,14 +1066,14 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert component_class |> String.split(" ") |> Enum.member?("dark")
     end
 
-    test "send psb-set-color-mode applies light sandbox class", %{conn: conn} do
+    test "send psb:set-color-mode applies light sandbox class", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
       view
       |> element("#psb-colormode-dropdown")
-      |> render_hook("psb-set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
+      |> render_hook("psb:set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
 
-      assert view |> has_element?("#psb-colormode-dropdown[data-selected-mode=light]")
+      assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=light]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 

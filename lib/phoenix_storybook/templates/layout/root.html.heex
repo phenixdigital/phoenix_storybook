@@ -3,7 +3,7 @@
   lang="en"
   class="psb"
   phx-socket={live_socket_path(@conn)}
-  data-color-mode={color_mode?(@conn)}
+  data-psb-color-mode={color_mode?(@conn)}
 >
   <head>
     <meta charset="utf-8" />
@@ -13,10 +13,10 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"
     />
     <%= if csrf?(@conn) do %>
-      {csrf_meta_tag()}
+      <meta name="csrf-token" content={get_csrf_token()} />
     <% end %>
 
-    {render("_favicon.html", conn: @conn)}
+    <.favicon conn={@conn} />
     <.live_title prefix={title_prefix(@conn)}>
       {assigns[:page_title]}
     </.live_title>

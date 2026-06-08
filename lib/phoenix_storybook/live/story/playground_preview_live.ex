@@ -86,7 +86,8 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
   defp variation_id(%VariationGroup{id: group_id}, variation_id), do: {group_id, variation_id}
   defp variation_id(%Variation{}, variation_id), do: {:single, variation_id}
 
-  defp theme(theme) when is_binary(theme), do: String.to_atom(theme)
+  defp theme(theme) when theme in [nil, ""], do: nil
+  defp theme(theme) when is_binary(theme), do: String.to_existing_atom(theme)
   defp theme(theme) when is_atom(theme), do: theme
 
   def render(assigns = %{variation: nil}), do: ~H""
@@ -107,9 +108,9 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
       )
 
     ~H"""
-    <div id="playground-preview-live" style="width: 100%; height: 100%;">
+    <div id="psb-playground-preview-live" style="width: 100%; height: 100%;">
       <div
-        id="sandbox"
+        id="psb-playground-sandbox"
         class={[
           LayoutView.sandbox_class(
             @socket,
@@ -118,8 +119,12 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
           ),
           @color_mode_class
         ]}
-        ,
         style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; gap: 5px; height: 100%; width: 100%; padding: 10px;"
+        {LayoutView.sandbox_attributes(
+          @socket,
+          LayoutView.normalize_story_container(@story.container()),
+          assigns
+        )}
       >
         {ComponentRenderer.render(@context)}
       </div>

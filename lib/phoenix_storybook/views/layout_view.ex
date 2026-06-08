@@ -1,7 +1,10 @@
 defmodule PhoenixStorybook.LayoutView do
   @moduledoc false
-  use Phoenix.Component
-  use PhoenixStorybook.Web, :view
+  use PhoenixStorybook.Web, :component
+  import Phoenix.Controller, only: [get_csrf_token: 0]
+  import PhoenixStorybook.Components.Icon
+
+  embed_templates "../templates/layout/*"
 
   alias Makeup.Styles.HTML.StyleMap
   alias Phoenix.LiveView.{JS, Socket}
@@ -194,6 +197,13 @@ defmodule PhoenixStorybook.LayoutView do
   defp hide_dropdown_transition do
     {"psb:ease-out psb:duration-200", "psb:opacity-100 psb:scale-100",
      "psb:opacity-0 psb:scale-95"}
+  end
+
+  def sandbox_attributes(_conn_or_socket, _container, %{theme: nil}), do: []
+
+  def sandbox_attributes(conn_or_socket, _container, %{theme: theme}) do
+    backend_module = backend_module(conn_or_socket)
+    List.wrap(ThemeHelpers.theme_sandbox_data_attribute(backend_module, theme))
   end
 
   def sandbox_class(conn_or_socket, container, %{theme: nil}) do

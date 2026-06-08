@@ -12,12 +12,12 @@ let self;
 export const ColorModeHook = {
   mounted() {
     self = this;
-    window.addEventListener("psb-set-color-mode", this.onSetColorMode);
+    window.addEventListener("psb:set-color-mode", this.onSetColorMode);
 
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
       const selectedMode = this.selectedColorMode();
       const actualMode = this.actualColorMode(selectedMode);
-      this.pushEvent("psb-set-color-mode", {
+      this.pushEvent("psb:set-color-mode", {
         selected_mode: selectedMode,
         mode: actualMode,
       });
@@ -26,7 +26,7 @@ export const ColorModeHook = {
   },
 
   destroyed() {
-    window.removeEventListener("psb-set-color-mode", this.onSetColorMode);
+    window.removeEventListener("psb:set-color-mode", this.onSetColorMode);
   },
 
   selectedColorMode() {
@@ -43,7 +43,7 @@ export const ColorModeHook = {
     return "light";
   },
   toggleColorModeClass: (mode) => {
-    if ("colorMode" in document.documentElement.dataset) {
+    if ("psbColorMode" in document.documentElement.dataset) {
       if (mode === "dark") {
         document.documentElement.classList.add("psb:dark");
       } else {
@@ -55,7 +55,7 @@ export const ColorModeHook = {
     const selectedMode = e.detail.mode || "system";
     localStorage.setItem("psb_selected_color_mode", selectedMode);
     const actualMode = self.actualColorMode(selectedMode);
-    self.pushEvent("psb-set-color-mode", {
+    self.pushEvent("psb:set-color-mode", {
       selected_mode: selectedMode,
       mode: actualMode,
     });

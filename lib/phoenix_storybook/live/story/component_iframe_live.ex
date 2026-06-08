@@ -11,6 +11,9 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   alias PhoenixStorybook.StoryNotFound
   alias PhoenixStorybook.ThemeHelpers
 
+  @playground_topic_salt "phoenix_storybook:playground_topic"
+  @playground_token_max_age 86_400
+
   def mount(_params, _session, socket) do
     {:ok, assign(socket, []), layout: {PhoenixStorybook.LayoutView, :live_iframe}}
   end
@@ -18,10 +21,12 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   def handle_params(params = %{"story" => story_path}, _uri, socket) do
     case load_story(socket, story_path) do
       {:ok, story} ->
-        if params["topic"] do
+        topic = verified_playground_topic(socket, params["playground_token"])
+
+        if topic do
           PubSub.broadcast!(
             PhoenixStorybook.PubSub,
-            params["topic"],
+            topic,
             {:component_iframe_pid, self()}
           )
         end
@@ -36,7 +41,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
            story: story,
            variation_id: params["variation_id"],
            variation: current_variation(story.storybook_type(), story, params),
-           topic: params["topic"],
+           topic: topic,
            theme: params["theme"],
            color_mode: params["color_mode"]
          )
@@ -48,6 +53,17 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
 
       {:error, :not_found} ->
         raise StoryNotFound, "unknown story #{inspect(story_path)}"
+    end
+  end
+
+  defp verified_playground_topic(_socket, nil), do: nil
+
+  defp verified_playground_topic(socket, token) do
+    case Phoenix.Token.verify(socket.endpoint, @playground_topic_salt, token,
+           max_age: @playground_token_max_age
+         ) do
+      {:ok, %{"topic" => topic}} when is_binary(topic) -> topic
+      _other -> nil
     end
   end
 
@@ -125,7 +141,15 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         )}
       <% else %>
         <% {classes, iframe_opts} = Keyword.pop(@iframe_opts, :class) %>
-        <div {iframe_opts} class={[classes, @color_mode_class]}>
+        <div
+          {iframe_opts}
+          class={[classes, @color_mode_class]}
+          {LayoutView.sandbox_attributes(
+            @socket,
+            {:div, @iframe_opts},
+            assigns
+          )}
+        >
           {ComponentRenderer.render(@context)}
         </div>
       <% end %>

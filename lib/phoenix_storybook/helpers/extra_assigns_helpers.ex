@@ -5,6 +5,9 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
   alias PhoenixStorybook.Stories.{Variation, VariationGroup}
   alias PhoenixStorybook.ThemeHelpers
 
+  @assign_attr_name_regex ~r/^[A-Za-z_:][A-Za-z0-9_:\.-]*[!?]?$/
+  @reserved_assign_attrs ~w(__changed__ __struct__)a
+
   def init_variation_extra_assigns(type, story) when type in [:component, :live_component] do
     extra_assigns =
       for %Variation{id: variation_id} <- story.variations(),
@@ -48,7 +51,7 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
 
   def handle_set_variation_assign(params, extra_assigns, story) do
     context = "assign"
-    variation_id = to_variation_id(params, context)
+    variation_id = to_variation_id(params, extra_assigns, context)
     params = Map.delete(params, "variation_id")
 
     variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id)
@@ -56,7 +59,7 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     variation_extra_assigns =
       for {attr, value} <- params, reduce: variation_extra_assigns do
         acc ->
-          attr = String.to_atom(attr)
+          attr = to_attr!(attr, story.attributes(), context)
           value = to_value(value, attr, story.attributes(), context)
           Map.put(acc, attr, value)
       end
@@ -70,9 +73,9 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     attr =
       params
       |> Map.get_lazy("attr", fn -> raise "missing attr in #{context}" end)
-      |> String.to_atom()
+      |> to_attr!(story.attributes(), context)
 
-    variation_id = to_variation_id(params, context)
+    variation_id = to_variation_id(params, extra_assigns, context)
     variation_extra_assigns = to_variation_extra_assigns(extra_assigns, variation_id)
     current_value = Map.get(variation_extra_assigns, attr)
     check_type!(current_value, :boolean, context)
@@ -95,27 +98,95 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     {variation_id, variation_extra_assigns}
   end
 
-  defp to_variation_id(%{"variation_id" => [group_id, variation_id]}, _ctx),
-    do: {String.to_atom(group_id), String.to_atom(variation_id)}
+  defp to_variation_id(%{"variation_id" => [group_id, variation_id]}, extra_assigns, context) do
+    find_variation_id!(extra_assigns, {group_id, variation_id}, context)
+  end
 
-  defp to_variation_id(%{"variation_id" => variation_id}, _ctx),
-    do: {:single, String.to_atom(variation_id)}
+  defp to_variation_id(%{"variation_id" => variation_id}, extra_assigns, context) do
+    find_variation_id!(extra_assigns, {:single, variation_id}, context)
+  end
 
-  defp to_variation_id(_, context), do: raise("missing variation_id in #{context}")
+  defp to_variation_id(_, _extra_assigns, context),
+    do: raise("missing variation_id in #{context}")
+
+  defp find_variation_id!(extra_assigns, expected_id, context) when is_map(extra_assigns) do
+    Enum.find(Map.keys(extra_assigns), &same_variation_id?(&1, expected_id)) ||
+      raise("unknown variation_id in #{context}")
+  end
+
+  defp find_variation_id!(_extra_assigns, _expected_id, context) do
+    raise("unknown variation_id in #{context}")
+  end
+
+  defp same_variation_id?({group_id, variation_id}, {expected_group_id, expected_variation_id}) do
+    to_string(group_id) == to_string(expected_group_id) &&
+      to_string(variation_id) == to_string(expected_variation_id)
+  end
+
+  defp same_variation_id?(_variation_id, _expected_id), do: false
 
   defp to_variation_extra_assigns(extra_assigns, id = {_group_id, _variation_id}) do
-    Map.get(extra_assigns, id)
+    Map.fetch!(extra_assigns, id)
+  end
+
+  defp to_attr!(attr, attributes, context) when is_atom(attr) do
+    attr
+    |> Atom.to_string()
+    |> validate_attr_name!(context)
+
+    validate_attr!(attr, attributes, context)
+  end
+
+  defp to_attr!(attr, attributes, context) when is_binary(attr) do
+    validate_attr_name!(attr, context)
+
+    attr =
+      declared_attr_id(attr, attributes) ||
+        existing_attr_atom!(attr, context)
+
+    validate_attr!(attr, attributes, context)
+  end
+
+  defp to_attr!(attr, _attributes, context) do
+    raise(RuntimeError, "invalid attribute name in #{context}: #{inspect(attr)}")
+  end
+
+  defp validate_attr_name!(attr, context) do
+    unless Regex.match?(@assign_attr_name_regex, attr) do
+      raise(RuntimeError, "invalid attribute name in #{context}: #{attr}")
+    end
+  end
+
+  defp validate_attr!(attr, _attributes, context) when attr in @reserved_assign_attrs do
+    raise(RuntimeError, "invalid attribute name in #{context}: #{attr}")
+  end
+
+  defp validate_attr!(attr, _attributes, _context), do: attr
+
+  defp existing_attr_atom!(attr, context) do
+    String.to_existing_atom(attr)
+  rescue
+    ArgumentError -> raise(RuntimeError, "unknown attribute in #{context}: #{attr}")
   end
 
   defp to_value("nil", _attr_id, _attributes, _context), do: nil
 
   defp to_value(val, attr_id, attributes, context) when is_binary(val) do
-    case declared_attr_type(attr_id, attributes) do
-      :atom -> val |> String.to_atom() |> check_type!(:atom, context)
-      :boolean -> val |> String.to_atom() |> check_type!(:boolean, context)
-      :integer -> val |> Integer.parse() |> check_type!(:integer, context)
-      :float -> val |> Float.parse() |> check_type!(:float, context)
-      _ -> val
+    case declared_attr(attr_id, attributes) do
+      %Attr{type: :atom, values: values} ->
+        val |> to_atom_value(values, context) |> check_type!(:atom, context)
+
+      %Attr{type: :boolean} ->
+        val |> to_boolean_value(context) |> check_type!(:boolean, context)
+
+      %Attr{type: :integer} ->
+        val |> Integer.parse() |> check_type!(:integer, context)
+
+      %Attr{type: :float} ->
+        val |> Float.parse() |> check_type!(:float, context)
+
+      _ ->
+        val
     end
   end
 
@@ -126,22 +197,56 @@ defmodule PhoenixStorybook.ExtraAssignsHelpers do
     end
   end
 
+  defp to_atom_value("nil", _values, _context), do: nil
+
+  defp to_atom_value(val, nil, context) do
+    existing_value_atom!(val, context)
+  end
+
+  defp to_atom_value(val, values, context) do
+    Enum.find(values, &(to_string(&1) == val)) ||
+      raise(RuntimeError, "unknown atom value in #{context}: #{val}")
+  end
+
+  defp to_boolean_value("true", _context), do: true
+  defp to_boolean_value("false", _context), do: false
+
+  defp to_boolean_value(val, context) do
+    raise(RuntimeError, "type mismatch in #{context}: #{val} is not a boolean")
+  end
+
+  defp declared_attr(attr_id, attributes) do
+    Enum.find(attributes, fn %Attr{id: id} -> id == attr_id end)
+  end
+
   defp declared_attr_type(attr_id, attributes) do
-    case Enum.find(attributes, fn %Attr{id: id} -> id == attr_id end) do
+    case declared_attr(attr_id, attributes) do
       %Attr{type: type} -> type
       _ -> nil
     end
   end
 
+  defp declared_attr_id(attr, attributes) do
+    Enum.find_value(attributes, fn %Attr{id: id} ->
+      if to_string(id) == attr, do: id
+    end)
+  end
+
+  defp existing_value_atom!(val, context) do
+    String.to_existing_atom(val)
+  rescue
+    ArgumentError -> raise(RuntimeError, "unknown atom value in #{context}: #{val}")
+  end
+
   defp check_type!(nil, _type, _context), do: nil
   defp check_type!(atom, :atom, _context) when is_atom(atom), do: atom
   defp check_type!(boolean, :boolean, _context) when is_boolean(boolean), do: boolean
-  defp check_type!({integer, _}, :integer, _context) when is_integer(integer), do: integer
+  defp check_type!({integer, ""}, :integer, _context) when is_integer(integer), do: integer
   defp check_type!(integer, :integer, _context) when is_integer(integer), do: integer
-  defp check_type!({float, _}, :float, _context) when is_float(float), do: float
+  defp check_type!({float, ""}, :float, _context) when is_float(float), do: float
   defp check_type!(float, :float, _context) when is_float(float), do: float
 
   defp check_type!(value, type, context) do
-    raise(RuntimeError, "type mismatch in #{context}: #{value} is not a #{type}")
+    raise(RuntimeError, "type mismatch in #{context}: #{inspect(value)} is not a #{type}")
   end
 end
