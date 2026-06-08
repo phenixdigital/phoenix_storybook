@@ -29,6 +29,19 @@ defmodule PhoenixStorybook.Rendering.MarkdownRendererTest do
       assert result =~ ~s[<span class="kd">def</span>]
     end
 
+    test "guesses Elixir for unlabeled non-tag code fences" do
+      markdown = """
+      ```
+      x = 1 + 1
+      ```
+      """
+
+      result = MarkdownRenderer.markdown_to_html(markdown)
+
+      assert result =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert result =~ ~s[<span class="n">x</span>]
+    end
+
     test "guesses HEEx for unlabeled tag-like code fences" do
       markdown = """
       ```

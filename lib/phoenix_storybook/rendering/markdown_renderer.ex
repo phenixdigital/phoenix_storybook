@@ -41,6 +41,7 @@ defmodule PhoenixStorybook.Rendering.MarkdownRenderer do
   defp guess_lang("<" <> _), do: :heex
   defp guess_lang(_code), do: :elixir
 
+  defp normalize_lang_class(nil), do: ""
   defp normalize_lang_class("language-" <> lang), do: lang
   defp normalize_lang_class(lang), do: lang
 
