@@ -11,13 +11,14 @@ defmodule PhoenixStorybook.Helpers.ExampleHelpers do
          {:defmodule, m1, [aliases, [{{:__block__, m2, [:do]}, {:__block__, m3, block}}]]} <- ast do
       new_block =
         block
-        # drop doc and extra_sources functions from the source code
+        # drop storybook-only functions from the displayed source code
         |> Enum.reject(fn
-          {:def, _, [{:doc, _, _} | _]} -> true
-          {:def, _, [{:extra_sources, _, _} | _]} -> true
+          {:def, _, [{:doc, _, args} | _]} -> zero_arity?(args)
+          {:def, _, [{:container, _, args} | _]} -> zero_arity?(args)
+          {:def, _, [{:extra_sources, _, args} | _]} -> zero_arity?(args)
           _ -> false
         end)
-        # replace `use PhoenixStorybook.Story, :example` with `use Phoenix.LiveView`
+        # replace example storybook declarations with plain LiveView source
         |> Enum.map(fn
           {:use, m4, [{:__aliases__, _, [:PhoenixStorybook, :Story]}, _example]} ->
             {:use, m4, [{:__aliases__, [], [:Phoenix, :LiveView]}]}
@@ -36,4 +37,8 @@ defmodule PhoenixStorybook.Helpers.ExampleHelpers do
       _ -> code
     end
   end
+
+  defp zero_arity?(nil), do: true
+  defp zero_arity?([]), do: true
+  defp zero_arity?(_args), do: false
 end

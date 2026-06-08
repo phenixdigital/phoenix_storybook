@@ -774,20 +774,85 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
   describe "example rendering" do
     test "renders an example story", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/storybook/examples/example")
+      {:ok, view, html} = live(conn, ~p"/storybook/examples/example")
       assert html =~ "Example story"
       assert html =~ "Example template"
+
+      [{"div", attrs, _}] =
+        view
+        |> element("#inline-example-container")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
+      assert List.keyfind(attrs, "class", 0) |> elem(1) =~ "inline-example"
+      assert List.keyfind(attrs, "data-foo", 0) == {"data-foo", "bar"}
+    end
+
+    test "renders an example story with the default div container", %{conn: conn} do
+      {:ok, view, html} = live(conn, ~p"/storybook/examples/default_container")
+
+      assert html =~ "Default container example story"
+      assert html =~ "Default container example content"
+      assert has_element?(view, ".psb-sandbox #default-container-example-story")
+    end
+
+    test "renders an iframe example story in an iframe", %{conn: conn} do
+      {:ok, view, html} = live(conn, ~p"/storybook/examples/iframe")
+
+      refute html =~ "Iframe example content"
+
+      [{"iframe", attrs, _}] =
+        view
+        |> element("#iframe-tree_storybook_examples_iframe-example-theme-default")
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.to_tree()
+
+      assert List.keyfind(attrs, "src", 0) ==
+               {"src", ~p"/storybook/iframe/examples/iframe?theme=default"}
+
+      assert List.keyfind(attrs, "data-foo", 0) == {"data-foo", "bar"}
+      assert is_nil(List.keyfind(attrs, "style", 0))
+    end
+
+    test "iframe example story id changes with iframe params", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/iframe")
+
+      assert has_element?(view, "#iframe-tree_storybook_examples_iframe-example-theme-default")
+
+      view
+      |> element("#psb-colormode-dropdown")
+      |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
+
+      assert has_element?(
+               view,
+               "#iframe-tree_storybook_examples_iframe-example-theme-default-color-mode-dark"
+             )
     end
 
     test "renders an example story main source tab", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
-      html = view |> element("a", "Source") |> render_click()
+      view |> element("a", "Source") |> render_click()
+      source_html = view |> element("pre.highlight") |> render()
 
       assert_patched(view, ~p"/storybook/examples/example?#{[tab: :source, theme: :default]}")
-      assert html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
-      refute html =~ ~r/extra_sources/
-      refute html =~ ~r/doc/
-      refute html =~ ~r/defmodule.*PhoenixStorybook/
+      assert source_html =~ ~r/defmodule.*TreeStorybook\.Examples\.Example/
+      refute source_html =~ ~r/extra_sources/
+      refute source_html =~ ~r/def container/
+      refute source_html =~ ~r/doc/
+      refute source_html =~ ~r/defmodule.*PhoenixStorybook/
+    end
+
+    test "renders an iframe example story main source tab", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/examples/iframe")
+      view |> element("a", "Source") |> render_click()
+      source_html = view |> element("pre.highlight") |> render()
+
+      assert_patched(view, ~p"/storybook/examples/iframe?#{[tab: :source, theme: :default]}")
+      assert source_html =~ ~r/defmodule.*TreeStorybook\.Examples\.Iframe/
+      refute source_html =~ ~r/def container/
+      refute source_html =~ ~r/PhoenixStorybook/
     end
 
     test "renders source permalink icon for main source file", %{conn: conn} do

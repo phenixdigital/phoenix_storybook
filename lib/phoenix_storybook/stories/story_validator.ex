@@ -45,6 +45,7 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
   defp validate_example!(story) do
     file_path = story.__info__(:compile)[:source]
     validate_page_doc!(file_path, story)
+    validate_example_container!(file_path, story)
     validate_example_extra_sources!(file_path, story)
     story
   end
@@ -130,6 +131,22 @@ defmodule PhoenixStorybook.Stories.StoryValidator do
 
     for source <- story.extra_sources() do
       validate_type!(file_path, source, :string, msg)
+    end
+  end
+
+  defp validate_example_container!(file_path, story) do
+    case story.container() do
+      c when c in ~w(div iframe)a ->
+        :ok
+
+      {c, options} when c in ~w(div iframe)a and is_list(options) ->
+        :ok
+
+      _ ->
+        compile_error!(
+          file_path,
+          "story container must be :div, {:div, opts}, :iframe or {:iframe, opts}"
+        )
     end
   end
 

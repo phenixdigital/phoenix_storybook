@@ -84,6 +84,40 @@ defmodule PhoenixStorybook.Helpers.ExampleHelpersTest do
       assert @base_expected == strip_example_source(source)
     end
 
+    test "module with container and without extra sources" do
+      source = """
+      defmodule Storybook.Examples.Example do
+        use PhoenixStorybook.Story, :example
+
+        def container, do: :iframe
+
+        def render(assigns) do
+          ~H"Hello world!"
+        end
+      end\
+      """
+
+      assert @base_expected == strip_example_source(source)
+    end
+
+    test "module with non-callback container function" do
+      source = """
+      defmodule Storybook.Examples.Example do
+        use PhoenixStorybook.Story, :example
+
+        def container(assigns) do
+          assigns
+        end
+
+        def render(assigns) do
+          ~H"Hello world!"
+        end
+      end\
+      """
+
+      assert strip_example_source(source) =~ "def container(assigns) do"
+    end
+
     test "module with inline doc and extra sources" do
       source = """
       defmodule Storybook.Examples.Example do

@@ -462,23 +462,33 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns = %{tab: :example}) do
-    theme = Map.get(assigns, :theme)
+    case normalize_example_container(assigns.story.container()) do
+      {:iframe, iframe_opts} ->
+        assigns =
+          assign(assigns, :iframe_attributes, assigns_to_attributes(iframe_opts, [:style]))
 
-    live_render(assigns.socket, assigns.story,
-      id: "example-#{story_id(assigns.story)}-#{theme}",
-      session: %{"theme" => theme},
-      container:
-        {:div,
-         [
-           class:
-             LayoutView.sandbox_class(
-               assigns.socket,
-               {:div, class: ["psb psb:pb-12", assigns[:color_mode_class]]},
-               assigns
-             )
-         ] ++
-           LayoutView.sandbox_attributes(assigns.socket, {:div, class: "psb psb:pb-12"}, assigns)}
-    )
+        ~H"""
+        <iframe
+          phx-update="ignore"
+          id={example_iframe_id(@story, @theme, @color_mode)}
+          class="psb:w-full psb:border-0"
+          src={path_to_iframe(@socket, @root_path, @story_path, theme: @theme, color_mode: @color_mode)}
+          height="0"
+          onload={iframe_onload_js()}
+          {@iframe_attributes}
+        />
+        """
+
+      {:div, container_opts} ->
+        theme = Map.get(assigns, :theme)
+        {id, container_opts} = Keyword.pop(container_opts, :id)
+
+        live_render(assigns.socket, assigns.story,
+          id: id || "example-#{story_id(assigns.story)}-#{theme}",
+          session: %{"theme" => theme},
+          container: {:div, example_container_opts(assigns, container_opts)}
+        )
+    end
   end
 
   defp render_content(:example, assigns = %{tab: :source}) do
@@ -502,6 +512,29 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp render_content(:example, assigns), do: ~H[]
+
+  defp normalize_example_container(:div), do: {:div, []}
+  defp normalize_example_container({:div, opts}), do: {:div, opts}
+  defp normalize_example_container(container), do: LayoutView.normalize_story_container(container)
+
+  defp example_container_opts(assigns, container_opts) do
+    sandbox_container_opts =
+      Keyword.update(
+        container_opts,
+        :class,
+        ["psb psb:pb-12", assigns[:color_mode_class]],
+        fn class ->
+          ["psb psb:pb-12", assigns[:color_mode_class], class]
+        end
+      )
+
+    Keyword.put(
+      container_opts,
+      :class,
+      LayoutView.sandbox_class(assigns.socket, {:div, sandbox_container_opts}, assigns)
+    ) ++
+      LayoutView.sandbox_attributes(assigns.socket, {:div, sandbox_container_opts}, assigns)
+  end
 
   attr :source, :any, required: true
   slot :inner_block
@@ -789,6 +822,27 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp story_id(story_module) do
     story_module |> Macro.underscore() |> String.replace("/", "_")
+  end
+
+  defp example_iframe_id(story_module, theme, color_mode) do
+    [
+      "iframe-#{story_id(story_module)}-example",
+      if(theme, do: "theme-#{theme}"),
+      if(color_mode, do: "color-mode-#{color_mode}")
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("-")
+  end
+
+  defp iframe_onload_js do
+    """
+    javascript:(function(o){
+      o.style.height=o.contentWindow.document.body.scrollHeight+'px';
+      setTimeout(function() {
+        o.style.height=o.contentWindow.document.body.scrollHeight+'px';
+      }, 100)
+    }(this));
+    """
   end
 
   def handle_event("psb-set-theme", %{"theme" => theme}, socket) do

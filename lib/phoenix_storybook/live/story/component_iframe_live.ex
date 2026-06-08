@@ -103,6 +103,13 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   end
 
   def render(assigns) do
+    case assigns.story.storybook_type() do
+      :example -> render_example(assigns)
+      _ -> render_component(assigns)
+    end
+  end
+
+  defp render_component(assigns) do
     assigns =
       assign(
         assigns,
@@ -150,9 +157,37 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     """
   end
 
+  defp render_example(assigns) do
+    theme = Map.get(assigns, :theme)
+    {_container, container_opts} = LayoutView.normalize_story_container(assigns.story.container())
+    {id, container_opts} = Keyword.pop(container_opts, :id)
+
+    assigns =
+      assigns
+      |> assign(:example_live_id, id || "example-#{story_id(assigns.story)}-#{theme}")
+      |> assign(:example_container, {:div, example_container_opts(assigns, container_opts)})
+
+    ~H"""
+    {live_render(@socket, @story,
+      id: @example_live_id,
+      session: %{"theme" => @theme},
+      container: @example_container
+    )}
+    """
+  end
+
+  defp example_container_opts(assigns, container_opts) do
+    {classes, container_opts} = Keyword.pop(container_opts, :class)
+    Keyword.put(container_opts, :class, [classes, assigns[:color_mode_class]])
+  end
+
   defp playground_preview_id(story) do
     module = story |> Macro.underscore() |> String.replace("/", "_")
     "#{module}-playground-preview"
+  end
+
+  defp story_id(story) do
+    story |> Macro.underscore() |> String.replace("/", "_")
   end
 
   defp current_variation(type, story, %{"variation_id" => variation_id})

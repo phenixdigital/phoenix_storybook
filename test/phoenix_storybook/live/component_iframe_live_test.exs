@@ -134,6 +134,15 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ ~r|class="[^"]*dark[^"]*"|
       assert html =~ "component: hello"
     end
+
+    test "it renders an example story", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/examples/iframe", %{"theme" => "default"})
+
+      assert html =~ "Iframe example content"
+      assert html =~ ~s|style="padding: 16px;"|
+      assert html =~ ~s|data-foo="bar"|
+    end
   end
 
   describe "playground" do
