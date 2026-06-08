@@ -10,6 +10,8 @@
 >   more of my free time to fixing bugs and developing new features 🤗
 
 ## v1.2.0 (unreleased)
+- **change**: [align `mix phx.gen.storybook` and install docs with Phoenix 1.8 / Tailwind v4](https://github.com/phenixdigital/phoenix_storybook/pull/828) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+- **feature**: [iframe container for examples](https://github.com/phenixdigital/phoenix_storybook/pull/798) - 🙏 [@ferrine](https://github.com/ferrine)
 - **feature**: [support data-* attribute for theme strategies](https://github.com/phenixdigital/phoenix_storybook/pull/802) - 🙏 [@georgemarshall](https://github.com/georgemarshall)
 - **change**: [removed `phoenix_view` dependency](https://github.com/phenixdigital/phoenix_storybook/pull/824) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
 - **change**: [removed `phoenix_html_helpers` dependency](https://github.com/phenixdigital/phoenix_storybook/pull/823) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
