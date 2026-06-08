@@ -52,7 +52,7 @@ defmodule PhoenixStorybook.MixProject do
       {:makeup_html, "~> 0.2.0"},
       {:heroicons, "~> 0.5", only: [:test]},
       {:jason, "~> 1.3", optional: true},
-      {:earmark, "~> 1.4"},
+      {:mdex, "~> 0.12"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},

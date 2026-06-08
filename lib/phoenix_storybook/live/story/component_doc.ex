@@ -4,6 +4,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
   use PhoenixStorybook.Web, :component
   import PhoenixStorybook.Components.Icon
 
+  alias PhoenixStorybook.Rendering.MarkdownRenderer
   alias PhoenixStorybook.Stories.Doc
 
   @doc """
@@ -83,7 +84,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
   end
 
   defp format(doc) do
-    doc |> String.trim() |> Earmark.as_html() |> elem(1)
+    doc |> String.trim() |> MarkdownRenderer.markdown_to_html()
   end
 
   defp read_doc(nil), do: nil

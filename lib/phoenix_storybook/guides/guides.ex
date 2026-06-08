@@ -4,7 +4,7 @@ defmodule PhoenixStorybook.Guides do
   It renders HTML markup from markdown guides located in the guides/folder.
 
   Markup is precompiled because:
-  - we don't want to force user application to embed Earmark
+  - we don't want to force user application to embed MDEx
   - we don't want to put markdown guides in priv
 
   ## Examples

@@ -28,5 +28,41 @@ defmodule PhoenixStorybook.Rendering.MarkdownRendererTest do
       assert result =~ ~r/<pre.*psb highlight.*\/pre>/s
       assert result =~ ~s[<span class="kd">def</span>]
     end
+
+    test "guesses HEEx for unlabeled tag-like code fences" do
+      markdown = """
+      ```
+      <div>{@label}</div>
+      ```
+      """
+
+      result = MarkdownRenderer.markdown_to_html(markdown)
+
+      assert result =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert result =~ ~s[<span class="nt">div</span>]
+      assert result =~ ~s[&amp;lbrace;@label&amp;rbrace;]
+    end
+
+    test "falls back to unknown syntax highlighting for unsupported fenced languages" do
+      markdown = """
+      ```ruby
+      puts "hello"
+      ```
+      """
+
+      result = MarkdownRenderer.markdown_to_html(markdown)
+
+      assert result =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert result =~ "puts \"hello\""
+      refute result =~ ~s[class="lumis"]
+    end
+
+    test "preserves inline HTML for compatibility" do
+      markdown = ~s[Before <span class="demo">inline</span> after.]
+
+      result = MarkdownRenderer.markdown_to_html(markdown)
+
+      assert result =~ ~s[<span class="demo">inline</span>]
+    end
   end
 end
