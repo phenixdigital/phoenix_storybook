@@ -16,7 +16,8 @@ defmodule PhoenixStorybook.Stories.DocTest do
       assert body =~ "<h2>Examples</h2>"
       assert body =~ ~s[<span class="nf">.component</span>]
       assert body =~ ~s[<span class="nc">Component</span>]
-      assert body =~ ~s[&amp;lbrace;:cool&amp;rbrace;]
+      assert body =~ ~s[<span class="ss">:cool</span>]
+      assert body =~ ~s[data-group-id=]
       assert body =~ ~s[<span class="ss">:boring</span>]
     end
 

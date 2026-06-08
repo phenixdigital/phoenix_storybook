@@ -40,7 +40,9 @@ defmodule PhoenixStorybook.Rendering.MarkdownRendererTest do
 
       assert result =~ ~r/<pre.*psb highlight.*\/pre>/s
       assert result =~ ~s[<span class="nt">div</span>]
-      assert result =~ ~s[&amp;lbrace;@label&amp;rbrace;]
+      assert result =~ ~s[<span class="na">@label</span>]
+      assert result =~ ">{</span>"
+      assert result =~ ">}</span>"
     end
 
     test "falls back to unknown syntax highlighting for unsupported fenced languages" do

@@ -44,7 +44,15 @@ defmodule PhoenixStorybook.Rendering.MarkdownRenderer do
   defp normalize_lang_class("language-" <> lang), do: lang
   defp normalize_lang_class(lang), do: lang
 
-  entities = [{"&amp;", ?&}, {"&lt;", ?<}, {"&gt;", ?>}, {"&quot;", ?"}, {"&#39;", ?'}]
+  entities = [
+    {"&amp;", ?&},
+    {"&lt;", ?<},
+    {"&gt;", ?>},
+    {"&quot;", ?"},
+    {"&#39;", ?'},
+    {"&lbrace;", ?{},
+    {"&rbrace;", ?}}
+  ]
 
   for {encoded, decoded} <- entities do
     defp unescape_html(unquote(encoded) <> rest), do: [unquote(decoded) | unescape_html(rest)]
