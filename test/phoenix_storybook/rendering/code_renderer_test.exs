@@ -1,9 +1,18 @@
 defmodule PhoenixStorybook.Rendering.CodeRendererTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
+  alias Makeup.Registry
   alias PhoenixStorybook.{TestStorybook, TreeStorybook}
   alias PhoenixStorybook.Rendering.{CodeRenderer, RenderingContext}
   import Phoenix.LiveViewTest, only: [rendered_to_string: 1]
+
+  defmodule RuntimeErrorLexer do
+    def lex(_code, _opts), do: raise("boom")
+  end
+
+  defmodule BadMapLexer do
+    def lex(_code, _opts), do: raise(BadMapError, term: :bad)
+  end
 
   setup_all do
     [
@@ -185,6 +194,22 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       refute code =~ ~s|variation-template|
     end
 
+    test "it keeps raw template markup when there is no variation placeholder", %{
+      template_component: component
+    } do
+      code = render_variation_code(component, :no_placeholder)
+
+      assert code == "<div></div>"
+    end
+
+    test "it keeps raw group template markup when there is no variation-group placeholder", %{
+      template_component: component
+    } do
+      code = render_variation_code(component, :no_placeholder_group)
+
+      assert code == "<div></div>"
+    end
+
     test "it prints aliases struct names" do
       {:ok, component} = TreeStorybook.load_story("/b_folder/all_types_component")
       code = render_variation_code(component, :with_struct)
@@ -234,6 +259,26 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       source = CodeRenderer.render_component_source(component) |> rendered_to_string()
       assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
     end
+
+    test "it strips unrelated module code when render_source is :function", %{
+      afolder_component: component
+    } do
+      source = CodeRenderer.render_component_source(component) |> rendered_to_string()
+
+      assert source =~ ~s[<span class="nc">Component</span>]
+      assert source =~ "# stripped ..."
+      assert source =~ ~s[<span class="nf">component</span>]
+      refute source =~ "should not appear"
+      refute source =~ "def another_component(assigns) do"
+    end
+
+    test "it returns nil when render_source is false", %{afolder_live_component: component} do
+      assert CodeRenderer.render_component_source(component) == nil
+    end
+
+    test "render_source/2 returns nil for nil input" do
+      assert CodeRenderer.render_source(nil) == nil
+    end
   end
 
   describe "render_code_block/3" do
@@ -281,6 +326,76 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
       assert source =~ ~s[  <.button phx-click="go">Send!</.button>]
     end
+
+    test "it leaves unsupported languages unformatted" do
+      code = ~s|puts "hello"|
+
+      source = CodeRenderer.render_code_block(code, :unknown) |> rendered_to_string()
+
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s|puts "hello"|
+      refute source =~ ~s|<span class="|
+    end
+
+    test "it highlights incomplete HEEx snippets without crashing" do
+      code = "<div><%= if true do %>"
+
+      source = CodeRenderer.render_code_block(code, :heex) |> rendered_to_string()
+
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s[<span class="nt">div</span>]
+      assert source =~ ~s[<span class="k">if</span>]
+    end
+
+    test "it registers the HTML lexer on demand for HEEx highlighting" do
+      restore_makeup_registry()
+      Registry.clean_name_registry()
+      Registry.clean_extension_registry()
+
+      source = CodeRenderer.render_code_block("<div>ok</div>", :heex) |> rendered_to_string()
+
+      assert source =~ ~s[<span class="nt">div</span>]
+      assert Registry.get_lexer_by_name("html") == {Makeup.Lexers.HTMLLexer, []}
+      assert Registry.get_lexer_by_extension("html") == {Makeup.Lexers.HTMLLexer, []}
+    end
+
+    test "it falls back to raw HEEx when the registered HTML lexer raises RuntimeError" do
+      restore_makeup_registry()
+      Registry.register_lexer_with_name("html", {RuntimeErrorLexer, []})
+      Registry.register_lexer_with_extension("html", {RuntimeErrorLexer, []})
+
+      source = CodeRenderer.render_code_block("<div>ok</div>", :heex) |> rendered_to_string()
+
+      assert source =~ "<div>ok</div>"
+      refute source =~ ~s[<span class="nt">div</span>]
+    end
+
+    test "it falls back to raw HEEx when the registered HTML lexer raises BadMapError" do
+      restore_makeup_registry()
+      Registry.register_lexer_with_name("html", {BadMapLexer, []})
+      Registry.register_lexer_with_extension("html", {BadMapLexer, []})
+
+      source = CodeRenderer.render_code_block("<div>ok</div>", :heex) |> rendered_to_string()
+
+      assert source =~ "<div>ok</div>"
+      refute source =~ ~s[<span class="nt">div</span>]
+    end
+  end
+
+  describe "render/1" do
+    test "it wraps formatted component markup in a highlighted pre block", %{component: component} do
+      variation = Enum.find(component.variations(), &(&1.id == :hello))
+
+      source =
+        TreeStorybook
+        |> RenderingContext.build(component, variation, %{})
+        |> CodeRenderer.render()
+        |> rendered_to_string()
+
+      assert source =~ ~r/<pre.*psb highlight.*\/pre>/s
+      assert source =~ ~s[<span class="nf">.component</span>]
+      assert source =~ ~s[<span class="na">label</span>]
+    end
   end
 
   describe "render booleans with their shorthand notation" do
@@ -317,5 +432,15 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
     |> RenderingContext.build(story, variation, %{}, format: false)
     |> CodeRenderer.render()
     |> rendered_to_string()
+  end
+
+  defp restore_makeup_registry do
+    name_registry = Application.get_env(:makeup, :lexer_name_registry)
+    extension_registry = Application.get_env(:makeup, :lexer_extension_registry)
+
+    on_exit(fn ->
+      Application.put_env(:makeup, :lexer_name_registry, name_registry)
+      Application.put_env(:makeup, :lexer_extension_registry, extension_registry)
+    end)
   end
 end
