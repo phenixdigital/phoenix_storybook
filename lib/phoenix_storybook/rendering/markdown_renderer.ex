@@ -34,7 +34,7 @@ defmodule PhoenixStorybook.Rendering.MarkdownRenderer do
         _ -> :unknown
       end
 
-    CodeRenderer.render_code_block(code, lang, trim: false)
+    CodeRenderer.render_code_block(code, lang, trim: true)
     |> HTMLSafe.to_iodata()
   end
 
