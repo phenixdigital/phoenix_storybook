@@ -23,8 +23,8 @@ jobs:
         uses: erlef/setup-beam@v1
         id: beam
         with:
-          otp-version: "27.3"
-          elixir-version: "1.18.3-otp-27"
+          otp-version: "28.2"
+          elixir-version: "1.19.5-otp-28"
 
       - name: Restore dependencies cache
         uses: actions/cache@v3
