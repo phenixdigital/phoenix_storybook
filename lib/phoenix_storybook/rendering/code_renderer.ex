@@ -9,7 +9,8 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
   import Phoenix.Component
 
   alias Makeup.Formatters.HTML.HTMLFormatter
-  alias Makeup.Lexers.{ElixirLexer, HEExLexer}
+  alias Makeup.Lexers.{ElixirLexer, HEExLexer, HTMLLexer}
+  alias Makeup.Registry
   alias Phoenix.HTML
   alias PhoenixStorybook.Rendering.{RenderingContext, RenderingVariation}
   alias PhoenixStorybook.Stories.Attr
@@ -272,7 +273,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
       if format? do
         case lang do
           :elixir -> code |> ElixirLexer.lex() |> HTMLFormatter.format_inner_as_binary([])
-          :heex -> code |> HEExLexer.lex() |> HTMLFormatter.format_inner_as_binary([])
+          :heex -> code |> format_heex()
           _ -> code
         end
       else
@@ -280,6 +281,21 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
       end
 
     HTML.raw(code)
+  end
+
+  defp format_heex(code) do
+    ensure_html_lexer_registered()
+    code |> HEExLexer.lex() |> HTMLFormatter.format_inner_as_binary([])
+  rescue
+    BadMapError -> code
+    RuntimeError -> code
+  end
+
+  defp ensure_html_lexer_registered do
+    if is_nil(Registry.get_lexer_by_name("html")) and
+         is_nil(Registry.get_lexer_by_extension("html")) do
+      Registry.register_lexer(HTMLLexer, options: [], names: ["html"], extensions: ["html"])
+    end
   end
 
   defp function_name(fun), do: Function.info(fun)[:name]
