@@ -184,10 +184,8 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
 
   defp eval_component_heex(fun_or_mod, heex, opts, assigns) do
     quoted_code =
-      EEx.compile_string(heex,
-        engine: TagEngine,
+      TagEngine.compile(heex,
         caller: __ENV__,
-        source: heex,
         tag_handler: Phoenix.LiveView.HTMLEngine
       )
 
