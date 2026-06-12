@@ -1007,8 +1007,7 @@ defmodule PhoenixStorybook.Story.Playground do
       role="switch"
     >
       <.input field={@form[@attr_id]} type="hidden" value={"#{@value}"} />
-      <span class={"psb #{@translate_class} psb:form-input psb:p-0 psb:border-0 psb:pointer-events-none psb:inline-block psb:h-5 psb:w-5 psb:rounded-full psb:bg-white psb:shadow psb:transform psb:ring-0 psb:transition psb:ease-in-out psb:duration-200"}>
-      </span>
+      <span class={"psb #{@translate_class} psb:form-input psb:p-0 psb:border-0 psb:pointer-events-none psb:inline-block psb:h-5 psb:w-5 psb:rounded-full psb:bg-white psb:shadow psb:transform psb:ring-0 psb:transition psb:ease-in-out psb:duration-200"}></span>
     </button>
     """
   end
