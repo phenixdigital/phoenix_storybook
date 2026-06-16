@@ -43,7 +43,15 @@ Three kinds of stories are supported:
 
 ## Installation
 
-To start using `PhoenixStorybook` in your phoenix application you will need to follow these steps:
+The fastest way to install the storybook is with [Igniter](https://hexdocs.pm/igniter), which adds the dependency, generates the storybook files and applies the whole setup (router, layout, assets, config, formatter and mix aliases) automatically:
+
+```bash
+mix igniter.install phoenix_storybook
+```
+
+And you are ready to go!
+
+Without Igniter, you will need to follow these steps:
 
 1. Add the `phoenix_storybook` dependency
 2. Run the generator
@@ -203,7 +211,6 @@ A few storybooks running in production:
 - [Bloom](https://bloom-ui.fly.dev/storybook)
 - [Doggo](https://doggo.wlyx.dev/)
 - [Tremorx](https://tremorx.fly.dev/)
-
 
 ## Contributing
 
