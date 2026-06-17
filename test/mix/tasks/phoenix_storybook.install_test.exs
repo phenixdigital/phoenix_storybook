@@ -200,5 +200,111 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
              |> Igniter.Test.diff(only: "mix.exs")
              |> String.contains?("tailwind storybook")
     end
+
+    test "with --no-tailwind it writes the minimal scoped stylesheet, not an app.css copy" do
+      content =
+        phx_test_project()
+        |> Igniter.compose_task("phoenix_storybook.install", ["--no-tailwind"])
+        |> css_content()
+
+      assert content =~ ".test {"
+      assert content =~ "font-family: system-ui"
+      refute content =~ ~s|@import "tailwindcss"|
+      refute content =~ "@plugin"
+    end
+
+    test "falls back to the tailwind stylesheet template when there is no app.css" do
+      igniter =
+        phx_test_project()
+        |> Igniter.rm("assets/css/app.css")
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      content = css_content(igniter)
+
+      assert content =~ ~s|@import "tailwindcss" source(none);|
+      assert content =~ ~s|@source "../../storybook";|
+      refute content =~ "copied from assets/css/app.css at install time"
+
+      assert_has_notice(igniter, &(&1 =~ "loads this file instead of your app.css"))
+    end
+
+    test "skips core component stories when there is no CoreComponents module" do
+      igniter =
+        phx_test_project()
+        |> Igniter.rm("lib/test_web/components/core_components.ex")
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_creates(igniter, "lib/test_web/storybook.ex")
+      assert_creates(igniter, "storybook/welcome.story.exs")
+
+      refute_creates(igniter, "storybook/core_components/_core_components.index.exs")
+      refute_creates(igniter, "storybook/core_components/button.story.exs")
+      refute_creates(igniter, "storybook/examples/core_components.story.exs")
+    end
+
+    test "warns and patches nothing in the router when no router exists" do
+      igniter =
+        phx_test_project()
+        |> Igniter.rm("lib/test_web/router.ex")
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_warning(igniter, &(&1 =~ "No Phoenix router found"))
+      assert_has_notice(igniter, &(&1 =~ "Add a watcher for the storybook tailwind profile"))
+      assert_has_notice(igniter, &(&1 =~ "Add a live_reload pattern"))
+
+      assert_creates(igniter, "lib/test_web/storybook.ex")
+    end
+
+    test "adds a Dockerfile notice when a Dockerfile is present" do
+      igniter =
+        phx_test_project(files: %{"Dockerfile" => "FROM elixir:1.17\n"})
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "COPY storybook storybook"))
+    end
+
+    test "notices the esbuild setup when esbuild is not configured" do
+      igniter =
+        phx_test_project()
+        |> strip_config(~r/\n# Configure esbuild.*?\n  \]\n/s)
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "Add js/storybook.js as a new entry point"))
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/config.exs")
+             |> String.contains?("js/storybook.js")
+    end
+
+    test "notices the tailwind setup when tailwind is not configured" do
+      igniter =
+        phx_test_project()
+        |> strip_config(~r/\n# Configure tailwind.*?\n  \]\n/s)
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "Add a tailwind build profile"))
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/config.exs")
+             |> String.contains?("storybook: [")
+    end
+  end
+
+  defp css_content(igniter) do
+    igniter.rewrite
+    |> Rewrite.source!("assets/css/storybook.css")
+    |> Rewrite.Source.get(:content)
+  end
+
+  defp strip_config(igniter, regex) do
+    igniter
+    |> Igniter.update_file("config/config.exs", fn source ->
+      content = source |> Rewrite.Source.get(:content) |> String.replace(regex, "\n")
+      Rewrite.Source.update(source, :content, content)
+    end)
+    |> apply_igniter!()
   end
 end
