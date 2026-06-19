@@ -12,7 +12,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
         use PhoenixStorybook,
           otp_app: :test,
           content_path: Path.expand("../../storybook", __DIR__),
-          # assets path are remote path, not local file-system paths
+          # asset paths are URL paths (served by your app), not local file-system paths
           css_path: "/assets/css/storybook.css",
           js_path: "/assets/js/storybook.js",
           # Ex: "https://github.com/my-org/my-app/blob/main"
