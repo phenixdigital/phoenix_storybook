@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   import Igniter.Test
 
