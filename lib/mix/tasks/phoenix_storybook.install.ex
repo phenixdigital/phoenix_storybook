@@ -419,15 +419,31 @@ if Code.ensure_loaded?(Igniter) do
            :esbuild,
            [schema.app_name, :args]
          ) do
-        Project.Config.configure(
-          igniter,
+        igniter
+        |> Project.Config.configure(
           "config.exs",
           :esbuild,
           [schema.app_name, :args],
           nil,
-          updater: &add_esbuild_entry_point/1,
-          failure_message: esbuild_message(schema)
+          updater: &add_esbuild_entry_point/1
         )
+        |> notice_unless_esbuild_wired(schema)
+      else
+        Igniter.add_notice(igniter, esbuild_message(schema))
+      end
+    end
+
+    # `Project.Config.configure/6` silently leaves the profile untouched when the
+    # entry point can't be added automatically (e.g. a customized `args` with no
+    # `js/app.js` to anchor on), so fall back to the manual notice in that case.
+    defp notice_unless_esbuild_wired(igniter, schema) do
+      igniter = Igniter.include_existing_file(igniter, "config/config.exs")
+
+      content =
+        igniter.rewrite |> Rewrite.source!("config/config.exs") |> Rewrite.Source.get(:content)
+
+      if String.contains?(content, "js/storybook.js") do
+        igniter
       else
         Igniter.add_notice(igniter, esbuild_message(schema))
       end
