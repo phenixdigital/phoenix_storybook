@@ -291,6 +291,90 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
              |> Igniter.Test.diff(only: "config/config.exs")
              |> String.contains?("storybook: [")
     end
+
+    test "notices the esbuild setup when the profile has no js/app.js entry point" do
+      igniter =
+        phx_test_project()
+        |> edit_file("config/config.exs", "js/app.js", "js/main.js")
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "Add js/storybook.js as a new entry point"))
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/config.exs")
+             |> String.contains?("js/storybook.js")
+    end
+
+    test "notices the sandbox class when there is no root layout" do
+      layout_path = "lib/test_web/components/layouts/root.html.heex"
+
+      igniter =
+        phx_test_project()
+        |> Igniter.rm(layout_path)
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "Add the CSS sandbox class"))
+      refute_creates(igniter, layout_path)
+    end
+
+    test "notices the live_reload setup when there is no dev.exs" do
+      # --no-tailwind, otherwise the tailwind watcher setup recreates dev.exs
+      # before the live_reload step runs.
+      igniter =
+        phx_test_project()
+        |> Igniter.rm("config/dev.exs")
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", ["--no-tailwind"])
+
+      assert_has_notice(igniter, &(&1 =~ "Add a live_reload pattern"))
+    end
+
+    test "warns the live_reload setup when dev.exs has no live_reload config" do
+      igniter =
+        phx_test_project()
+        |> edit_file("config/dev.exs", ~r/\n# Reload browser tabs.*?\n  \]\n/s, "\n")
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_warning(igniter, &(&1 =~ "Add a live_reload pattern"))
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/dev.exs")
+             |> String.contains?("storybook/.*")
+    end
+
+    test "appends the storybook build to assets.deploy when it has no phx.digest" do
+      igniter =
+        phx_test_project()
+        |> edit_file("mix.exs", ~r/,\n\s*"phx\.digest"/, "")
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert igniter
+             |> Igniter.Test.diff(only: "mix.exs")
+             |> String.contains?("tailwind storybook --minify")
+    end
+
+    test "generates the example core components story when all example functions exist" do
+      # The fixture's CoreComponents has button/header/table/input but no
+      # simple_form, so add it to satisfy the example story's full set.
+      phx_test_project()
+      |> edit_file(
+        "lib/test_web/components/core_components.ex",
+        "defmodule TestWeb.CoreComponents do",
+        "defmodule TestWeb.CoreComponents do\n  def simple_form(assigns), do: nil\n"
+      )
+      |> Igniter.compose_task("phoenix_storybook.install", [])
+      |> assert_creates("storybook/examples/core_components.story.exs")
+    end
+
+    test "notices that storybook.css must be kept in sync with app.css" do
+      igniter =
+        phx_test_project()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "mirror the relevant changes"))
+      assert_has_notice(igniter, &(&1 =~ "nest it under your CSS sandbox class"))
+    end
   end
 
   defp css_content(igniter) do
@@ -300,9 +384,13 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
   end
 
   defp strip_config(igniter, regex) do
+    edit_file(igniter, "config/config.exs", regex, "\n")
+  end
+
+  defp edit_file(igniter, path, from, to) do
     igniter
-    |> Igniter.update_file("config/config.exs", fn source ->
-      content = source |> Rewrite.Source.get(:content) |> String.replace(regex, "\n")
+    |> Igniter.update_file(path, fn source ->
+      content = source |> Rewrite.Source.get(:content) |> String.replace(from, to)
       Rewrite.Source.update(source, :content, content)
     end)
     |> apply_igniter!()
