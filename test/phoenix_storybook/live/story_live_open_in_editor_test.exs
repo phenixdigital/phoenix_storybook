@@ -65,7 +65,52 @@ defmodule PhoenixStorybook.StoryLiveOpenInEditorTest do
            )
   end
 
+  test "uses line 1 for components rendered from module source", %{conn: conn} do
+    System.put_env("PLUG_EDITOR", @editor)
+
+    {:ok, view, _html} = live(conn, ~p"/storybook/component")
+    view |> element("a", "Source") |> render_click()
+
+    assert has_element?(
+             view,
+             "a[title='Open in editor'][href^='vscode://file/']" <>
+               "[href$='/components/component.ex:1']"
+           )
+  end
+
+  test "uses the component module path and line 1 for live_component stories", %{conn: conn} do
+    System.put_env("PLUG_EDITOR", @editor)
+
+    {:ok, view, _html} = live(conn, ~p"/storybook/live_component")
+    view |> element("a", "Source") |> render_click()
+
+    assert has_element?(
+             view,
+             "a[title='Open in editor'][href^='vscode://file/']" <>
+               "[href$='/components/live_component.ex:1']"
+           )
+  end
+
+  test "substitutes __FILE__ and __LINE__ for any editor template", %{conn: conn} do
+    System.put_env("PLUG_EDITOR", "txmt://open?url=file://__FILE__&line=__LINE__")
+
+    {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/component")
+    html = view |> element("a", "Source") |> render_click()
+
+    [_, href] = Regex.run(~r/href="(txmt:\/\/open[^"]+)"/, html)
+    assert href =~ ~r|file://.+/components/component\.ex&amp;line=4$|
+  end
+
   test "does not render open-in-editor button when PLUG_EDITOR is unset", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
+    view |> element("a", "Source") |> render_click()
+
+    refute has_element?(view, "a[title='Open in editor']")
+  end
+
+  test "does not render open-in-editor button when PLUG_EDITOR is an empty string", %{conn: conn} do
+    System.put_env("PLUG_EDITOR", "")
+
     {:ok, view, _html} = live(conn, ~p"/storybook/examples/example")
     view |> element("a", "Source") |> render_click()
 
