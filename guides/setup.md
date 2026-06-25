@@ -1,5 +1,9 @@
 # Manual setup
 
+> [!TIP]
+>
+> All the steps below can be applied automatically by running `mix igniter.install phoenix_storybook` (see the [Igniter documentation](https://hexdocs.pm/igniter)). This guide is for setting things up manually, and as a reference for what the installer does.
+
 To start using `PhoenixStorybook` in your Phoenix application you will need to follow these steps:
 
 1. Add the `phoenix_storybook` dependency
