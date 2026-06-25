@@ -420,6 +420,7 @@ defmodule PhoenixStorybook.StoryLive do
         change_event="psb-set-source-file"
         class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
       />
+      <.editor_button :if={@editor_url} editor_url={@editor_url} />
       <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
@@ -506,6 +507,7 @@ defmodule PhoenixStorybook.StoryLive do
         change_event="psb-set-source-file"
         class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
       />
+      <.editor_button :if={@editor_url} editor_url={@editor_url} />
       <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
@@ -580,6 +582,20 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
+  attr :editor_url, :string, required: true
+
+  defp editor_button(assigns) do
+    ~H"""
+    <a
+      href={@editor_url}
+      title="Open in editor"
+      class="psb psb:dark:text-slate-400 psb:dark:hover:text-slate-500"
+    >
+      <i class="fa-solid fa-file-code fa-xl psb:h-5.5 psb:w-5.5"></i>
+    </a>
+    """
+  end
+
   defp assign_source_panel_values(assigns) do
     extra_sources = story_extra_sources(assigns.story)
     extra_sources_file_paths = story_extra_sources_file_paths(assigns.story)
@@ -594,11 +610,14 @@ defmodule PhoenixStorybook.StoryLive do
         extra_sources_file_paths
       )
 
+    editor_url = editor_url(assigns.story, selected_source_file, extra_sources_file_paths)
+
     assign(assigns,
       source: source,
       extra_sources: extra_sources,
       selected_source_file: selected_source_file,
-      source_permalink_url: source_permalink_url
+      source_permalink_url: source_permalink_url,
+      editor_url: editor_url
     )
   end
 
@@ -692,6 +711,43 @@ defmodule PhoenixStorybook.StoryLive do
 
       relative_path ->
         normalized_base_url <> "/" <> relative_path <> line_fragment
+    end
+  end
+
+  defp editor_url(story, selected_source_file, extra_sources_file_paths) do
+    case System.get_env("PLUG_EDITOR") do
+      template when is_binary(template) and template != "" ->
+        build_editor_url(template, story, selected_source_file, extra_sources_file_paths)
+
+      _ ->
+        nil
+    end
+  end
+
+  defp build_editor_url(template, story, selected_source_file, extra_sources_file_paths) do
+    with path when not is_nil(path) <-
+           selected_source_file_path(story, selected_source_file, extra_sources_file_paths),
+         path = to_string(path),
+         true <- path != "" do
+      line = editor_url_line(story, selected_source_file)
+
+      template
+      |> String.replace("__FILE__", URI.encode(path))
+      |> String.replace("__LINE__", to_string(line))
+    else
+      _ -> nil
+    end
+  end
+
+  defp editor_url_line(story, selected_source_file) do
+    if selected_source_file in [nil, ""] and story.storybook_type() == :component and
+         story.render_source() == :function do
+      case StorySource.function_source_line_range(story.function()) do
+        {start_line, _end_line} -> start_line
+        _ -> 1
+      end
+    else
+      1
     end
   end
 

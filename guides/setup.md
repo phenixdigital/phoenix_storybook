@@ -206,6 +206,18 @@ defp aliases do
 end
 ```
 
+### f. Open source files in your editor (optional)
+
+When the storybook runs locally, the **Source** tab shows a button that opens the displayed file directly in your editor. It is driven by the `PLUG_EDITOR` environment variable — the same one `Plug.Debugger` and `phoenix_live_reload` use, so you may already have it set. Point it at your editor's URL scheme using the `__FILE__` and `__LINE__` placeholders:
+
+```bash
+export PLUG_EDITOR="vscode://file/__FILE__:__LINE__"   # VS Code
+# export PLUG_EDITOR="cursor://file/__FILE__:__LINE__" # Cursor
+# export PLUG_EDITOR="zed://file/__FILE__:__LINE__"    # Zed
+```
+
+The button only appears when `PLUG_EDITOR` is set. Because it links to an absolute path on the machine running the server, keep it set in your local shell only — not in deployed environments.
+
 ## 5. Update your Docker image
 
 If you are deploying your app with Docker, then you need to copy the storybook content into your
