@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "2.5.0",
+    "@biomejs/biome": "2.5.1",
     "@tailwindcss/cli": "^4.3.1",
     "@tailwindcss/forms": "^0.5.11",
     "esbuild": "^0.28.1",
