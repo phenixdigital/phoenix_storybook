@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 @layer reset, theme, app, utilities;
 
 @import "tailwindcss/theme.css" layer(theme) prefix(psb);
@@ -16,6 +18,49 @@
 
 @custom-variant dark (&:where(.psb\:dark, .psb\:dark *));
 
+/*
+  Semantic sidebar theme tokens (shadcn-style).
+  A small, standard set of roles rather than one token per micro-state.
+  Each token holds its light-mode value here and its dark-mode value in the
+  `.psb\:dark` override below, so components reference a single token (e.g.
+  `psb:bg-sidebar`) instead of hardcoded light/dark color pairs.
+
+  Palette: Tailwind `neutral` (monochrome). The highlight (`sidebar-primary`)
+  is a strong neutral — near-black in light, near-white in dark — not a color.
+*/
+@theme {
+  --color-muted: var(--psb-color-neutral-100);
+  --color-muted-foreground: var(--psb-color-neutral-500);
+  --color-border: var(--psb-color-neutral-200);
+
+  --color-sidebar: var(--psb-color-neutral-50);
+  --color-sidebar-foreground: var(--psb-color-neutral-700);
+  --color-sidebar-muted: var(--psb-color-neutral-100);
+  --color-sidebar-muted-foreground: var(--psb-color-neutral-400);
+  --color-sidebar-primary: var(--psb-color-neutral-900);
+  --color-sidebar-border: var(--psb-color-neutral-200);
+  --color-sidebar-accent: var(--psb-color-white);
+}
+
+/*
+  Dark-mode values. The `prefix(psb)` import above namespaces `@theme` tokens
+  to `--psb-color-*`, and utilities read those, so the overrides must target the
+  prefixed names (not `--color-*`) or they are silently ignored.
+*/
+.psb\:dark {
+  --psb-color-muted: var(--psb-color-neutral-800);
+  --psb-color-muted-foreground: var(--psb-color-neutral-400);
+  --psb-color-border: var(--psb-color-neutral-700);
+
+  --psb-color-sidebar: var(--psb-color-neutral-900);
+  --psb-color-sidebar-foreground: var(--psb-color-neutral-300);
+  --psb-color-sidebar-muted: var(--psb-color-neutral-800);
+  --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-500);
+  --psb-color-sidebar-primary: var(--psb-color-neutral-50);
+  --psb-color-sidebar-border: var(--psb-color-neutral-700);
+  --psb-color-sidebar-accent: var(--psb-color-neutral-800);
+}
+
 @layer utilities {
   .psb {
     @import "tailwindcss/utilities.css" prefix(psb);
@@ -24,7 +69,7 @@
 
 @layer theme {
   .psb {
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     @apply psb:antialiased;
   }
 

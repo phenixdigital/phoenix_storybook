@@ -63,10 +63,10 @@ defmodule PhoenixStorybook.Sidebar do
 
   def render(assigns) do
     ~H"""
-    <section
+    <sidebar
       id="psb-sidebar"
       phx-hook="PhoenixStorybook.SidebarHook"
-      class="psb psb:text-gray-600 psb:dark:text-slate-400 psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-slate-50 psb:dark:bg-slate-800 psb:lg:pt-20 psb:pb-32 psb:px-4 psb:overflow-y-auto"
+      class="psb psb:text-sidebar-foreground psb:border-r-sidebar-border psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:lg:pt-20 psb:pb-32 psb:px-4 psb:overflow-y-auto"
     >
       <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon
@@ -74,33 +74,29 @@ defmodule PhoenixStorybook.Sidebar do
           name="xmark"
           phx-click={JS.dispatch("psb:close-sidebar")}
           plan={@fa_plan}
-          class="fa-lg psb:block psb:lg:hidden psb:absolute psb:right-6 psb:top-6 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:cursor-pointer"
+          class="fa-lg psb:block psb:lg:hidden psb:absolute psb:right-6 psb:top-6 psb:hover:text-sidebar-primary psb:cursor-pointer"
         />
       </span>
 
-      <div class="psb psb:bg-white psb:dark:bg-slate-900 psb:relative psb:pointer-events-auto psb:mb-4">
-        <button
-          id="psb-search-button"
-          phx-click={JS.dispatch("psb:open-search")}
-          class="psb psb:hidden psb:w-full psb:lg:flex psb:items-center psb:text-sm psb:leading-6 psb:text-slate-400 psb:rounded-md psb:border psb:border-1 psb:border-slate-100 psb:dark:border-slate-600 psb:hover:border-slate-200 psb:py-1.5 psb:pl-2 psb:pr-3"
-        >
-          <.fa_icon
-            style={:light}
-            name="magnifying-glass"
-            plan={@fa_plan}
-            class="fa-lg psb:mr-3 psb:flex-none psb:text-slate-400"
-          /> Quick search...
-          <span class="psb psb:ml-auto psb:pl-3 psb:flex-none psb:text-xs psb:font-semibold psb:text-slate-400">
-            ⌘K
-          </span>
-        </button>
-      </div>
+      <%!-- <div class="psb  psb:relative psb:pointer-events-auto psb:mb-4"> --%>
+      <button
+        id="psb-search-button"
+        phx-click={JS.dispatch("psb:open-search")}
+        class="psb psb:px-3 psb:pb-1.5 psb:pt-2 psb:mb-4 psb:w-full psb:flex psb:items-center psb:gap-1 psb:bg-sidebar-accent psb:text-sidebar-muted-foreground psb:shadow-xs psb:rounded-lg psb:border psb:border-sidebar-border psb:transition-shadow psb:hover:shadow-sm"
+      >
+        <%!-- <.scaled_fa_icon name="magnifying-glass" plan={@fa_plan} class="psb:size-5" /> --%>
+        Quick search...
+        <div class="psb:ml-auto psb:flex psb:items-center psb:gap-0.25">
+          <.kbd text="⌘ K" />
+        </div>
+      </button>
+      <%!-- </div> --%>
 
       <nav class="psb psb:flex-1 psb:xl:sticky">
         {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
       </nav>
 
-      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-slate-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-bold">
+      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-sidebar-muted-foreground psb:hover:text-sidebar-primary psb:hover:font-bold">
         <.link
           href="https://github.com/phenixdigital/phoenix_storybook"
           target="_blank"
@@ -112,7 +108,7 @@ defmodule PhoenixStorybook.Sidebar do
         </.link>
       </div>
       <.hidden_icons fa_plan={@fa_plan} content_flat_list={@content_flat_list} />
-    </section>
+    </sidebar>
     """
   end
 
@@ -126,28 +122,31 @@ defmodule PhoenixStorybook.Sidebar do
               <% folder_path = Path.join(@root_path, path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div
-                class="psb psb:flex psb:items-center psb:py-3 psb:lg:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:group psb:hover:text-indigo-600 psb:dark:hover:text-sky-400"
+                class="psb psb:flex psb:items-center psb:py-3 psb:lg:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:group psb:hover:text-sidebar-primary"
                 phx-click={click_action(open_folder?)}
                 phx-target={@myself}
                 phx-value-path={folder_path}
               >
                 <%= unless @root do %>
-                  <%= if open_folder? do %>
-                    <.fa_icon name="caret-down" class="psb:pl-1 psb:pr-2" plan={@fa_plan} />
-                  <% else %>
-                    <.fa_icon name="caret-right" class="psb:pl-1 psb:pr-2" plan={@fa_plan} />
-                  <% end %>
+                  <.scaled_fa_icon
+                    name="chevron-right"
+                    plan={@fa_plan}
+                    class={[
+                      "psb:mr-2 psb:size-4 psb:transition-transform psb:origin-center psb:text-sidebar-muted-foreground",
+                      open_folder? && "psb:rotate-90"
+                    ]}
+                  />
                 <% end %>
 
                 <%= if folder_icon do %>
                   <.user_icon
                     icon={folder_icon}
-                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
+                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-sidebar-primary"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
 
-                <span class="psb psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400">
+                <span class="psb psb:group-hover:text-sidebar-primary">
                   {name}
                 </span>
               </div>
@@ -167,13 +166,13 @@ defmodule PhoenixStorybook.Sidebar do
                 <%= if icon do %>
                   <.user_icon
                     icon={icon}
-                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
+                    class="fa-fw psb:-ml-1 psb:mr-1.5 psb:group-hover:text-sidebar-primary"
                     fa_plan={@fa_plan}
                   />
                 <% end %>
                 <.link
                   patch={if t = assigns[:theme], do: "#{story_path}?theme=#{t}", else: story_path}
-                  class="psb psb:block psb:w-full psb:py-2 psb:lg:py-1 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400"
+                  class="psb psb:block psb:w-full psb:py-2 psb:lg:py-1 psb:group-hover:text-sidebar-primary"
                 >
                   {name}
                 </.link>
@@ -183,6 +182,27 @@ defmodule PhoenixStorybook.Sidebar do
         </li>
       <% end %>
     </ul>
+    """
+  end
+
+  # Renders an `fa_icon` that scales to precisely fill its box, regardless of
+  # the glyph's font metrics. The wrapper establishes a CSS container and the
+  # icon is sized in container-query units, so the caller only sets the box size
+  # (and color, which the glyph inherits via `currentColor`) through `class`.
+  attr :name, :string, required: true, doc: "The name of the icon, without the fa- prefix."
+  attr :style, :atom, default: :solid, doc: "One of the styles provided by FontAwesome."
+  attr :plan, :atom, required: true, doc: "Free plan will make all icons render with solid style."
+  attr :class, :any, default: nil, doc: "CSS classes for the wrapper box."
+  attr :rest, :global, doc: "Any HTML attribute"
+
+  defp scaled_fa_icon(assigns) do
+    ~H"""
+    <div
+      class={["psb:@container psb:flex psb:items-center psb:justify-center", @class]}
+      {@rest}
+    >
+      <.fa_icon name={@name} style={@style} plan={@plan} class="psb:text-[70cqw]" />
+    </div>
     """
   end
 
@@ -205,14 +225,14 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp story_class(current_path, story_path) do
     story_class =
-      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-indigo-600 psb:dark:hover:border-sky-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:border-l-1.5 psb:group"
+      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-sidebar-primary psb:hover:text-sidebar-primary psb:hover:border-l-1.5 psb:group"
 
     if current_path == story_path do
       story_class <>
-        " psb:font-bold psb:border-indigo-600 psb:dark:border-sky-400 psb:text-indigo-700 psb:dark:text-sky-400 psb:border-l-1.5"
+        " psb:font-bold psb:border-sidebar-primary psb:text-sidebar-primary psb:border-l-1.5"
     else
       story_class <>
-        " psb:border-slate-200 psb:dark:border-slate-500 psb:text-slate-700 psb:dark:text-slate-400"
+        " psb:border-sidebar-border psb:text-sidebar-foreground"
     end
   end
 
