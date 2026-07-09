@@ -718,13 +718,14 @@ defmodule PhoenixStorybook.StoryLive do
          extra_sources_file_paths
        ) do
     normalized_base_url = normalize_source_permalink_base_url(base_url)
+    content_path = backend_module.config(:content_path)
 
     line_fragment =
       source_permalink_line_fragment(normalized_base_url, story, selected_source_file)
 
     story
     |> selected_source_file_path(selected_source_file, extra_sources_file_paths)
-    |> relative_source_file_path(normalized_base_url, backend_module.config(:content_path))
+    |> relative_source_file_path(normalized_base_url, content_path)
     |> case do
       nil ->
         nil
@@ -873,8 +874,9 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp source_file_path_root_from_content_path(nil, _repo_name), do: nil
 
-  defp source_file_path_root_from_content_path(content_path, repo_name) do
-    expanded_content_path = Path.expand(to_string(content_path))
+  defp source_file_path_root_from_content_path(content_path, repo_name)
+       when is_binary(content_path) and content_path != "" do
+    expanded_content_path = Path.expand(content_path)
 
     expanded_content_path
     |> path_and_parent_directories()
@@ -883,14 +885,20 @@ defmodule PhoenixStorybook.StoryLive do
     end)
   end
 
-  defp path_and_parent_directories(path) do
-    parent = Path.dirname(path)
+  defp source_file_path_root_from_content_path(_content_path, _repo_name), do: nil
 
-    if parent == path do
-      [path]
-    else
-      [path | path_and_parent_directories(parent)]
-    end
+  defp path_and_parent_directories(path) do
+    path
+    |> Stream.unfold(fn
+      nil ->
+        nil
+
+      current ->
+        parent = Path.dirname(current)
+        next = if parent == current, do: nil, else: parent
+        {current, next}
+    end)
+    |> Enum.to_list()
   end
 
   defp source_permalink_line_fragment(normalized_base_url, story, selected_source_file) do
