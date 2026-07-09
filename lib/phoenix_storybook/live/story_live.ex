@@ -854,21 +854,22 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp source_file_path_from_cwd(source_file_path, repo_name, content_path) do
-    root =
-      case File.cwd!() do
-        cwd when String.starts_with?(Path.basename(cwd), repo_name) ->
-          cwd
-
-        _ ->
-          source_file_path_root_from_content_path(content_path, repo_name)
-      end
-
-    with root when is_binary(root) <- root,
+    with root when is_binary(root) <- source_file_path_root(repo_name, content_path),
          relative_path <- Path.relative_to(source_file_path, root),
          false <- String.starts_with?(relative_path, "..") do
       relative_path
     else
       _ -> nil
+    end
+  end
+
+  defp source_file_path_root(repo_name, content_path) do
+    cwd = File.cwd!()
+
+    if String.starts_with?(Path.basename(cwd), repo_name) do
+      cwd
+    else
+      source_file_path_root_from_content_path(content_path, repo_name)
     end
   end
 
@@ -878,28 +879,22 @@ defmodule PhoenixStorybook.StoryLive do
        when is_binary(content_path) and content_path != "" do
     expanded_content_path = Path.expand(content_path)
 
-    expanded_content_path
-    |> path_and_parent_directories()
-    |> Enum.find(fn candidate ->
-      String.starts_with?(Path.basename(candidate), repo_name)
+    Stream.iterate(expanded_content_path, &Path.dirname/1)
+    |> Enum.reduce_while(nil, fn candidate, _acc ->
+      cond do
+        String.starts_with?(Path.basename(candidate), repo_name) ->
+          {:halt, candidate}
+
+        Path.dirname(candidate) == candidate ->
+          {:halt, nil}
+
+        true ->
+          {:cont, nil}
+      end
     end)
   end
 
   defp source_file_path_root_from_content_path(_content_path, _repo_name), do: nil
-
-  defp path_and_parent_directories(path) do
-    path
-    |> Stream.unfold(fn
-      nil ->
-        nil
-
-      current ->
-        parent = Path.dirname(current)
-        next = if parent == current, do: nil, else: parent
-        {current, next}
-    end)
-    |> Enum.to_list()
-  end
 
   defp source_permalink_line_fragment(normalized_base_url, story, selected_source_file) do
     if selected_source_file in [nil, ""] and story.storybook_type() == :component and
