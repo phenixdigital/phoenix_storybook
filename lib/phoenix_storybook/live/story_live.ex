@@ -855,7 +855,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_file_path_from_cwd(source_file_path, repo_name, content_path) do
     root =
       case File.cwd!() do
-        cwd when is_binary(cwd) and String.starts_with?(Path.basename(cwd), repo_name) ->
+        cwd when String.starts_with?(Path.basename(cwd), repo_name) ->
           cwd
 
         _ ->
