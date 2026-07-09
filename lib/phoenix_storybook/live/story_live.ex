@@ -605,6 +605,7 @@ defmodule PhoenixStorybook.StoryLive do
     source_permalink_url =
       source_permalink_url(
         assigns.backend_module.config(:source_permalink_base_url),
+        assigns.backend_module,
         assigns.story,
         selected_source_file,
         extra_sources_file_paths
@@ -691,12 +692,31 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp source_permalink_url(nil, _story, _selected_source_file, _extra_sources_file_paths),
+  defp source_permalink_url(
+         nil,
+         _backend_module,
+         _story,
+         _selected_source_file,
+         _extra_sources_file_paths
+       ),
     do: nil
 
-  defp source_permalink_url("", _story, _selected_source_file, _extra_sources_file_paths), do: nil
+  defp source_permalink_url(
+         "",
+         _backend_module,
+         _story,
+         _selected_source_file,
+         _extra_sources_file_paths
+       ),
+       do: nil
 
-  defp source_permalink_url(base_url, story, selected_source_file, extra_sources_file_paths) do
+  defp source_permalink_url(
+         base_url,
+         backend_module,
+         story,
+         selected_source_file,
+         extra_sources_file_paths
+       ) do
     normalized_base_url = normalize_source_permalink_base_url(base_url)
 
     line_fragment =
@@ -704,7 +724,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     story
     |> selected_source_file_path(selected_source_file, extra_sources_file_paths)
-    |> relative_source_file_path(normalized_base_url)
+    |> relative_source_file_path(normalized_base_url, backend_module.config(:content_path))
     |> case do
       nil ->
         nil
@@ -768,14 +788,14 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp relative_source_file_path(nil, _normalized_base_url), do: nil
+  defp relative_source_file_path(nil, _normalized_base_url, _content_path), do: nil
 
-  defp relative_source_file_path(source_file_path, normalized_base_url) do
+  defp relative_source_file_path(source_file_path, normalized_base_url, content_path) do
     source_file_path = to_string(source_file_path)
 
     relative_path =
       if Path.type(source_file_path) == :absolute do
-        source_file_path_from_repo_name(source_file_path, normalized_base_url)
+        source_file_path_from_repo_name(source_file_path, normalized_base_url, content_path)
       else
         source_file_path
       end
@@ -810,10 +830,11 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp source_file_path_from_repo_name(source_file_path, normalized_base_url) do
+  defp source_file_path_from_repo_name(source_file_path, normalized_base_url, content_path) do
     with %URI{path: base_path} <- URI.parse(normalized_base_url),
          [_, repo_name | _] <- String.split(base_path || "", "/", trim: true),
-         suffix when not is_nil(suffix) <- source_file_path_suffix(source_file_path, repo_name),
+         suffix when not is_nil(suffix) <-
+           source_file_path_suffix(source_file_path, repo_name, content_path),
          true <- suffix != "" do
       suffix
     else
@@ -821,27 +842,54 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp source_file_path_suffix(source_file_path, repo_name) do
+  defp source_file_path_suffix(source_file_path, repo_name, content_path) do
     case String.split(source_file_path, "/#{repo_name}/", parts: 2) do
       [_, suffix] ->
         suffix
 
       _ ->
-        source_file_path_from_cwd(source_file_path, repo_name)
+        source_file_path_from_cwd(source_file_path, repo_name, content_path)
     end
   end
 
-  defp source_file_path_from_cwd(source_file_path, repo_name) do
-    cwd = File.cwd!()
+  defp source_file_path_from_cwd(source_file_path, repo_name, content_path) do
+    root =
+      case File.cwd!() do
+        cwd when is_binary(cwd) and cwd != "" and String.starts_with?(Path.basename(cwd), repo_name) ->
+          cwd
 
-    if Path.basename(cwd) |> String.starts_with?(repo_name) do
-      relative_path = Path.relative_to(source_file_path, cwd)
-
-      if String.starts_with?(relative_path, "..") do
-        nil
-      else
-        relative_path
+        _ ->
+          source_file_path_root_from_content_path(content_path, repo_name)
       end
+
+    with root when is_binary(root) <- root,
+         relative_path <- Path.relative_to(source_file_path, root),
+         false <- String.starts_with?(relative_path, "..") do
+      relative_path
+    else
+      _ -> nil
+    end
+  end
+
+  defp source_file_path_root_from_content_path(nil, _repo_name), do: nil
+
+  defp source_file_path_root_from_content_path(content_path, repo_name) do
+    content_path = Path.expand(to_string(content_path))
+
+    content_path
+    |> path_and_parent_directories()
+    |> Enum.find(fn candidate ->
+      String.starts_with?(Path.basename(candidate), repo_name)
+    end)
+  end
+
+  defp path_and_parent_directories(path) do
+    parent = Path.dirname(path)
+
+    if parent == path do
+      [path]
+    else
+      [path | path_and_parent_directories(parent)]
     end
   end
 
