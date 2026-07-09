@@ -877,20 +877,19 @@ defmodule PhoenixStorybook.StoryLive do
 
   defp source_file_path_root_from_content_path(content_path, repo_name)
        when is_binary(content_path) and content_path != "" do
-    expanded_content_path = Path.expand(content_path)
+    content_path
+    |> Path.expand()
+    |> Stream.unfold(fn
+      nil ->
+        nil
 
-    Stream.iterate(expanded_content_path, &Path.dirname/1)
-    |> Enum.reduce_while(nil, fn candidate, _acc ->
-      cond do
-        String.starts_with?(Path.basename(candidate), repo_name) ->
-          {:halt, candidate}
-
-        Path.dirname(candidate) == candidate ->
-          {:halt, nil}
-
-        true ->
-          {:cont, nil}
-      end
+      candidate ->
+        parent = Path.dirname(candidate)
+        next = if parent == candidate, do: nil, else: parent
+        {candidate, next}
+    end)
+    |> Enum.find(fn candidate ->
+      String.starts_with?(Path.basename(candidate), repo_name)
     end)
   end
 
