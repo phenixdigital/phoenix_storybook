@@ -158,8 +158,7 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
   defp let_markup(nil), do: ""
   defp let_markup(let), do: ":let={#{to_string(let)}}"
 
-  defp extra_attrs_markup(attrs) when is_list(attrs), do: Enum.join(attrs, " ")
-  defp extra_attrs_markup(attrs), do: attrs
+  defp extra_attrs_markup(attrs), do: Enum.join(attrs, " ")
 
   defp attributes_markup(attributes, index, reserved_attrs \\ []) do
     {eval_attrs, runtime_attrs} =
