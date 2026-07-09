@@ -601,13 +601,15 @@ defmodule PhoenixStorybook.StoryLive do
     extra_sources_file_paths = story_extra_sources_file_paths(assigns.story)
     selected_source_file = selected_source_file(assigns.story, assigns[:source_file])
     source = rendered_story_source(assigns.story, extra_sources, selected_source_file)
+    content_path = assigns.backend_module.config(:content_path, nil)
 
     source_permalink_url =
       source_permalink_url(
         assigns.backend_module.config(:source_permalink_base_url),
         assigns.story,
         selected_source_file,
-        extra_sources_file_paths
+        extra_sources_file_paths,
+        content_path
       )
 
     editor_url = editor_url(assigns.story, selected_source_file, extra_sources_file_paths)
@@ -691,12 +693,31 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp source_permalink_url(nil, _story, _selected_source_file, _extra_sources_file_paths),
-    do: nil
+  defp source_permalink_url(
+         nil,
+         _story,
+         _selected_source_file,
+         _extra_sources_file_paths,
+         _content_path
+       ),
+       do: nil
 
-  defp source_permalink_url("", _story, _selected_source_file, _extra_sources_file_paths), do: nil
+  defp source_permalink_url(
+         "",
+         _story,
+         _selected_source_file,
+         _extra_sources_file_paths,
+         _content_path
+       ),
+       do: nil
 
-  defp source_permalink_url(base_url, story, selected_source_file, extra_sources_file_paths) do
+  defp source_permalink_url(
+         base_url,
+         story,
+         selected_source_file,
+         extra_sources_file_paths,
+         content_path
+       ) do
     normalized_base_url = normalize_source_permalink_base_url(base_url)
 
     line_fragment =
@@ -704,7 +725,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     story
     |> selected_source_file_path(selected_source_file, extra_sources_file_paths)
-    |> relative_source_file_path(normalized_base_url)
+    |> relative_source_file_path(normalized_base_url, content_path)
     |> case do
       nil ->
         nil
@@ -768,14 +789,15 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp relative_source_file_path(nil, _normalized_base_url), do: nil
+  defp relative_source_file_path(nil, _normalized_base_url, _content_path), do: nil
 
-  defp relative_source_file_path(source_file_path, normalized_base_url) do
+  defp relative_source_file_path(source_file_path, normalized_base_url, content_path) do
     source_file_path = to_string(source_file_path)
 
     relative_path =
       if Path.type(source_file_path) == :absolute do
-        source_file_path_from_repo_name(source_file_path, normalized_base_url)
+        source_file_path_from_repo_name(source_file_path, normalized_base_url) ||
+          source_file_path_from_content_path(source_file_path, content_path)
       else
         source_file_path
       end
@@ -837,11 +859,44 @@ defmodule PhoenixStorybook.StoryLive do
     if Path.basename(cwd) |> String.starts_with?(repo_name) do
       relative_path = Path.relative_to(source_file_path, cwd)
 
-      if String.starts_with?(relative_path, "..") do
+      if Path.type(relative_path) == :absolute or String.starts_with?(relative_path, "..") do
         nil
       else
         relative_path
       end
+    end
+  end
+
+  defp source_file_path_from_content_path(_source_file_path, nil), do: nil
+
+  defp source_file_path_from_content_path(source_file_path, content_path) do
+    content_path = to_string(content_path)
+
+    with :absolute <- Path.type(content_path),
+         common_root when common_root not in [nil, "/", source_file_path] <-
+           common_path_prefix(source_file_path, content_path),
+         relative_path <- Path.relative_to(source_file_path, common_root),
+         false <- String.starts_with?(relative_path, "..") do
+      relative_path
+    else
+      _ -> nil
+    end
+  end
+
+  defp common_path_prefix(path_a, path_b) do
+    path_a_parts = Path.split(Path.expand(path_a))
+    path_b_parts = Path.split(Path.expand(path_b))
+
+    common_parts =
+      path_a_parts
+      |> Enum.zip(path_b_parts)
+      |> Enum.take_while(fn {left, right} -> left == right end)
+      |> Enum.map(&elem(&1, 0))
+
+    case common_parts do
+      [] -> nil
+      ["/"] -> "/"
+      _ -> Path.join(common_parts)
     end
   end
 
