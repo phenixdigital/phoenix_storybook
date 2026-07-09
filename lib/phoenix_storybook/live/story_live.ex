@@ -855,7 +855,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_file_path_from_cwd(source_file_path, repo_name, content_path) do
     root =
       case File.cwd!() do
-        cwd when is_binary(cwd) and cwd != "" and String.starts_with?(Path.basename(cwd), repo_name) ->
+        cwd when is_binary(cwd) and String.starts_with?(Path.basename(cwd), repo_name) ->
           cwd
 
         _ ->
@@ -874,9 +874,9 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_file_path_root_from_content_path(nil, _repo_name), do: nil
 
   defp source_file_path_root_from_content_path(content_path, repo_name) do
-    content_path = Path.expand(to_string(content_path))
+    expanded_content_path = Path.expand(to_string(content_path))
 
-    content_path
+    expanded_content_path
     |> path_and_parent_directories()
     |> Enum.find(fn candidate ->
       String.starts_with?(Path.basename(candidate), repo_name)
