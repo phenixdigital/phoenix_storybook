@@ -156,7 +156,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.#{fun}"}#{maybe_wrap_attributes(story, attributes, let, template)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.#{fun}"}#{maybe_wrap_attributes(story, attributes, let, template)}#{if self_closed?, do: " />", else: ">"}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.#{fun}>"}
     """)
@@ -168,7 +168,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     self_closed? = Enum.empty?(slots)
 
     trim_empty_lines("""
-    #{"<.live_component"}#{maybe_wrap_attributes(story, attributes, let, template, mod)}#{if self_closed?, do: "/>", else: ">"}
+    #{"<.live_component"}#{maybe_wrap_attributes(story, attributes, let, template, mod)}#{if self_closed?, do: " />", else: ">"}
     #{if slots, do: indent_slots(slots)}
     #{unless self_closed?, do: "</.live_component>"}
     """)
@@ -190,10 +190,15 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
 
     attrs_binary = Enum.join(attrs, " ")
 
-    if String.length(attrs_binary) > @wrap_attributes_threshold do
-      "\n  " <> Enum.join(attrs, "\n  ") <> "\n"
-    else
-      " " <> attrs_binary
+    cond do
+      attrs_binary == "" ->
+        ""
+
+      String.length(attrs_binary) > @wrap_attributes_threshold ->
+        "\n  " <> Enum.join(attrs, "\n  ") <> "\n"
+
+      true ->
+        " " <> attrs_binary
     end
   end
 

@@ -1,12 +1,12 @@
 defmodule PhoenixStorybook.TemplateHelpers do
   @moduledoc false
 
-  @variation_regex ~r{(<\.psb-variation\/>)|(<\.psb-variation\s[^(\>)]*\/>)}
-  @variation_group_regex ~r{<\.psb-variation-group[^(\>)]*\/>}
+  @variation_regex ~r{<\.psb-variation(?:\s[^>]*)?\s*\/>}
+  @variation_group_regex ~r{<\.psb-variation-group(?:\s[^>]*)?\s*\/>}
   @html_attributes_regex ~r{(\w+)=((?:.(?!["']?\s+(?:\S+)=|\s*\/?[>]))+.["']?)?}
   @js_push_regex ~r[(JS\.push\("(?:psb-assign|psb-toggle)".*value:\s+)(%{.*})(.*\))]
 
-  def default_template, do: "<.psb-variation/>"
+  def default_template, do: "<.psb-variation />"
 
   def set_variation_dom_id(template, unique_variation_id) do
     String.replace(template, ":variation_id", unique_variation_id)
