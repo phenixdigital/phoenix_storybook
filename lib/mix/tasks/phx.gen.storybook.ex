@@ -139,7 +139,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   defp maybe_core_components_example(core_components_module) do
     if Code.ensure_loaded?(core_components_module) &&
-         Enum.all?(~w(button header table input simple_form)a, fn function ->
+         Enum.all?(~w(button header table input)a, fn function ->
            function_exported?(core_components_module, function, 1)
          end) do
       [
