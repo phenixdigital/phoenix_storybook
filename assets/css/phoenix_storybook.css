@@ -16,30 +16,75 @@
   strategy: class;
 }
 
+@plugin "tailwindcss-motion";
+
 @custom-variant dark (&:where(.psb\:dark, .psb\:dark *));
 
 /*
-  Semantic sidebar theme tokens (shadcn-style).
+  Semantic theme tokens (shadcn-style).
   A small, standard set of roles rather than one token per micro-state.
   Each token holds its light-mode value here and its dark-mode value in the
   `.psb\:dark` override below, so components reference a single token (e.g.
   `psb:bg-sidebar`) instead of hardcoded light/dark color pairs.
 
-  Palette: Tailwind `neutral` (monochrome). The highlight (`sidebar-primary`)
-  is a strong neutral — near-black in light, near-white in dark — not a color.
+  Palette: for now every color token lives in the neutral zone (Tailwind
+  `neutral`, monochrome). Strong highlights (`primary`, `sidebar-primary`)
+  are a strong neutral — near-black in light, near-white in dark — not a color.
+  Radius derives from a single `--radius` base so the whole scale shifts together.
 */
 @theme {
+  --color-background: var(--psb-color-white);
+  --color-foreground: var(--psb-color-neutral-950);
+
+  --color-card: var(--psb-color-white);
+  --color-card-foreground: var(--psb-color-neutral-950);
+
+  --color-popover: var(--psb-color-white);
+  --color-popover-foreground: var(--psb-color-neutral-950);
+
+  --color-primary: var(--psb-color-neutral-900);
+  --color-primary-foreground: var(--psb-color-neutral-50);
+
+  --color-secondary: var(--psb-color-neutral-100);
+  --color-secondary-foreground: var(--psb-color-neutral-900);
+
   --color-muted: var(--psb-color-neutral-100);
   --color-muted-foreground: var(--psb-color-neutral-500);
+
+  --color-accent: var(--psb-color-neutral-100);
+  --color-accent-foreground: var(--psb-color-neutral-900);
+
+  --color-destructive: var(--psb-color-neutral-700);
+
   --color-border: var(--psb-color-neutral-200);
+  --color-input: var(--psb-color-neutral-200);
+  --color-ring: var(--psb-color-neutral-400);
+
+  --color-chart-1: var(--psb-color-neutral-300);
+  --color-chart-2: var(--psb-color-neutral-400);
+  --color-chart-3: var(--psb-color-neutral-500);
+  --color-chart-4: var(--psb-color-neutral-600);
+  --color-chart-5: var(--psb-color-neutral-700);
 
   --color-sidebar: var(--psb-color-neutral-50);
   --color-sidebar-foreground: var(--psb-color-neutral-700);
   --color-sidebar-muted: var(--psb-color-neutral-100);
   --color-sidebar-muted-foreground: var(--psb-color-neutral-400);
   --color-sidebar-primary: var(--psb-color-neutral-900);
-  --color-sidebar-border: var(--psb-color-neutral-200);
+  --color-sidebar-primary-foreground: var(--psb-color-neutral-50);
   --color-sidebar-accent: var(--psb-color-white);
+  --color-sidebar-accent-foreground: var(--psb-color-neutral-900);
+  --color-sidebar-border: var(--psb-color-neutral-200);
+  --color-sidebar-ring: var(--psb-color-neutral-400);
+
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--psb-radius) * 0.6);
+  --radius-md: calc(var(--psb-radius) * 0.8);
+  --radius-lg: var(--psb-radius);
+  --radius-xl: calc(var(--psb-radius) * 1.4);
+  --radius-2xl: calc(var(--psb-radius) * 1.8);
+  --radius-3xl: calc(var(--psb-radius) * 2.2);
+  --radius-4xl: calc(var(--psb-radius) * 2.6);
 }
 
 /*
@@ -48,17 +93,49 @@
   prefixed names (not `--color-*`) or they are silently ignored.
 */
 .psb\:dark {
+  --psb-color-background: var(--psb-color-neutral-950);
+  --psb-color-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-card: var(--psb-color-neutral-900);
+  --psb-color-card-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-popover: var(--psb-color-neutral-900);
+  --psb-color-popover-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-primary: var(--psb-color-neutral-50);
+  --psb-color-primary-foreground: var(--psb-color-neutral-900);
+
+  --psb-color-secondary: var(--psb-color-neutral-800);
+  --psb-color-secondary-foreground: var(--psb-color-neutral-50);
+
   --psb-color-muted: var(--psb-color-neutral-800);
   --psb-color-muted-foreground: var(--psb-color-neutral-400);
+
+  --psb-color-accent: var(--psb-color-neutral-800);
+  --psb-color-accent-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-destructive: var(--psb-color-neutral-300);
+
   --psb-color-border: var(--psb-color-neutral-700);
+  --psb-color-input: var(--psb-color-neutral-700);
+  --psb-color-ring: var(--psb-color-neutral-500);
+
+  --psb-color-chart-1: var(--psb-color-neutral-700);
+  --psb-color-chart-2: var(--psb-color-neutral-600);
+  --psb-color-chart-3: var(--psb-color-neutral-500);
+  --psb-color-chart-4: var(--psb-color-neutral-400);
+  --psb-color-chart-5: var(--psb-color-neutral-300);
 
   --psb-color-sidebar: var(--psb-color-neutral-900);
   --psb-color-sidebar-foreground: var(--psb-color-neutral-300);
   --psb-color-sidebar-muted: var(--psb-color-neutral-800);
   --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-500);
   --psb-color-sidebar-primary: var(--psb-color-neutral-50);
-  --psb-color-sidebar-border: var(--psb-color-neutral-700);
+  --psb-color-sidebar-primary-foreground: var(--psb-color-neutral-900);
   --psb-color-sidebar-accent: var(--psb-color-neutral-800);
+  --psb-color-sidebar-accent-foreground: var(--psb-color-neutral-50);
+  --psb-color-sidebar-border: var(--psb-color-neutral-700);
+  --psb-color-sidebar-ring: var(--psb-color-neutral-500);
 }
 
 @layer utilities {

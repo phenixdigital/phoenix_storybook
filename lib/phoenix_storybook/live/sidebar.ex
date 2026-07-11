@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.Sidebar do
     <sidebar
       id="psb-sidebar"
       phx-hook="PhoenixStorybook.SidebarHook"
-      class="psb psb:text-sidebar-foreground psb:border-r-sidebar-border psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:lg:pt-20 psb:pb-32 psb:px-4 psb:overflow-y-auto"
+      class="psb psb:text-sidebar-foreground psb:border-r-sidebar-border psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto"
     >
       <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon
@@ -74,23 +74,20 @@ defmodule PhoenixStorybook.Sidebar do
           name="xmark"
           phx-click={JS.dispatch("psb:close-sidebar")}
           plan={@fa_plan}
-          class="fa-lg psb:block psb:lg:hidden psb:absolute psb:right-6 psb:top-6 psb:hover:text-sidebar-primary psb:cursor-pointer"
+          class="fa-lg psb:block! psb:lg:hidden! psb:absolute psb:right-6 psb:top-6 psb:hover:text-sidebar-primary psb:cursor-pointer"
         />
       </span>
 
-      <%!-- <div class="psb  psb:relative psb:pointer-events-auto psb:mb-4"> --%>
       <button
         id="psb-search-button"
         phx-click={JS.dispatch("psb:open-search")}
         class="psb psb:px-3 psb:pb-1.5 psb:pt-2 psb:mb-4 psb:w-full psb:flex psb:items-center psb:gap-1 psb:bg-sidebar-accent psb:text-sidebar-muted-foreground psb:shadow-xs psb:rounded-lg psb:border psb:border-sidebar-border psb:transition-shadow psb:hover:shadow-sm"
       >
-        <%!-- <.scaled_fa_icon name="magnifying-glass" plan={@fa_plan} class="psb:size-5" /> --%>
         Quick search...
         <div class="psb:ml-auto psb:flex psb:items-center psb:gap-0.25">
           <.kbd text="⌘ K" />
         </div>
       </button>
-      <%!-- </div> --%>
 
       <nav class="psb psb:flex-1 psb:xl:sticky">
         {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
@@ -114,7 +111,11 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp render_entries(assigns) do
     ~H"""
-    <ul class="psb psb:ml-3 psb:-mt-1.5 psb:lg:mt-auto">
+    <ul
+      class="psb psb:ml-3 psb:-mt-1.5 psb:lg:mt-auto"
+      phx-mounted={unless @root, do: submenu_enter()}
+      phx-remove={unless @root, do: submenu_leave()}
+    >
       <%= for entry <- sort_entries(@entries) do %>
         <li class="psb">
           <%= case entry do %>
@@ -122,7 +123,7 @@ defmodule PhoenixStorybook.Sidebar do
               <% folder_path = Path.join(@root_path, path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div
-                class="psb psb:flex psb:items-center psb:py-3 psb:lg:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:group psb:hover:text-sidebar-primary"
+                class="psb psb:flex psb:items-center psb:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:group psb:hover:text-sidebar-primary"
                 phx-click={click_action(open_folder?)}
                 phx-target={@myself}
                 phx-value-path={folder_path}
@@ -238,6 +239,26 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp click_action(_open? = false), do: "open-folder"
   defp click_action(_open? = true), do: "close-folder"
+
+  # Enter/leave animations for a folder's submenu list. The submenu is added and
+  # removed from the DOM by the server as folders open and close, so we hook the
+  # animation onto `phx-mounted` (open) and `phx-remove` (close). Each applies a
+  # `tailwindcss-motion` utility for its duration only — never both at once, so
+  # their competing `animation` declarations can't clash. On close LiveView keeps
+  # the element around until the leave animation has run.
+  defp submenu_enter do
+    JS.transition(
+      "psb:motion-translate-y-in-[-0.5rem] psb:motion-opacity-in-0 psb:motion-duration-200",
+      time: 200
+    )
+  end
+
+  defp submenu_leave do
+    JS.transition(
+      "psb:motion-translate-y-out-[-0.5rem] psb:motion-opacity-out-0 psb:motion-duration-150",
+      time: 150
+    )
+  end
 
   defp open_folder?(path, _assigns = %{opened_folders: opened_folders}) do
     MapSet.member?(opened_folders, path)
