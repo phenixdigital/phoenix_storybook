@@ -199,6 +199,31 @@ defmodule PhoenixStorybook.LayoutView do
      "psb:opacity-0 psb:scale-95"}
   end
 
+  attr :id, :string, default: nil
+  attr :class, :any, default: nil
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  defp header_action_button(assigns) do
+    ~H"""
+    <button
+      type="button"
+      id={@id}
+      class={[
+        "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-sidebar-border",
+        "psb:bg-white psb:dark:bg-slate-800 psb:shadow-xs psb:flex psb:items-center psb:justify-center",
+        "psb:text-gray-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:shadow-sm",
+        "psb:transition-shadow psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2",
+        "psb:focus:ring-offset-white psb:dark:focus:ring-offset-slate-800 psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400",
+        @class
+      ]}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </button>
+    """
+  end
+
   def sandbox_attributes(_conn_or_socket, _container, %{theme: nil}), do: []
 
   def sandbox_attributes(conn_or_socket, _container, %{theme: theme}) do

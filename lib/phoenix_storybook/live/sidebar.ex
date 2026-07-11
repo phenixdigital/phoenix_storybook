@@ -78,17 +78,6 @@ defmodule PhoenixStorybook.Sidebar do
         />
       </span>
 
-      <button
-        id="psb-search-button"
-        phx-click={JS.dispatch("psb:open-search")}
-        class="psb psb:px-3 psb:pb-1.5 psb:pt-2 psb:mb-4 psb:w-full psb:flex psb:items-center psb:gap-1 psb:bg-sidebar-accent psb:text-sidebar-muted-foreground psb:shadow-xs psb:rounded-lg psb:border psb:border-sidebar-border psb:transition-shadow psb:hover:shadow-sm"
-      >
-        Quick search...
-        <div class="psb:ml-auto psb:flex psb:items-center psb:gap-0.25">
-          <.kbd text="⌘ K" />
-        </div>
-      </button>
-
       <nav class="psb psb:flex-1 psb:xl:sticky">
         {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
       </nav>
@@ -133,7 +122,7 @@ defmodule PhoenixStorybook.Sidebar do
                     name="chevron-right"
                     plan={@fa_plan}
                     class={[
-                      "psb:mr-2 psb:size-4 psb:transition-transform psb:origin-center psb:text-sidebar-muted-foreground",
+                      "psb:mr-3 psb:ml-0.5 psb:size-3 psb:transition-transform psb:origin-center psb:text-sidebar-muted-foreground",
                       open_folder? && "psb:rotate-90"
                     ]}
                   />
@@ -183,27 +172,6 @@ defmodule PhoenixStorybook.Sidebar do
         </li>
       <% end %>
     </ul>
-    """
-  end
-
-  # Renders an `fa_icon` that scales to precisely fill its box, regardless of
-  # the glyph's font metrics. The wrapper establishes a CSS container and the
-  # icon is sized in container-query units, so the caller only sets the box size
-  # (and color, which the glyph inherits via `currentColor`) through `class`.
-  attr :name, :string, required: true, doc: "The name of the icon, without the fa- prefix."
-  attr :style, :atom, default: :solid, doc: "One of the styles provided by FontAwesome."
-  attr :plan, :atom, required: true, doc: "Free plan will make all icons render with solid style."
-  attr :class, :any, default: nil, doc: "CSS classes for the wrapper box."
-  attr :rest, :global, doc: "Any HTML attribute"
-
-  defp scaled_fa_icon(assigns) do
-    ~H"""
-    <div
-      class={["psb:@container psb:flex psb:items-center psb:justify-center", @class]}
-      {@rest}
-    >
-      <.fa_icon name={@name} style={@style} plan={@plan} class="psb:text-[70cqw]" />
-    </div>
     """
   end
 
