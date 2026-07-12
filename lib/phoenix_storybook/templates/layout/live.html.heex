@@ -29,13 +29,13 @@
   id="psb-main"
   class={[
     "psb psb:absolute psb:inset-0 psb:flex psb:flex-col psb:overflow-hidden",
-    "psb:bg-white psb:dark:bg-slate-900",
+    "psb:bg-background",
     "psb:lg:left-60 psb:lg:my-3 psb:lg:mr-3 psb:lg:rounded-xl psb:lg:border psb:lg:border-sidebar-border psb:lg:shadow-sm"
   ]}
 >
   <header class="psb psb:relative psb:shrink-0 psb:w-full psb:border-b psb:border-sidebar-border">
     <div class="psb psb:h-16 psb:w-full">
-      <div class="psb psb:absolute psb:top-5 psb:left-5 psb:z-20 psb:text-indigo-600 psb:dark:text-sky-400 psb:text-lg psb:font-bold psb:uppercase ">
+      <div class="psb psb:absolute psb:top-5 psb:left-5 psb:z-20 psb:text-primary psb:text-lg psb:font-bold psb:uppercase ">
         <.link patch={@root_path} class="psb">
           <.fa_icon style={:regular} name="book-open" plan={@fa_plan} />
           <span class="psb psb:ml-1">{title(@socket)}</span>
@@ -83,7 +83,7 @@
 
             <div
               id="psb-colormode-dropdown"
-              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-white psb:dark:bg-slate-800 psb:ring-1 psb:ring-black/5 psb:divide-y psb:divide-gray-100 psb:dark:divide-slate-600 psb:focus:outline-none psb:justify-start "
+              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-popover psb:ring-1 psb:ring-border psb:divide-y psb:divide-border psb:focus:outline-none psb:justify-start "
               phx-click-away={
                 JS.hide(to: "#psb-colormode-dropdown", transition: hide_dropdown_transition())
               }
@@ -91,7 +91,7 @@
               data-psb-selected-mode={@selected_color_mode}
             >
               <div class="psb psb:px-4 psb:py-3">
-                <p class="psb psb:text-sm psb:font-medium psb:text-indigo-600 psb:dark:text-slate-300 psb:text-left">
+                <p class="psb psb:text-sm psb:font-medium psb:text-muted-foreground psb:text-left">
                   Pick a color mode
                 </p>
               </div>
@@ -109,10 +109,10 @@
                       transition: hide_dropdown_transition()
                     )
                   }
-                  class="psb psb:text-gray-700 psb:dark:text-slate-300 psb:hover:bg-gray-100 psb:dark:hover:bg-slate-800 psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
+                  class="psb psb:text-popover-foreground psb:hover:bg-accent psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
                 >
                   <%= if @selected_color_mode == mode do %>
-                    <span class="psb psb:text-indigo-600 psb:dark:text-sky-400">
+                    <span class="psb psb:text-primary">
                       <.fa_icon name="check" class="psb:pr-2" plan={@fa_plan} />
                       <.fa_icon
                         name={color_mode_icon(mode)}
@@ -152,13 +152,13 @@
 
             <div
               id="psb-theme-dropdown"
-              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-white psb:dark:bg-slate-800 psb:ring-1 psb:ring-black/5 psb:divide-y psb:divide-gray-100 psb:dark:divide-slate-600 psb:focus:outline-none"
+              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-popover psb:ring-1 psb:ring-border psb:divide-y psb:divide-border psb:focus:outline-none"
               phx-click-away={
                 JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())
               }
             >
               <div class="psb psb:px-4 psb:py-3">
-                <p class="psb psb:text-sm psb:font-medium psb:text-indigo-600 psb:dark:text-gray-200 psb:text-left">
+                <p class="psb psb:text-sm psb:font-medium psb:text-muted-foreground psb:text-left">
                   Pick a theme
                 </p>
               </div>
@@ -172,10 +172,10 @@
                         transition: hide_dropdown_transition()
                       )
                     }
-                    class="psb psb-theme psb:text-gray-700 psb:dark:text-gray-500 psb:hover:bg-gray-100 psb:dark:hover:bg-slate-800 psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
+                    class="psb psb-theme psb:text-popover-foreground psb:hover:bg-accent psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
                   >
                     <%= if assigns[:theme] == theme do %>
-                      <span class="psb psb:text-indigo-600 psb:dark:text-gray-200">
+                      <span class="psb psb:text-primary">
                         <.fa_icon name="check" class="psb:pr-2" plan={@fa_plan} />{opts[:name]}
                       </span>
                     <% else %>
@@ -192,7 +192,7 @@
       </div>
     </div>
 
-    <nav class="psb psb:lg:hidden psb:w-full psb:h-12 psb:border-slate-200 psb:dark:border-slate-600 psb:border-t psb:flex psb:text-gray-600 psb:dark:text-slate-300 psb:items-center psb:cursor-pointer psb:pr-2">
+    <nav class="psb psb:lg:hidden psb:w-full psb:h-12 psb:border-border psb:border-t psb:flex psb:text-muted-foreground psb:items-center psb:cursor-pointer psb:pr-2">
       <span id="psb-breadcrumb-icon" phx-update="ignore">
         <.fa_icon
           name="bars"

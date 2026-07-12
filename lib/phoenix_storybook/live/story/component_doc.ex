@@ -41,7 +41,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
     ~H"""
     <div
       :if={@doc}
-      class="psb psb:text-base psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300"
+      class="psb psb:text-base psb:md:text-lg psb:leading-7 psb:text-foreground"
     >
       {raw(@doc.header)}
     </div>
@@ -49,7 +49,7 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
       <a
         phx-click={JS.show(to: "#psb-doc-next") |> JS.hide() |> JS.show(to: "#psb-read-less")}
         id="psb-read-more"
-        class="psb psb:py-2 psb:inline-block psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
+        class="psb psb:py-2 psb:inline-block psb:text-muted-foreground psb:hover:text-primary psb:cursor-pointer"
       >
         <.fa_icon
           name="caret-right"
@@ -61,12 +61,12 @@ defmodule PhoenixStorybook.Story.ComponentDoc do
       <a
         phx-click={JS.hide(to: "#psb-doc-next") |> JS.hide() |> JS.show(to: "#psb-read-more")}
         id="psb-read-less"
-        class="psb psb:pt-2 psb:pb-4 psb:hidden psb:text-slate-400 psb:hover:text-indigo-700 psb:dark:hover:text-sky-400 psb:cursor-pointer"
+        class="psb psb:pt-2 psb:pb-4 psb:hidden psb:text-muted-foreground psb:hover:text-primary psb:cursor-pointer"
       >
         <.fa_icon name="caret-down" style={:thin} plan={@fa_plan} class="psb:mr-1" /> Read less
       </a>
       <div id="psb-doc-next" class="psb:hidden psb:space-y-4 ">
-        <div class="psb psb-doc psb:text-sm psb:md:text-base psb:leading-7 psb:text-slate-700 psb:dark:text-slate-500">
+        <div class="psb psb-doc psb:text-sm psb:md:text-base psb:leading-7 psb:text-muted-foreground">
           {raw(@doc.body)}
         </div>
       </div>

@@ -42,7 +42,7 @@ defmodule PhoenixStorybook.Search do
       phx-hide={hide_container()}
       class="psb psb:hidden psb:opacity-0 psb:relative psb:z-10 psb:transition-all"
     >
-      <div class="psb psb:fixed psb:inset-0 psb:backdrop-blur psb:bg-gray-500 psb:bg-opacity-25">
+      <div class="psb psb:fixed psb:inset-0 psb:backdrop-blur psb:bg-neutral-950/25">
       </div>
 
       <div class="psb psb:fixed psb:inset-0 psb:z-10 psb:overflow-y-auto psb:p-4 psb:sm:p-6 psb:md:p-20">
@@ -53,7 +53,7 @@ defmodule PhoenixStorybook.Search do
           phx-click-away={JS.dispatch("psb:close-search")}
           phx-window-keydown={JS.exec("phx-click-away")}
           phx-key="Escape"
-          class="psb psb:opacity-0 psb:scale-90 psb:mx-auto psb:max-w-xl psb:mt-16 psb:transform psb:divide-y psb:divide-gray-100 psb:dark:divide-slate-600 psb:overflow-hidden psb:rounded-xl psb:bg-white psb:dark:bg-slate-800 psb:shadow-2xl psb:transition-all"
+          class="psb psb:opacity-0 psb:scale-90 psb:mx-auto psb:max-w-xl psb:mt-16 psb:transform psb:divide-y psb:divide-border psb:overflow-hidden psb:rounded-xl psb:bg-popover psb:shadow-2xl psb:transition-all"
         >
           <.form
             :let={f}
@@ -67,7 +67,7 @@ defmodule PhoenixStorybook.Search do
               style={:light}
               name="search"
               plan={@fa_plan}
-              class="psb:pointer-events-none psb:absolute psb:top-3.5 psb:left-4 psb:h-5 psb:w-5 psb:text-gray-400"
+              class="psb:pointer-events-none psb:absolute psb:top-3.5 psb:left-4 psb:h-5 psb:w-5 psb:text-muted-foreground"
             />
             <.input
               field={f[:input]}
@@ -76,46 +76,46 @@ defmodule PhoenixStorybook.Search do
               phx-target={@myself}
               placeholder="Search..."
               autocomplete="off"
-              class="psb psb:h-12 psb:w-full psb:border-0 psb:bg-transparent psb:pl-11 psb:pr-4 psb:text-gray-800 psb:dark:text-slate-300 psb:placeholder-gray-400 psb:dark:placeholder-slate-500 psb:outline-none psb:focus:ring-0 psb:sm:text-sm"
+              class="psb psb:h-12 psb:w-full psb:border-0 psb:bg-transparent psb:pl-11 psb:pr-4 psb:text-foreground psb:placeholder-muted-foreground psb:outline-none psb:focus:ring-0 psb:sm:text-sm"
             />
           </.form>
 
           <%= if Enum.empty?(@stories) do %>
-            <div class="psb psb:text-center psb:text-gray-600 psb:dark:text-slate-300 psb:py-4">
+            <div class="psb psb:text-center psb:text-muted-foreground psb:py-4">
               <p>No stories found</p>
             </div>
           <% end %>
 
           <ul
             id="psb-search-list"
-            class="psb psb:max-h-72 psb:scroll-py-2 psb:divide-y psb:divide-gray-200 psb:dark:divide-slate-600 psb:overflow-y-auto psb:pb-2 psb:text-sm psb:text-gray-800"
+            class="psb psb:max-h-72 psb:scroll-py-2 psb:divide-y psb:divide-border psb:overflow-y-auto psb:pb-2 psb:text-sm psb:text-foreground"
           >
             <%= for {story, i} <- Enum.with_index(@stories) do %>
               <li
                 id={"story-#{i}"}
                 phx-highlight={
                   JS.add_class(
-                    "psb:bg-slate-50 psb:dark:bg-slate-700 psb:text-indigo-600 psb:dark:text-sky-400"
+                    "psb:bg-muted psb:text-primary"
                   )
                 }
                 phx-baseline={
                   JS.remove_class(
-                    "psb:bg-slate-50 psb:dark:bg-slate-700 psb:text-indigo-600 psb:dark:text-sky-400"
+                    "psb:bg-muted psb:text-primary"
                   )
                 }
-                class="psb psb:group psb:select-none psb:cursor-pointer psb:hover:bg-slate-50 psb:dark:hover:bg-slate-700"
+                class="psb psb:group psb:select-none psb:cursor-pointer psb:hover:bg-muted"
                 tabindex="-1"
               >
                 <.link
                   patch={NavigationHelpers.path_to_story(@root_path, story.path, %{theme: @theme})}
                   class="psb psb:flex psb:justify-between psb:px-4 psb:py-4 psb:space-x-4"
                 >
-                  <span class="psb psb:font-semibold psb:whitespace-nowrap psb:dark:text-slate-300">
+                  <span class="psb psb:font-semibold psb:whitespace-nowrap">
                     {story.name}
                   </span>
                   <div class="psb psb:truncate">
                     {LayoutView.render_breadcrumb(@socket, story.path,
-                      span_class: "psb:text-xs psb:dark:text-slate-300"
+                      span_class: "psb:text-xs psb:text-muted-foreground"
                     )}
                   </div>
                 </.link>

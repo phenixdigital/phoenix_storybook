@@ -42,7 +42,7 @@
   --color-popover: var(--psb-color-white);
   --color-popover-foreground: var(--psb-color-neutral-950);
 
-  --color-primary: var(--psb-color-neutral-900);
+  --color-primary: var(--psb-color-violet-800);
   --color-primary-foreground: var(--psb-color-neutral-50);
 
   --color-secondary: var(--psb-color-neutral-100);
@@ -93,7 +93,7 @@
   prefixed names (not `--color-*`) or they are silently ignored.
 */
 .psb\:dark {
-  --psb-color-background: var(--psb-color-neutral-950);
+  --psb-color-background: var(--psb-color-neutral-900);
   --psb-color-foreground: var(--psb-color-neutral-50);
 
   --psb-color-card: var(--psb-color-neutral-900);
@@ -102,7 +102,7 @@
   --psb-color-popover: var(--psb-color-neutral-900);
   --psb-color-popover-foreground: var(--psb-color-neutral-50);
 
-  --psb-color-primary: var(--psb-color-neutral-50);
+  --psb-color-primary: var(--psb-color-gray-300);
   --psb-color-primary-foreground: var(--psb-color-neutral-900);
 
   --psb-color-secondary: var(--psb-color-neutral-800);
@@ -126,7 +126,7 @@
   --psb-color-chart-4: var(--psb-color-neutral-400);
   --psb-color-chart-5: var(--psb-color-neutral-300);
 
-  --psb-color-sidebar: var(--psb-color-neutral-900);
+  --psb-color-sidebar: var(--psb-color-neutral-800);
   --psb-color-sidebar-foreground: var(--psb-color-neutral-300);
   --psb-color-sidebar-muted: var(--psb-color-neutral-800);
   --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-500);
@@ -134,7 +134,7 @@
   --psb-color-sidebar-primary-foreground: var(--psb-color-neutral-900);
   --psb-color-sidebar-accent: var(--psb-color-neutral-800);
   --psb-color-sidebar-accent-foreground: var(--psb-color-neutral-50);
-  --psb-color-sidebar-border: var(--psb-color-neutral-700);
+  --psb-color-sidebar-border: var(--psb-color-neutral-800);
   --psb-color-sidebar-ring: var(--psb-color-neutral-500);
 }
 
@@ -167,10 +167,10 @@
   }
 
   .psb\:dark ::-webkit-scrollbar {
-    @apply psb:bg-slate-900 psb:w-[15px];
+    @apply psb:bg-neutral-900 psb:w-[15px];
   }
 
   .psb\:dark ::-webkit-scrollbar-thumb {
-    @apply psb:bg-slate-700 psb:border-solid psb:border-4 psb:border-transparent psb:rounded-lg psb:bg-clip-content;
+    @apply psb:bg-neutral-700 psb:border-solid psb:border-4 psb:border-transparent psb:rounded-lg psb:bg-clip-content;
   }
 }

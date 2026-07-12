@@ -25,7 +25,7 @@ defmodule PhoenixStorybook.LayoutView do
         <.fa_icon
           style={:thin}
           name="angle-right"
-          class="psb:px-2 psb:text-slate-500 psb:dark:text-slate-300"
+          class="psb:px-2 psb:text-muted-foreground"
           plan={@fa_plan}
         />
       </:separator>
@@ -210,11 +210,11 @@ defmodule PhoenixStorybook.LayoutView do
       type="button"
       id={@id}
       class={[
-        "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-sidebar-border",
-        "psb:bg-white psb:dark:bg-slate-800 psb:shadow-xs psb:flex psb:items-center psb:justify-center",
-        "psb:text-gray-400 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:shadow-sm",
+        "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-sidebar-border psb:dark:border-border",
+        "psb:bg-card psb:dark:bg-secondary psb:shadow-xs psb:flex psb:items-center psb:justify-center",
+        "psb:text-muted-foreground psb:hover:text-primary psb:hover:shadow-sm",
         "psb:transition-shadow psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2",
-        "psb:focus:ring-offset-white psb:dark:focus:ring-offset-slate-800 psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400",
+        "psb:focus:ring-offset-background psb:focus:ring-ring",
         @class
       ]}
       {@rest}

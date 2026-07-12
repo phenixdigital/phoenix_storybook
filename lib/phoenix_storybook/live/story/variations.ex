@@ -60,12 +60,12 @@ defmodule PhoenixStorybook.Story.Variations do
           class="psb psb-variation-block psb:gap-x-4 psb:grid psb:grid-cols-5"
         >
           <!-- Variation description -->
-          <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-4 psb:border-b psb:border-slate-100 psb:dark:border-slate-600 psb:md:text-lg psb:leading-7 psb:text-slate-700 psb:dark:text-slate-300 psb:flex psb:justify-between">
+          <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-4 psb:border-b psb:border-border psb:md:text-lg psb:leading-7 psb:text-foreground psb:flex psb:justify-between">
             <.link href={"##{anchor_id(variation)}"} class="psb psb-variation-anchor-link">
               <.fa_icon
                 style={:light}
                 name="link"
-                class="psb:hidden! psb:group-hover:inline-block! psb:-ml-8 psb:pr-1 psb:text-slate-400"
+                class="psb:hidden! psb:group-hover:inline-block! psb:-ml-8 psb:pr-1 psb:text-muted-foreground"
                 plan={@fa_plan}
               />
               <%= if description do %>
@@ -84,14 +84,14 @@ defmodule PhoenixStorybook.Story.Variations do
               }
               class="psb psb:hidden psb-open-playground-link"
             >
-              <span class="psb psb:text-base psb:font-light psb:text-gray-500 psb:dark:text-slate-300 psb:hover:text-indigo-600 psb:dark:hover:text-sky-400 psb:hover:font-medium ">
+              <span class="psb psb:text-base psb:font-light psb:text-muted-foreground psb:hover:text-primary psb:hover:font-medium ">
                 Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
               </span>
             </.link>
           </div>
           <!-- Optional variation note -->
           <%= if note do %>
-            <div class="psb psb:col-span-5 psb:mb-2 psb:text-sm psb:md:text-base psb:leading-7 psb:text-slate-700 psb:dark:text-slate-500 psb-doc">
+            <div class="psb psb:col-span-5 psb:mb-2 psb:text-sm psb:md:text-base psb:leading-7 psb:text-muted-foreground psb-doc">
               {raw(MarkdownRenderer.markdown_to_html(note))}
             </div>
           <% end %>
@@ -99,7 +99,7 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-component"}
             class={[
-              "psb psb:border psb:dark:bg-slate-800 psb:border-slate-100 psb:dark:border-slate-600 psb:rounded-md psb:col-span-5 psb:mt-2 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-white psb:shadow-sm",
+              "psb psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:mt-2 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-card psb:shadow-sm",
               component_layout_class(@story)
             ]}
           >
@@ -151,13 +151,13 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-code"}
             class={[
-              "psb psb:border psb:border-slate-100 psb:dark:border-slate-600 psb:bg-slate-800 psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
+              "psb psb:border psb:border-border psb:bg-neutral-800 psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
               code_layout_class(@story)
             ]}
           >
             <div
               phx-click={JS.dispatch("psb:copy-code")}
-              class="psb psb:hidden psb:group-hover:block psb:bg-slate-700 psb:text-slate-500 psb:hover:text-slate-100 psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
+              class="psb psb:hidden psb:group-hover:block psb:bg-neutral-700 psb:text-neutral-400 psb:hover:text-neutral-100 psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
             >
               <.fa_icon name="copy" class="psb:text-inherit" plan={@fa_plan} />
             </div>

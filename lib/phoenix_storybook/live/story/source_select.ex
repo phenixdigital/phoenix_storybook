@@ -17,7 +17,7 @@ defmodule PhoenixStorybook.Story.SourceSelect do
 
   attr :label_class, :string,
     default:
-      "psb psb:text-gray-400 psb:dark:text-slate-300 psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
+      "psb psb:text-muted-foreground psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
 
   def source_file_select(assigns) do
     ~H"""
@@ -29,10 +29,10 @@ defmodule PhoenixStorybook.Story.SourceSelect do
   end
 
   @default_select_class [
-    "psb psb:cursor-pointer psb:form-select psb:dark:bg-slate-800 psb:text-gray-600",
-    "psb:dark:text-slate-300 psb:pr-10 psb:py-1 psb:border-gray-300 psb:dark:border-slate-600",
-    "psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400",
-    "psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:rounded-md"
+    "psb psb:cursor-pointer psb:form-select psb:bg-card psb:text-muted-foreground",
+    "psb:pr-10 psb:py-1 psb:border-border",
+    "psb:focus:outline-none psb:focus:ring-ring",
+    "psb:focus:border-ring psb:text-xs psb:md:text-sm psb:rounded-md"
   ]
 
   defp select_options(assigns = %{change_target: nil}) do
