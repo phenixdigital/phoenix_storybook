@@ -210,8 +210,8 @@ defmodule PhoenixStorybook.LayoutView do
       type="button"
       id={@id}
       class={[
-        "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-sidebar-border psb:dark:border-border",
-        "psb:bg-card psb:dark:bg-secondary psb:shadow-xs psb:flex psb:items-center psb:justify-center",
+        "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-border",
+        "psb:bg-sidebar-accent psb:shadow-xs psb:flex psb:items-center psb:justify-center",
         "psb:text-muted-foreground psb:hover:text-primary psb:hover:shadow-sm",
         "psb:transition-shadow psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2",
         "psb:focus:ring-offset-background psb:focus:ring-ring",

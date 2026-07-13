@@ -35,10 +35,10 @@
 >
   <header class="psb psb:relative psb:shrink-0 psb:w-full psb:border-b psb:border-sidebar-border">
     <div class="psb psb:h-16 psb:w-full">
-      <div class="psb psb:absolute psb:top-5 psb:left-5 psb:z-20 psb:text-primary psb:text-lg psb:font-bold psb:uppercase ">
-        <.link patch={@root_path} class="psb">
-          <.fa_icon style={:regular} name="book-open" plan={@fa_plan} />
-          <span class="psb psb:ml-1">{title(@socket)}</span>
+      <div class="psb psb:absolute psb:top-5 psb:left-5 psb:right-36 psb:lg:right-auto psb:text-primary psb:text-lg psb:font-bold psb:uppercase">
+        <.link patch={@root_path} class="psb psb:flex psb:items-center psb:min-w-0">
+          <.fa_icon style={:regular} name="book-open" plan={@fa_plan} class="psb:shrink-0" />
+          <span class="psb psb:ml-1 psb:truncate">{title(@socket)}</span>
         </.link>
       </div>
 
@@ -83,20 +83,18 @@
 
             <div
               id="psb-colormode-dropdown"
-              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-popover psb:ring-1 psb:ring-border psb:divide-y psb:divide-border psb:focus:outline-none psb:justify-start "
+              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-3 psb:w-48 psb:rounded-md psb:border psb:border-border psb:bg-sidebar-accent psb:p-1 psb:shadow-md psb:focus:outline-none"
               phx-click-away={
                 JS.hide(to: "#psb-colormode-dropdown", transition: hide_dropdown_transition())
               }
               phx-hook="PhoenixStorybook.ColorModeHook"
               data-psb-selected-mode={@selected_color_mode}
             >
-              <div class="psb psb:px-4 psb:py-3">
-                <p class="psb psb:text-sm psb:font-medium psb:text-muted-foreground psb:text-left">
-                  Pick a color mode
-                </p>
-              </div>
+              <p class="psb psb:px-2 psb:py-1.5 psb:text-xs psb:font-medium psb:text-muted-foreground psb:text-left psb:cursor-default">
+                Pick a color mode
+              </p>
 
-              <div class="psb psb:py-1">
+              <div class="psb">
                 <a
                   :for={mode <- ~w(light dark system)}
                   phx-click={
@@ -109,7 +107,7 @@
                       transition: hide_dropdown_transition()
                     )
                   }
-                  class="psb psb:text-popover-foreground psb:hover:bg-accent psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
+                  class="psb psb:text-popover-foreground psb:hover:bg-border psb:block psb:rounded-sm psb:px-2 psb:py-1.5 psb:text-sm psb:cursor-pointer psb:text-left"
                 >
                   <%= if @selected_color_mode == mode do %>
                     <span class="psb psb:text-primary">
@@ -152,17 +150,15 @@
 
             <div
               id="psb-theme-dropdown"
-              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-2 psb:w-52 psb:rounded-md psb:shadow-lg psb:bg-popover psb:ring-1 psb:ring-border psb:divide-y psb:divide-border psb:focus:outline-none"
+              class="psb psb:hidden psb:origin-top-right psb:absolute psb:right-0 psb:top-6 psb:mt-3 psb:w-48 psb:rounded-md psb:border psb:border-border psb:bg-sidebar-accent psb:p-1 psb:shadow-md psb:focus:outline-none"
               phx-click-away={
                 JS.hide(to: "#psb-theme-dropdown", transition: hide_dropdown_transition())
               }
             >
-              <div class="psb psb:px-4 psb:py-3">
-                <p class="psb psb:text-sm psb:font-medium psb:text-muted-foreground psb:text-left">
-                  Pick a theme
-                </p>
-              </div>
-              <div class="psb psb:py-1">
+              <p class="psb psb:px-2 psb:py-1.5 psb:text-xs psb:font-medium psb:text-muted-foreground psb:text-left psb:cursor-default">
+                Pick a theme
+              </p>
+              <div class="psb">
                 <%= for {theme, opts} <- themes do %>
                   <a
                     phx-click={
@@ -172,7 +168,7 @@
                         transition: hide_dropdown_transition()
                       )
                     }
-                    class="psb psb-theme psb:text-popover-foreground psb:hover:bg-accent psb:block psb:px-4 psb:py-2 psb:text-sm psb:cursor-pointer psb:text-left"
+                    class="psb psb-theme psb:text-popover-foreground psb:hover:bg-border psb:block psb:rounded-sm psb:px-2 psb:py-1.5 psb:text-sm psb:cursor-pointer psb:text-left"
                   >
                     <%= if assigns[:theme] == theme do %>
                       <span class="psb psb:text-primary">
@@ -211,8 +207,7 @@
   <div
     id="psb-live-container"
     class={[
-      "psb psb:flex-1 psb:overflow-auto psb:overflow-x-hidden",
-      "psb:px-4 psb:lg:px-12 psb:py-6"
+      "psb psb:p-6 psb:flex-1 psb:overflow-auto psb:overflow-x-hidden"
     ]}
   >
     {@inner_content}

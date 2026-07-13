@@ -252,23 +252,23 @@ defmodule PhoenixStorybook.StoryLive do
   def render(assigns = %{story: _story}) do
     ~H"""
     <div
-      class="psb psb:space-y-6 psb:pb-12 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
+      class="psb psb:space-y-6 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
       id="psb-story-live"
       phx-hook="PhoenixStorybook.StoryHook"
     >
       <div class="psb">
-        <div class="psb psb:flex psb:my-6 psb:items-center">
-          <h2 class="psb psb:flex-1 psb:flex-nowrap psb:whitespace-nowrap psb:text-xl psb:md:text-2xl psb:lg:text-3xl psb:m-0 psb:font-extrabold psb:tracking-tight psb:text-primary">
+        <div class="psb psb:flex psb:items-center psb:gap-3">
+          <h2 class="psb psb:flex psb:items-center psb:min-w-0 psb:flex-1 psb:m-0 psb:text-lg psb:md:text-xl psb:lg:text-2xl psb:font-extrabold psb:tracking-tight psb:text-primary">
             <%= if icon = @story_entry.icon do %>
-              <span id={"story-icon-#{story_id(@story)}"} phx-update="ignore">
+              <span id={"story-icon-#{story_id(@story)}"} phx-update="ignore" class="psb psb:shrink-0 psb:pr-2">
                 <.user_icon
                   icon={icon}
-                  class="psb:pr-2 psb:text-primary"
+                  class="psb:text-primary"
                   fa_plan={@fa_plan}
                 />
               </span>
             <% end %>
-            {@story_entry.name}
+            <span class="psb psb:truncate">{@story_entry.name}</span>
           </h2>
           {@story |> navigation_tabs() |> render_navigation_tabs(assigns)}
         </div>
@@ -320,7 +320,7 @@ defmodule PhoenixStorybook.StoryLive do
     assigns = assign(assigns, :tabs, tabs)
 
     ~H"""
-    <div class="psb psb:flex psb:flex-items-center">
+    <div class="psb psb:flex psb:items-center psb:shrink-0">
       <!-- mobile version of navigation tabs -->
       <.form
         :let={f}
@@ -335,32 +335,24 @@ defmodule PhoenixStorybook.StoryLive do
           options={navigation_select_options(@tabs)}
           value={@tab}
           phx-change="psb-set-tab"
-          class="psb psb:form-select psb:bg-card psb:text-muted-foreground psb:border-border psb:w-full psb:pl-3 psb:pr-10 psb:py-1 psb:text-base psb:focus:outline-none psb:focus:ring-ring psb:focus:border-ring psb:sm:text-sm psb:rounded-md"
+          class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-border psb:bg-sidebar-accent psb:shadow-xs psb:text-muted-foreground psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm psb:leading-none psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring"
         />
       </.form>
       <!-- :lg+ version of navigation tabs -->
-      <nav class="psb psb-story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-border psb:bg-muted psb:h-10 psb:text-sm psb:font-medium">
+      <nav class="psb psb-story-tabs psb:hidden psb:lg:inline-flex psb:h-9 psb:items-center psb:justify-center psb:rounded-lg psb:bg-muted psb:p-1 psb:text-sm psb:font-medium psb:text-muted-foreground">
         <%= for tab <- @tabs do %>
           <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
+          <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
           <a
             href="#"
             phx-click="psb-set-tab"
             phx-value-tab={tab_id}
-            class={"psb psb:group psb:focus:outline-none psb:flex psb:rounded-md psb:text-muted-foreground #{active_link(@tab, tab_id)}"}
+            class={"psb psb:group psb:inline-flex psb:h-full psb:items-center psb:justify-center psb:whitespace-nowrap psb:rounded-md psb:px-3 psb:py-1 psb:transition-all psb:focus:outline-none psb:focus-visible:ring-2 psb:focus-visible:ring-ring #{active_link(@tab, tab_id)}"}
           >
-            <span class={active_span(@tab, tab_id)}>
-              <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
-              <%= if icon do %>
-                <.user_icon
-                  icon={icon}
-                  class={"psb:lg:mr-2 psb:group-hover:text-primary #{active_text(@tab, tab_id)}"}
-                  fa_plan={@fa_plan}
-                />
-              <% end %>
-              <span class={"psb psb:whitespace-nowrap psb:group-hover:text-primary #{active_text(@tab, tab_id)}"}>
-                {tab_label}
-              </span>
-            </span>
+            <%= if icon do %>
+              <.user_icon icon={icon} class="psb:mr-2" fa_plan={@fa_plan} />
+            <% end %>
+            <span class="psb psb:leading-none psb:whitespace-nowrap">{tab_label}</span>
           </a>
         <% end %>
       </nav>
@@ -368,21 +360,8 @@ defmodule PhoenixStorybook.StoryLive do
     """
   end
 
-  defp active_link(same, same), do: "psb psb:bg-card psb:opacity-100"
-
-  defp active_link(_tab, _current_tab) do
-    "psb psb:ml-0.5 psb:p-1.5 psb:lg:pl-2.5 psb:lg:pr-3.5 psb:items-center psb:text-muted-foreground"
-  end
-
-  defp active_span(same, same) do
-    "psb psb:h-full psb:rounded-md psb:flex psb:items-center psb:bg-card psb:shadow-sm \
-    psb:ring-opacity-5 psb:text-primary psb:p-1.5 psb:lg:pl-2.5 psb:lg:pr-3.5"
-  end
-
-  defp active_span(_tab, _current_tab), do: ""
-
-  defp active_text(same, same), do: "psb:text-primary"
-  defp active_text(_tab, _current_tab), do: "psb:-ml-0.5"
+  defp active_link(same, same), do: "psb psb:bg-card psb:text-foreground psb:shadow-sm"
+  defp active_link(_tab, _current_tab), do: "psb psb:hover:text-foreground"
 
   defp navigation_select_options(tabs) do
     for {tab, label, _icon} <- tabs, do: {label, tab}
