@@ -114,8 +114,8 @@ defmodule MyAppWeb.Storybook do
     # Recommended value includes `/blob/<branch>` (GitHub) or `/-/blob/<branch>` (GitLab).
     source_permalink_base_url: "https://github.com/my-org/my-app/blob/main",
 
-    # Custom storybook title. Default is "Live Storybook".
-    title: "My Live Storybook",
+    # Custom storybook title. Default is "Phoenix Storybook".
+    title: "My Storybook",
 
     # Theme settings.
     # Each theme must have a name, and an optional dropdown_class.
