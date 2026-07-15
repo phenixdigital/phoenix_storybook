@@ -62,7 +62,7 @@ defmodule PhoenixStorybook.Story.PlaygroundPreviewLive do
         assign_variations_attributes(socket, group, vars)
 
       _ ->
-        assign_variations_attributes(socket, nil, [])
+        assign(socket, variation: nil, variation_id: nil, variations_attributes: %{})
     end
   end
 
