@@ -1086,10 +1086,6 @@ defmodule PhoenixStorybook.Story.Playground do
     """
   end
 
-  defp attr_input(assigns = %{values: values}) when not is_nil(values) do
-    attr_input(%{assigns | values: values})
-  end
-
   defp on_toggle_click(attr_id, value) do
     JS.push("playground-toggle", value: %{toggled: [attr_id, !value]})
   end

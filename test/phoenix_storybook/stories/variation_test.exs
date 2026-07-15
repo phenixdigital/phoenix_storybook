@@ -184,26 +184,16 @@ defmodule PhoenixStorybook.Stories.VariationTest do
         note: "Test note"
       }
 
-      case variation do
-        %Variation{id: id, note: note} when not is_nil(note) ->
-          assert id == :test
-          assert note == "Test note"
-
-        _ ->
-          flunk("Should match variation with note")
-      end
+      %Variation{id: id, note: note} = variation
+      assert id == :test
+      assert note == "Test note"
     end
 
     test "can pattern match on variation without note" do
       variation = %Variation{id: :test}
 
-      case variation do
-        %Variation{id: id, note: nil} ->
-          assert id == :test
-
-        _ ->
-          flunk("Should match variation without note")
-      end
+      %Variation{id: id, note: nil} = variation
+      assert id == :test
     end
 
     test "can pattern match on variation group with note" do
@@ -213,14 +203,9 @@ defmodule PhoenixStorybook.Stories.VariationTest do
         variations: [%Variation{id: :test}]
       }
 
-      case group do
-        %VariationGroup{id: id, note: note} when not is_nil(note) ->
-          assert id == :test_group
-          assert note == "Group note"
-
-        _ ->
-          flunk("Should match variation group with note")
-      end
+      %VariationGroup{id: id, note: note} = group
+      assert id == :test_group
+      assert note == "Group note"
     end
   end
 end
