@@ -8,7 +8,7 @@ defmodule Storybook.Components.CoreComponents.Flash do
   def template do
     """
     <div>
-      <.button phx-click={show("#:variation_id")}>
+      <.button phx-click={show("#:variation_id") |> JS.remove_attribute("hidden", to: "#:variation_id")}>
         Trigger flash
       </.button>
       <.psb-variation/>

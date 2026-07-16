@@ -36,17 +36,17 @@ defmodule Storybook.Examples.CoreComponents do
         {user.last_name}
       </:col>
     </.table>
-    <.header class="mt-16">
-      Feel free to add any missing user!
-      <:subtitle>Please fill-in their first and last names</:subtitle>
-    </.header>
-    <.simple_form :let={f} for={%{}} as={:user} phx-submit={JS.push("save_user")}>
+    <div class="mt-16">
+      <.header>
+        Feel free to add any missing user!
+        <:subtitle>Please fill-in their first and last names</:subtitle>
+      </.header>
+    </div>
+    <.form :let={f} for={%{}} as={:user} phx-submit={JS.push("save_user")} class="max-w-md">
       <.input field={f[:first_name]} label="First name" />
       <.input field={f[:last_name]} label="Last name" />
-      <:actions>
-        <.button>Save user</.button>
-      </:actions>
-    </.simple_form>
+      <.button variant="primary">Save user</.button>
+    </.form>
     """
   end
 

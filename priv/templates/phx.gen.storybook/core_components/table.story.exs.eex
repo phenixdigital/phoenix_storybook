@@ -54,7 +54,11 @@ defmodule Storybook.Components.CoreComponents.Table do
   defp table_rows do
     [
       %{id: 1, first_name: "Jean", last_name: "Dupont", city: "Paris"},
-      %{id: 2, first_name: "Sam", last_name: "Smith", city: "NY"}
+      %{id: 2, first_name: "Sam", last_name: "Smith", city: "NY"},
+      %{id: 3, first_name: "Maria", last_name: "Garcia", city: "Madrid"},
+      %{id: 4, first_name: "Kenji", last_name: "Tanaka", city: "Tokyo"},
+      %{id: 5, first_name: "Anna", last_name: "Muller", city: "Berlin"},
+      %{id: 6, first_name: "Liam", last_name: "O'Brien", city: "Dublin"}
     ]
   end
 
