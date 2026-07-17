@@ -50,8 +50,6 @@ defmodule PhoenixStorybook do
   alias PhoenixStorybook.ExsCompiler
   alias PhoenixStorybook.Stories.StoryValidator
 
-  require Logger
-
   @doc false
   defmacro __using__(opts) do
     if enabled?() do
@@ -220,55 +218,31 @@ defmodule PhoenixStorybook do
     end
   end
 
-  # This quote triggers MD5 calculation for js/css assets provided by the user
+  # Defines asset_hash/1 for the js/css assets provided by the user.
+  # These assets may not exist when the backend module is compiled (asset
+  # pipelines run separately from `mix compile`), so their hashes are
+  # computed at runtime (see PhoenixStorybook.AssetHelpers).
   defp assets_quotes(opts) do
     otp_app = Keyword.get(opts, :otp_app)
 
-    case :code.priv_dir(otp_app) do
-      {:error, :bad_name} ->
-        if Mix.env() != :test,
-          do: Logger.warning("Can't resolve priv dir for application #{otp_app}")
-
-        quote do
-          def asset_hash(_), do: nil
-        end
-
-      priv_dir ->
-        assets_path = Path.join(priv_dir, "/static")
-
-        for asset <- [:css_path, :js_path] do
-          case Keyword.get(opts, asset) do
-            nil ->
-              quote do
-                def asset_hash(unquote(asset)), do: nil
-              end
-
-            asset_path ->
-              path = Path.join(assets_path, asset_path)
-
-              case File.read(path) do
-                {:ok, content} ->
-                  hash = Base.encode16(:crypto.hash(:md5, content), case: :lower)
-
-                  quote do
-                    @external_resource unquote(path)
-                    def asset_hash(unquote(asset)) do
-                      unquote(hash)
-                    end
-                  end
-
-                _ ->
-                  Logger.warning(
-                    "Can't resolve #{asset}: #{path} not found (storybook assets are built by `mix assets.build`)"
-                  )
-
-                  quote do
-                    @external_resource unquote(path)
-                    def asset_hash(unquote(asset)), do: nil
-                  end
-              end
+    for asset <- [:css_path, :js_path] do
+      case Keyword.get(opts, asset) do
+        nil ->
+          quote do
+            def asset_hash(unquote(asset)), do: nil
           end
-        end
+
+        asset_path ->
+          quote do
+            def asset_hash(unquote(asset)) do
+              PhoenixStorybook.AssetHelpers.asset_hash(
+                unquote(otp_app),
+                unquote(asset),
+                unquote(asset_path)
+              )
+            end
+          end
+      end
     end
   end
 
