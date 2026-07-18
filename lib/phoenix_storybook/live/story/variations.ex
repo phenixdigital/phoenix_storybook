@@ -60,19 +60,19 @@ defmodule PhoenixStorybook.Story.Variations do
           class="psb psb-variation-block psb:gap-x-4 psb:grid psb:grid-cols-5"
         >
           <!-- Variation description -->
-          <div class="psb psb:group psb:col-span-5 psb:font-medium psb:hover:font-semibold psb:mb-4 psb:border-b psb:border-border psb:md:text-lg psb:leading-7 psb:text-foreground psb:flex psb:justify-between">
-            <.link href={"##{anchor_id(variation)}"} class="psb psb-variation-anchor-link">
-              <.fa_icon
-                style={:light}
-                name="link"
-                class="psb:hidden! psb:group-hover:inline-block! psb:-ml-8 psb:pr-1 psb:text-muted-foreground"
-                plan={@fa_plan}
-              />
+          <div class="psb psb:group psb:col-span-5 psb:mb-4 psb:border-b psb:border-border psb:md:text-lg psb:text-foreground psb:flex psb:items-center psb:justify-between">
+            <.link href={"##{anchor_id(variation)}"} class="psb psb-variation-anchor-link psb:font-semibold psb:flex psb:items-center psb:gap-2">
               <%= if description do %>
                 {description}
               <% else %>
                 {variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ")}
               <% end %>
+              <.scaled_fa_icon
+                style={:light}
+                name="link"
+                class="psb:size-4 psb:hidden! psb:group-hover:inline-flex!"
+                plan={@fa_plan}
+              />
             </.link>
             <.link
               patch={
@@ -84,8 +84,9 @@ defmodule PhoenixStorybook.Story.Variations do
               }
               class="psb psb:hidden psb-open-playground-link"
             >
-              <span class="psb psb:text-base psb:font-light psb:text-muted-foreground psb:hover:text-primary psb:hover:font-medium ">
-                Open in playground <.fa_icon style={:regular} name="arrow-right" plan={@fa_plan} />
+              <span class="psb psb:flex psb:items-center psb:gap-1 psb:text-xs psb:text-muted-foreground psb:hover:text-primary psb:md:text-sm">
+                Open in playground
+                <.scaled_fa_icon style={:regular} name="arrow-right" plan={@fa_plan} class="psb:size-3" />
               </span>
             </.link>
           </div>
@@ -99,7 +100,7 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-component"}
             class={[
-              "psb psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:mt-2 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-card psb:shadow-sm",
+              "psb psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:mb-4 psb:lg:mb-0 psb:flex psb:items-center psb:justify-center psb:p-2 psb:bg-card",
               component_layout_class(@story)
             ]}
           >
@@ -151,7 +152,7 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-code"}
             class={[
-              "psb psb:border psb:border-border psb:bg-neutral-800 psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
+              "psb psb:bg-neutral-800 psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
               code_layout_class(@story)
             ]}
           >
