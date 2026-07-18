@@ -143,7 +143,11 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     """
   end
 
-  defp pre_class do
+  @doc """
+  Shared CSS classes for every rendered `<pre>` code block, so code output looks
+  consistent wherever it is rendered (stories, playground, docs, markdown).
+  """
+  def pre_class do
     """
     psb highlight psb:py-2 psb:px-4 psb:md:py-3 psb:text-xs psb:md:text-sm
     psb:rounded-md psb:bg-neutral-800! psb:whitespace-pre-wrap psb:break-normal

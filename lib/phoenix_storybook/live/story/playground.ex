@@ -405,7 +405,7 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, :html, html)
 
     ~H"""
-    <pre class={pre_class()}>
+    <pre class={CodeRenderer.pre_class()}>
     {@html}
     </pre>
     """
@@ -417,13 +417,6 @@ defmodule PhoenixStorybook.Story.Playground do
     |> HTMLLexer.lex()
     |> HTMLFormatter.format_inner_as_binary([])
     |> HTML.raw()
-  end
-
-  defp pre_class do
-    """
-    psb highlight psb:p-2 psb:md:p-3 psb:border psb:border-border psb:text-xs psb:md:text-sm
-    psb:rounded-md psb:bg-neutral-800 psb:whitespace-pre-wrap psb:break-normal
-    """
   end
 
   defp render_lower_tab_content(assigns = %{lower_tab: _tab}) do
@@ -942,7 +935,7 @@ defmodule PhoenixStorybook.Story.Playground do
   field={@form[@attr_id]}
   value="[Multiple values]"
   disabled
-  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-ring psb:focus:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
 />|
 
           {:eval, value} ->
@@ -960,7 +953,7 @@ defmodule PhoenixStorybook.Story.Playground do
   field={@form[@attr_id]}
   value={inspect(@value)}
   disabled
-  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-ring psb:focus:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
 />|
     end
   end
@@ -1000,7 +993,7 @@ defmodule PhoenixStorybook.Story.Playground do
       type="number"
       value={@value}
       step={@step}
-      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
     />
     """
   end
@@ -1015,7 +1008,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value={@value}
       min={@min}
       max={@max}
-      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
     />
     """
   end
@@ -1025,7 +1018,7 @@ defmodule PhoenixStorybook.Story.Playground do
     <.input
       field={@form[@attr_id]}
       value={@value}
-      class="psb psb:form-input psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
+      class="psb psb:form-input psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
     />
     """
   end
@@ -1045,7 +1038,7 @@ defmodule PhoenixStorybook.Story.Playground do
       field={@form[@attr_id]}
       value={@value}
       disabled
-      class="psb psb:cursor-not-allowed psb:bg-muted psb:form-input psb:block psb:w-full psb:text-muted-foreground psb:shadow-sm psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
+      class="psb psb:cursor-not-allowed psb:bg-muted psb:form-input psb:block psb:w-full psb:text-muted-foreground psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
     />
     """
   end
@@ -1059,7 +1052,7 @@ defmodule PhoenixStorybook.Story.Playground do
       type="select"
       options={@values}
       value={@value}
-      class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:text-foreground psb:bg-background psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
+      class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:text-foreground psb:bg-background psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
     />
     """
   end

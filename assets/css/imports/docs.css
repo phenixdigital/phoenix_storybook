@@ -45,12 +45,6 @@
   @apply psb:my-4;
 }
 
-.psb-doc pre code {
-  @apply psb:border psb:bg-neutral-800 psb:border-border;
-  @apply psb:rounded-md psb:px-4 psb:py-4 psb:text-neutral-300 psb:text-xs psb:md:text-sm psb:block;
-  @apply psb:overflow-x-auto;
-}
-
 .psb-doc code.inline {
   @apply psb:border psb:bg-muted psb:border-border;
   @apply psb:rounded-md psb:p-0.5 psb:m-0.5 psb:text-primary psb:text-sm;
