@@ -339,29 +339,18 @@ defmodule PhoenixStorybook.StoryLive do
         />
       </.form>
       <!-- :lg+ version of navigation tabs -->
-      <nav class="psb psb-story-tabs psb:hidden psb:lg:inline-flex psb:h-9 psb:items-center psb:justify-center psb:rounded-lg psb:bg-muted psb:p-1 psb:text-sm psb:font-medium psb:text-muted-foreground">
-        <%= for tab <- @tabs do %>
-          <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
-          <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
-          <a
-            href="#"
-            phx-click="psb-set-tab"
-            phx-value-tab={tab_id}
-            class={"psb psb:group psb:inline-flex psb:h-full psb:items-center psb:justify-center psb:whitespace-nowrap psb:rounded-md psb:px-3 psb:py-1 psb:transition-all psb:focus:outline-none psb:focus-visible:ring-2 psb:focus-visible:ring-ring #{active_link(@tab, tab_id)}"}
-          >
-            <%= if icon do %>
-              <.user_icon icon={icon} class="psb:mr-2" fa_plan={@fa_plan} />
-            <% end %>
-            <span class="psb psb:leading-none psb:whitespace-nowrap">{tab_label}</span>
-          </a>
-        <% end %>
-      </nav>
+      <div class="psb psb-story-tabs psb:hidden psb:lg:block">
+        <.tab_navigation
+          variant={:pills}
+          tabs={@tabs}
+          active={@tab}
+          event="psb-set-tab"
+          fa_plan={@fa_plan}
+        />
+      </div>
     </div>
     """
   end
-
-  defp active_link(same, same), do: "psb psb:bg-card psb:text-foreground psb:shadow-sm"
-  defp active_link(_tab, _current_tab), do: "psb psb:hover:text-foreground"
 
   defp navigation_select_options(tabs) do
     for {tab, label, _icon} <- tabs, do: {label, tab}

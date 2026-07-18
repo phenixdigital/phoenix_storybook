@@ -232,10 +232,13 @@ defmodule PhoenixStorybook.Story.Playground do
 
   defp render_upper_navigation_tabs(assigns = %{story: story}) do
     tabs =
-      [{:preview, "Preview", "eye"}, {:code, "Code", "code"}]
+      [
+        {:preview, "Preview", {:fa, "eye", :duotone}},
+        {:code, "Code", {:fa, "code", :duotone}}
+      ]
       |> then(fn tabs ->
         if story.storybook_type() == :component do
-          tabs ++ [{:html, "HTML", "browser"}]
+          tabs ++ [{:html, "HTML", {:fa, "browser", :duotone}}]
         else
           tabs
         end
@@ -244,63 +247,38 @@ defmodule PhoenixStorybook.Story.Playground do
     assigns = assign(assigns, tabs: tabs)
 
     ~H"""
-    <div class="psb psb:border-b psb:border-border psb:mb-6">
-      <nav class="psb psb:-mb-px psb:flex psb:space-x-8">
-        <%= for {tab, label, icon} <- @tabs do %>
-          <a
-            href="#"
-            phx-click="upper-tab-navigation"
-            phx-value-tab={tab}
-            phx-target={@myself}
-            class={[
-              active_link(@upper_tab, tab),
-              "psb psb:whitespace-nowrap psb:py-4 psb:px-1 psb:border-b-2 psb:font-medium psb:text-sm"
-            ]}
-          >
-            <.fa_icon
-              style={:duotone}
-              name={icon}
-              class={"psb:pr-1 #{active_link(@upper_tab, tab)}"}
-              plan={@fa_plan}
-            /> {label}
-          </a>
-        <% end %>
-      </nav>
-    </div>
+    <.tab_navigation
+      variant={:default}
+      tabs={@tabs}
+      active={@upper_tab}
+      event="upper-tab-navigation"
+      target={@myself}
+      fa_plan={@fa_plan}
+      class="psb:mb-6"
+    />
     """
   end
 
   defp render_lower_navigation_tabs(assigns) do
+    tabs = [
+      {:attributes, "Attributes", {:fa, "table", :duotone}},
+      {:events, "Event logs", {:fa, "list-timeline", :duotone},
+       event_counter(:events, assigns.event_logs_unread)}
+    ]
+
+    assigns = assign(assigns, tabs: tabs)
+
     ~H"""
-    <div class="psb psb:border-b psb:border-border psb:mt-6 psb:md:mt-12 psb:mb-4">
-      <nav class="psb psb:-mb-px psb:flex psb:space-x-8">
-        <%= for {tab, label, icon} <- [{:attributes, "Attributes", "table"}, {:events, "Event logs", "list-timeline"}] do %>
-          <a
-            href="#"
-            phx-click="lower-tab-navigation"
-            phx-value-tab={tab}
-            phx-target={@myself}
-            class={"psb #{active_link(@lower_tab, tab)} psb:whitespace-nowrap psb:py-4 psb:px-1 psb:border-b-2 psb:font-medium psb:text-sm"}
-          >
-            <.fa_icon
-              style={:duotone}
-              name={icon}
-              class={"psb:pr-1 #{active_link(@lower_tab, tab)}"}
-              plan={@fa_plan}
-            /> {label}
-            {event_counter(tab, @event_logs_unread)}
-          </a>
-        <% end %>
-      </nav>
-    </div>
+    <.tab_navigation
+      variant={:default}
+      tabs={@tabs}
+      active={@lower_tab}
+      event="lower-tab-navigation"
+      target={@myself}
+      fa_plan={@fa_plan}
+      class="psb:mt-6 psb:md:mt-12 psb:mb-4"
+    />
     """
-  end
-
-  defp active_link(same_tab, same_tab),
-    do: "psb:border-primary psb:text-primary"
-
-  defp active_link(_current_tab, _tab) do
-    "psb:border-transparent psb:text-muted-foreground psb:hover:text-foreground psb:hover:border-border"
   end
 
   defp event_counter(:events, count) when count > 0, do: "(#{count})"
