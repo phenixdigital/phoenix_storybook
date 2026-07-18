@@ -325,11 +325,11 @@ defmodule PhoenixStorybook.Story.Playground do
       </div>
       <div
         :if={@upper_tab == :code}
-        class="psb psb:relative psb:group psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:lg:col-span-2 psb:lg:mb-0 psb:flex psb:items-center psb:px-2 psb:min-h-32 psb:bg-neutral-800 psb:shadow-sm"
+        class="psb psb:relative psb:group psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:lg:col-span-2 psb:lg:mb-0 psb:flex psb:items-center psb:px-2 psb:min-h-32 psb:bg-code psb:shadow-sm"
       >
         <div
           phx-click={JS.dispatch("psb:copy-code")}
-          class="psb psb:hidden psb:group-hover:block psb:bg-neutral-700 psb:text-neutral-400 psb:hover:text-neutral-100 psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
+          class="psb psb:hidden psb:group-hover:block psb:bg-code-accent psb:text-code-muted-foreground psb:hover:text-code-foreground psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
         >
           <.fa_icon name="copy" class="psb:text-inherit" plan={@fa_plan} />
         </div>
@@ -342,11 +342,11 @@ defmodule PhoenixStorybook.Story.Playground do
       </div>
       <div
         :if={@upper_tab == :html and @story.storybook_type() == :component}
-        class="psb psb:relative psb:group psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:lg:col-span-2 psb:lg:mb-0 psb:flex psb:items-center psb:px-2 psb:min-h-32 psb:bg-neutral-800 psb:shadow-sm"
+        class="psb psb:relative psb:group psb:border psb:border-border psb:rounded-md psb:col-span-5 psb:lg:col-span-2 psb:lg:mb-0 psb:flex psb:items-center psb:px-2 psb:min-h-32 psb:bg-code psb:shadow-sm"
       >
         <div
           phx-click={JS.dispatch("psb:copy-code")}
-          class="psb psb:hidden psb:group-hover:block psb:bg-neutral-700 psb:text-neutral-400 psb:hover:text-neutral-100 psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
+          class="psb psb:hidden psb:group-hover:block psb:bg-code-accent psb:text-code-muted-foreground psb:hover:text-code-foreground psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
         >
           <.fa_icon name="copy" class="psb:text-inherit" plan={@fa_plan} />
         </div>
@@ -358,13 +358,13 @@ defmodule PhoenixStorybook.Story.Playground do
         />
       </div>
       <%= if @playground_error do %>
-        <% error_bg = if @upper_tab == :code, do: "psb:bg-neutral-950/20", else: "psb:bg-background/20" %>
+        <% error_bg = if @upper_tab == :code, do: "psb:bg-black/20", else: "psb:bg-background/20" %>
         <div class={"psb psb:absolute psb:inset-2 psb:z-10 psb:backdrop-blur-lg psb:text-destructive #{error_bg} psb:rounded psb:flex psb:flex-col psb:justify-center psb:items-center psb:space-y-2"}>
           <.fa_icon style={:duotone} name="bomb" class="fa-xl psb:text-destructive" plan={@fa_plan} />
           <span class="psb psb:drop-shadow psb:font-medium">Ohoh, I just crashed!</span>
           <button
             phx-click="psb-clear-playground-error"
-            class="psb psb:inline-flex psb:items-center psb:px-2 psb:py-1 psb:border psb:border-transparent psb:text-xs psb:font-medium psb:rounded psb:shadow-sm psb:text-background psb:bg-destructive psb:hover:bg-destructive/90 psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-ring"
+            class="psb psb:inline-flex psb:items-center psb:px-2 psb:py-1 psb:border psb:border-transparent psb:text-xs psb:font-medium psb:rounded psb:shadow-sm psb:text-destructive-foreground psb:bg-destructive psb:hover:bg-destructive/90 psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring"
           >
             Dismiss
           </button>
@@ -726,7 +726,7 @@ defmodule PhoenixStorybook.Story.Playground do
       <div
         phx-update="stream"
         id={playground_event_logs_id(@story)}
-        class="psb psb:absolute psb:w-full psb:h-full psb:max-h-full psb:overflow-y-scroll psb:p-2 psb:border psb:border-border psb:bg-neutral-800 psb:rounded-md"
+        class="psb psb:absolute psb:w-full psb:h-full psb:max-h-full psb:overflow-y-scroll psb:p-2 psb:border psb:border-border psb:bg-code psb:rounded-md"
       >
         <.event_log
           :for={{dom_id, event_log} <- @streams.event_logs}
@@ -746,21 +746,21 @@ defmodule PhoenixStorybook.Story.Playground do
         class="psb:flex psb:items-center psb:group psb:cursor-pointer"
         phx-click={toggle_event_details(@id)}
       >
-        <span class="psb-uncollapse psb:mr-1 psb:text-neutral-400 psb:group-hover:font-bold">
+        <span class="psb-uncollapse psb:mr-1 psb:text-code-muted-foreground psb:group-hover:font-bold">
           <.fa_icon style={:thin} name="caret-right" class="fa-fw" plan={@fa_plan} />
         </span>
 
-        <span class="psb-collapse psb:mr-1 psb:hidden psb:text-neutral-400 psb:group-hover:font-bold">
+        <span class="psb-collapse psb:mr-1 psb:hidden psb:text-code-muted-foreground psb:group-hover:font-bold">
           <.fa_icon style={:thin} name="caret-down" class="fa-fw" plan={@fa_plan} />
         </span>
 
         <div>
-          <span class="psb:text-neutral-400 psb:group-hover:font-bold">
+          <span class="psb:text-code-muted-foreground psb:group-hover:font-bold">
             {@event_log.time |> Time.truncate(:millisecond) |> Time.to_iso8601()}
           </span>
-          <span class="psb:text-neutral-200 psb:group-hover:font-bold">{@event_log.type}</span>
-          <span class="psb:text-neutral-200 psb:group-hover:font-bold">
-            event: <span class="psb:text-neutral-400 psb:group-hover:font-bold">{@event_log.event}</span>
+          <span class="psb:text-code-foreground psb:group-hover:font-bold">{@event_log.type}</span>
+          <span class="psb:text-code-foreground psb:group-hover:font-bold">
+            event: <span class="psb:text-code-muted-foreground psb:group-hover:font-bold">{@event_log.event}</span>
           </span>
         </div>
       </div>
@@ -768,8 +768,8 @@ defmodule PhoenixStorybook.Story.Playground do
       <div class="psb-details psb:hidden psb:pl-4">
         <%= for {k, v} <- @event_log |> Map.from_struct() |> Map.take([:params, :assigns, :parent_pid, :event]) do %>
           <div>
-            <span class="psb:text-neutral-200">{k}:</span>
-            <span class="psb:text-neutral-400">{inspect(v)}</span>
+            <span class="psb:text-code-foreground">{k}:</span>
+            <span class="psb:text-code-muted-foreground">{inspect(v)}</span>
           </div>
         <% end %>
       </div>
@@ -935,7 +935,7 @@ defmodule PhoenixStorybook.Story.Playground do
   field={@form[@attr_id]}
   value="[Multiple values]"
   disabled
-  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
 />|
 
           {:eval, value} ->
@@ -953,7 +953,7 @@ defmodule PhoenixStorybook.Story.Playground do
   field={@form[@attr_id]}
   value={inspect(@value)}
   disabled
-  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
+  class="psb psb:form-input psb:cursor-not-allowed psb:block psb:w-full psb:shadow-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:text-xs psb:md:text-sm psb:bg-muted psb:border-border psb:rounded-md psb:text-muted-foreground"
 />|
     end
   end
@@ -973,7 +973,7 @@ defmodule PhoenixStorybook.Story.Playground do
     <button
       type="button"
       phx-click={on_toggle_click(@attr_id, @value)}
-      class={"psb #{@bg_class} psb:relative psb:inline-flex psb:flex-shrink-0 psb:p-0 psb:h-6 psb:w-11 psb:border-2 psb:border-transparent psb:rounded-full psb:cursor-pointer psb:transition-colors psb:ease-in-out psb:duration-200 psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-ring"}
+      class={"psb #{@bg_class} psb:relative psb:inline-flex psb:flex-shrink-0 psb:p-0 psb:h-6 psb:w-11 psb:border-2 psb:border-transparent psb:rounded-full psb:cursor-pointer psb:transition-colors psb:ease-in-out psb:duration-200 psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring"}
       phx-target={@myself}
       role="switch"
     >
@@ -993,7 +993,7 @@ defmodule PhoenixStorybook.Story.Playground do
       type="number"
       value={@value}
       step={@step}
-      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:border-border psb:rounded-md"
     />
     """
   end
@@ -1008,7 +1008,7 @@ defmodule PhoenixStorybook.Story.Playground do
       value={@value}
       min={@min}
       max={@max}
-      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
+      class="psb psb:form-input psb:text-xs psb:md:text-sm psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:border-border psb:rounded-md"
     />
     """
   end
@@ -1018,7 +1018,7 @@ defmodule PhoenixStorybook.Story.Playground do
     <.input
       field={@form[@attr_id]}
       value={@value}
-      class="psb psb:form-input psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
+      class="psb psb:form-input psb:block psb:w-full psb:text-foreground psb:bg-background psb:shadow-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
     />
     """
   end
@@ -1038,7 +1038,7 @@ defmodule PhoenixStorybook.Story.Playground do
       field={@form[@attr_id]}
       value={@value}
       disabled
-      class="psb psb:cursor-not-allowed psb:bg-muted psb:form-input psb:block psb:w-full psb:text-muted-foreground psb:shadow-sm psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
+      class="psb psb:cursor-not-allowed psb:bg-muted psb:form-input psb:block psb:w-full psb:text-muted-foreground psb:shadow-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:border-border psb:text-xs psb:md:text-sm psb:rounded-md"
     />
     """
   end
@@ -1052,7 +1052,7 @@ defmodule PhoenixStorybook.Story.Playground do
       type="select"
       options={@values}
       value={@value}
-      class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:text-foreground psb:bg-background psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring psb:focus:border-ring psb:border-border psb:rounded-md"
+      class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:text-foreground psb:bg-background psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring psb:focus-visible:border-ring psb:border-border psb:rounded-md"
     />
     """
   end

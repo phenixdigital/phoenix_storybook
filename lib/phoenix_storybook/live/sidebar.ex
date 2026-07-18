@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.Sidebar do
     <sidebar
       id="psb-sidebar"
       phx-hook="PhoenixStorybook.SidebarHook"
-      class="psb psb:text-sidebar-foreground psb:border-r-sidebar-border psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto psb:max-lg:-translate-x-full psb:max-lg:transition-transform psb:max-lg:duration-300 psb:max-lg:ease-out"
+      class="psb psb:text-sidebar-foreground psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto psb:max-lg:-translate-x-full psb:max-lg:transition-transform psb:max-lg:duration-300 psb:max-lg:ease-out"
     >
       <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon
@@ -126,7 +126,7 @@ defmodule PhoenixStorybook.Sidebar do
               <% folder_path = Path.join(@root_path, path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div
-                class="psb psb:flex psb:items-center psb:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:group psb:hover:text-sidebar-primary"
+                class="psb psb:flex psb:items-center psb:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:hover:text-sidebar-primary"
                 phx-click={click_action(open_folder?)}
                 phx-target={@myself}
                 phx-value-path={folder_path}

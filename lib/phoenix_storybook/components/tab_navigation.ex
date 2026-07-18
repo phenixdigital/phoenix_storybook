@@ -65,14 +65,14 @@ defmodule PhoenixStorybook.Components.TabNavigation do
   end
 
   defp tab_class(:pills) do
-    "psb psb:group psb:inline-flex psb:h-full psb:items-center psb:justify-center psb:whitespace-nowrap psb:rounded-md psb:px-3 psb:py-1 psb:transition-all psb:focus:outline-none psb:focus-visible:ring-2 psb:focus-visible:ring-ring"
+    "psb psb:group psb:inline-flex psb:h-full psb:items-center psb:justify-center psb:whitespace-nowrap psb:rounded-md psb:px-3 psb:py-1 psb:transition-all psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring"
   end
 
   defp tab_class(:default) do
     "psb psb:group psb:inline-flex psb:items-center psb:whitespace-nowrap psb:-mb-px psb:border-b-2 psb:px-1 psb:py-2 psb:transition-colors psb:focus:outline-none"
   end
 
-  defp active_class(:pills, true), do: "psb:bg-card psb:text-foreground psb:shadow-sm"
+  defp active_class(:pills, true), do: "psb:bg-background psb:text-foreground psb:shadow-sm"
   defp active_class(:pills, false), do: "psb:hover:text-foreground"
   defp active_class(:default, true), do: "psb:border-primary psb:text-primary"
 

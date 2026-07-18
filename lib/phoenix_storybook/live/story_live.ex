@@ -335,7 +335,7 @@ defmodule PhoenixStorybook.StoryLive do
           options={navigation_select_options(@tabs)}
           value={@tab}
           phx-change="psb-set-tab"
-          class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-border psb:bg-sidebar-accent psb:shadow-xs psb:text-muted-foreground psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm psb:leading-none psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring"
+          class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-input psb:bg-background psb:shadow-sm psb:text-muted-foreground psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm psb:leading-none psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring"
         />
       </.form>
       <!-- :lg+ version of navigation tabs -->

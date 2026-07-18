@@ -42,7 +42,7 @@ defmodule PhoenixStorybook.Search do
       phx-hide={hide_container()}
       class="psb psb:hidden psb:opacity-0 psb:relative psb:z-10 psb:transition-all"
     >
-      <div class="psb psb:fixed psb:inset-0 psb:backdrop-blur psb:bg-neutral-950/25">
+      <div class="psb psb:fixed psb:inset-0 psb:backdrop-blur psb:bg-black/50">
       </div>
 
       <div class="psb psb:fixed psb:inset-0 psb:z-10 psb:overflow-y-auto psb:p-4 psb:sm:p-6 psb:md:p-20">

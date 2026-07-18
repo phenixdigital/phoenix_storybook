@@ -37,10 +37,10 @@
 }
 
 .psb-sandbox .psb-welcome-page pre {
-  @apply psb:bg-neutral-800 psb:border-border;
-  @apply psb:rounded-lg psb:px-4 psb:py-2 psb:my-4 psb:whitespace-pre-wrap psb:break-normal;
+  @apply psb:bg-code;
+  @apply psb:rounded-md psb:px-4 psb:py-2 psb:my-4 psb:whitespace-pre-wrap psb:break-normal;
 }
 
 .psb-sandbox .psb-welcome-page pre span {
-  @apply psb:font-mono psb:text-sm psb:text-neutral-300;
+  @apply psb:font-mono psb:text-sm psb:text-code-foreground;
 }

@@ -29,10 +29,10 @@ defmodule PhoenixStorybook.Story.SourceSelect do
   end
 
   @default_select_class [
-    "psb psb:cursor-pointer psb:form-select psb:bg-card psb:text-muted-foreground",
-    "psb:pr-10 psb:py-1 psb:border-border",
-    "psb:focus:outline-none psb:focus:ring-2 psb:focus:ring-offset-2 psb:focus:ring-offset-background psb:focus:ring-ring",
-    "psb:focus:border-ring psb:text-xs psb:md:text-sm psb:rounded-md"
+    "psb psb:cursor-pointer psb:form-select psb:bg-background psb:text-muted-foreground",
+    "psb:pr-10 psb:py-1 psb:border-input",
+    "psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring",
+    "psb:focus-visible:border-ring psb:text-xs psb:md:text-sm psb:rounded-md"
   ]
 
   defp select_options(assigns = %{change_target: nil}) do

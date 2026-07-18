@@ -152,13 +152,13 @@ defmodule PhoenixStorybook.Story.Variations do
           <div
             id={"#{anchor_id(variation)}-code"}
             class={[
-              "psb psb:bg-neutral-800 psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
+              "psb psb:bg-code psb:rounded-md psb:col-span-5 psb:group psb:relative psb:shadow-sm psb:flex psb:flex-col psb:justify-center",
               code_layout_class(@story)
             ]}
           >
             <div
               phx-click={JS.dispatch("psb:copy-code")}
-              class="psb psb:hidden psb:group-hover:block psb:bg-neutral-700 psb:text-neutral-400 psb:hover:text-neutral-100 psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
+              class="psb psb:hidden psb:group-hover:block psb:bg-code-accent psb:text-code-muted-foreground psb:hover:text-code-foreground psb:z-10 psb:absolute psb:top-2 psb:right-2 psb:px-2 psb:py-1 psb:rounded-md psb:cursor-pointer"
             >
               <.fa_icon name="copy" class="psb:text-inherit" plan={@fa_plan} />
             </div>

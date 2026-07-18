@@ -25,9 +25,10 @@
   `.psb\:dark` override below, so components reference a single token (e.g.
   `psb:bg-sidebar`) instead of hardcoded light/dark color pairs.
 
-  Palette: for now every color token lives in the neutral zone (Tailwind
-  `neutral`, monochrome). Strong highlights (`primary`, `sidebar-primary`)
-  are a strong neutral — near-black in light, near-white in dark — not a color.
+  Palette: mostly neutral (Tailwind `neutral`), with two intentional accents kept
+  minimal — `primary` is violet (hue-consistent across modes) and `destructive` is
+  red. `sidebar-primary` stays a strong neutral (near-black in light, near-white in
+  dark). `code*` are always-dark surfaces for code blocks in both modes.
   Radius derives from a single `--radius` base so the whole scale shifts together.
 */
 @theme {
@@ -52,11 +53,17 @@
   --color-accent: var(--psb-color-neutral-100);
   --color-accent-foreground: var(--psb-color-neutral-900);
 
-  --color-destructive: var(--psb-color-neutral-700);
+  --color-destructive: var(--psb-color-red-600);
+  --color-destructive-foreground: var(--psb-color-neutral-50);
 
   --color-border: var(--psb-color-neutral-200);
   --color-input: var(--psb-color-neutral-200);
   --color-ring: var(--psb-color-neutral-400);
+
+  --color-code: var(--psb-color-neutral-800);
+  --color-code-foreground: var(--psb-color-neutral-200);
+  --color-code-muted-foreground: var(--psb-color-neutral-400);
+  --color-code-accent: var(--psb-color-neutral-700);
 
   --color-chart-1: var(--psb-color-neutral-300);
   --color-chart-2: var(--psb-color-neutral-400);
@@ -70,7 +77,7 @@
   --color-sidebar-muted-foreground: var(--psb-color-neutral-400);
   --color-sidebar-primary: var(--psb-color-neutral-900);
   --color-sidebar-primary-foreground: var(--psb-color-neutral-50);
-  --color-sidebar-accent: var(--psb-color-white);
+  --color-sidebar-accent: var(--psb-color-neutral-100);
   --color-sidebar-accent-foreground: var(--psb-color-neutral-900);
   --color-sidebar-border: var(--psb-color-neutral-200);
   --color-sidebar-ring: var(--psb-color-neutral-400);
@@ -100,7 +107,7 @@
   --psb-color-popover: var(--psb-color-neutral-900);
   --psb-color-popover-foreground: var(--psb-color-neutral-50);
 
-  --psb-color-primary: var(--psb-color-gray-300);
+  --psb-color-primary: var(--psb-color-violet-400);
   --psb-color-primary-foreground: var(--psb-color-neutral-900);
 
   --psb-color-secondary: var(--psb-color-neutral-800);
@@ -112,7 +119,8 @@
   --psb-color-accent: var(--psb-color-neutral-800);
   --psb-color-accent-foreground: var(--psb-color-neutral-50);
 
-  --psb-color-destructive: var(--psb-color-neutral-300);
+  --psb-color-destructive: var(--psb-color-red-500);
+  --psb-color-destructive-foreground: var(--psb-color-neutral-50);
 
   --psb-color-border: var(--psb-color-neutral-700);
   --psb-color-input: var(--psb-color-neutral-700);
@@ -130,9 +138,9 @@
   --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-500);
   --psb-color-sidebar-primary: var(--psb-color-neutral-50);
   --psb-color-sidebar-primary-foreground: var(--psb-color-neutral-900);
-  --psb-color-sidebar-accent: var(--psb-color-neutral-800);
+  --psb-color-sidebar-accent: var(--psb-color-neutral-700);
   --psb-color-sidebar-accent-foreground: var(--psb-color-neutral-50);
-  --psb-color-sidebar-border: var(--psb-color-neutral-800);
+  --psb-color-sidebar-border: var(--psb-color-neutral-700);
   --psb-color-sidebar-ring: var(--psb-color-neutral-500);
 }
 
