@@ -1,14 +1,13 @@
-// Every animation class is `max-lg:`-scoped so it only takes effect below the
-// `lg` breakpoint. `open`/`close` run on desktop too — the server pushes
-// `psb:close-sidebar` on navigation regardless of viewport — but there the
-// sidebar is a permanently visible column, not a drawer. Scoping the classes to
-// mobile makes those calls inert on desktop; otherwise `close` would run the
-// exit animation and slide the always-visible desktop sidebar off screen.
+// The mobile sidebar is a drawer: the container/overlay toggle `psb:hidden`, the
+// panel slides in via a transform transition, and the overlay fades via an
+// opacity transition. Every animation utility is `max-lg:`-scoped so it only
+// applies below the `lg` breakpoint. `open`/`close` run on desktop too — the
+// server pushes `psb:close-sidebar` on navigation regardless of viewport — but
+// there the sidebar is a permanently visible column, so the scoped classes are
+// inert and can't slide the always-visible desktop sidebar off screen.
 
-const SIDEBAR_IN = ["psb:max-lg:motion-translate-x-in-[-100%]"];
-const SIDEBAR_OUT = ["psb:max-lg:motion-translate-x-out-[-100%]"];
-const OVERLAY_IN = ["psb:max-lg:motion-opacity-in-0"];
-const OVERLAY_OUT = ["psb:max-lg:motion-opacity-out-0"];
+const SIDEBAR_CLOSED = ["psb:max-lg:-translate-x-full"];
+const OVERLAY_CLOSED = ["psb:max-lg:opacity-0"];
 
 export const SidebarHook = {
   mounted() {
@@ -19,19 +18,19 @@ export const SidebarHook = {
 
     const openSidebar = () => {
       clearTimeout(closeTimer);
-      sidebar.classList.remove(...SIDEBAR_OUT);
-      overlay.classList.remove(...OVERLAY_OUT);
       container.classList.remove("psb:hidden");
       overlay.classList.remove("psb:hidden");
-      sidebar.classList.add(...SIDEBAR_IN);
-      overlay.classList.add(...OVERLAY_IN);
+      // Force a reflow so the browser paints the closed state before we move to
+      // the open state — otherwise the display:none → block change and the class
+      // removal collapse into one frame and the slide-in is skipped.
+      void sidebar.offsetWidth;
+      sidebar.classList.remove(...SIDEBAR_CLOSED);
+      overlay.classList.remove(...OVERLAY_CLOSED);
     };
 
     const closeSidebar = () => {
-      sidebar.classList.remove(...SIDEBAR_IN);
-      overlay.classList.remove(...OVERLAY_IN);
-      sidebar.classList.add(...SIDEBAR_OUT);
-      overlay.classList.add(...OVERLAY_OUT);
+      sidebar.classList.add(...SIDEBAR_CLOSED);
+      overlay.classList.add(...OVERLAY_CLOSED);
       closeTimer = setTimeout(() => {
         container.classList.add("psb:hidden");
         overlay.classList.add("psb:hidden");

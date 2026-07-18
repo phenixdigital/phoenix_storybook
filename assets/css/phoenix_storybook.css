@@ -16,8 +16,6 @@
   strategy: class;
 }
 
-@plugin "tailwindcss-motion";
-
 @custom-variant dark (&:where(.psb\:dark, .psb\:dark *));
 
 /*

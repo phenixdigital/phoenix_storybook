@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.Sidebar do
     <sidebar
       id="psb-sidebar"
       phx-hook="PhoenixStorybook.SidebarHook"
-      class="psb psb:text-sidebar-foreground psb:border-r-sidebar-border psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto"
+      class="psb psb:text-sidebar-foreground psb:border-r-sidebar-border psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto psb:max-lg:-translate-x-full psb:max-lg:transition-transform psb:max-lg:duration-300 psb:max-lg:ease-out"
     >
       <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon
@@ -100,11 +100,25 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp render_entries(assigns) do
     ~H"""
-    <ul
-      class="psb psb:ml-3 psb:-mt-1.5 psb:lg:mt-auto"
-      phx-mounted={unless @root, do: submenu_enter()}
-      phx-remove={unless @root, do: submenu_leave()}
-    >
+    <%= if @root do %>
+      <.entries_list {assigns} />
+    <% else %>
+      <div
+        class="psb psb:grid"
+        phx-mounted={submenu_enter()}
+        phx-remove={submenu_leave()}
+      >
+        <div class="psb psb:overflow-hidden">
+          <.entries_list {assigns} />
+        </div>
+      </div>
+    <% end %>
+    """
+  end
+
+  defp entries_list(assigns) do
+    ~H"""
+    <ul class="psb psb:ml-3 psb:-mt-1.5 psb:lg:mt-auto">
       <%= for entry <- sort_entries(@entries) do %>
         <li class="psb">
           <%= case entry do %>
@@ -210,20 +224,23 @@ defmodule PhoenixStorybook.Sidebar do
 
   # Enter/leave animations for a folder's submenu list. The submenu is added and
   # removed from the DOM by the server as folders open and close, so we hook the
-  # animation onto `phx-mounted` (open) and `phx-remove` (close). Each applies a
-  # `tailwindcss-motion` utility for its duration only — never both at once, so
-  # their competing `animation` declarations can't clash. On close LiveView keeps
-  # the element around until the leave animation has run.
+  # animation onto `phx-mounted` (open) and `phx-remove` (close). The wrapper is a
+  # grid whose single row animates between `0fr` and `1fr`, expanding the list to
+  # its natural height while an `overflow-hidden` child clips the content. Each
+  # transition sets its start row up front, then swaps to the target on the next
+  # frame; on close LiveView keeps the element around until the animation has run.
   defp submenu_enter do
     JS.transition(
-      "psb:motion-translate-y-in-[-0.5rem] psb:motion-opacity-in-0 psb:motion-duration-200",
+      {"psb:transition-[grid-template-rows] psb:duration-200", "psb:grid-rows-[0fr]",
+       "psb:grid-rows-[1fr]"},
       time: 200
     )
   end
 
   defp submenu_leave do
     JS.transition(
-      "psb:motion-translate-y-out-[-0.5rem] psb:motion-opacity-out-0 psb:motion-duration-150",
+      {"psb:transition-[grid-template-rows] psb:duration-150", "psb:grid-rows-[1fr]",
+       "psb:grid-rows-[0fr]"},
       time: 150
     )
   end
