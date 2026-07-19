@@ -121,7 +121,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # Opening A folder
-      element(view, "#psb-sidebar div", "A Folder") |> render_click()
+      element(view, "#psb-sidebar div[phx-click]", "A Folder") |> render_click()
       assert has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # B folder is already open (by its index.exs file)
@@ -132,7 +132,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
                "Component mixing any attribute possible types"
 
       # closing "B folder"
-      element(view, "#psb-sidebar div", "Config Name") |> render_click()
+      element(view, "#psb-sidebar div[phx-click]", "Config Name") |> render_click()
       refute has_element?(view, "#psb-sidebar a", "AllTypesComponent (b_folder)")
     end
 
