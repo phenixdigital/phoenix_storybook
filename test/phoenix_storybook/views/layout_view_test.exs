@@ -25,6 +25,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
     def asset_hash(:css_path), do: "abc123"
     def asset_hash(:js_path), do: nil
+    def asset_hash(:theme_path), do: nil
 
     def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
     def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
@@ -50,6 +51,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
     def asset_hash(:css_path), do: "abc123"
     def asset_hash(:js_path), do: nil
+    def asset_hash(:theme_path), do: nil
 
     def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
     def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
@@ -74,6 +76,7 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
     def asset_hash(:css_path), do: "abc123"
     def asset_hash(:js_path), do: nil
+    def asset_hash(:theme_path), do: nil
 
     def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
     def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
@@ -97,9 +100,31 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
     def asset_hash(:css_path), do: "abc123"
     def asset_hash(:js_path), do: nil
+    def asset_hash(:theme_path), do: nil
 
     def find_entry_by_path("/folder"), do: %FolderEntry{name: "Folder"}
     def find_entry_by_path("/folder/story"), do: %StoryEntry{name: "Story"}
+    def find_entry_by_path(_path), do: nil
+  end
+
+  defmodule TestBackendWithTheme do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          font_awesome_plan: :free,
+          sandbox_class: "root-sandbox",
+          themes_strategies: [sandbox_class: "theme"],
+          theme_path: "/assets/css/storybook_theme.css"
+        ],
+        key,
+        default
+      )
+    end
+
+    def asset_hash(:css_path), do: nil
+    def asset_hash(:js_path), do: nil
+    def asset_hash(:theme_path), do: "theme123"
+
     def find_entry_by_path(_path), do: nil
   end
 
@@ -274,6 +299,47 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
     assert html =~ "phoenix_storybook_fonts.css"
     refute html =~ "kit.fontawesome.com"
+  end
+
+  test "root layout imports the consumer theme css unlayered when present" do
+    conn = build_test_conn(TestBackendWithTheme)
+
+    html =
+      render_component(&LayoutView.root/1,
+        conn: conn,
+        inner_content: "",
+        page_title: "Storybook"
+      )
+
+    assert html =~ ~s(@import "/assets/css/storybook_theme.css?hash=theme123";)
+    refute html =~ ~s(storybook_theme.css?hash=theme123" layer)
+  end
+
+  test "root_iframe layout imports the consumer theme css unlayered when present" do
+    conn = build_test_conn(TestBackendWithTheme)
+
+    html =
+      render_component(&LayoutView.root_iframe/1,
+        conn: conn,
+        inner_content: "",
+        theme: nil
+      )
+
+    assert html =~ ~s(@import "/assets/css/storybook_theme.css?hash=theme123";)
+    refute html =~ ~s(storybook_theme.css?hash=theme123" layer)
+  end
+
+  test "root layout omits the theme import when theme_path is unset" do
+    conn = build_test_conn(TestBackend)
+
+    html =
+      render_component(&LayoutView.root/1,
+        conn: conn,
+        inner_content: "",
+        page_title: "Storybook"
+      )
+
+    refute html =~ "storybook_theme.css"
   end
 
   test "asset_path uses hashed JS assets and raw asset names" do

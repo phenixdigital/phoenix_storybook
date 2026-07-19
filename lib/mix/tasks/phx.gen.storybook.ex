@@ -12,6 +12,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     * a storybook backend in `lib/my_app_web/storybook.ex`
     * a custom js file in `assets/js/storybook.js`
     * a custom css file in `assets/css/storybook.css`
+    * a storybook UI theme css file in `assets/css/storybook_theme.css`
     * scaffolding including example stories for your own storybook in `storybook/`
 
   The generator supports the `--no-tailwind` flag if you want to skip the TailwindCSS specific bit.
@@ -68,7 +69,10 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
         maybe_core_components_index(core_components_module) ++
         maybe_core_components_example(core_components_module) ++
         stylesheet(css_folder, opts) ++
-        [{"storybook.js", Path.join(js_folder, "storybook.js")}]
+        [
+          {"storybook_theme.css", Path.join(css_folder, "storybook_theme.css")},
+          {"storybook.js", Path.join(js_folder, "storybook.js")}
+        ]
 
     for {source_file_path, target} <- mapping do
       templates_folder = Application.app_dir(:phoenix_storybook, @templates_folder)
@@ -221,7 +225,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   defp print_tailwind_instructions(schema) do
     print_instructions("""
-      Add a new Tailwind build profile for #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()} in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
+      Add new Tailwind build profiles for #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()} and #{IO.ANSI.bright()}assets/css/storybook_theme.css#{IO.ANSI.reset()} in #{IO.ANSI.bright()}config/config.exs#{IO.ANSI.reset()}:
 
         config :tailwind,
           ...
@@ -232,6 +236,13 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
             args: ~w(
               --input=assets/css/storybook.css
               --output=priv/static/assets/css/storybook.css
+            ),
+            cd: Path.expand("..", __DIR__)
+          ],
+          storybook_theme: [
+            args: ~w(
+              --input=assets/css/storybook_theme.css
+              --output=priv/static/assets/css/storybook_theme.css
             ),
             cd: Path.expand("..", __DIR__)
           ]#{IO.ANSI.reset()}
@@ -264,16 +275,16 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   defp print_no_tailwind_css_instructions do
     print_instructions("""
-      Build and serve your storybook stylesheet #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()}:
+      Build and serve your storybook stylesheets #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()} and #{IO.ANSI.bright()}assets/css/storybook_theme.css#{IO.ANSI.reset()}:
 
-        You opted out of Tailwind, so no build step was added for it. Your
-        #{IO.ANSI.bright()}css_path#{IO.ANSI.reset()} is served from #{IO.ANSI.bright()}priv/static/assets/css/storybook.css#{IO.ANSI.reset()}, so add a
-        step to your asset pipeline that builds #{IO.ANSI.bright()}assets/css/storybook.css#{IO.ANSI.reset()} to
-        that path, plus a matching dev watcher so edits rebuild. Register that
-        build in your #{IO.ANSI.bright()}assets.build#{IO.ANSI.reset()} and #{IO.ANSI.bright()}assets.deploy#{IO.ANSI.reset()} aliases (mix.exs):
+        You opted out of Tailwind, so no build step was added for them. Your
+        #{IO.ANSI.bright()}css_path#{IO.ANSI.reset()} and #{IO.ANSI.bright()}theme_path#{IO.ANSI.reset()} are served from #{IO.ANSI.bright()}priv/static/assets/css/#{IO.ANSI.reset()}, so add
+        steps to your asset pipeline that build both files to that directory,
+        plus matching dev watchers so edits rebuild. Register those builds in
+        your #{IO.ANSI.bright()}assets.build#{IO.ANSI.reset()} and #{IO.ANSI.bright()}assets.deploy#{IO.ANSI.reset()} aliases (mix.exs):
 
-          "assets.build": [..., #{IO.ANSI.bright()}"<your storybook css build>"#{IO.ANSI.reset()}],
-          "assets.deploy": [..., #{IO.ANSI.bright()}"<your storybook css build>"#{IO.ANSI.reset()}, "phx.digest"]
+          "assets.build": [..., #{IO.ANSI.bright()}"<your storybook css builds>"#{IO.ANSI.reset()}],
+          "assets.deploy": [..., #{IO.ANSI.bright()}"<your storybook css builds>"#{IO.ANSI.reset()}, "phx.digest"]
     """)
   end
 
@@ -292,13 +303,14 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   defp print_watchers_instructions(schema) do
     print_instructions("""
-      Add a new #{IO.ANSI.bright()}endpoint watcher#{IO.ANSI.reset()} for your new Tailwind build profile in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
+      Add new #{IO.ANSI.bright()}endpoint watchers#{IO.ANSI.reset()} for your new Tailwind build profiles in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
 
         config #{inspect(schema.app_name)}, #{schema.web_module_name}.Endpoint,
           ...
           watchers: [
             ...
-            #{IO.ANSI.bright()}storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}#{IO.ANSI.reset()}
+            #{IO.ANSI.bright()}storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]},
+            storybook_theme_tailwind: {Tailwind, :install_and_run, [:storybook_theme, ~w(--watch)]}#{IO.ANSI.reset()}
           ]
     """)
   end
@@ -344,11 +356,13 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
           ...,
           "assets.build": [
             ...
-            #{IO.ANSI.bright()}"tailwind storybook"#{IO.ANSI.reset()}
+            #{IO.ANSI.bright()}"tailwind storybook",
+            "tailwind storybook_theme"#{IO.ANSI.reset()}
           ],
           "assets.deploy": [
             ...
-            #{IO.ANSI.bright()}"tailwind storybook --minify",#{IO.ANSI.reset()}
+            #{IO.ANSI.bright()}"tailwind storybook --minify",
+            "tailwind storybook_theme --minify",#{IO.ANSI.reset()}
             "phx.digest"
           ]
         ]

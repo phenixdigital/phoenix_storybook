@@ -1,0 +1,145 @@
+/*
+  PhoenixStorybook UI theme.
+
+  This file styles the storybook chrome — sidebar, header, playground, docs, etc.
+  It does NOT theme your own components inside the sandbox (use `css_path` for that).
+
+  It is built by Tailwind and served like your other assets: the `storybook_theme`
+  build profile compiles it to `priv/static/assets/css/storybook_theme.css`, and the
+  storybook imports it unlayered, after its own stylesheet. Being unlayered, your
+  rules win over both the shipped token defaults and the `psb:*` utilities — so you
+  can recolor (override tokens) AND reskin (override structural rules) the chrome,
+  in both light and dark mode.
+
+  Recolor: override the prefixed custom properties (`--psb-color-*`), not the
+  unprefixed `--color-*` names. Values can be raw (`#7c3aed`, `oklch(...)`) or
+  reference the bundled Tailwind palette (`var(--psb-color-violet-800)`).
+
+  Every token below holds its shipped default. Delete the lines you do not
+  change; keep only your overrides.
+*/
+
+:root {
+  --psb-color-background: var(--psb-color-white);
+  --psb-color-foreground: var(--psb-color-neutral-950);
+
+  --psb-color-card: var(--psb-color-white);
+  --psb-color-card-foreground: var(--psb-color-neutral-950);
+
+  --psb-color-popover: var(--psb-color-white);
+  --psb-color-popover-foreground: var(--psb-color-neutral-950);
+
+  --psb-color-primary: var(--psb-color-violet-800);
+  --psb-color-primary-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-secondary: var(--psb-color-neutral-100);
+  --psb-color-secondary-foreground: var(--psb-color-neutral-900);
+
+  --psb-color-muted: var(--psb-color-neutral-100);
+  --psb-color-muted-foreground: var(--psb-color-neutral-500);
+
+  --psb-color-accent: var(--psb-color-neutral-100);
+  --psb-color-accent-foreground: var(--psb-color-neutral-900);
+
+  --psb-color-destructive: var(--psb-color-red-600);
+  --psb-color-destructive-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-border: var(--psb-color-neutral-200);
+  --psb-color-input: var(--psb-color-neutral-200);
+  --psb-color-ring: var(--psb-color-neutral-400);
+
+  --psb-color-code: var(--psb-color-neutral-800);
+  --psb-color-code-foreground: var(--psb-color-neutral-200);
+  --psb-color-code-muted-foreground: var(--psb-color-neutral-400);
+  --psb-color-code-accent: var(--psb-color-neutral-700);
+
+  --psb-color-chart-1: var(--psb-color-neutral-300);
+  --psb-color-chart-2: var(--psb-color-neutral-400);
+  --psb-color-chart-3: var(--psb-color-neutral-500);
+  --psb-color-chart-4: var(--psb-color-neutral-600);
+  --psb-color-chart-5: var(--psb-color-neutral-700);
+
+  --psb-color-sidebar: var(--psb-color-neutral-50);
+  --psb-color-sidebar-foreground: var(--psb-color-neutral-700);
+  --psb-color-sidebar-muted: var(--psb-color-neutral-100);
+  --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-400);
+  --psb-color-sidebar-primary: var(--psb-color-neutral-900);
+  --psb-color-sidebar-primary-foreground: var(--psb-color-neutral-50);
+  --psb-color-sidebar-accent: var(--psb-color-neutral-100);
+  --psb-color-sidebar-accent-foreground: var(--psb-color-neutral-900);
+  --psb-color-sidebar-border: var(--psb-color-neutral-200);
+  --psb-color-sidebar-ring: var(--psb-color-neutral-400);
+
+  --psb-radius: 0.625rem;
+}
+
+.psb\:dark {
+  --psb-color-background: var(--psb-color-neutral-900);
+  --psb-color-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-card: var(--psb-color-neutral-900);
+  --psb-color-card-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-popover: var(--psb-color-neutral-900);
+  --psb-color-popover-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-primary: var(--psb-color-violet-400);
+  --psb-color-primary-foreground: var(--psb-color-neutral-900);
+
+  --psb-color-secondary: var(--psb-color-neutral-800);
+  --psb-color-secondary-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-muted: var(--psb-color-neutral-800);
+  --psb-color-muted-foreground: var(--psb-color-neutral-400);
+
+  --psb-color-accent: var(--psb-color-neutral-800);
+  --psb-color-accent-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-destructive: var(--psb-color-red-500);
+  --psb-color-destructive-foreground: var(--psb-color-neutral-50);
+
+  --psb-color-border: var(--psb-color-neutral-700);
+  --psb-color-input: var(--psb-color-neutral-700);
+  --psb-color-ring: var(--psb-color-neutral-500);
+
+  --psb-color-chart-1: var(--psb-color-neutral-700);
+  --psb-color-chart-2: var(--psb-color-neutral-600);
+  --psb-color-chart-3: var(--psb-color-neutral-500);
+  --psb-color-chart-4: var(--psb-color-neutral-400);
+  --psb-color-chart-5: var(--psb-color-neutral-300);
+
+  --psb-color-sidebar: var(--psb-color-neutral-800);
+  --psb-color-sidebar-foreground: var(--psb-color-neutral-300);
+  --psb-color-sidebar-muted: var(--psb-color-neutral-800);
+  --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-500);
+  --psb-color-sidebar-primary: var(--psb-color-neutral-50);
+  --psb-color-sidebar-primary-foreground: var(--psb-color-neutral-900);
+  --psb-color-sidebar-accent: var(--psb-color-neutral-700);
+  --psb-color-sidebar-accent-foreground: var(--psb-color-neutral-50);
+  --psb-color-sidebar-border: var(--psb-color-neutral-700);
+  --psb-color-sidebar-ring: var(--psb-color-neutral-500);
+}
+
+/*
+  Reskin: beyond recoloring, you can override structural rules on the chrome.
+  Because this file is imported unlayered, a plain rule wins over the `psb:*`
+  utilities baked into the markup. For example, to drop the border around the
+  playground component preview (the wrapper whose direct child is the preview):
+
+    :has(> [id$="-playground-preview"]) {
+      border-width: 0;
+    }
+
+  Caveat: these selectors target PhoenixStorybook's internal `psb`-prefixed
+  markup, which is not a stable API and may change between releases.
+
+  To reuse the storybook's own `psb:*` utilities via `@apply`, reference the
+  storybook's Tailwind setup first (this emits no CSS, it only makes the
+  utilities and `--psb-color-*` theme available):
+
+    @reference "../../deps/phoenix_storybook/priv/phoenix_storybook.css";
+
+    :has(> [id$="-playground-preview"]) {
+      @apply psb:border-0 psb:shadow-none;
+    }
+*/

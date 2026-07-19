@@ -229,14 +229,16 @@ defmodule PhoenixStorybook do
         if Mix.env() != :test,
           do: Logger.warning("Can't resolve priv dir for application #{otp_app}")
 
-        quote do
-          def asset_hash(_), do: nil
-        end
+        [
+          quote do
+            def asset_hash(_), do: nil
+          end
+        ]
 
       priv_dir ->
         assets_path = Path.join(priv_dir, "/static")
 
-        for asset <- [:css_path, :js_path] do
+        for asset <- [:css_path, :js_path, :theme_path] do
           case Keyword.get(opts, asset) do
             nil ->
               quote do

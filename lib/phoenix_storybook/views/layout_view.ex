@@ -63,6 +63,7 @@ defmodule PhoenixStorybook.LayoutView do
     [Enum.map(script_name, &["/" | &1]) | socket_path]
   end
 
+  def storybook_theme_path(conn), do: storybook_setting(conn, :theme_path)
   def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
   def storybook_js_type(conn), do: storybook_setting(conn, :js_script_type, "text/javascript")
@@ -132,6 +133,13 @@ defmodule PhoenixStorybook.LayoutView do
 
   def storybook_js_hash(conn_or_socket) do
     case backend_module(conn_or_socket).asset_hash(:js_path) do
+      nil -> ""
+      hash -> "?hash=" <> hash
+    end
+  end
+
+  def storybook_theme_hash(conn_or_socket) do
+    case backend_module(conn_or_socket).asset_hash(:theme_path) do
       nil -> ""
       hash -> "?hash=" <> hash
     end

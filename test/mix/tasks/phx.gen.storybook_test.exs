@@ -46,6 +46,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive(:info, ~r|creating storybook/core_components/table.story.exs|)
       assert_shell_receive(:info, ~r|creating storybook/core_components/_core_components.index.exs|)
       assert_shell_receive(:info, ~r|creating assets/css/storybook.css|)
+      assert_shell_receive(:info, ~r|creating assets/css/storybook_theme.css|)
       assert_shell_receive(:info, ~r|creating assets/js/storybook.js|)
       assert_shell_receive(:yes?, ~r|Add the following to your.*router.ex.*:|)
 
@@ -54,10 +55,13 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
         ~r|Add.*js/storybook.js.*as a new entry point to your existing esbuild profile in .*config/config.exs.*|
       )
 
-      assert_shell_receive(
-        :yes?,
-        ~r|Add a new Tailwind build profile for.*css/storybook.css.*in.*config/config.exs|
-      )
+      assert_receive {:mix_shell, :yes?, [tailwind_profile_msg]}
+
+      assert tailwind_profile_msg =~
+               ~r|Add new Tailwind build profiles for.*storybook.css.*storybook_theme.css.*config/config.exs|
+
+      assert String.contains?(tailwind_profile_msg, "--input=assets/css/storybook_theme.css")
+      assert String.contains?(tailwind_profile_msg, "--output=priv/static/assets/css/storybook_theme.css")
 
       assert_shell_receive(
         :yes?,
@@ -74,17 +78,23 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
         ~r|Add the CSS sandbox class to your layout in.*lib/phoenix_storybook_web/components/layouts/root.html.heex.*:|
       )
 
-      assert_shell_receive(
-        :yes?,
-        ~r|Add a new.*endpoint watcher.*for your new Tailwind build profile in.*config/dev.exs.*|
-      )
+      assert_receive {:mix_shell, :yes?, [watchers_msg]}
+
+      assert watchers_msg =~
+               ~r|Add new.*endpoint watchers.*for your new Tailwind build profiles in.*config/dev.exs.*|
+
+      assert String.contains?(watchers_msg, "storybook_theme_tailwind")
 
       assert_receive {:mix_shell, :yes?, [live_reload_msg]}
       assert live_reload_msg =~ ~r|Add a new.*live_reload pattern.*to your endpoint in.*config/dev.exs|
       assert String.contains?(live_reload_msg, ~S|~r"storybook/.*\.exs$"|)
 
       assert_shell_receive(:yes?, ~r|Add your storybook content to.*\.formatter.exs.*|)
-      assert_shell_receive(:yes?, ~r|Add the storybook build to your asset aliases in .*mix.exs.*|)
+
+      assert_receive {:mix_shell, :yes?, [aliases_msg]}
+      assert aliases_msg =~ ~r|Add the storybook build to your asset aliases in .*mix.exs|
+      assert String.contains?(aliases_msg, "tailwind storybook_theme")
+
       assert_shell_receive(:yes?, ~r|Add a COPY directive in .*Dockerfile.*|)
       assert_shell_receive(:info, ~r|You are all set! 🚀|)
       assert_shell_receive(:info, ~r|You can run mix phx.server and visit|)
@@ -118,6 +128,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive(:info, ~r|creating storybook/core_components/table.story.exs|)
       assert_shell_receive(:info, ~r|creating storybook/core_components/_core_components.index.exs|)
       assert_shell_receive(:info, ~r|creating assets/css/storybook.css|)
+      assert_shell_receive(:info, ~r|creating assets/css/storybook_theme.css|)
       assert_shell_receive(:info, ~r|creating assets/js/storybook.js|)
       assert_shell_receive(:yes?, ~r|Add the following to your.*router.ex.*:|)
 
@@ -127,7 +138,10 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       )
 
       assert_receive {:mix_shell, :yes?, [no_tw_css_msg]}
-      assert no_tw_css_msg =~ ~r|Build and serve your storybook stylesheet.*assets/css/storybook.css|
+
+      assert no_tw_css_msg =~
+               ~r|Build and serve your storybook stylesheets.*storybook.css.*storybook_theme.css|
+
       assert String.contains?(no_tw_css_msg, "assets.deploy")
 
       assert_shell_receive(
@@ -175,6 +189,7 @@ defmodule Mix.Tasks.Phx.Gen.StorybookTest do
       assert_shell_receive(:info, ~r|creating storybook/core_components/table.story.exs|)
       assert_shell_receive(:info, ~r|creating storybook/core_components/_core_components.index.exs|)
       assert_shell_receive(:info, ~r|creating assets/css/storybook.css|)
+      assert_shell_receive(:info, ~r|creating assets/css/storybook_theme.css|)
       assert_shell_receive(:info, ~r|creating assets/js/storybook.js|)
       assert_shell_receive(:info, ~r|Storybook files were generated\. Setup walkthrough stopped|)
     end)
