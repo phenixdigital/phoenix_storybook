@@ -212,8 +212,8 @@ defmodule PhoenixStorybook.Stories.StorySourceTest do
     test "returns a 1-based range for a component function" do
       {:ok, story} = TreeStorybook.load_story("/component")
       assert {start_line, end_line} = StorySource.function_source_line_range(story.function())
-      assert is_integer(start_line) and start_line > 0
-      assert is_integer(end_line) and end_line >= start_line
+      assert start_line > 0
+      assert end_line >= start_line
     end
   end
 
