@@ -13,10 +13,11 @@ defmodule PhoenixStorybook.SidebarTest do
       assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 1
 
       # test sidebar has 2 folders beneath root
-      assert query(document, "nav>ul>li>ul>li") |> LazyHTML.to_tree() |> length() == 2
+      assert query(document, "nav>ul>li>div>div>ul>li") |> LazyHTML.to_tree() |> length() == 2
 
       # test those 2 stories are links (ie. not folders)
-      assert query(document, "nav>ul>li>ul>li>div>a") |> LazyHTML.to_tree() |> length() == 2
+      assert query(document, "nav>ul>li>div>div>ul>li>div>a") |> LazyHTML.to_tree() |> length() ==
+               2
     end
   end
 
@@ -29,18 +30,19 @@ defmodule PhoenixStorybook.SidebarTest do
       assert length(LazyHTML.to_tree(sidebar)) == 1
 
       # test sidebar has 11 stories
-      assert query(document, "nav>ul>li>ul>li") |> LazyHTML.to_tree() |> length() == 11
+      assert query(document, "nav>ul>li>div>div>ul>li") |> LazyHTML.to_tree() |> length() == 11
 
       # test 4 of them are links (ie. not folders)
-      assert query(document, "nav>ul>li>ul>li>div>a") |> LazyHTML.to_tree() |> length() == 4
+      assert query(document, "nav>ul>li>div>div>ul>li>div>a") |> LazyHTML.to_tree() |> length() ==
+               4
 
       # first node (which is 1st folder) is closed
-      assert query(document, "nav>ul>li>ul>li:nth-child(1)>ul>li")
+      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>div>ul>li")
              |> LazyHTML.to_tree()
              |> length() == 0
 
       # second node (which is 2nd folder) is open (by config)
-      assert query(document, "nav>ul>li>ul>li:nth-child(2)>ul>li")
+      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(2)>div>div>ul>li")
              |> LazyHTML.to_tree()
              |> length() == 4
     end
@@ -51,18 +53,19 @@ defmodule PhoenixStorybook.SidebarTest do
       assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 1
 
       # test sidebar has 11 stories
-      assert query(document, "nav>ul>li>ul>li") |> LazyHTML.to_tree() |> length() == 11
+      assert query(document, "nav>ul>li>div>div>ul>li") |> LazyHTML.to_tree() |> length() == 11
 
       # test 4 of them are links (ie. not folders)
-      assert query(document, "nav>ul>li>ul>li>div>a") |> LazyHTML.to_tree() |> length() == 4
+      assert query(document, "nav>ul>li>div>div>ul>li>div>a") |> LazyHTML.to_tree() |> length() ==
+               4
 
       # first node (which is 1st folder) is open (by path)
-      assert query(document, "nav>ul>li>ul>li:nth-child(1)>ul>li")
+      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>div>ul>li")
              |> LazyHTML.to_tree()
              |> length() == 2
 
       # second node (which is 2nd folder) is open (by config)
-      assert query(document, "nav>ul>li>ul>li:nth-child(2)>ul>li")
+      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(2)>div>div>ul>li")
              |> LazyHTML.to_tree()
              |> length() == 4
     end
@@ -72,7 +75,7 @@ defmodule PhoenixStorybook.SidebarTest do
 
       # test 1th story in 1st folder is active (font-bold class)
       [{"div", [{"class", link_class} | _], _}] =
-        query(document, "nav>ul>li>ul>li:nth-child(1)>ul>li:nth-child(1)>div")
+        query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>div>ul>li:nth-child(1)>div")
         |> LazyHTML.to_tree()
 
       assert String.contains?(link_class, "psb:font-bold")
@@ -84,9 +87,11 @@ defmodule PhoenixStorybook.SidebarTest do
       [
         {"i", [{"class", first_icon_classes} | _], _},
         {"i", [{"class", second_icon_classes} | _], _}
-      ] = query(document, "nav>ul>li>ul>li:nth-child(1)>div>i") |> LazyHTML.to_tree()
+      ] =
+        query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div:nth-child(1) i")
+        |> LazyHTML.to_tree()
 
-      assert String.contains?(first_icon_classes, "fa-caret-down")
+      assert String.contains?(first_icon_classes, "fa-chevron-right")
       assert String.contains?(second_icon_classes, "fa-icon")
     end
 
@@ -95,14 +100,14 @@ defmodule PhoenixStorybook.SidebarTest do
 
       # test default folder name (properly humanized)
       [{"span", [_], [html]}] =
-        query(document, "nav>ul>li>ul>li:nth-child(1)>div>span:nth-child(3)")
+        query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>span:nth-child(3)")
         |> LazyHTML.to_tree()
 
       assert String.contains?(html, "A Folder")
 
       # test config folder name
       [{"span", [_], [html]}] =
-        query(document, "nav>ul>li>ul>li:nth-child(2)>div>span") |> LazyHTML.to_tree()
+        query(document, "nav>ul>li>div>div>ul>li:nth-child(2)>div>span") |> LazyHTML.to_tree()
 
       assert String.contains?(html, "Config Name")
     end

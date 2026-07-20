@@ -1,0 +1,18 @@
+/*
+  Reference stylesheet for theming the PhoenixStorybook UI.
+
+  This file exists so a consumer's `storybook_theme.css` can use `@apply psb:*`
+  utilities and the storybook's `--psb-color-*` theme. It sets up the same
+  psb-prefixed Tailwind engine the storybook chrome is built with, but is meant
+  to be pulled in with Tailwind's `@reference` directive, which registers those
+  utilities and theme variables without emitting any CSS.
+
+  Usage, from `assets/css/storybook_theme.css`:
+
+    @reference "../../deps/phoenix_storybook/priv/phoenix_storybook.css";
+
+  The `tailwindcss` imports below resolve from the consumer's own node_modules.
+*/
+
+@import "tailwindcss/theme.css" prefix(psb);
+@import "tailwindcss/utilities.css" prefix(psb);

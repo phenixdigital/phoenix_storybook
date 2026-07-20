@@ -127,7 +127,7 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     assigns = assign(assigns, source: source)
 
     ~H"""
-    <pre class={[pre_class(), "psb:dark:border-slate-600"]}>
+    <pre class={pre_class()}>
     <%= format_code(@source, :elixir) %>
     </pre>
     """
@@ -143,10 +143,14 @@ defmodule PhoenixStorybook.Rendering.CodeRenderer do
     """
   end
 
-  defp pre_class do
+  @doc """
+  Shared CSS classes for every rendered `<pre>` code block, so code output looks
+  consistent wherever it is rendered (stories, playground, docs, markdown).
+  """
+  def pre_class do
     """
-    psb highlight psb:p-2 psb:md:p-3 psb:border psb:border-slate-800 psb:text-xs psb:md:text-sm
-    psb:rounded-md psb:bg-slate-800! psb:whitespace-pre-wrap psb:break-normal
+    psb highlight psb:py-2 psb:px-4 psb:md:py-3 psb:text-xs psb:md:text-sm
+    psb:rounded-md psb:bg-code! psb:text-code-foreground psb:whitespace-pre-wrap psb:break-normal
     """
   end
 

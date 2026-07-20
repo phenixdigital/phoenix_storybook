@@ -42,4 +42,33 @@ defmodule PhoenixStorybook.CoreComponents do
     <input type={@type} id={@id} name={@name} value={normalize_value(@type, @value)} {@rest} />
     """
   end
+
+  @doc """
+  Renders a keyboard key using a `<kbd>` element with minimal styling.
+
+  ## Examples
+
+      <.kbd text="⌘" />
+      <.kbd text="Ctrl" /> + <.kbd text="K" />
+      <.kbd text="Enter" class="psb:h-8" />
+  """
+  attr :text, :string, required: true, doc: "The key label to render."
+  attr :class, :any, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global, doc: "Any HTML attribute"
+
+  def kbd(assigns) do
+    ~H"""
+    <kbd
+      class={[
+        "psb:inline psb:px-1.5 psb:pt-1 psb:rounded-sm",
+        "psb:border psb:border-border psb:bg-muted psb:shadow-xs",
+        "psb:font-mono psb:text-xs psb:font-medium psb:text-muted-foreground",
+        @class
+      ]}
+      {@rest}
+    >
+      {@text}
+    </kbd>
+    """
+  end
 end

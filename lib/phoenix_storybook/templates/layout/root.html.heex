@@ -69,12 +69,17 @@
         @import "<%= path %><%= storybook_css_hash(@conn) %>" layer(app);
       </style>
     <% end %>
+    <%= if path = storybook_theme_path(@conn) do %>
+      <style nonce={csp_nonce(@conn, :style)}>
+        @import "<%= path %><%= storybook_theme_hash(@conn) %>";
+      </style>
+    <% end %>
     <style nonce={csp_nonce(@conn, :style)}>
       <%= raw(makeup_stylesheet(@conn)) %>
     </style>
   </head>
 
-  <body class="psb psb:max-w-full psb:overflow-hidden psb:bg-white psb:dark:bg-slate-900">
+  <body class="psb psb:max-w-full psb:overflow-hidden psb:bg-sidebar">
     {@inner_content}
   </body>
 </html>

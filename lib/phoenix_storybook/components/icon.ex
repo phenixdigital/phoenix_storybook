@@ -48,6 +48,24 @@ defmodule PhoenixStorybook.Components.Icon do
     ~H(<i class={["fa-#{@style} fa-#{@name}", @class | @class_list]} {@rest}></i>)
   end
 
+  # This wrapper helps to control the size of the font icon with width/height helpers.
+  attr :name, :string, required: true, doc: "The name of the icon, without the fa- prefix."
+  attr :style, :atom, default: :solid, doc: "One of the styles provided by FontAwesome."
+  attr :plan, :atom, required: true, doc: "Free plan will make all icons render with solid style."
+  attr :class, :any, default: nil, doc: "CSS classes for the wrapper box."
+  attr :rest, :global, doc: "Any HTML attribute"
+
+  def scaled_fa_icon(assigns) do
+    ~H"""
+    <div
+      class={["psb:@container psb:flex psb:items-center psb:justify-center", @class]}
+      {@rest}
+    >
+      <.fa_icon name={@name} style={@style} plan={@plan} class="psb:text-[100cqw] psb:leading-none" />
+    </div>
+    """
+  end
+
   @doc """
   HeroIcons icons for internal phoenix_storybook usage. Requires :heroicons as a mix dependency.
 
