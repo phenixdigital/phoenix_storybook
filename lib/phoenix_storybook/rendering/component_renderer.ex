@@ -148,15 +148,11 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
   end
 
   defp extract_placeholder_attributes(template, _variation_id, _topic = nil) do
-    template
-    |> TemplateHelpers.extract_placeholder_attributes()
-    |> Enum.join(" ")
+    TemplateHelpers.extract_placeholder_attributes(template)
   end
 
   defp extract_placeholder_attributes(template, variation_id, topic) do
-    template
-    |> TemplateHelpers.extract_placeholder_attributes({topic, variation_id})
-    |> Enum.join(" ")
+    TemplateHelpers.extract_placeholder_attributes(template, {topic, variation_id})
   end
 
   defp let_markup(nil), do: ""
