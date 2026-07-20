@@ -87,17 +87,19 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
 
   defp component_heex(fun, assigns, _let, [], index, extra_attrs) when is_function(fun) do
     {attributes_markup, runtime_attrs} = attributes_markup(assigns, index)
+    extra_attrs_markup = extra_attrs_markup(extra_attrs)
 
     {"""
-     <.#{function_name(fun)} #{attributes_markup} #{extra_attrs}/>
+     <.#{function_name(fun)} #{extra_attrs_markup} #{attributes_markup} />
      """, runtime_attrs}
   end
 
   defp component_heex(fun, assigns, let, slots, index, extra_attrs) when is_function(fun) do
     {attributes_markup, runtime_attrs} = attributes_markup(assigns, index)
+    extra_attrs_markup = extra_attrs_markup(extra_attrs)
 
     {"""
-     <.#{function_name(fun)} #{let_markup(let)} #{attributes_markup} #{extra_attrs}>
+     <.#{function_name(fun)} #{let_markup(let)} #{extra_attrs_markup} #{attributes_markup}>
        #{slots}
      </.#{function_name(fun)}>
      """, runtime_attrs}
@@ -105,17 +107,19 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
 
   defp component_heex(module, assigns, _let, [], index, extra_attrs) when is_atom(module) do
     {attributes_markup, runtime_attrs} = attributes_markup(assigns, index, [:module])
+    extra_attrs_markup = extra_attrs_markup(extra_attrs)
 
     {"""
-     <.live_component module={#{inspect(module)}} #{attributes_markup} #{extra_attrs}/>
+     <.live_component module={#{inspect(module)}} #{extra_attrs_markup} #{attributes_markup} />
      """, runtime_attrs}
   end
 
   defp component_heex(module, assigns, let, slots, index, extra_attrs) when is_atom(module) do
     {attributes_markup, runtime_attrs} = attributes_markup(assigns, index, [:module])
+    extra_attrs_markup = extra_attrs_markup(extra_attrs)
 
     {"""
-     <.live_component module={#{inspect(module)}} #{let_markup(let)} #{attributes_markup} #{extra_attrs}>
+     <.live_component module={#{inspect(module)}} #{let_markup(let)} #{extra_attrs_markup} #{attributes_markup}>
        #{slots}
      </.live_component>
      """, runtime_attrs}
@@ -157,6 +161,8 @@ defmodule PhoenixStorybook.Rendering.ComponentRenderer do
 
   defp let_markup(nil), do: ""
   defp let_markup(let), do: ":let={#{to_string(let)}}"
+
+  defp extra_attrs_markup(attrs), do: Enum.join(attrs, " ")
 
   defp attributes_markup(attributes, index, reserved_attrs \\ []) do
     {eval_attrs, runtime_attrs} =

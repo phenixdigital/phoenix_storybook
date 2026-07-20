@@ -75,6 +75,19 @@ defmodule PhoenixStorybook.StoryLiveTest do
     def config(_key, default), do: default
   end
 
+  defmodule ManualReleasePermalinkBackend do
+    def config(:source_permalink_base_url),
+      do: "https://github.com/phenixdigital/phoenix_storybook"
+
+    def config(:content_path), do: "/opt/storybook"
+
+    def config(:source_permalink_base_url, _default),
+      do: "https://github.com/phenixdigital/phoenix_storybook"
+
+    def config(:content_path, _default), do: "/opt/storybook"
+    def config(_key, default), do: default
+  end
+
   defmodule ExampleNilFilePathStory do
     def storybook_type, do: :example
     def doc, do: nil
@@ -90,6 +103,25 @@ defmodule PhoenixStorybook.StoryLiveTest do
     def __source__, do: "defmodule Demo do\n  def ok, do: :ok\nend\n"
     def __extra_sources__, do: %{}
     def __file_path__, do: "./lib/demo source.ex"
+  end
+
+  defmodule ExampleAbsoluteExtraSourceStory do
+    def storybook_type, do: :example
+    def doc, do: nil
+    def __source__, do: "defmodule Demo do\n  def ok, do: :ok\nend\n"
+
+    def __extra_sources__,
+      do: %{
+        "../../../assets/js/hooks/time_picker_hook.js" => "export const TimePickerHook = {};\n"
+      }
+
+    def __extra_sources_file_paths__,
+      do: %{
+        "../../../assets/js/hooks/time_picker_hook.js" =>
+          "/opt/assets/js/hooks/time_picker_hook.js"
+      }
+
+    def __file_path__, do: "/opt/storybook/examples/example.story.exs"
   end
 
   setup_all do
@@ -241,6 +273,24 @@ defmodule PhoenixStorybook.StoryLiveTest do
 
       assert html =~
                "https://github.com/phenixdigital/phoenix_storybook/blob/main/lib/demo%20source.ex"
+    end
+
+    test "source panel permalink keeps selected absolute extra source permalink in release-like paths" do
+      html =
+        %{
+          __changed__: %{},
+          story: ExampleAbsoluteExtraSourceStory,
+          story_entry: %PhoenixStorybook.StoryEntry{name: "Demo", path: "/demo", icon: nil},
+          backend_module: ManualReleasePermalinkBackend,
+          tab: :source,
+          source_file: "../../../assets/js/hooks/time_picker_hook.js",
+          fa_plan: :free
+        }
+        |> PhoenixStorybook.StoryLive.render()
+        |> Phoenix.LiveViewTest.rendered_to_string()
+
+      assert html =~
+               "https://github.com/phenixdigital/phoenix_storybook/blob/main/assets/js/hooks/time_picker_hook.js"
     end
 
     test "psb-clear-playground-error clears playground_error assign" do

@@ -9,6 +9,9 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v1.4.0 (not released yet)
+- **bugfix**: fixed source permalink generation for selected absolute `extra_sources`, including JS files in production/release environments
+
 ## v1.3.0 (2026-07-03)
 - **improvement**: [support Phoenix LiveView 1.2](https://github.com/phenixdigital/phoenix_storybook/pull/834) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
 
