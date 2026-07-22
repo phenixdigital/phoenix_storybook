@@ -126,6 +126,21 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       |> assert_has_patch("config/config.exs", """
       + | storybook: [
       """)
+      |> assert_has_patch("config/config.exs", """
+      + | env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+      """)
+    end
+
+    test "omits the storybook tailwind NODE_PATH env when the app has no colocated CSS" do
+      config =
+        phx_test_project()
+        |> edit_file("assets/css/app.css", ~r/.*phoenix-colocated.*\n/, "")
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+        |> config_content()
+
+      assert config =~ "storybook: ["
+      storybook_profile = config |> String.split("storybook: [") |> List.last()
+      refute storybook_profile =~ "NODE_PATH"
     end
 
     test "adds the storybook watcher and live_reload pattern to dev.exs" do
@@ -287,6 +302,12 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
 
       assert_has_notice(igniter, &(&1 =~ "Add a tailwind build profile"))
 
+      assert_has_notice(
+        igniter,
+        &(&1 =~
+            ~S|env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}|)
+      )
+
       refute igniter
              |> Igniter.Test.diff(only: "config/config.exs")
              |> String.contains?("storybook: [")
@@ -380,6 +401,12 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
   defp css_content(igniter) do
     igniter.rewrite
     |> Rewrite.source!("assets/css/storybook.css")
+    |> Rewrite.Source.get(:content)
+  end
+
+  defp config_content(igniter) do
+    igniter.rewrite
+    |> Rewrite.source!("config/config.exs")
     |> Rewrite.Source.get(:content)
   end
 

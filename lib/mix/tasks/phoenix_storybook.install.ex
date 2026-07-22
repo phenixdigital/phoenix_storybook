@@ -511,7 +511,7 @@ if Code.ensure_loaded?(Igniter) do
                    --input=assets/css/storybook.css
                    --output=priv/static/assets/css/storybook.css
                  ),
-               cd: Path.expand("..", __DIR__)
+               cd: Path.expand("..", __DIR__)#{tailwind_env_kw(igniter, "  ")}
              ]
              """)}
           )
@@ -526,9 +526,39 @@ if Code.ensure_loaded?(Igniter) do
                     --input=assets/css/storybook.css
                     --output=priv/static/assets/css/storybook.css
                   ),
-                  cd: Path.expand("..", __DIR__)
+                  cd: Path.expand("..", __DIR__)#{tailwind_env_kw(igniter, "        ")}
                 ]
           """)
+      end
+    end
+
+    # LiveView >= 1.2 writes `@import "phoenix-colocated/..."` into app.css, which
+    # we copy verbatim into storybook.css. Resolving that import needs a list-form
+    # NODE_PATH on the tailwind profile, and that list form is only joined into a
+    # path by tailwind >= 0.5.0 — which any app already using colocated CSS runs,
+    # since its own main profile resolves the same import. Apps without the import
+    # (older LiveView) get no env, so their older tailwind can't be handed a config
+    # it would crash on. The leading comma lives here so `cd:` has no trailing one.
+    defp tailwind_env_kw(igniter, indent) do
+      if colocated_css?(igniter) do
+        ",\n" <>
+          indent <>
+          ~S|env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}|
+      else
+        ""
+      end
+    end
+
+    defp colocated_css?(igniter) do
+      if Igniter.exists?(igniter, @app_css) do
+        igniter = Igniter.include_existing_file(igniter, @app_css)
+
+        igniter.rewrite
+        |> Rewrite.source!(@app_css)
+        |> Rewrite.Source.get(:content)
+        |> String.contains?("phoenix-colocated")
+      else
+        false
       end
     end
 
