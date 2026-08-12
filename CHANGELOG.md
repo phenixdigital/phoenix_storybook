@@ -10,6 +10,7 @@
 >   more of my free time to fixing bugs and developing new features 🤗
 
 ## v1.4.0 (not released yet)
+- **bugfix**: relative `:content_path` values are resolved from the Mix project cwd at runtime
 - **bugfix**: fixed source permalink generation for selected absolute `extra_sources`, including JS files in production/release environments
 
 ## v1.3.0 (2026-07-03)

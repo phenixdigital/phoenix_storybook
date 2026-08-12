@@ -90,7 +90,8 @@ defmodule MyAppWeb.Storybook do
     # OTP name of your application.
     otp_app: :my_app,
 
-    # Path to your storybook stories (required).
+    # Path to your storybook stories (required). Absolute, or relative to the Mix
+    # project root.
     content_path: Path.expand("../../storybook", __DIR__),
 
     # Path to your JS asset, which will be loaded just before PhoenixStorybook's own

@@ -80,12 +80,17 @@ defmodule PhoenixStorybook do
       @impl PhoenixStorybook.BackendBehaviour
       def storybook_path(story_module) do
         if Code.ensure_loaded?(story_module) do
-          content_path = Keyword.get(unquote(opts), :content_path)
+          content_path =
+            unquote(opts)
+            |> Keyword.get(:content_path)
+            |> Path.expand()
 
-          file_path =
+          Path.join(
+            "/",
             story_module.__file_path__()
-            |> String.replace_prefix(content_path, "")
+            |> Path.relative_to(content_path)
             |> String.replace_suffix(Entries.story_file_suffix(), "")
+          )
         end
       end
     end
