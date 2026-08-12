@@ -114,5 +114,18 @@ defmodule PhoenixStorybookTest do
       {:ok, module} = TreeStorybook.load_story(path)
       assert TreeStorybook.storybook_path(module) == path
     end
+
+    test "relative content_path maps stories the same as an expanded path" do
+      defmodule RelativeContentStorybook do
+        use Elixir.PhoenixStorybook,
+          otp_app: :phoenix_storybook,
+          content_path: "test/fixtures/storybook_content/tree",
+          compilation_mode: :lazy
+      end
+
+      path = "/a_folder/component"
+      {:ok, module} = RelativeContentStorybook.load_story(path)
+      assert RelativeContentStorybook.storybook_path(module) == path
+    end
   end
 end
