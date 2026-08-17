@@ -749,7 +749,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp render_event_logs_tab(assigns) do
     ~H"""
     <div class={[
-      "psb psb:flex psb:flex-col psb:grow psb:py-2 psb:relative",
+      "psb psb:flex psb:flex-col psb:grow psb:py-2 psb:relative psb:min-h-32",
       @lower_tab != :events && "psb:hidden"
     ]}>
       <div
