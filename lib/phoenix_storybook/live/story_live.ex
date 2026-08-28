@@ -838,7 +838,7 @@ defmodule PhoenixStorybook.StoryLive do
   defp source_file_path_from_content_path(_source_file_path, nil), do: nil
 
   defp source_file_path_from_content_path(source_file_path, content_path) do
-    content_path = to_string(content_path)
+    content_path = content_path |> to_string() |> Path.expand()
 
     with :absolute <- Path.type(content_path),
          common_root when common_root not in [nil, "/", source_file_path] <-

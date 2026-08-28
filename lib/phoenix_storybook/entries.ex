@@ -20,8 +20,6 @@ defmodule PhoenixStorybook.Entries do
   alias PhoenixStorybook.ExsCompiler
   alias PhoenixStorybook.{FolderEntry, IndexEntry, StoryEntry}
 
-  require Logger
-
   def story_file_suffix, do: ".story.exs"
   def index_file_suffix, do: ".index.exs"
 

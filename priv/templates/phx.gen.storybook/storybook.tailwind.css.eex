@@ -28,3 +28,8 @@
 @source "../js";
 @source "../../lib/<%= schema.web_app_name %>";
 @source "../../storybook";
+
+/* Storybook sandbox defaults to a serif font; match the app's sans-serif UI. */
+.<%= schema.sandbox_class %> {
+  font-family: system-ui, sans-serif;
+}
