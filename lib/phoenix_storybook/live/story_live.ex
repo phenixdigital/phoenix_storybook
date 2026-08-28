@@ -260,7 +260,11 @@ defmodule PhoenixStorybook.StoryLive do
         <div class="psb psb:flex psb:items-center psb:gap-3">
           <h2 class="psb psb:flex psb:items-center psb:min-w-0 psb:flex-1 psb:m-0 psb:text-lg psb:md:text-xl psb:lg:text-2xl psb:font-extrabold psb:tracking-tight psb:text-primary">
             <%= if icon = @story_entry.icon do %>
-              <span id={"story-icon-#{story_id(@story)}"} phx-update="ignore" class="psb psb:shrink-0 psb:pr-2">
+              <span
+                id={"story-icon-#{story_id(@story)}"}
+                phx-update="ignore"
+                class="psb psb:shrink-0 psb:pr-2"
+              >
                 <.user_icon
                   icon={icon}
                   class="psb:text-primary"

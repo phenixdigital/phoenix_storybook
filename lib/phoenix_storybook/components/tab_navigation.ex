@@ -49,7 +49,8 @@ defmodule PhoenixStorybook.Components.TabNavigation do
           class={[tab_class(@variant), active_class(@variant, elem(tab, 0) == @active)]}
         >
           <.user_icon :if={icon} icon={icon} class={icon_class(@variant)} fa_plan={@fa_plan} />
-          <span class="psb psb:leading-none psb:whitespace-nowrap">{elem(tab, 1)}{if suffix, do: " #{suffix}"}</span>
+          <span class="psb psb:leading-none psb:whitespace-nowrap">{elem(tab, 1)}{if suffix,
+            do: " #{suffix}"}</span>
         </a>
       <% end %>
     </nav>

@@ -760,7 +760,8 @@ defmodule PhoenixStorybook.Story.Playground do
           </span>
           <span class="psb:text-code-foreground psb:group-hover:font-bold">{@event_log.type}</span>
           <span class="psb:text-code-foreground psb:group-hover:font-bold">
-            event: <span class="psb:text-code-muted-foreground psb:group-hover:font-bold">{@event_log.event}</span>
+            event:
+            <span class="psb:text-code-muted-foreground psb:group-hover:font-bold">{@event_log.event}</span>
           </span>
         </div>
       </div>

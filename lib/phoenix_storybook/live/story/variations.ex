@@ -61,7 +61,10 @@ defmodule PhoenixStorybook.Story.Variations do
         >
           <!-- Variation description -->
           <div class="psb psb:group psb:col-span-5 psb:mb-4 psb:border-b psb:border-border psb:md:text-lg psb:text-foreground psb:flex psb:items-center psb:justify-between">
-            <.link href={"##{anchor_id(variation)}"} class="psb psb-variation-anchor-link psb:font-semibold psb:flex psb:items-center psb:gap-2">
+            <.link
+              href={"##{anchor_id(variation)}"}
+              class="psb psb-variation-anchor-link psb:font-semibold psb:flex psb:items-center psb:gap-2"
+            >
               <%= if description do %>
                 {description}
               <% else %>
@@ -86,7 +89,12 @@ defmodule PhoenixStorybook.Story.Variations do
             >
               <span class="psb psb:flex psb:items-center psb:gap-1 psb:text-xs psb:text-muted-foreground psb:hover:text-primary psb:md:text-sm">
                 Open in playground
-                <.scaled_fa_icon style={:regular} name="arrow-right" plan={@fa_plan} class="psb:size-3" />
+                <.scaled_fa_icon
+                  style={:regular}
+                  name="arrow-right"
+                  plan={@fa_plan}
+                  class="psb:size-3"
+                />
               </span>
             </.link>
           </div>
