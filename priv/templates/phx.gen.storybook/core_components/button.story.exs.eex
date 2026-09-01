@@ -8,9 +8,24 @@ defmodule Storybook.Components.CoreComponents.Button do
     [
       %Variation{
         id: :default,
+        slots: [
+          "Click me!"
+        ]
+      },
+      %Variation{
+        id: :primary,
         attributes: %{
-          type: "button",
-          class: "bg-emerald-400 hover:bg-emerald-500 text-emerald-800"
+          variant: "primary"
+        },
+        slots: [
+          "Click me!"
+        ]
+      },
+      %Variation{
+        id: :custom,
+        description: "With custom classes",
+        attributes: %{
+          class: "bg-emerald-400 hover:bg-emerald-500 text-emerald-800 px-3 py-2 rounded"
         },
         slots: [
           "Click me!"
@@ -19,7 +34,6 @@ defmodule Storybook.Components.CoreComponents.Button do
       %Variation{
         id: :disabled,
         attributes: %{
-          type: "button",
           disabled: true
         },
         slots: [

@@ -749,7 +749,7 @@ defmodule PhoenixStorybook.Story.Playground do
   defp render_event_logs_tab(assigns) do
     ~H"""
     <div class={[
-      "psb psb:flex psb:flex-col psb:grow psb:py-2 psb:relative",
+      "psb psb:flex psb:flex-col psb:grow psb:py-2 psb:relative psb:min-h-32",
       @lower_tab != :events && "psb:hidden"
     ]}>
       <div
@@ -1084,10 +1084,6 @@ defmodule PhoenixStorybook.Story.Playground do
       class="psb psb:form-select psb:mt-1 psb:block psb:w-full psb:dark:text-slate-300 psb:dark:bg-slate-700 psb:pl-3 psb:pr-10 psb:py-2 psb:text-xs psb:md:text-sm psb:focus:outline-none psb:focus:ring-indigo-500 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-500 psb:border-gray-300 psb:dark:border-slate-600 psb:rounded-md"
     />
     """
-  end
-
-  defp attr_input(assigns = %{values: values}) when not is_nil(values) do
-    attr_input(%{assigns | values: values})
   end
 
   defp on_toggle_click(attr_id, value) do

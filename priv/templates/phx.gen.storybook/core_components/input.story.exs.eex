@@ -3,7 +3,6 @@ defmodule Storybook.Components.CoreComponents.Input do
 
   def function, do: &<%= schema.core_components_module_name %>.input/1
   def render_source, do: :function
-  def layout, do: :one_column
 
   def template do
     """
@@ -84,7 +83,7 @@ defmodule Storybook.Components.CoreComponents.Input do
         id: :type,
         description: "Various input types",
         variations:
-          for type <- ~w(number range email password tel search month week date time color file) do
+          for type <- ~w(number email password tel search month week date time color file) do
             %Variation{
               id: String.to_atom(type),
               attributes: %{

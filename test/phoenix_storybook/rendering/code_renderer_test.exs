@@ -32,10 +32,10 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       live_component: live_component
     } do
       code = render_variation_code(component, :hello)
-      assert code =~ ~s|<.component id="component-single-hello" label="hello"/>|
+      assert code =~ ~s|<.component id="component-single-hello" label="hello" />|
 
       code = render_variation_code(component, :world)
-      assert code =~ ~s|<.component id="component-single-world" index={37} label="world"/>|
+      assert code =~ ~s|<.component id="component-single-world" index={37} label="world" />|
 
       code = render_variation_code(component, :lengthy)
 
@@ -45,11 +45,11 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
                  id="component-single-lengthy"
                  index={37}
                  label="Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt."
-               />
+                />
                """)
 
       code = render_variation_code(live_component, :hello)
-      assert code =~ ~s|<.live_component module={LiveComponent} label="hello"/>|
+      assert code =~ ~s|<.live_component module={LiveComponent} label="hello" />|
 
       code = render_variation_code(live_component, :world)
 
@@ -67,7 +67,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
                <.live_component
                  module={LiveComponent}
                  label="Omnis rerum facere aspernatur ipsum velit et illum in earum quia modi molestias qui sunt."
-               />
+                />
                """)
     end
 
@@ -79,8 +79,8 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <.component label="hello"/>
-               <.component index={37} label="world"/>
+               <.component label="hello" />
+               <.component index={37} label="world" />
                """)
 
       code = render_variation_code(live_component, :group)
@@ -90,7 +90,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
                <.live_component module={LiveComponent} label="hello">
                  <span>inner block</span>
                </.live_component>
-               <.live_component module={LiveComponent} label="world"/>
+               <.live_component module={LiveComponent} label="world" />
                """)
     end
 
@@ -134,7 +134,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
                  <button id="toggle-status-template-component-single-hello" phx-click={JS.push("psb-toggle", value: %{attr: :status})}>Toggle status</button>
                  <button id="set-status-true-template-component-single-hello" phx-click={JS.push("psb-assign", value: %{status: true})}>Set status to true</button>
                  <button id="set-status-false-template-component-single-hello" phx-click={JS.push("psb-assign", value: %{status: false})}>Set status to false</button>
-                 <.template_component label="hello"/>
+                 <.template_component label="hello" />
                </div>
                """)
     end
@@ -145,11 +145,11 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       assert code =~
                String.trim("""
                <div class="group-template">
-                 <.template_component label="one"/>
+                 <.template_component label="one" />
                </div>
 
                <div class="group-template">
-                 <.template_component label="two"/>
+                 <.template_component label="two" />
                </div>
                """)
     end
@@ -160,8 +160,8 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
       assert code =~
                String.trim("""
                <div class="group-template">
-                 <.template_component label="one"/>
-                 <.template_component label="two"/>
+                 <.template_component label="one" />
+                 <.template_component label="two" />
                </div>
                """)
     end
@@ -171,8 +171,8 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
 
       assert code =~
                String.trim("""
-               <.template_component label="one"/>
-               <.template_component label="two"/>
+               <.template_component label="one" />
+               <.template_component label="two" />
                """)
     end
 
@@ -181,7 +181,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
     } do
       code = render_variation_code(component, :no_template)
 
-      assert code =~ ~s|<.template_component label="variation without template"/>|
+      assert code =~ ~s|<.template_component label="variation without template" />|
       refute code =~ ~s|template-div|
     end
 
@@ -190,7 +190,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
     } do
       code = render_variation_code(component, :hidden_template)
 
-      assert code =~ ~s|<.template_component label="variation hidden template"/>|
+      assert code =~ ~s|<.template_component label="variation hidden template" />|
       refute code =~ ~s|variation-template|
     end
 
@@ -239,7 +239,7 @@ defmodule PhoenixStorybook.Rendering.CodeRendererTest do
     test "it renders component id only if it has a declared :id attribute" do
       {:ok, component} = TreeStorybook.load_story("/b_folder/with_id_component")
       code = render_variation_code(component, :default)
-      assert code =~ ~s|<.component id="with-id-component-single-default"/>|
+      assert code =~ ~s|<.component id="with-id-component-single-default" />|
     end
 
     test "renders a variation with an evaluated attribute", %{all_types_component: component} do

@@ -10,7 +10,7 @@ defmodule TreeStorybook.TemplateComponent do
       <button id="toggle-status-:variation_id" phx-click={JS.push("psb-toggle", value: %{attr: :status})}>Toggle status</button>
       <button id="set-status-true-:variation_id" phx-click={JS.push("psb-assign", value: %{status: true})}>Set status to true</button>
       <button id="set-status-false-:variation_id" phx-click={JS.push("psb-assign", value: %{status: false})}>Set status to false</button>
-      <.psb-variation/>
+      <.psb-variation />
     </div>
     """
   end
@@ -58,7 +58,7 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %Variation{
         id: :variation_template,
-        template: ~s|<div class="variation-template"><.psb-variation/></div>|,
+        template: ~s|<div class="variation-template"><.psb-variation /></div>|,
         attributes: %{label: "variation template"}
       },
       %Variation{
@@ -68,7 +68,7 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %Variation{
         id: :hidden_template,
-        template: ~s|<div class="variation-template" psb-code-hidden><.psb-variation/></div>|,
+        template: ~s|<div class="variation-template" psb-code-hidden><.psb-variation /></div>|,
         attributes: %{label: "variation hidden template"}
       },
       %Variation{
@@ -80,7 +80,7 @@ defmodule TreeStorybook.TemplateComponent do
         id: :group_template,
         template: """
         <div class="group-template">
-          <.psb-variation/>
+          <.psb-variation />
         </div>
         """,
         variations: [
@@ -98,7 +98,7 @@ defmodule TreeStorybook.TemplateComponent do
         id: :group_template_single,
         template: """
         <div class="group-template">
-          <.psb-variation-group/>
+          <.psb-variation-group />
         </div>
         """,
         variations: [
@@ -116,7 +116,7 @@ defmodule TreeStorybook.TemplateComponent do
         id: :group_template_hidden,
         template: """
         <div class="group-template" psb-code-hidden>
-          <.psb-variation-group/>
+          <.psb-variation-group />
         </div>
         """,
         variations: [
@@ -146,7 +146,7 @@ defmodule TreeStorybook.TemplateComponent do
       },
       %Variation{
         id: :template_attributes,
-        template: ~s(<.psb-variation label="from_template" status={true}/>)
+        template: ~s(<.psb-variation label="from_template" status={true} />)
       }
     ]
   end
