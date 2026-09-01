@@ -15,6 +15,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     * scaffolding including example stories for your own storybook in `storybook/`
 
   The generator supports the `--no-tailwind` flag if you want to skip the TailwindCSS specific bit.
+
+  If you use [Igniter](https://hexdocs.pm/igniter), `mix phoenix_storybook.install` generates the
+  same files and applies all the setup instructions automatically.
   """
 
   use Mix.Task
