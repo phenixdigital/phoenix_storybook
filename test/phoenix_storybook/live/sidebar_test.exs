@@ -71,6 +71,24 @@ defmodule PhoenixStorybook.SidebarTest do
              |> length() == 1
     end
 
+    test "sidebar only displays the gutter for nested stories" do
+      {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
+
+      assert query(
+               document,
+               "nav>ul>li>div[class*='border-l']>a[href='/storybook/a_page']"
+             )
+             |> LazyHTML.to_tree()
+             |> Enum.empty?()
+
+      assert query(
+               document,
+               "nav ul ul div[class*='border-l']>a[href='/storybook/a_folder/component']"
+             )
+             |> LazyHTML.to_tree()
+             |> length() == 1
+    end
+
     test "sidebar with an icon folder is well displayed" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 

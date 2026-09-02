@@ -170,7 +170,7 @@ defmodule PhoenixStorybook.Sidebar do
               <% end %>
             <% %StoryEntry{name: name, path: path, icon: icon} -> %>
               <% story_path = Path.join(@root_path, path) %>
-              <div class={story_class(@current_path, story_path)}>
+              <div class={story_class(@current_path, story_path, @root)}>
                 <%= if icon do %>
                   <.user_icon
                     icon={icon}
@@ -213,16 +213,21 @@ defmodule PhoenixStorybook.Sidebar do
   defp root_entries([%FolderEntry{path: "", entries: entries}]), do: entries
   defp root_entries(entries), do: entries
 
-  defp story_class(current_path, story_path) do
-    story_class =
-      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:border-l psb:pl-4 psb:hover:border-sidebar-primary psb:hover:text-sidebar-primary psb:hover:border-l-1.5 psb:group"
+  defp story_class(current_path, story_path, root?) do
+    story_class = [
+      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:pl-4 psb:hover:text-sidebar-primary psb:group",
+      !root? &&
+        "psb:border-l psb:hover:border-sidebar-primary psb:hover:border-l-1.5"
+    ]
 
     if current_path == story_path do
-      story_class <>
-        " psb:font-bold psb:border-sidebar-primary psb:text-sidebar-primary psb:border-l-1.5"
+      [
+        story_class,
+        "psb:font-bold psb:text-sidebar-primary",
+        !root? && "psb:border-sidebar-primary psb:border-l-1.5"
+      ]
     else
-      story_class <>
-        " psb:border-sidebar-border psb:text-sidebar-foreground"
+      [story_class, "psb:text-sidebar-foreground", !root? && "psb:border-sidebar-border"]
     end
   end
 
