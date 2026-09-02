@@ -68,10 +68,10 @@ defmodule PhoenixStorybook.SidebarTest do
     test "sidebar with a path has active story marked as active" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
-      # test 1st story in 1st folder is active (font-bold class)
+      # test 1st story in 1st folder is bold and uses the sidebar primary color
       assert query(
                document,
-               "div[class*='psb:font-bold']>a[href='/storybook/a_folder/component']"
+               "div[class~='psb:font-bold'][class~='psb:text-sidebar-primary'][class~='psb:border-sidebar-primary']>a[href='/storybook/a_folder/component']"
              )
              |> LazyHTML.to_tree()
              |> length() == 1
