@@ -79,7 +79,13 @@ defmodule PhoenixStorybook.Sidebar do
       </span>
 
       <nav class="psb psb:flex-1 psb:xl:sticky">
-        {render_entries(assign(assigns, entries: @content_tree, folder_path: @root_path, root: true))}
+        {render_entries(
+          assign(assigns,
+            entries: root_entries(@content_tree),
+            folder_path: @root_path,
+            root: true
+          )
+        )}
       </nav>
 
       <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-sidebar-muted-foreground psb:hover:text-sidebar-primary psb:hover:font-bold">
@@ -131,16 +137,14 @@ defmodule PhoenixStorybook.Sidebar do
                 phx-target={@myself}
                 phx-value-path={folder_path}
               >
-                <%= unless @root do %>
-                  <.scaled_fa_icon
-                    name="chevron-right"
-                    plan={@fa_plan}
-                    class={[
-                      "psb:mr-3 psb:ml-0.5 psb:size-3 psb:transition-transform psb:origin-center psb:text-sidebar-muted-foreground",
-                      open_folder? && "psb:rotate-90"
-                    ]}
-                  />
-                <% end %>
+                <.scaled_fa_icon
+                  name="chevron-right"
+                  plan={@fa_plan}
+                  class={[
+                    "psb:mr-3 psb:ml-0.5 psb:size-3 psb:transition-transform psb:origin-center psb:text-sidebar-muted-foreground",
+                    open_folder? && "psb:rotate-90"
+                  ]}
+                />
 
                 <%= if folder_icon do %>
                   <.user_icon
@@ -155,7 +159,7 @@ defmodule PhoenixStorybook.Sidebar do
                 </span>
               </div>
 
-              <%= if open_folder? or @root do %>
+              <%= if open_folder? do %>
                 {render_entries(
                   assign(assigns,
                     entries: folder_entries,
@@ -205,6 +209,9 @@ defmodule PhoenixStorybook.Sidebar do
       end)
     end
   end
+
+  defp root_entries([%FolderEntry{path: "", entries: entries}]), do: entries
+  defp root_entries(entries), do: entries
 
   defp story_class(current_path, story_path) do
     story_class =

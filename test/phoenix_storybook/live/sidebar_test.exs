@@ -8,64 +8,53 @@ defmodule PhoenixStorybook.SidebarTest do
 
   describe "storybook with flat list of stories" do
     test "sidebar contains those 2 stories" do
-      {document, _html} = render_sidebar(FlatListStorybook)
-      # test sidebar has 1 root story
-      assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 1
+      {document, html} = render_sidebar(FlatListStorybook)
 
-      # test sidebar has 2 folders beneath root
-      assert query(document, "nav>ul>li>div>div>ul>li") |> LazyHTML.to_tree() |> length() == 2
+      # test sidebar has 2 stories at the root
+      assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 2
 
       # test those 2 stories are links (ie. not folders)
-      assert query(document, "nav>ul>li>div>div>ul>li>div>a") |> LazyHTML.to_tree() |> length() ==
-               2
+      assert query(document, "nav>ul>li>div>a") |> LazyHTML.to_tree() |> length() == 2
+
+      refute html =~ ">Storybook<"
     end
   end
 
   describe "storybook with a tree of stories" do
     test "sidebar contains all stories, with one open folder" do
       {document, _html} = render_sidebar(TreeStorybook)
-      sidebar = query(document, "nav>ul>li")
-
-      # test sidebar has 1 root story
-      assert length(LazyHTML.to_tree(sidebar)) == 1
-
-      # test sidebar has 11 stories
-      assert query(document, "nav>ul>li>div>div>ul>li") |> LazyHTML.to_tree() |> length() == 11
+      # test sidebar has 11 stories at the root
+      assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 11
 
       # test 4 of them are links (ie. not folders)
-      assert query(document, "nav>ul>li>div>div>ul>li>div>a") |> LazyHTML.to_tree() |> length() ==
-               4
+      assert query(document, "nav>ul>li>div>a") |> LazyHTML.to_tree() |> length() == 4
 
       # first node (which is 1st folder) is closed
-      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>div>ul>li")
+      assert query(document, "div[phx-value-path='/storybook/a_folder'] + div ul>li")
              |> LazyHTML.to_tree()
              |> length() == 0
 
       # second node (which is 2nd folder) is open (by config)
-      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(2)>div>div>ul>li")
+      assert query(document, "div[phx-value-path='/storybook/b_folder'] + div ul>li")
              |> LazyHTML.to_tree()
              |> length() == 4
     end
 
     test "sidebar with a path contains all stories, with 2 open folders" do
       {document, _html} = render_sidebar(TreeStorybook, "/a_folder/aa_component")
-      # test sidebar has 1 root story
-      assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 1
-
-      # test sidebar has 11 stories
-      assert query(document, "nav>ul>li>div>div>ul>li") |> LazyHTML.to_tree() |> length() == 11
+      # test sidebar has 11 stories at the root
+      assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 11
 
       # test 4 of them are links (ie. not folders)
-      assert query(document, "nav>ul>li>div>div>ul>li>div>a") |> LazyHTML.to_tree() |> length() ==
-               4
+      assert query(document, "nav>ul>li>div>a") |> LazyHTML.to_tree() |> length() == 4
 
       # first node (which is 1st folder) is open (by path)
-      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>div>ul>li")
+      assert query(document, "div[phx-value-path='/storybook/a_folder'] + div ul>li")
              |> LazyHTML.to_tree()
              |> length() == 2
 
       # second node (which is 2nd folder) is open (by config)
-      assert query(document, "nav>ul>li>div>div>ul>li:nth-child(2)>div>div>ul>li")
+      assert query(document, "div[phx-value-path='/storybook/b_folder'] + div ul>li")
              |> LazyHTML.to_tree()
              |> length() == 4
     end
@@ -73,12 +62,13 @@ defmodule PhoenixStorybook.SidebarTest do
     test "sidebar with a path has active story marked as active" do
       {document, _html} = render_sidebar(TreeStorybook, "a_folder/component")
 
-      # test 1th story in 1st folder is active (font-bold class)
-      [{"div", [{"class", link_class} | _], _}] =
-        query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>div>ul>li:nth-child(1)>div")
-        |> LazyHTML.to_tree()
-
-      assert String.contains?(link_class, "psb:font-bold")
+      # test 1st story in 1st folder is active (font-bold class)
+      assert query(
+               document,
+               "div[class*='psb:font-bold']>a[href='/storybook/a_folder/component']"
+             )
+             |> LazyHTML.to_tree()
+             |> length() == 1
     end
 
     test "sidebar with an icon folder is well displayed" do
@@ -88,7 +78,7 @@ defmodule PhoenixStorybook.SidebarTest do
         {"i", [{"class", first_icon_classes} | _], _},
         {"i", [{"class", second_icon_classes} | _], _}
       ] =
-        query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div:nth-child(1) i")
+        query(document, "div[phx-value-path='/storybook/a_folder'] i")
         |> LazyHTML.to_tree()
 
       assert String.contains?(first_icon_classes, "fa-chevron-right")
@@ -100,14 +90,14 @@ defmodule PhoenixStorybook.SidebarTest do
 
       # test default folder name (properly humanized)
       [{"span", [_], [html]}] =
-        query(document, "nav>ul>li>div>div>ul>li:nth-child(1)>div>span:nth-child(3)")
+        query(document, "div[phx-value-path='/storybook/a_folder']>span")
         |> LazyHTML.to_tree()
 
       assert String.contains?(html, "A Folder")
 
       # test config folder name
       [{"span", [_], [html]}] =
-        query(document, "nav>ul>li>div>div>ul>li:nth-child(2)>div>span") |> LazyHTML.to_tree()
+        query(document, "div[phx-value-path='/storybook/b_folder']>span") |> LazyHTML.to_tree()
 
       assert String.contains?(html, "Config Name")
     end
