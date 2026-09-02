@@ -36,11 +36,11 @@
 >
   <header class="psb psb:relative psb:shrink-0 psb:w-full psb:border-b psb:border-sidebar-border">
     <div class="psb psb:h-16 psb:w-full">
-      <div class="psb psb:absolute psb:top-4 psb:right-5 psb:flex psb:gap-2 psb:items-center">
+      <div class="psb psb:absolute psb:top-4 psb:left-5 psb:flex psb:items-center">
         <.header_action_button
           id="psb-search-button"
           phx-click={JS.dispatch("psb:open-search")}
-          class="psb:lg:w-auto psb:lg:px-2.5 psb:lg:gap-1.5"
+          class="psb:lg:w-56 psb:lg:px-2.5 psb:lg:gap-1.5 psb:lg:justify-start"
         >
           <.scaled_fa_icon
             name="magnifying-glass"
@@ -51,11 +51,13 @@
           <span class="psb psb:hidden psb:lg:inline psb:text-sm psb:leading-none psb:text-muted-foreground psb:whitespace-nowrap">
             Quick search...
           </span>
-          <div class="psb psb:hidden psb:lg:flex psb:items-center psb:ml-2">
+          <div class="psb psb:hidden psb:lg:flex psb:items-center psb:ml-auto">
             <.kbd text="⌘ K" />
           </div>
         </.header_action_button>
+      </div>
 
+      <div class="psb psb:absolute psb:top-4 psb:right-5 psb:flex psb:items-center">
         <%= if color_mode?(@socket) do %>
           <.header_action_button phx-click={
             JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())
