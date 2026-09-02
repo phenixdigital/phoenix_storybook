@@ -10,6 +10,12 @@ defmodule PhoenixStorybook.SidebarTest do
     test "sidebar contains those 2 stories" do
       {document, html} = render_sidebar(FlatListStorybook)
 
+      assert query(document, "#psb-sidebar-title>a[href='/storybook']")
+             |> LazyHTML.to_tree()
+             |> length() == 1
+
+      assert html =~ "Phoenix Storybook"
+
       # test sidebar has 2 stories at the root
       assert query(document, "nav>ul>li") |> LazyHTML.to_tree() |> length() == 2
 
@@ -76,7 +82,7 @@ defmodule PhoenixStorybook.SidebarTest do
 
       assert query(
                document,
-               "nav>ul>li>div[class*='border-l']>a[href='/storybook/a_page']"
+               "nav>ul>li>div[class*='border-l']>a[href='/storybook/a_page'], nav>ul>li>div[class*='psb:pl-4']>a[href='/storybook/a_page']"
              )
              |> LazyHTML.to_tree()
              |> Enum.empty?()
@@ -127,6 +133,7 @@ defmodule PhoenixStorybook.SidebarTest do
         id: "sidebar",
         backend_module: backend_module,
         root_path: "/storybook",
+        title: "Phoenix Storybook",
         current_path: path,
         fa_plan: :pro,
         sandbox_class: "sandbox"

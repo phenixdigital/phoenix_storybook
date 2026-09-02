@@ -78,6 +78,21 @@ defmodule PhoenixStorybook.Sidebar do
         />
       </span>
 
+      <div
+        id="psb-sidebar-title"
+        class="psb psb:shrink-0 psb:ml-3 psb:mb-4 psb:text-primary psb:text-[15px] psb:font-bold psb:tracking-tight psb:uppercase"
+      >
+        <.link patch={@root_path} class="psb psb:flex psb:items-center psb:min-w-0">
+          <.fa_icon
+            style={:regular}
+            name="book-open"
+            plan={@fa_plan}
+            class="fa-fw psb:-ml-1 psb:mr-1.5 psb:shrink-0"
+          />
+          <span class="psb psb:truncate">{@title}</span>
+        </.link>
+      </div>
+
       <nav class="psb psb:flex-1 psb:xl:sticky">
         {render_entries(
           assign(assigns,
@@ -215,9 +230,9 @@ defmodule PhoenixStorybook.Sidebar do
 
   defp story_class(current_path, story_path, root?) do
     story_class = [
-      "psb psb:flex psb:items-center psb:-ml-[12px] psb:block psb:pl-4 psb:hover:text-sidebar-primary psb:group",
+      "psb psb:flex psb:items-center psb:block psb:hover:text-sidebar-primary psb:group",
       !root? &&
-        "psb:border-l psb:hover:border-sidebar-primary psb:hover:border-l-1.5"
+        "psb:-ml-[12px] psb:pl-4 psb:border-l psb:hover:border-sidebar-primary psb:hover:border-l-1.5"
     ]
 
     if current_path == story_path do
