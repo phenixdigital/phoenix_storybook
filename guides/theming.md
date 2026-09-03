@@ -8,9 +8,10 @@ possibilities are named _strategies_.
 The following strategies are available:
 
 1. _sandbox class_: set your theme as a CSS class, on the sandbox container, with a custom prefix
-2. _data attribute_ (`data_attribute`): set your theme on the sandbox container as a `data-*` attribute.
-3. _assign_: pass the theme as an assign to your components, with a custom key.
-4. _function_: call a custom module/function along with the current theme.
+2. _root class_ (`root_class`): set your theme as a CSS class on the root `html` element, with a custom prefix.
+3. _data attribute_ (`data_attribute`): set your theme on the sandbox container as a `data-*` attribute.
+4. _assign_: pass the theme as an assign to your components, with a custom key.
+5. _function_: call a custom module/function along with the current theme.
 
 Here is how you can use these strategies. In your `storybook.ex`:
 
@@ -18,6 +19,7 @@ Here is how you can use these strategies. In your `storybook.ex`:
 use PhoenixStorybook,
   themes_strategies: [
     sandbox_class: "prefix", # will set a class prefixed by `prefix-` on the sandbox container
+    root_class: "theme", # will set `theme-<theme name>` on the root html element
     data_attribute: "name", # will set data-name="theme" on the sandbox container
     assign: :theme,
     function: {MyApp.ThemeHelper, :register_theme}

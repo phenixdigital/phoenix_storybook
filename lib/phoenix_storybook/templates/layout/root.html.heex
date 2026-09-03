@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html
   lang="en"
-  class="psb"
+  class={["psb", root_class(@conn, assigns)]}
   phx-socket={live_socket_path(@conn)}
   data-psb-color-mode={color_mode?(@conn)}
 >

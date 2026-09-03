@@ -474,7 +474,11 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "renders component, change theme and navigate", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
+      assert has_element?(view, "#psb-main[data-psb-root-theme-class=theme-default]")
+
       view |> element("a.psb-theme", "Colorful") |> render_click()
+
+      assert has_element?(view, "#psb-main[data-psb-root-theme-class=theme-colorful]")
 
       assert_patched(
         view,
@@ -1145,6 +1149,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
       assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=dark]")
+      assert view |> has_element?("#psb-main[data-psb-color-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
@@ -1162,6 +1167,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       |> render_hook("psb:set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
 
       assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=light]")
+      assert view |> has_element?("#psb-main[data-psb-color-mode=light]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 

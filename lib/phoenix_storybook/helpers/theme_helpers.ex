@@ -8,6 +8,15 @@ defmodule PhoenixStorybook.ThemeHelpers do
     end
   end
 
+  def theme_root_class(_backend_module, nil), do: nil
+
+  def theme_root_class(backend_module, theme) do
+    case theme_strategy(backend_module, :root_class) do
+      nil -> nil
+      prefix -> "#{prefix}-#{theme}"
+    end
+  end
+
   def theme_sandbox_data_attribute(backend_module, theme) do
     case theme_strategy(backend_module, :data_attribute) do
       nil ->

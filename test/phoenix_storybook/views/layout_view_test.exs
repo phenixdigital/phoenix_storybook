@@ -155,6 +155,20 @@ defmodule PhoenixStorybook.LayoutViewTest do
     end
   end
 
+  defmodule TestBackendWithRootClass do
+    def config(key, default \\ nil) do
+      Keyword.get(
+        [
+          themes_strategies: [root_class: "theme"]
+        ],
+        key,
+        default
+      )
+    end
+
+    def asset_hash(_path), do: nil
+  end
+
   defmodule DummyEndpoint do
     def script_name, do: ["storybook"]
   end
@@ -327,6 +341,33 @@ defmodule PhoenixStorybook.LayoutViewTest do
 
     assert html =~ ~s(@import "/assets/css/storybook_theme.css?hash=theme123";)
     refute html =~ ~s(storybook_theme.css?hash=theme123" layer)
+  end
+
+  test "root layout applies the configured theme class to the html element" do
+    conn = build_test_conn(TestBackendWithRootClass)
+
+    html =
+      render_component(&LayoutView.root/1,
+        conn: conn,
+        inner_content: "",
+        page_title: "Storybook",
+        theme: :default
+      )
+
+    assert html =~ ~s(<html lang="en" class="psb theme-default")
+  end
+
+  test "root iframe layout applies the configured theme class to the html element" do
+    conn = build_test_conn(TestBackendWithRootClass)
+
+    html =
+      render_component(&LayoutView.root_iframe/1,
+        conn: conn,
+        inner_content: "",
+        theme: :colorful
+      )
+
+    assert html =~ ~s(<html lang="en" class="theme-colorful")
   end
 
   test "root layout omits the theme import when theme_path is unset" do

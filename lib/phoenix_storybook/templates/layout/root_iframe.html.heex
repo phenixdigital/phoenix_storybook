@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
+<html
+  lang="en"
+  class={root_class(@conn, assigns)}
+  phx-socket={live_socket_path(@conn)}
+  style="height: 100%; margin: 0;"
+>
   <head>
     <%= if csrf?(@conn) do %>
       <meta name="csrf-token" content={get_csrf_token()} />

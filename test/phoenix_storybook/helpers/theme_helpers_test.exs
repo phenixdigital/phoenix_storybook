@@ -15,6 +15,12 @@ defmodule PhoenixStorybook.ThemeHelpersTest do
     end
   end
 
+  defmodule RootPrefixBackend do
+    def config(:themes_strategies, default) do
+      Keyword.put(default, :root_class, "root-theme")
+    end
+  end
+
   defmodule DataAttributeBackend do
     def config(:themes_strategies, default) do
       Keyword.put(default, :data_attribute, "test-theme")
@@ -61,6 +67,18 @@ defmodule PhoenixStorybook.ThemeHelpersTest do
 
   test "theme_sandbox_class prefixes theme when strategy exists" do
     assert ThemeHelpers.theme_sandbox_class(SandboxPrefixBackend, :default) == "sandbox-default"
+  end
+
+  test "theme_root_class returns nil when no root strategy" do
+    assert ThemeHelpers.theme_root_class(SandboxPrefixBackend, :default) == nil
+  end
+
+  test "theme_root_class returns nil when no theme is selected" do
+    assert ThemeHelpers.theme_root_class(RootPrefixBackend, nil) == nil
+  end
+
+  test "theme_root_class prefixes theme when strategy exists" do
+    assert ThemeHelpers.theme_root_class(RootPrefixBackend, :default) == "root-theme-default"
   end
 
   test "theme_sandbox_data_attribute nil when no sandbox strategy" do

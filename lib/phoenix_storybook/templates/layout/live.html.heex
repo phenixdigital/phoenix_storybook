@@ -28,6 +28,9 @@
 
 <div
   id="psb-main"
+  phx-hook="PhoenixStorybook.RootHook"
+  data-psb-root-theme-class={root_class(@socket, assigns)}
+  data-psb-color-mode={assigns[:color_mode]}
   class={[
     "psb psb:absolute psb:inset-0 psb:flex psb:flex-col psb:overflow-hidden",
     "psb:bg-background",

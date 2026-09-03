@@ -251,6 +251,13 @@ defmodule PhoenixStorybook.LayoutView do
     ]
   end
 
+  def root_class(_conn_or_socket, %{theme: nil}), do: nil
+
+  def root_class(conn_or_socket, assigns) do
+    backend_module = backend_module(conn_or_socket)
+    ThemeHelpers.theme_root_class(backend_module, Map.get(assigns, :theme))
+  end
+
   defp main_sandbox_class(conn_or_socket, {_container, container_opts}) do
     container_class = Keyword.get(container_opts, :class)
     ["psb-sandbox", container_class, backend_module(conn_or_socket).config(:sandbox_class)]

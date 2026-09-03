@@ -7,6 +7,8 @@ not the component's colors)
 is system, it will send dark or light depending on the browser current prefers-color-scheme).
 */
 
+import { syncRootColorMode } from "./root_hook";
+
 let self;
 
 export const ColorModeHook = {
@@ -43,13 +45,7 @@ export const ColorModeHook = {
     return "light";
   },
   toggleColorModeClass: (mode) => {
-    if ("psbColorMode" in document.documentElement.dataset) {
-      if (mode === "dark") {
-        document.documentElement.classList.add("psb:dark");
-      } else {
-        document.documentElement.classList.remove("psb:dark");
-      }
-    }
+    syncRootColorMode(mode);
   },
   onSetColorMode: (e) => {
     const selectedMode = e.detail.mode || "system";
