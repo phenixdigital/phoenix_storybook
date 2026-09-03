@@ -21,25 +21,25 @@
 
 :root {
   --psb-color-background: var(--psb-color-white);
-  --psb-color-foreground: var(--psb-color-neutral-950);
+  --psb-color-foreground: var(--psb-color-neutral-700);
 
   --psb-color-card: var(--psb-color-white);
-  --psb-color-card-foreground: var(--psb-color-neutral-950);
+  --psb-color-card-foreground: var(--psb-color-neutral-700);
 
   --psb-color-popover: var(--psb-color-white);
-  --psb-color-popover-foreground: var(--psb-color-neutral-950);
+  --psb-color-popover-foreground: var(--psb-color-neutral-700);
 
   --psb-color-primary: var(--psb-color-violet-800);
   --psb-color-primary-foreground: var(--psb-color-neutral-50);
 
   --psb-color-secondary: var(--psb-color-neutral-100);
-  --psb-color-secondary-foreground: var(--psb-color-neutral-900);
+  --psb-color-secondary-foreground: var(--psb-color-neutral-600);
 
   --psb-color-muted: var(--psb-color-neutral-100);
   --psb-color-muted-foreground: var(--psb-color-neutral-500);
 
   --psb-color-accent: var(--psb-color-neutral-100);
-  --psb-color-accent-foreground: var(--psb-color-neutral-900);
+  --psb-color-accent-foreground: var(--psb-color-neutral-600);
 
   --psb-color-destructive: var(--psb-color-red-600);
   --psb-color-destructive-foreground: var(--psb-color-neutral-50);
@@ -52,6 +52,7 @@
   --psb-color-code-foreground: var(--psb-color-neutral-200);
   --psb-color-code-muted-foreground: var(--psb-color-neutral-400);
   --psb-color-code-accent: var(--psb-color-neutral-700);
+  --psb-color-code-slot: var(--psb-color-neutral-200);
 
   --psb-color-chart-1: var(--psb-color-neutral-300);
   --psb-color-chart-2: var(--psb-color-neutral-400);
@@ -74,25 +75,25 @@
 }
 
 .psb\:dark {
-  --psb-color-background: var(--psb-color-neutral-900);
+  --psb-color-background: var(--psb-color-neutral-800);
   --psb-color-foreground: var(--psb-color-neutral-50);
 
-  --psb-color-card: var(--psb-color-neutral-900);
+  --psb-color-card: var(--psb-color-neutral-800);
   --psb-color-card-foreground: var(--psb-color-neutral-50);
 
-  --psb-color-popover: var(--psb-color-neutral-900);
+  --psb-color-popover: var(--psb-color-neutral-800);
   --psb-color-popover-foreground: var(--psb-color-neutral-50);
 
   --psb-color-primary: var(--psb-color-violet-400);
-  --psb-color-primary-foreground: var(--psb-color-neutral-900);
+  --psb-color-primary-foreground: var(--psb-color-neutral-800);
 
   --psb-color-secondary: var(--psb-color-neutral-800);
   --psb-color-secondary-foreground: var(--psb-color-neutral-50);
 
-  --psb-color-muted: var(--psb-color-neutral-800);
+  --psb-color-muted: var(--psb-color-neutral-900);
   --psb-color-muted-foreground: var(--psb-color-neutral-400);
 
-  --psb-color-accent: var(--psb-color-neutral-800);
+  --psb-color-accent: var(--psb-color-neutral-900);
   --psb-color-accent-foreground: var(--psb-color-neutral-50);
 
   --psb-color-destructive: var(--psb-color-red-500);
@@ -102,15 +103,18 @@
   --psb-color-input: var(--psb-color-neutral-700);
   --psb-color-ring: var(--psb-color-neutral-500);
 
+  --psb-color-code: var(--psb-color-neutral-900);
+  --psb-color-code-slot: var(--psb-color-neutral-800);
+
   --psb-color-chart-1: var(--psb-color-neutral-700);
   --psb-color-chart-2: var(--psb-color-neutral-600);
   --psb-color-chart-3: var(--psb-color-neutral-500);
   --psb-color-chart-4: var(--psb-color-neutral-400);
   --psb-color-chart-5: var(--psb-color-neutral-300);
 
-  --psb-color-sidebar: var(--psb-color-neutral-800);
+  --psb-color-sidebar: var(--psb-color-neutral-900);
   --psb-color-sidebar-foreground: var(--psb-color-neutral-300);
-  --psb-color-sidebar-muted: var(--psb-color-neutral-800);
+  --psb-color-sidebar-muted: var(--psb-color-neutral-900);
   --psb-color-sidebar-muted-foreground: var(--psb-color-neutral-500);
   --psb-color-sidebar-primary: var(--psb-color-primary);
   --psb-color-sidebar-primary-foreground: var(--psb-color-primary-foreground);
