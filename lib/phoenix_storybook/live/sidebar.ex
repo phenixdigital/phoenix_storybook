@@ -66,7 +66,7 @@ defmodule PhoenixStorybook.Sidebar do
     <sidebar
       id="psb-sidebar"
       phx-hook="PhoenixStorybook.SidebarHook"
-      class="psb psb:text-sidebar-foreground psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto psb:max-lg:-translate-x-full psb:max-lg:transition-transform psb:max-lg:duration-300 psb:max-lg:ease-out"
+      class="psb psb:text-sidebar-foreground psb:lg:block psb:fixed psb:z-20 psb:lg:z-auto psb:w-80 psb:lg:w-60 psb:text-base psb:lg:text-sm psb:h-screen psb:flex psb:flex-col psb:flex-grow psb:bg-sidebar psb:p-4 psb:overflow-y-auto psb:max-lg:transition-transform psb:max-lg:duration-300 psb:max-lg:ease-out"
     >
       <span id="psb-close-sidebar-icon" phx-update="ignore">
         <.fa_icon

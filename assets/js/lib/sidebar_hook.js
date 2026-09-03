@@ -16,8 +16,16 @@ export const SidebarHook = {
     const sidebar = this.el;
     let closeTimer;
 
+    // Keep the drawer position client-owned. If the closed class is rendered by
+    // LiveView, every folder update restores it and closes the open drawer.
+    this.sidebarOpen = false;
+    sidebar.classList.add(...SIDEBAR_CLOSED);
+
     const openSidebar = () => {
       clearTimeout(closeTimer);
+      this.sidebarOpen = true;
+      sidebar.classList.add(...SIDEBAR_CLOSED);
+      overlay.classList.add(...OVERLAY_CLOSED);
       container.classList.remove("psb:hidden");
       overlay.classList.remove("psb:hidden");
       // Force a reflow so the browser paints the closed state before we move to
@@ -29,6 +37,7 @@ export const SidebarHook = {
     };
 
     const closeSidebar = () => {
+      this.sidebarOpen = false;
       sidebar.classList.add(...SIDEBAR_CLOSED);
       overlay.classList.add(...OVERLAY_CLOSED);
       closeTimer = setTimeout(() => {
@@ -42,5 +51,11 @@ export const SidebarHook = {
 
     window.addEventListener("psb:open-sidebar", openSidebar);
     window.addEventListener("psb:close-sidebar", closeSidebar);
+  },
+
+  updated() {
+    for (const className of SIDEBAR_CLOSED) {
+      this.el.classList.toggle(className, !this.sidebarOpen);
+    }
   },
 };
