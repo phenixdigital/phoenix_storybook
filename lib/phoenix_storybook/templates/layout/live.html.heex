@@ -40,7 +40,7 @@
         <.header_action_button
           id="psb-search-button"
           phx-click={JS.dispatch("psb:open-search")}
-          class="psb:lg:w-56 psb:lg:px-2.5 psb:lg:gap-1.5 psb:lg:justify-start"
+          class="psb:lg:w-56 psb:lg:pl-2.5 psb:lg:pr-1 psb:lg:gap-1.5 psb:lg:justify-start"
         >
           <.scaled_fa_icon
             name="magnifying-glass"
@@ -57,7 +57,7 @@
         </.header_action_button>
       </div>
 
-      <div class="psb psb:absolute psb:top-4 psb:right-5 psb:flex psb:items-center">
+      <div class="psb psb:absolute psb:top-4 psb:right-5 psb:flex psb:items-center psb:space-x-1">
         <%= if color_mode?(@socket) do %>
           <.header_action_button phx-click={
             JS.show(to: "#psb-colormode-dropdown", transition: show_dropdown_transition())

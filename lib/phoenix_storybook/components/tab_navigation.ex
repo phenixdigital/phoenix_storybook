@@ -70,10 +70,10 @@ defmodule PhoenixStorybook.Components.TabNavigation do
   end
 
   defp tab_class(:default) do
-    "psb psb:group psb:inline-flex psb:items-center psb:whitespace-nowrap psb:-mb-px psb:border-b-2 psb:px-1 psb:py-2 psb:transition-colors psb:focus:outline-none"
+    "psb psb:group psb:inline-flex psb:items-center psb:whitespace-nowrap psb:-mb-px psb:border-b-2 psb:px-1 psb:py-4 psb:transition-colors psb:focus:outline-none"
   end
 
-  defp active_class(:pills, true), do: "psb:bg-background psb:text-foreground psb:shadow-sm"
+  defp active_class(:pills, true), do: "psb:bg-background psb:text-primary psb:shadow-sm"
   defp active_class(:pills, false), do: "psb:hover:text-foreground"
   defp active_class(:default, true), do: "psb:border-primary psb:text-primary"
 

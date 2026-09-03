@@ -688,9 +688,9 @@ defmodule PhoenixStorybook.Story.Playground do
                         >
                           <td
                             colspan="5"
-                            class="psb psb:whitespace-nowrap psb:pl-3 psb:md:pl-9 psb:pr-3 psb:py-3 psb:text-xs psb:md:text-sm psb:font-medium psb:text-foreground"
+                            class="psb psb:whitespace-nowrap psb:pl-3 psb:pr-3 psb:py-3 psb:text-xs psb:md:text-sm psb:font-medium psb:text-foreground"
                           >
-                            <pre class="psb psb:text-foreground psb:p-2 psb:border psb:border-border psb:rounded-md psb:bg-muted psb:whitespace-pre-wrap psb:break-normal psb:flex-1"><%= do_render_slot(assigns, slot) %></pre>
+                            <pre class="psb psb:text-foreground psb:p-2 psb:border psb:border-border psb:rounded-md psb:bg-code-slot psb:whitespace-pre-wrap psb:break-normal psb:flex-1"><%= do_render_slot(assigns, slot) %></pre>
                           </td>
                         </tr>
                       <% end %>

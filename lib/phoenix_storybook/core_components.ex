@@ -60,7 +60,7 @@ defmodule PhoenixStorybook.CoreComponents do
     ~H"""
     <kbd
       class={[
-        "psb:inline psb:px-1.5 psb:pt-1 psb:rounded-sm",
+        "psb:inline psb:px-1.5 psb:py-0.5 psb:rounded-sm",
         "psb:border psb:border-border psb:bg-muted psb:shadow-xs",
         "psb:font-mono psb:text-xs psb:font-medium psb:text-muted-foreground",
         @class

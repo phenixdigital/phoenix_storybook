@@ -220,7 +220,7 @@ defmodule PhoenixStorybook.LayoutView do
       class={[
         "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-input",
         "psb:bg-background psb:shadow-sm psb:flex psb:items-center psb:justify-center",
-        "psb:text-muted-foreground psb:hover:bg-accent psb:hover:text-foreground",
+        "psb:text-muted-foreground psb:hover:bg-accent psb:hover:text-muted-foreground",
         "psb:transition-colors psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring",
         @class
       ]}

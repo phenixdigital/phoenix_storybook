@@ -80,7 +80,7 @@ defmodule PhoenixStorybook.Sidebar do
 
       <div
         id="psb-sidebar-title"
-        class="psb psb:shrink-0 psb:ml-3 psb:mb-4 psb:text-primary psb:text-[15px] psb:font-bold psb:tracking-tight psb:uppercase"
+        class="psb psb:shrink-0 psb:ml-3 psb:mt-2 psb:mb-4 psb:text-primary psb:text-[15px] psb:font-bold psb:tracking-tight psb:uppercase"
       >
         <.link patch={@root_path} class="psb psb:flex psb:items-center psb:min-w-0">
           <.fa_icon
@@ -147,7 +147,7 @@ defmodule PhoenixStorybook.Sidebar do
               <% folder_path = Path.join(@root_path, path) %>
               <% open_folder? = open_folder?(folder_path, assigns) %>
               <div
-                class="psb psb:flex psb:items-center psb:py-1.5 psb:-ml-2 psb:group psb:cursor-pointer psb:hover:text-sidebar-primary"
+                class="psb psb:flex psb:items-center psb:py-1 psb:-ml-2 psb:group psb:cursor-pointer psb:hover:text-sidebar-primary"
                 phx-click={click_action(open_folder?)}
                 phx-target={@myself}
                 phx-value-path={folder_path}
