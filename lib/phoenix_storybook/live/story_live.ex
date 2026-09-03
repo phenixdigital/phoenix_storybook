@@ -357,7 +357,9 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   defp navigation_select_options(tabs) do
-    for {tab, label, _icon} <- tabs, do: {label, tab}
+    Enum.map(tabs, fn tab ->
+      {elem(tab, 1), elem(tab, 0)}
+    end)
   end
 
   defp render_content(t, assigns = %{tab: :variations}) when t in [:component, :live_component] do

@@ -820,6 +820,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")
       assert html =~ "B Page: tab_2"
     end
+
+    test "navigates page tabs from the mobile select", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/b_page")
+
+      assert has_element?(view, ".psb-story-nav-form option[value=tab_1]", "Tab 1")
+      assert has_element?(view, ".psb-story-nav-form option[value=tab_2]", "Tab 2")
+
+      html =
+        view
+        |> element(".psb-story-nav-form select")
+        |> render_change(%{navigation: %{tab: "tab_2"}})
+
+      assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")
+      assert html =~ "B Page: tab_2"
+    end
   end
 
   describe "example rendering" do
