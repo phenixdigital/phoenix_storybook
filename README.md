@@ -107,6 +107,11 @@ defmodule MyAppWeb.Storybook do
     # @layer reset, theme, app, utilities;
     css_path: "/assets/css/storybook.css",
 
+    # Path to the stylesheet customizing the storybook UI (sidebar, header, playground, docs…).
+    # Remote path (not local file-system path) which means this file should be served by your own
+    # application endpoint.
+    theme_path: "/assets/css/storybook_theme.css",
+
     # This CSS class will be put on storybook container elements where your own styles should
     # prevail. See the `guides/sandboxing.md` guide for more details.
     sandbox_class: "my-app",
@@ -188,8 +193,10 @@ config :phoenix_storybook, gzip_assets: true
 config :phoenix_storybook, fingerprint_assets: true
 ```
 
-ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), icons in the
-[icons](guides/icons.md) guide and color mode in the [color modes guide](guides/color_modes.md).
+ℹ️ Learn more about customizing the storybook UI with `theme_path` in
+[The theme file](guides/theming.md#the-theme-file), theming components in the
+[theming guide](guides/theming.md), icons in the [icons](guides/icons.md) guide and color mode in the
+[color modes guide](guides/color_modes.md).
 
 <!-- MDOC !-->
 
