@@ -10,8 +10,14 @@
 >   more of my free time to fixing bugs and developing new features 🤗
 
 ## v1.4.0 (not released yet)
-- **bugfix**: relative `:content_path` values are resolved from the Mix project cwd at runtime
-- **bugfix**: fixed source permalink generation for selected absolute `extra_sources`, including JS files in production/release environments
+- **feature**: [storybook's layout has been updated and can be themed](https://github.com/phenixdigital/phoenix_storybook/pull/862) - 🙏 [@MoeinMirkiani](https://github.com/MoeinMirkiani)
+- **feature**: [open the displayed source file in an editor](https://github.com/phenixdigital/phoenix_storybook/pull/843) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+- **improvement**: [updated generated core component stories for Phoenix 1.8](https://github.com/phenixdigital/phoenix_storybook/pull/859) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+- **bugfix**: [fixed source permalink generation for selected absolute `extra_sources`, including JS files in production/release environments](https://github.com/phenixdigital/phoenix_storybook/pull/854)
+- **bugfix**: [fixed compile warnings surfaced by Elixir's gradual type checker](https://github.com/phenixdigital/phoenix_storybook/pull/858) - 🙏 [@roelandvanbatenburg](https://github.com/roelandvanbatenburg)
+- **bugfix**: [compute host asset hashes at runtime instead of compile time](https://github.com/phenixdigital/phoenix_storybook/pull/861) - 🙏 [@JoeMerriweather-Webb](https://github.com/JoeMerriweather-Webb)
+- **bugfix**: [relative `:content_path` values are resolved from the Mix project cwd at runtime](https://github.com/phenixdigital/phoenix_storybook/pull/873) - 🙏 [@JoeMerriweather-Webb](https://github.com/JoeMerriweather-Webb)
+- **bugfix**: [prevent the event logs tab from collapsing](https://github.com/phenixdigital/phoenix_storybook/pull/878) - 🙏 [@oshanz](https://github.com/oshanz)
 
 ## v1.3.0 (2026-07-03)
 - **improvement**: [support Phoenix LiveView 1.2](https://github.com/phenixdigital/phoenix_storybook/pull/834) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
