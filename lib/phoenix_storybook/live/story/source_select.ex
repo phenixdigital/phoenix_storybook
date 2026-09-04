@@ -15,6 +15,8 @@ defmodule PhoenixStorybook.Story.SourceSelect do
     default:
       "psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-6"
 
+  attr :select_class, :any, default: []
+
   attr :label_class, :string,
     default:
       "psb psb:text-muted-foreground psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
@@ -38,7 +40,7 @@ defmodule PhoenixStorybook.Story.SourceSelect do
   defp select_options(assigns = %{change_target: nil}) do
     [
       "phx-change": assigns.change_event,
-      class: @default_select_class,
+      class: [@default_select_class, assigns.select_class],
       value: assigns.value
     ]
   end
@@ -47,7 +49,7 @@ defmodule PhoenixStorybook.Story.SourceSelect do
     [
       "phx-change": assigns.change_event,
       "phx-target": assigns.change_target,
-      class: @default_select_class,
+      class: [@default_select_class, assigns.select_class],
       value: assigns.value
     ]
   end

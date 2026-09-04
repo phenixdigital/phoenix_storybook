@@ -393,9 +393,10 @@ defmodule PhoenixStorybook.StoryLive do
         value={@selected_source_file}
         change_event="psb-set-source-file"
         class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+        select_class="psb:h-5.5 psb:rounded-[4px]! psb:-mt-0.5 psb:text-xs! psb:leading-none!"
       />
       <.editor_button :if={@editor_url} editor_url={@editor_url} />
-      <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
+      <.git_button :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
   end
@@ -479,10 +480,11 @@ defmodule PhoenixStorybook.StoryLive do
         options={source_select_options(@story, @extra_sources)}
         value={@selected_source_file}
         change_event="psb-set-source-file"
-        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-1 psb:justify-end psb:w-full psb:mb-2"
+        select_class="psb:h-5.5 psb:rounded-[4px]! psb:-mt-0.5 psb:text-xs! psb:leading-none!"
       />
       <.editor_button :if={@editor_url} editor_url={@editor_url} />
-      <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
+      <.git_button :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
   end
@@ -522,7 +524,7 @@ defmodule PhoenixStorybook.StoryLive do
         :if={@inner_block != []}
         class="psb psb:flex psb:justify-end psb:items-center psb:mb-2 psb:absolute psb:top-1 psb:right-1.5"
       >
-        <div class="psb:flex psb:items-center psb:gap-2 psb:opacity-85 psb:dark">
+        <div class="psb:flex psb:items-center psb:gap-1 psb:opacity-85 psb:dark">
           {render_slot(@inner_block)}
         </div>
       </div>
@@ -533,7 +535,7 @@ defmodule PhoenixStorybook.StoryLive do
 
   attr :source_permalink_url, :string, required: true
 
-  defp git_buttons(assigns) do
+  defp git_button(assigns) do
     assigns = assign(assigns, :git_icon, git_icon(assigns.source_permalink_url))
 
     ~H"""
@@ -563,9 +565,9 @@ defmodule PhoenixStorybook.StoryLive do
     <a
       href={@editor_url}
       title="Open in editor"
-      class="psb psb:dark:text-slate-400 psb:dark:hover:text-slate-500"
+      class="psb psb:text-muted-foreground psb:hover:text-foreground"
     >
-      <i class="fa-solid fa-file-code fa-xl psb:h-5.5 psb:w-5.5"></i>
+      <i class="fa-solid fa-square-code fa-xl psb:h-5.5 psb:w-5.5"></i>
     </a>
     """
   end
