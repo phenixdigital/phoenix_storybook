@@ -41,7 +41,7 @@ if Code.ensure_loaded?(Igniter) do
     alias Sourceror.Zipper
 
     @templates_folder "priv/templates/phx.gen.storybook"
-    @example_story_functions ~w(button header table input simple_form)a
+    @example_story_functions ~w(button header table input)a
 
     @impl Igniter.Mix.Task
     def info(_argv, _composing_task) do
@@ -158,7 +158,7 @@ if Code.ensure_loaded?(Igniter) do
           app_css =
             igniter.rewrite |> Rewrite.source!(@app_css) |> Rewrite.Source.get(:content)
 
-          {igniter, storybook_css_from_app_css(app_css)}
+          {igniter, storybook_css_from_app_css(app_css, schema)}
         else
           template = if tailwind?, do: "storybook.tailwind.css.eex", else: "storybook.css.eex"
           {igniter, EEx.eval_file(Path.join(templates_folder(), template), schema: schema)}
@@ -167,7 +167,7 @@ if Code.ensure_loaded?(Igniter) do
       Igniter.create_new_file(igniter, "assets/css/storybook.css", contents, on_exists: :skip)
     end
 
-    defp storybook_css_from_app_css(app_css) do
+    defp storybook_css_from_app_css(app_css, schema) do
       """
       /*
        * Storybook stylesheet - copied from assets/css/app.css at install time.
@@ -185,6 +185,11 @@ if Code.ensure_loaded?(Igniter) do
 
         /* Pick up classes used in your stories */
         @source "../../storybook";
+
+        /* Storybook sandbox defaults to a serif font; match the app's sans-serif UI. */
+        .#{schema.sandbox_class} {
+          font-family: system-ui, sans-serif;
+        }
         """
     end
 

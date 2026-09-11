@@ -58,6 +58,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
 
       assert content =~ ~s|@plugin "../vendor/heroicons";|
       assert content =~ ~s|@source "../../storybook";|
+      assert content =~ ".test {\n  font-family: system-ui, sans-serif;\n}"
     end
 
     test "mounts the storybook in the router" do
@@ -406,17 +407,22 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       assert diff =~ "tailwind storybook_theme --minify"
     end
 
-    test "generates the example core components story when all example functions exist" do
-      # The fixture's CoreComponents has button/header/table/input but no
-      # simple_form, so add it to satisfy the example story's full set.
+    test "generates the example core components story" do
+      phx_test_project()
+      |> Igniter.compose_task("phoenix_storybook.install", [])
+      |> assert_creates("storybook/examples/core_components.story.exs")
+    end
+
+    test "skips the example story when a component it uses is missing" do
       phx_test_project()
       |> edit_file(
         "lib/test_web/components/core_components.ex",
-        "defmodule TestWeb.CoreComponents do",
-        "defmodule TestWeb.CoreComponents do\n  def simple_form(assigns), do: nil\n"
+        "def header(assigns) do",
+        "def page_header(assigns) do"
       )
       |> Igniter.compose_task("phoenix_storybook.install", [])
-      |> assert_creates("storybook/examples/core_components.story.exs")
+      |> refute_creates("storybook/core_components/header.story.exs")
+      |> refute_creates("storybook/examples/core_components.story.exs")
     end
 
     test "notices that storybook.css must be kept in sync with app.css" do
