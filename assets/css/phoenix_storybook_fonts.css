@@ -697,6 +697,14 @@ readers do not read off random characters that represent icons */
   --fa: "\f00c";
   --fa--fa: "\f00c\f00c";
 }
+.fa-chevron-down {
+  --fa: "\f078";
+  --fa--fa: "\f078\f078";
+}
+.fa-chevron-right {
+  --fa: "\f054";
+  --fa--fa: "\f054\f054";
+}
 .fa-circle-dot {
   --fa: "\f192";
   --fa--fa: "\f192\f192";
