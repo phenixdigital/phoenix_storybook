@@ -230,7 +230,7 @@ defmodule PhoenixStorybook do
   defp assets_quotes(opts) do
     otp_app = Keyword.get(opts, :otp_app)
 
-    for asset <- [:css_path, :js_path] do
+    for asset <- [:css_path, :js_path, :theme_path] do
       case Keyword.get(opts, asset) do
         nil ->
           quote do

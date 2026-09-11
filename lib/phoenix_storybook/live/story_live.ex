@@ -238,12 +238,12 @@ defmodule PhoenixStorybook.StoryLive do
       when not is_nil(error) do
     ~H"""
     <div class="psb psb:my-6 psb:md:my-12 psb:space-y-4 psb:md:space-y-8 psb:flex psb:flex-col">
-      <h1 class="psb psb:font-medium psb:text-red-500 psb:text-lg psb:md:text-xl psb:lg:text-2xl psb:align-middle">
+      <h1 class="psb psb:font-medium psb:text-destructive psb:text-lg psb:md:text-xl psb:lg:text-2xl psb:align-middle">
         <.fa_icon style={:duotone} name="bomb" plan={@fa_plan} /> {@story_load_error}
       </h1>
 
-      <div class="psb psb:border psb:rounded-md psb:border-slate-100 psb:bg-slate-800 psb:p-4 psb:overflow-x-scroll">
-        <pre class="psb psb:text-xs psb:md:text-sm psb:leading-loose psb:text-red-500"><%= @story_load_exception %></pre>
+      <div class="psb psb:border psb:rounded-md psb:border-border psb:bg-muted psb:p-4 psb:overflow-x-scroll">
+        <pre class="psb psb:text-xs psb:md:text-sm psb:leading-loose psb:text-destructive"><%= @story_load_exception %></pre>
       </div>
     </div>
     """
@@ -252,23 +252,27 @@ defmodule PhoenixStorybook.StoryLive do
   def render(assigns = %{story: _story}) do
     ~H"""
     <div
-      class="psb psb:space-y-6 psb:pb-12 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
+      class="psb psb:space-y-6 psb:flex psb:flex-col psb:h-[calc(100vh_-_7rem)] psb:lg:h-[calc(100vh_-_4rem)]"
       id="psb-story-live"
       phx-hook="PhoenixStorybook.StoryHook"
     >
       <div class="psb">
-        <div class="psb psb:flex psb:my-6 psb:items-center">
-          <h2 class="psb psb:flex-1 psb:flex-nowrap psb:whitespace-nowrap psb:text-xl psb:md:text-2xl psb:lg:text-3xl psb:m-0 psb:font-extrabold psb:tracking-tight psb:text-indigo-600 psb:dark:text-sky-400">
+        <div class="psb psb:flex psb:items-center psb:gap-3">
+          <h2 class="psb psb:flex psb:items-center psb:min-w-0 psb:flex-1 psb:m-0 psb:text-lg psb:md:text-xl psb:lg:text-2xl psb:font-extrabold psb:tracking-tight psb:text-primary">
             <%= if icon = @story_entry.icon do %>
-              <span id={"story-icon-#{story_id(@story)}"} phx-update="ignore">
+              <span
+                id={"story-icon-#{story_id(@story)}"}
+                phx-update="ignore"
+                class="psb psb:shrink-0 psb:pr-2"
+              >
                 <.user_icon
                   icon={icon}
-                  class="psb:pr-2 psb:text-indigo-600 psb:dark:text-sky-400"
+                  class="psb:text-primary"
                   fa_plan={@fa_plan}
                 />
               </span>
             <% end %>
-            {@story_entry.name}
+            <span class="psb psb:truncate">{@story_entry.name}</span>
           </h2>
           {@story |> navigation_tabs() |> render_navigation_tabs(assigns)}
         </div>
@@ -320,7 +324,7 @@ defmodule PhoenixStorybook.StoryLive do
     assigns = assign(assigns, :tabs, tabs)
 
     ~H"""
-    <div class="psb psb:flex psb:flex-items-center">
+    <div class="psb psb:flex psb:items-center psb:shrink-0">
       <!-- mobile version of navigation tabs -->
       <.form
         :let={f}
@@ -335,57 +339,27 @@ defmodule PhoenixStorybook.StoryLive do
           options={navigation_select_options(@tabs)}
           value={@tab}
           phx-change="psb-set-tab"
-          class="psb psb:form-select psb:dark:bg-slate-800 psb:text-gray-600 psb:dark:text-slate-300 psb:border-gray-300 psb:dark:border-slate-600 psb:w-full psb:pl-3 psb:pr-10 psb:py-1 psb:text-base psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400 psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:sm:text-sm psb:rounded-md"
+          class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-input psb:bg-background psb:shadow-sm psb:text-muted-foreground psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm psb:leading-none psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring"
         />
       </.form>
       <!-- :lg+ version of navigation tabs -->
-      <nav class="psb psb-story-tabs psb:hidden psb:lg:flex psb:rounded-lg psb:border psb:border-gray-300 psb:dark:border-slate-600 psb:bg-slate-100 psb:dark:bg-slate-900 psb:h-10 psb:text-sm psb:font-medium">
-        <%= for tab <- @tabs do %>
-          <% {tab_id, tab_label} = {elem(tab, 0), elem(tab, 1)} %>
-          <a
-            href="#"
-            phx-click="psb-set-tab"
-            phx-value-tab={tab_id}
-            class={"psb psb:group psb:focus:outline-none psb:flex psb:rounded-md psb:dark:text-slate-400 #{active_link(@tab, tab_id)}"}
-          >
-            <span class={active_span(@tab, tab_id)}>
-              <% icon = if tuple_size(tab) == 3, do: elem(tab, 2), else: nil %>
-              <%= if icon do %>
-                <.user_icon
-                  icon={icon}
-                  class={"psb:lg:mr-2 psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}
-                  fa_plan={@fa_plan}
-                />
-              <% end %>
-              <span class={"psb psb:whitespace-nowrap psb:group-hover:text-indigo-600 psb:dark:group-hover:text-sky-400 #{active_text(@tab, tab_id)}"}>
-                {tab_label}
-              </span>
-            </span>
-          </a>
-        <% end %>
-      </nav>
+      <div class="psb psb-story-tabs psb:hidden psb:lg:block">
+        <.tab_navigation
+          variant={:pills}
+          tabs={@tabs}
+          active={@tab}
+          event="psb-set-tab"
+          fa_plan={@fa_plan}
+        />
+      </div>
     </div>
     """
   end
 
-  defp active_link(same, same), do: "psb psb:bg-white psb:opacity-100"
-
-  defp active_link(_tab, _current_tab) do
-    "psb psb:ml-0.5 psb:p-1.5 psb:lg:pl-2.5 psb:lg:pr-3.5 psb:items-center psb:text-slate-600"
-  end
-
-  defp active_span(same, same) do
-    "psb psb:h-full psb:rounded-md psb:flex psb:items-center psb:bg-white psb:dark:bg-slate-700 psb:shadow-sm \
-    psb:ring-opacity-5 psb:text-indigo-600 psb:dark:text-sky-400 psb:p-1.5 psb:lg:pl-2.5 psb:lg:pr-3.5"
-  end
-
-  defp active_span(_tab, _current_tab), do: ""
-
-  defp active_text(same, same), do: "psb:text-indigo-600 psb:dark:text-sky-400"
-  defp active_text(_tab, _current_tab), do: "psb:-ml-0.5"
-
   defp navigation_select_options(tabs) do
-    for {tab, label, _icon} <- tabs, do: {label, tab}
+    Enum.map(tabs, fn tab ->
+      {elem(tab, 1), elem(tab, 0)}
+    end)
   end
 
   defp render_content(t, assigns = %{tab: :variations}) when t in [:component, :live_component] do
@@ -419,9 +393,10 @@ defmodule PhoenixStorybook.StoryLive do
         value={@selected_source_file}
         change_event="psb-set-source-file"
         class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+        select_class="psb:h-5.5 psb:rounded-[4px]! psb:-mt-0.5 psb:text-xs! psb:leading-none!"
       />
       <.editor_button :if={@editor_url} editor_url={@editor_url} />
-      <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
+      <.git_button :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
   end
@@ -505,10 +480,11 @@ defmodule PhoenixStorybook.StoryLive do
         options={source_select_options(@story, @extra_sources)}
         value={@selected_source_file}
         change_event="psb-set-source-file"
-        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-2"
+        class="psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-1 psb:justify-end psb:w-full psb:mb-2"
+        select_class="psb:h-5.5 psb:rounded-[4px]! psb:-mt-0.5 psb:text-xs! psb:leading-none!"
       />
       <.editor_button :if={@editor_url} editor_url={@editor_url} />
-      <.git_buttons :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
+      <.git_button :if={@source_permalink_url} source_permalink_url={@source_permalink_url} />
     </.source_panel>
     """
   end
@@ -548,7 +524,7 @@ defmodule PhoenixStorybook.StoryLive do
         :if={@inner_block != []}
         class="psb psb:flex psb:justify-end psb:items-center psb:mb-2 psb:absolute psb:top-1 psb:right-1.5"
       >
-        <div class="psb:flex psb:items-center psb:gap-2 psb:opacity-85 psb:dark">
+        <div class="psb:flex psb:items-center psb:gap-1 psb:opacity-85 psb:dark">
           {render_slot(@inner_block)}
         </div>
       </div>
@@ -559,7 +535,7 @@ defmodule PhoenixStorybook.StoryLive do
 
   attr :source_permalink_url, :string, required: true
 
-  defp git_buttons(assigns) do
+  defp git_button(assigns) do
     assigns = assign(assigns, :git_icon, git_icon(assigns.source_permalink_url))
 
     ~H"""
@@ -567,7 +543,7 @@ defmodule PhoenixStorybook.StoryLive do
       href={@source_permalink_url}
       target="_blank"
       rel="noreferrer noopener"
-      class="psb psb:dark:text-slate-400 psb:dark:hover:text-slate-500"
+      class="psb psb:text-muted-foreground psb:hover:text-foreground"
     >
       <i class={"fa-brands #{@git_icon} fa-xl psb:h-5.5 psb:w-5.5"}></i>
     </a>
@@ -589,9 +565,9 @@ defmodule PhoenixStorybook.StoryLive do
     <a
       href={@editor_url}
       title="Open in editor"
-      class="psb psb:dark:text-slate-400 psb:dark:hover:text-slate-500"
+      class="psb psb:text-muted-foreground psb:hover:text-foreground"
     >
-      <i class="fa-solid fa-file-code fa-xl psb:h-5.5 psb:w-5.5"></i>
+      <i class="fa-solid fa-square-code fa-xl psb:h-5.5 psb:w-5.5"></i>
     </a>
     """
   end
@@ -602,6 +578,7 @@ defmodule PhoenixStorybook.StoryLive do
     selected_source_file = selected_source_file(assigns.story, assigns[:source_file])
     source = rendered_story_source(assigns.story, extra_sources, selected_source_file)
     content_path = assigns.backend_module.config(:content_path, nil)
+    source_permalink_root = assigns.backend_module.config(:source_permalink_root, nil)
 
     source_permalink_url =
       source_permalink_url(
@@ -609,7 +586,8 @@ defmodule PhoenixStorybook.StoryLive do
         assigns.story,
         selected_source_file,
         extra_sources_file_paths,
-        content_path
+        content_path,
+        source_permalink_root
       )
 
     editor_url = editor_url(assigns.story, selected_source_file, extra_sources_file_paths)
@@ -698,7 +676,8 @@ defmodule PhoenixStorybook.StoryLive do
          _story,
          _selected_source_file,
          _extra_sources_file_paths,
-         _content_path
+         _content_path,
+         _source_permalink_root
        ),
        do: nil
 
@@ -707,7 +686,8 @@ defmodule PhoenixStorybook.StoryLive do
          _story,
          _selected_source_file,
          _extra_sources_file_paths,
-         _content_path
+         _content_path,
+         _source_permalink_root
        ),
        do: nil
 
@@ -716,7 +696,8 @@ defmodule PhoenixStorybook.StoryLive do
          story,
          selected_source_file,
          extra_sources_file_paths,
-         content_path
+         content_path,
+         source_permalink_root
        ) do
     normalized_base_url = normalize_source_permalink_base_url(base_url)
 
@@ -725,7 +706,7 @@ defmodule PhoenixStorybook.StoryLive do
 
     story
     |> selected_source_file_path(selected_source_file, extra_sources_file_paths)
-    |> relative_source_file_path(normalized_base_url, content_path)
+    |> relative_source_file_path(normalized_base_url, content_path, source_permalink_root)
     |> case do
       nil ->
         nil
@@ -789,14 +770,26 @@ defmodule PhoenixStorybook.StoryLive do
     end
   end
 
-  defp relative_source_file_path(nil, _normalized_base_url, _content_path), do: nil
+  defp relative_source_file_path(
+         nil,
+         _normalized_base_url,
+         _content_path,
+         _source_permalink_root
+       ),
+       do: nil
 
-  defp relative_source_file_path(source_file_path, normalized_base_url, content_path) do
+  defp relative_source_file_path(
+         source_file_path,
+         normalized_base_url,
+         content_path,
+         source_permalink_root
+       ) do
     source_file_path = to_string(source_file_path)
 
     relative_path =
       if Path.type(source_file_path) == :absolute do
-        source_file_path_from_repo_name(source_file_path, normalized_base_url) ||
+        source_file_path_from_root(source_file_path, source_permalink_root) ||
+          source_file_path_from_repo_name(source_file_path, normalized_base_url) ||
           source_file_path_from_content_path(source_file_path, content_path)
       else
         source_file_path
@@ -864,6 +857,19 @@ defmodule PhoenixStorybook.StoryLive do
       else
         relative_path
       end
+    end
+  end
+
+  defp source_file_path_from_root(_source_file_path, nil), do: nil
+
+  defp source_file_path_from_root(source_file_path, source_permalink_root) do
+    relative_path =
+      Path.relative_to(source_file_path, Path.expand(to_string(source_permalink_root)))
+
+    if Path.type(relative_path) == :absolute or String.starts_with?(relative_path, "..") do
+      nil
+    else
+      relative_path
     end
   end
 

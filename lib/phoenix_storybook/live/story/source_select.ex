@@ -15,9 +15,11 @@ defmodule PhoenixStorybook.Story.SourceSelect do
     default:
       "psb psb:flex psb:flex-col psb:md:flex-row psb:space-y-1 psb:md:space-x-2 psb:justify-end psb:w-full psb:mb-6"
 
+  attr :select_class, :any, default: []
+
   attr :label_class, :string,
     default:
-      "psb psb:text-gray-400 psb:dark:text-slate-300 psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
+      "psb psb:text-muted-foreground psb:text-xs psb:md:text-sm psb:self-end psb:md:self-center"
 
   def source_file_select(assigns) do
     ~H"""
@@ -29,16 +31,16 @@ defmodule PhoenixStorybook.Story.SourceSelect do
   end
 
   @default_select_class [
-    "psb psb:cursor-pointer psb:form-select psb:dark:bg-slate-800 psb:text-gray-600",
-    "psb:dark:text-slate-300 psb:pr-10 psb:py-1 psb:border-gray-300 psb:dark:border-slate-600",
-    "psb:focus:outline-none psb:focus:ring-indigo-600 psb:dark:focus:ring-sky-400",
-    "psb:focus:border-indigo-600 psb:dark:focus:border-sky-400 psb:text-xs psb:md:text-sm psb:rounded-md"
+    "psb psb:cursor-pointer psb:form-select psb:bg-background psb:text-muted-foreground",
+    "psb:pr-10 psb:py-1 psb:border-input",
+    "psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring",
+    "psb:focus-visible:border-ring psb:text-xs psb:md:text-sm psb:rounded-md"
   ]
 
   defp select_options(assigns = %{change_target: nil}) do
     [
       "phx-change": assigns.change_event,
-      class: @default_select_class,
+      class: [@default_select_class, assigns.select_class],
       value: assigns.value
     ]
   end
@@ -47,7 +49,7 @@ defmodule PhoenixStorybook.Story.SourceSelect do
     [
       "phx-change": assigns.change_event,
       "phx-target": assigns.change_target,
-      class: @default_select_class,
+      class: [@default_select_class, assigns.select_class],
       value: assigns.value
     ]
   end

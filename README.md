@@ -23,8 +23,8 @@ Phoenix components.
 - Browse your component's documentation, with their supported attributes.
 - Learn how components behave by using an interactive playground.
 
-![screenshot](https://github.com/phenixdigital/phoenix_storybook/raw/main/screenshots/screenshot-01.jpg)
-![screenshot](https://github.com/phenixdigital/phoenix_storybook/raw/main/screenshots/screenshot-02.jpg)
+![screenshot](https://raw.githubusercontent.com/phenixdigital/phoenix_storybook/main/screenshots/screenshot-01.jpg)
+![screenshot](https://raw.githubusercontent.com/phenixdigital/phoenix_storybook/main/screenshots/screenshot-02.jpg)
 
 ## How does it work?
 
@@ -63,7 +63,7 @@ Add the following to your mix.exs and run mix deps.get:
 ```elixir
 def deps do
   [
-    {:phoenix_storybook, "~> 1.3.0"}
+    {:phoenix_storybook, "~> 1.4.0"}
   ]
 end
 ```
@@ -115,6 +115,11 @@ defmodule MyAppWeb.Storybook do
     # @layer reset, theme, app, utilities;
     css_path: "/assets/css/storybook.css",
 
+    # Path to the stylesheet customizing the storybook UI (sidebar, header, playground, docs…).
+    # Remote path (not local file-system path) which means this file should be served by your own
+    # application endpoint.
+    theme_path: "/assets/css/storybook_theme.css",
+
     # This CSS class will be put on storybook container elements where your own styles should
     # prevail. See the `guides/sandboxing.md` guide for more details.
     sandbox_class: "my-app",
@@ -122,6 +127,10 @@ defmodule MyAppWeb.Storybook do
     # Base URL used to build source file permalinks in the source tab.
     # Recommended value includes `/blob/<branch>` (GitHub) or `/-/blob/<branch>` (GitLab).
     source_permalink_base_url: "https://github.com/my-org/my-app/blob/main",
+
+    # Optional filesystem root used to derive paths for source permalinks. This is useful when
+    # the release working directory does not include the repository name (for example `/app`).
+    source_permalink_root: "/app",
 
     # Custom storybook title. Default is "Phoenix Storybook".
     title: "My Storybook",
@@ -196,8 +205,10 @@ config :phoenix_storybook, gzip_assets: true
 config :phoenix_storybook, fingerprint_assets: true
 ```
 
-ℹ️ Learn more on theming components in the [theming guide](guides/theming.md), icons in the
-[icons](guides/icons.md) guide and color mode in the [color modes guide](guides/color_modes.md).
+ℹ️ Learn more about customizing the storybook UI with `theme_path` in
+[The theme file](guides/theming.md#the-theme-file), theming components in the
+[theming guide](guides/theming.md), icons in the [icons](guides/icons.md) guide and color mode in the
+[color modes guide](guides/color_modes.md).
 
 <!-- MDOC !-->
 

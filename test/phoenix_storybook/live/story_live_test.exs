@@ -153,7 +153,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # Opening A folder
-      element(view, "#psb-sidebar div", "A Folder") |> render_click()
+      element(view, "#psb-sidebar div[phx-click]", "A Folder") |> render_click()
       assert has_element?(view, "#psb-sidebar a", "Component (a_folder)")
 
       # B folder is already open (by its index.exs file)
@@ -164,7 +164,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
                "Component mixing any attribute possible types"
 
       # closing "B folder"
-      element(view, "#psb-sidebar div", "Config Name") |> render_click()
+      element(view, "#psb-sidebar div[phx-click]", "Config Name") |> render_click()
       refute has_element?(view, "#psb-sidebar a", "AllTypesComponent (b_folder)")
     end
 
@@ -474,7 +474,11 @@ defmodule PhoenixStorybook.StoryLiveTest do
     test "renders component, change theme and navigate", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/storybook/component")
 
+      assert has_element?(view, "#psb-main[data-psb-root-theme-class=theme-default]")
+
       view |> element("a.psb-theme", "Colorful") |> render_click()
+
+      assert has_element?(view, "#psb-main[data-psb-root-theme-class=theme-colorful]")
 
       assert_patched(
         view,
@@ -820,6 +824,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
       assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")
       assert html =~ "B Page: tab_2"
     end
+
+    test "navigates page tabs from the mobile select", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/b_page")
+
+      assert has_element?(view, ".psb-story-nav-form option[value=tab_1]", "Tab 1")
+      assert has_element?(view, ".psb-story-nav-form option[value=tab_2]", "Tab 2")
+
+      html =
+        view
+        |> element(".psb-story-nav-form select")
+        |> render_change(%{navigation: %{tab: "tab_2"}})
+
+      assert_patched(view, ~p"/storybook/b_page?#{[tab: :tab_2, theme: :default]}")
+      assert html =~ "B Page: tab_2"
+    end
   end
 
   describe "example rendering" do
@@ -1130,6 +1149,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       |> render_hook("psb:set-color-mode", %{"selected_mode" => "dark", "mode" => "dark"})
 
       assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=dark]")
+      assert view |> has_element?("#psb-main[data-psb-color-mode=dark]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 
@@ -1147,6 +1167,7 @@ defmodule PhoenixStorybook.StoryLiveTest do
       |> render_hook("psb:set-color-mode", %{"selected_mode" => "light", "mode" => "light"})
 
       assert view |> has_element?("#psb-colormode-dropdown[data-psb-selected-mode=light]")
+      assert view |> has_element?("#psb-main[data-psb-color-mode=light]")
 
       component_html = view |> element("#hello-component .psb-sandbox") |> render()
 

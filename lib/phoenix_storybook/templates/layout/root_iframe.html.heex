@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" phx-socket={live_socket_path(@conn)} style="height: 100%; margin: 0;">
+<html
+  lang="en"
+  class={root_class(@conn, assigns)}
+  phx-socket={live_socket_path(@conn)}
+  style="height: 100%; margin: 0;"
+>
   <head>
     <%= if csrf?(@conn) do %>
       <meta name="csrf-token" content={get_csrf_token()} />
@@ -51,6 +56,11 @@
     <%= if path = storybook_css_path(@conn) do %>
       <style nonce={csp_nonce(@conn, :style)}>
         @import "<%= path %><%= storybook_css_hash(@conn) %>" layer(app);
+      </style>
+    <% end %>
+    <%= if path = storybook_theme_path(@conn) do %>
+      <style nonce={csp_nonce(@conn, :style)}>
+        @import "<%= path %><%= storybook_theme_hash(@conn) %>";
       </style>
     <% end %>
   </head>

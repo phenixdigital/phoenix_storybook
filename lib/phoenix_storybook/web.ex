@@ -18,6 +18,7 @@ defmodule PhoenixStorybook.Web do
         layout: {PhoenixStorybook.LayoutView, :live}
 
       import PhoenixStorybook.Components.Icon
+      import PhoenixStorybook.Components.TabNavigation
 
       unquote(view_helpers())
     end
@@ -38,6 +39,7 @@ defmodule PhoenixStorybook.Web do
       @moduledoc false
       use Phoenix.LiveComponent
       import PhoenixStorybook.Components.Icon
+      import PhoenixStorybook.Components.TabNavigation
       unquote(view_helpers())
     end
   end

@@ -25,7 +25,7 @@ defmodule PhoenixStorybook.LayoutView do
         <.fa_icon
           style={:thin}
           name="angle-right"
-          class="psb:px-2 psb:text-slate-500 psb:dark:text-slate-300"
+          class="psb:px-2 psb:text-muted-foreground"
           plan={@fa_plan}
         />
       </:separator>
@@ -63,6 +63,7 @@ defmodule PhoenixStorybook.LayoutView do
     [Enum.map(script_name, &["/" | &1]) | socket_path]
   end
 
+  def storybook_theme_path(conn), do: storybook_setting(conn, :theme_path)
   def storybook_css_path(conn), do: storybook_setting(conn, :css_path)
   def storybook_js_path(conn), do: storybook_setting(conn, :js_path)
   def storybook_js_type(conn), do: storybook_setting(conn, :js_script_type, "text/javascript")
@@ -137,6 +138,13 @@ defmodule PhoenixStorybook.LayoutView do
     end
   end
 
+  def storybook_theme_hash(conn_or_socket) do
+    case backend_module(conn_or_socket).asset_hash(:theme_path) do
+      nil -> ""
+      hash -> "?hash=" <> hash
+    end
+  end
+
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:phoenix_storybook))
   @external_resource @manifest_path
 
@@ -199,6 +207,30 @@ defmodule PhoenixStorybook.LayoutView do
      "psb:opacity-0 psb:scale-95"}
   end
 
+  attr :id, :string, default: nil
+  attr :class, :any, default: nil
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  defp header_action_button(assigns) do
+    ~H"""
+    <button
+      type="button"
+      id={@id}
+      class={[
+        "psb psb:relative psb:size-8 psb:rounded-lg psb:border psb:border-input",
+        "psb:bg-background psb:shadow-sm psb:flex psb:items-center psb:justify-center",
+        "psb:text-muted-foreground psb:hover:bg-accent psb:hover:text-muted-foreground",
+        "psb:transition-colors psb:focus-visible:outline-none psb:focus-visible:ring-1 psb:focus-visible:ring-ring",
+        @class
+      ]}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </button>
+    """
+  end
+
   def sandbox_attributes(_conn_or_socket, _container, %{theme: nil}), do: []
 
   def sandbox_attributes(conn_or_socket, _container, %{theme: theme}) do
@@ -217,6 +249,13 @@ defmodule PhoenixStorybook.LayoutView do
       ThemeHelpers.theme_sandbox_class(backend_module, theme)
       | main_sandbox_class(conn_or_socket, container)
     ]
+  end
+
+  def root_class(_conn_or_socket, %{theme: nil}), do: nil
+
+  def root_class(conn_or_socket, assigns) do
+    backend_module = backend_module(conn_or_socket)
+    ThemeHelpers.theme_root_class(backend_module, Map.get(assigns, :theme))
   end
 
   defp main_sandbox_class(conn_or_socket, {_container, container_opts}) do

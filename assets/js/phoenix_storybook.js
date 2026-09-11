@@ -1,5 +1,6 @@
 // phoenix and phoenix_live_view are loaded from host app dependencies (see JSAssets module)
 import { ColorModeHook } from "./lib/color_mode_hook";
+import { RootHook } from "./lib/root_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
 import { StoryHook } from "./lib/story_hook";
@@ -28,6 +29,7 @@ const psbHooks = {
   "PhoenixStorybook.SearchHook": SearchHook,
   "PhoenixStorybook.SidebarHook": SidebarHook,
   "PhoenixStorybook.ColorModeHook": ColorModeHook,
+  "PhoenixStorybook.RootHook": RootHook,
 };
 warnReservedHooks(Object.keys(psbHooks), window.storybook.Hooks);
 

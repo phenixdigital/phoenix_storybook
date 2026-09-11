@@ -35,7 +35,7 @@ defmodule PhoenixStorybook.StoryLiveOpenInEditorTest do
     assert has_element?(
              view,
              "a[title='Open in editor'][href^='vscode://file/']" <>
-               "[href$='/examples/example.story.exs:1'] i.fa-solid.fa-file-code"
+               "[href$='/examples/example.story.exs:1'] i.fa-solid.fa-square-code"
            )
   end
 

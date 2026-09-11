@@ -1,6 +1,6 @@
 {
   "name": "phoenix_storybook",
-  "version": "1.3.0",
+  "version": "1.4.1",
   "description": "PhoenixStorybook assets",
   "main": "./assets/js/phoenix_storybook.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "2.5.10",
+    "@biomejs/biome": "2.5.12",
     "@tailwindcss/cli": "^4.3.3",
     "@tailwindcss/forms": "^0.5.11",
     "esbuild": "^0.28.2",
