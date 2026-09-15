@@ -30,7 +30,8 @@ if Code.ensure_loaded?(Igniter) do
 
     ## Options
 
-    * `--no-tailwind` - skip the TailwindCSS specific setup
+    * `--no-tailwind` - skip the TailwindCSS specific setup (it is also skipped
+      when the project has no `:tailwind` dependency)
     """
 
     use Igniter.Mix.Task
@@ -63,7 +64,9 @@ if Code.ensure_loaded?(Igniter) do
         mix phoenix_storybook.install must be invoked from within your *_web application root directory
         """)
       else
-        tailwind? = igniter.args.options[:tailwind] != false
+        tailwind? =
+          igniter.args.options[:tailwind] != false and Project.Deps.has_dep?(igniter, :tailwind)
+
         schema = build_schema(igniter)
 
         {igniter, router} =
@@ -805,7 +808,8 @@ if Code.ensure_loaded?(Igniter) do
         cond do
           not tailwind? ->
             Igniter.add_notice(igniter, """
-            You opted out of Tailwind, so no build step was added for your storybook
+            Your project does not use Tailwind (no :tailwind dependency, or
+            --no-tailwind), so no build step was added for your storybook
             stylesheets. Add steps to your asset pipeline that build
             assets/css/storybook.css and assets/css/storybook_theme.css to
             priv/static/assets/css/, plus matching dev watchers, and register them in

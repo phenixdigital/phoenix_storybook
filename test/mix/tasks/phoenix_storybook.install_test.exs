@@ -284,6 +284,29 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
              |> String.contains?("tailwind storybook")
     end
 
+    test "skips the tailwind specific setup when the project has no :tailwind dependency" do
+      igniter =
+        phx_test_project()
+        |> Igniter.Project.Deps.remove_dep(:tailwind)
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "does not use Tailwind"))
+      refute css_content(igniter) =~ ~s|@import "tailwindcss"|
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/dev.exs")
+             |> String.contains?("storybook_tailwind")
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/config.exs")
+             |> String.contains?("storybook: [")
+
+      refute igniter
+             |> Igniter.Test.diff(only: "mix.exs")
+             |> String.contains?("tailwind storybook")
+    end
+
     test "with --no-tailwind it writes the minimal scoped stylesheet, not an app.css copy" do
       content =
         phx_test_project()
