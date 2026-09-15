@@ -4,8 +4,8 @@ defmodule <%= inspect schema.web_module %>.Storybook do
     content_path: Path.expand("../../storybook", __DIR__),
     # asset paths are URL paths (served by your app), not local file-system paths
     css_path: "/assets/css/storybook.css",
-    js_path: "/assets/js/storybook.js",
-    theme_path: "/assets/css/storybook_theme.css",
+    js_path: "/assets/js/storybook.js",<%= if schema.theme? do %>
+    theme_path: "/assets/css/storybook_theme.css",<% end %>
     # Ex: "https://github.com/my-org/my-app/blob/main"
     # source_permalink_base_url: "https://github.com/my-org/my-app/blob/main",
     sandbox_class: <%= inspect schema.sandbox_class %>

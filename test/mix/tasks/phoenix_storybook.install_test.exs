@@ -15,7 +15,6 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
           # asset paths are URL paths (served by your app), not local file-system paths
           css_path: "/assets/css/storybook.css",
           js_path: "/assets/js/storybook.js",
-          theme_path: "/assets/css/storybook_theme.css",
           # Ex: "https://github.com/my-org/my-app/blob/main"
           # source_permalink_base_url: "https://github.com/my-org/my-app/blob/main",
           sandbox_class: "test"
@@ -30,7 +29,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
 
       assert_creates(igniter, "assets/js/storybook.js")
       assert_creates(igniter, "assets/css/storybook.css")
-      assert_creates(igniter, "assets/css/storybook_theme.css")
+      refute_creates(igniter, "assets/css/storybook_theme.css")
       assert_creates(igniter, "storybook/_root.index.exs")
       assert_creates(igniter, "storybook/welcome.story.exs")
     end
@@ -132,23 +131,6 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       |> assert_has_patch("config/config.exs", """
       + | env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
       """)
-      |> assert_has_patch("config/config.exs", """
-      + | storybook_theme: [
-      """)
-      |> assert_has_patch("config/config.exs", """
-      + | --input=assets/css/storybook_theme.css
-      + | --output=priv/static/assets/css/storybook_theme.css
-      """)
-    end
-
-    test "omits the NODE_PATH env from the storybook_theme tailwind profile" do
-      config =
-        phx_test_project()
-        |> Igniter.compose_task("phoenix_storybook.install", [])
-        |> config_content()
-
-      theme_profile = config |> String.split("storybook_theme: [") |> List.last()
-      refute theme_profile =~ "NODE_PATH"
     end
 
     test "omits the storybook tailwind NODE_PATH env when the app has no colocated CSS" do
@@ -204,8 +186,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       phx_test_project()
       |> Igniter.compose_task("phoenix_storybook.install", [])
       |> assert_has_patch("config/dev.exs", """
-      + | storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]},
-      + | storybook_theme_tailwind: {Tailwind, :install_and_run, [:storybook_theme, ~w(--watch)]}
+      + | storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
       """)
       |> assert_has_patch("config/dev.exs", """
       + | ~r"storybook/.*\\.exs$"
@@ -227,17 +208,10 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       phx_test_project()
       |> Igniter.compose_task("phoenix_storybook.install", [])
       |> assert_has_patch("mix.exs", """
-      + | "assets.build": [
-      + |   "compile",
-      + |   "tailwind test",
-      + |   "esbuild test",
-      + |   "tailwind storybook",
-      + |   "tailwind storybook_theme"
-      + | ],
+      + | "assets.build": ["compile", "tailwind test", "esbuild test", "tailwind storybook"],
       """)
       |> assert_has_patch("mix.exs", """
       + | "tailwind storybook --minify",
-      + | "tailwind storybook_theme --minify",
         | "phx.digest"
       """)
     end
@@ -257,7 +231,6 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
         "mix.exs",
         "assets/js/storybook.js",
         "assets/css/storybook.css",
-        "assets/css/storybook_theme.css",
         "storybook/welcome.story.exs"
       ])
     end
@@ -268,8 +241,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
         |> Igniter.compose_task("phoenix_storybook.install", ["--no-tailwind"])
 
       assert_creates(igniter, "assets/css/storybook.css")
-      assert_creates(igniter, "assets/css/storybook_theme.css")
-      assert_has_notice(igniter, &(&1 =~ "assets/css/storybook_theme.css to"))
+      assert_has_notice(igniter, &(&1 =~ "does not use Tailwind"))
 
       refute igniter
              |> Igniter.Test.diff(only: "config/dev.exs")
@@ -358,7 +330,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
         |> Igniter.compose_task("phoenix_storybook.install", [])
 
       assert_has_warning(igniter, &(&1 =~ "No Phoenix router found"))
-      assert_has_notice(igniter, &(&1 =~ "Add watchers for the storybook tailwind profiles"))
+      assert_has_notice(igniter, &(&1 =~ "Add a watcher for the storybook tailwind profile"))
       assert_has_notice(igniter, &(&1 =~ "Add a live_reload pattern"))
 
       assert_creates(igniter, "lib/test_web/storybook.ex")
@@ -391,8 +363,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
         |> strip_config(~r/\n# Configure tailwind.*?\n  \]\n/s)
         |> Igniter.compose_task("phoenix_storybook.install", [])
 
-      assert_has_notice(igniter, &(&1 =~ "Add tailwind build profiles"))
-      assert_has_notice(igniter, &(&1 =~ "--input=assets/css/storybook_theme.css"))
+      assert_has_notice(igniter, &(&1 =~ "Add a tailwind build profile"))
 
       assert_has_notice(
         igniter,
@@ -464,7 +435,6 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
 
       diff = Igniter.Test.diff(igniter, only: "mix.exs")
       assert diff =~ "tailwind storybook --minify"
-      assert diff =~ "tailwind storybook_theme --minify"
     end
 
     test "generates the example core components story" do

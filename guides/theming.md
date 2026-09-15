@@ -237,8 +237,7 @@ utilities and `--psb-color-*` theme available to the compiler:
 The theme file goes through your asset build, exactly like `css_path`. The
 generator sets `theme_path` in your backend and prints the build steps to add
 (a `storybook_theme` Tailwind profile, a dev watcher, and `assets.build` /
-`assets.deploy` alias entries); `mix igniter.install phoenix_storybook` applies
-them for you:
+`assets.deploy` alias entries):
 
 ```elixir
 use PhoenixStorybook,

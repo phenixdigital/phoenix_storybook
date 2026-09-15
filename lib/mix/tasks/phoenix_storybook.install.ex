@@ -11,16 +11,14 @@ if Code.ensure_loaded?(Igniter) do
       * a storybook backend in `lib/my_app_web/storybook.ex`
       * storybook assets in `assets/js/storybook.js` and `assets/css/storybook.css`
         (copied from your `app.css` so components render the same in the storybook)
-      * a storybook UI theme stylesheet in `assets/css/storybook_theme.css`
       * example stories in `storybook/` for your core components
       * router: `import PhoenixStorybook.Router`, `storybook_assets()` and `live_storybook/2`
       * the CSS sandbox class on the `<body>` of your root layout
-      * `config.exs`: `js/storybook.js` esbuild entry point and `:storybook` /
-        `:storybook_theme` tailwind profiles
-      * `dev.exs`: tailwind watchers, and a live_reload pattern for stories (in
+      * `config.exs`: `js/storybook.js` esbuild entry point and a `:storybook` tailwind profile
+      * `dev.exs`: a tailwind watcher, and a live_reload pattern for stories (in
         `runtime.exs` for apps generated with phx_new >= 1.8.9)
       * `.formatter.exs`: `:phoenix_storybook` import and `storybook/**/*.exs` inputs
-      * `mix.exs`: storybook tailwind builds in the `assets.build` and `assets.deploy` aliases
+      * `mix.exs`: storybook tailwind build in the `assets.build` and `assets.deploy` aliases
 
     ## Example
 
@@ -112,7 +110,8 @@ if Code.ensure_loaded?(Igniter) do
         web_module: web_module,
         web_module_name: inspect(web_module),
         core_components_module: core_components_module,
-        core_components_module_name: inspect(core_components_module)
+        core_components_module_name: inspect(core_components_module),
+        theme?: false
       }
     end
 
@@ -128,7 +127,6 @@ if Code.ensure_loaded?(Igniter) do
            Path.join(["lib", to_string(schema.web_app_name), "storybook.ex"])},
           {"_root.index.exs", "storybook/_root.index.exs"},
           {"welcome.story.exs", "storybook/welcome.story.exs"},
-          {"storybook_theme.css", "assets/css/storybook_theme.css"},
           {"storybook.js", "assets/js/storybook.js"}
         ] ++ core_components_mapping(core_component_functions)
 
@@ -501,12 +499,10 @@ if Code.ensure_loaded?(Igniter) do
 
     defp setup_tailwind(igniter, schema, true) do
       if Project.Config.configures_key?(igniter, "config.exs", :tailwind, [schema.app_name]) do
-        igniter
-        |> add_tailwind_profile(:storybook, tailwind_env_kw(igniter, "  "))
-        |> add_tailwind_profile(:storybook_theme, "")
+        add_tailwind_profile(igniter, :storybook, tailwind_env_kw(igniter, "  "))
       else
         Igniter.add_notice(igniter, """
-        Add tailwind build profiles for assets/css/storybook.css and assets/css/storybook_theme.css in config/config.exs:
+        Add a tailwind build profile for assets/css/storybook.css in config/config.exs:
 
             config :tailwind,
               storybook: [
@@ -515,13 +511,6 @@ if Code.ensure_loaded?(Igniter) do
                   --output=priv/static/assets/css/storybook.css
                 ),
                 cd: Path.expand("..", __DIR__)#{tailwind_env_kw(igniter, "        ")}
-              ],
-              storybook_theme: [
-                args: ~w(
-                  --input=assets/css/storybook_theme.css
-                  --output=priv/static/assets/css/storybook_theme.css
-                ),
-                cd: Path.expand("..", __DIR__)
               ]
         """)
       end
@@ -590,14 +579,11 @@ if Code.ensure_loaded?(Igniter) do
 
     defp setup_watcher(igniter, endpoint, schema, true) do
       watchers =
-        Sourceror.parse_string!("""
-        [
-          storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]},
-          storybook_theme_tailwind: {Tailwind, :install_and_run, [:storybook_theme, ~w(--watch)]}
-        ]
-        """)
+        Sourceror.parse_string!(
+          "[storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}]"
+        )
 
-      {:__block__, _, [watcher_list]} = watchers
+      {:__block__, _, [[watcher]]} = watchers
 
       Project.Config.configure(
         igniter,
@@ -606,16 +592,10 @@ if Code.ensure_loaded?(Igniter) do
         [endpoint, :watchers],
         {:code, watchers},
         updater: fn zipper ->
-          Enum.reduce_while(watcher_list, {:ok, zipper}, fn
-            {{:__block__, _, [key]}, _} = watcher, {:ok, zipper} ->
-              case Code.Keyword.get_key(zipper, key) do
-                {:ok, _} -> {:cont, {:ok, zipper}}
-                :error -> {:cont, Code.List.append_to_list(zipper, watcher)}
-              end
-
-            _watcher, :error ->
-              {:halt, :error}
-          end)
+          case Code.Keyword.get_key(zipper, :storybook_tailwind) do
+            {:ok, _} -> {:ok, zipper}
+            :error -> Code.List.append_to_list(zipper, watcher)
+          end
         end,
         failure_message: watcher_message(schema)
       )
@@ -623,13 +603,12 @@ if Code.ensure_loaded?(Igniter) do
 
     defp watcher_message(schema) do
       """
-      Add watchers for the storybook tailwind profiles to your endpoint in config/dev.exs:
+      Add a watcher for the storybook tailwind profile to your endpoint in config/dev.exs:
 
           config #{inspect(schema.app_name)}, #{schema.web_module_name}.Endpoint,
             watchers: [
               ...
-              storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]},
-              storybook_theme_tailwind: {Tailwind, :install_and_run, [:storybook_theme, ~w(--watch)]}
+              storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
             ]
       """
     end
@@ -757,43 +736,28 @@ if Code.ensure_loaded?(Igniter) do
 
     defp setup_aliases(igniter, false), do: igniter
 
-    @tailwind_profiles ~w(storybook storybook_theme)
-
     defp setup_aliases(igniter, true) do
-      build_tasks = Enum.map(@tailwind_profiles, &"tailwind #{&1}")
-      deploy_tasks = Enum.map(@tailwind_profiles, &"tailwind #{&1} --minify")
-
       igniter
-      |> Project.TaskAliases.add_alias("assets.build", build_tasks, if_exists: :append)
+      |> Project.TaskAliases.add_alias("assets.build", ["tailwind storybook"], if_exists: :append)
       |> Project.TaskAliases.add_alias(
         "assets.deploy",
-        deploy_tasks ++ ["phx.digest"],
+        ["tailwind storybook --minify", "phx.digest"],
         if_exists: :ignore
       )
       |> Project.TaskAliases.modify_existing_alias(
         "assets.deploy",
-        &add_to_assets_deploy(&1, deploy_tasks)
+        &add_to_assets_deploy/1
       )
     end
 
-    defp add_to_assets_deploy(zipper, build_tasks) do
-      Enum.reduce_while(build_tasks, {:ok, zipper}, fn build_task, {:ok, zipper} ->
-        case add_before_digest(zipper, build_task) do
-          {:ok, zipper} -> {:cont, {:ok, zipper}}
-          :error -> {:halt, :error}
-        end
-      end)
-    end
+    defp add_to_assets_deploy(zipper) do
+      build_task = "tailwind storybook --minify"
 
-    defp add_before_digest(zipper, build_task) do
       with :error <-
              Code.List.move_to_list_item(zipper, &Common.nodes_equal?(&1, build_task)),
            {:ok, digest_zipper} <-
              Code.List.move_to_list_item(zipper, &Common.nodes_equal?(&1, "phx.digest")) do
-        digest_zipper
-        |> Zipper.insert_left(Sourceror.parse_string!(inspect(build_task)))
-        |> Zipper.up()
-        |> then(&{:ok, &1})
+        {:ok, Zipper.insert_left(digest_zipper, Sourceror.parse_string!(inspect(build_task)))}
       else
         {:ok, _already_present} -> {:ok, zipper}
         :error -> Code.List.append_new_to_list(zipper, build_task)
@@ -810,10 +774,10 @@ if Code.ensure_loaded?(Igniter) do
             Igniter.add_notice(igniter, """
             Your project does not use Tailwind (no :tailwind dependency, or
             --no-tailwind), so no build step was added for your storybook
-            stylesheets. Add steps to your asset pipeline that build
-            assets/css/storybook.css and assets/css/storybook_theme.css to
-            priv/static/assets/css/, plus matching dev watchers, and register them in
-            your assets.build and assets.deploy aliases (mix.exs).
+            stylesheets. Add a step to your asset pipeline that builds
+            assets/css/storybook.css to priv/static/assets/css/, plus a matching dev
+            watcher, and register it in your assets.build and assets.deploy aliases
+            (mix.exs).
             """)
 
           Igniter.exists?(igniter, @app_css) ->
