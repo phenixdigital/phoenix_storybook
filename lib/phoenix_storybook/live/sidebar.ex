@@ -93,7 +93,7 @@ defmodule PhoenixStorybook.Sidebar do
         </.link>
       </div>
 
-      <nav class="psb psb:flex-1 psb:xl:sticky">
+      <nav class="psb psb:flex-1 psb:xl:sticky psb:bg-sidebar">
         {render_entries(
           assign(assigns,
             entries: root_entries(@content_tree),
@@ -103,7 +103,7 @@ defmodule PhoenixStorybook.Sidebar do
         )}
       </nav>
 
-      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-sidebar-muted-foreground psb:hover:text-sidebar-primary psb:hover:font-bold">
+      <div class="psb psb:hidden psb:lg:block psb:fixed psb:bottom-3 psb:left-0 psb:w-60 psb:text-md psb:text-center psb:text-sidebar-muted-foreground psb:hover:text-sidebar-primary psb:hover:font-bold psb:-z-10">
         <.link
           href="https://github.com/phenixdigital/phoenix_storybook"
           target="_blank"
