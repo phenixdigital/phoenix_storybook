@@ -9,6 +9,12 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## v1.5.0 (2026-09-15)
+- **feature**: [add Igniter installer (mix igniter.install phoenix_storybook)](https://github.com/phenixdigital/phoenix_storybook/pull/840) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
+- **bugfix**: [fixed Github button hovers over sidebar links
+](https://github.com/phenixdigital/phoenix_storybook/pull/893)
+- **bugfix**: [fix: add missing chevrons](https://github.com/phenixdigital/phoenix_storybook/pull/887)
+- 
 ## v1.4.1 (2026-09-07)
 - **bugfix**: fixed permalink path under release working directories
 

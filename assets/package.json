@@ -1,6 +1,6 @@
 {
   "name": "phoenix_storybook",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "PhoenixStorybook assets",
   "main": "./assets/js/phoenix_storybook.js",
   "scripts": {
