@@ -16,6 +16,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
     * scaffolding including example stories for your own storybook in `storybook/`
 
   The generator supports the `--no-tailwind` flag if you want to skip the TailwindCSS specific bit.
+
+  If you use [Igniter](https://hexdocs.pm/igniter), `mix phoenix_storybook.install` generates the
+  same files and applies all the setup instructions automatically.
   """
 
   use Mix.Task
@@ -56,7 +59,9 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       web_module: web_module,
       web_module_name: Macro.to_string(web_module),
       core_components_module: core_components_module,
-      core_components_module_name: core_components_module_name
+      core_components_module_name: core_components_module_name,
+      js?: true,
+      theme?: true
     }
 
     mapping =
@@ -317,7 +322,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
 
   defp print_live_reload_instructions(schema, _opts) do
     print_instructions("""
-      Add a new #{IO.ANSI.bright()}live_reload pattern#{IO.ANSI.reset()} to your endpoint in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()}:
+      Add a new #{IO.ANSI.bright()}live_reload pattern#{IO.ANSI.reset()} to your endpoint in #{IO.ANSI.bright()}config/dev.exs#{IO.ANSI.reset()} (or #{IO.ANSI.bright()}config/runtime.exs#{IO.ANSI.reset()} for apps generated with phx_new >= 1.8.9):
 
         config #{inspect(schema.app_name)}, #{schema.web_module_name}.Endpoint,
           live_reload: [
