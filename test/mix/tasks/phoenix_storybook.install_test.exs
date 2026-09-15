@@ -256,6 +256,26 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
              |> String.contains?("tailwind storybook")
     end
 
+    test "skips the storybook JS setup when the project has no :esbuild dependency" do
+      igniter =
+        phx_test_project()
+        |> Igniter.Project.Deps.remove_dep(:esbuild)
+        |> apply_igniter!()
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_notice(igniter, &(&1 =~ "does not use esbuild"))
+      refute_creates(igniter, "assets/js/storybook.js")
+
+      refute igniter.rewrite
+             |> Rewrite.source!("lib/test_web/storybook.ex")
+             |> Rewrite.Source.get(:content)
+             |> String.contains?("js_path")
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/config.exs")
+             |> String.contains?("js/storybook.js")
+    end
+
     test "skips the tailwind specific setup when the project has no :tailwind dependency" do
       igniter =
         phx_test_project()

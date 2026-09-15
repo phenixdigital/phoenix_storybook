@@ -60,6 +60,7 @@ defmodule Mix.Tasks.Phx.Gen.Storybook do
       web_module_name: Macro.to_string(web_module),
       core_components_module: core_components_module,
       core_components_module_name: core_components_module_name,
+      js?: true,
       theme?: true
     }
 

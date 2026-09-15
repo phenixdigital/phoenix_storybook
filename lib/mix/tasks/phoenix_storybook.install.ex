@@ -20,6 +20,9 @@ if Code.ensure_loaded?(Igniter) do
       * `.formatter.exs`: `:phoenix_storybook` import and `storybook/**/*.exs` inputs
       * `mix.exs`: storybook tailwind build in the `assets.build` and `assets.deploy` aliases
 
+    The esbuild and tailwind specific parts are skipped when the project has no
+    `:esbuild` / `:tailwind` dependency.
+
     ## Example
 
     ```bash
@@ -28,8 +31,7 @@ if Code.ensure_loaded?(Igniter) do
 
     ## Options
 
-    * `--no-tailwind` - skip the TailwindCSS specific setup (it is also skipped
-      when the project has no `:tailwind` dependency)
+    * `--no-tailwind` - skip the TailwindCSS specific setup
     """
 
     use Igniter.Mix.Task
@@ -65,7 +67,8 @@ if Code.ensure_loaded?(Igniter) do
         tailwind? =
           igniter.args.options[:tailwind] != false and Project.Deps.has_dep?(igniter, :tailwind)
 
-        schema = build_schema(igniter)
+        esbuild? = Project.Deps.has_dep?(igniter, :esbuild)
+        schema = build_schema(igniter, esbuild?)
 
         {igniter, router} =
           Phoenix.select_router(
@@ -85,10 +88,10 @@ if Code.ensure_loaded?(Igniter) do
           end
 
         igniter
-        |> generate_files(schema, tailwind?)
+        |> generate_files(schema, tailwind?, esbuild?)
         |> setup_router(router, schema)
         |> setup_sandbox_class(schema)
-        |> setup_esbuild(schema)
+        |> setup_esbuild(schema, esbuild?)
         |> setup_tailwind(schema, tailwind?)
         |> setup_watcher(endpoint, schema, tailwind?)
         |> setup_live_reload(endpoint, schema)
@@ -98,7 +101,7 @@ if Code.ensure_loaded?(Igniter) do
       end
     end
 
-    defp build_schema(igniter) do
+    defp build_schema(igniter, esbuild?) do
       app_name = Project.Application.app_name(igniter)
       web_module = Phoenix.web_module(igniter)
       core_components_module = Module.concat(web_module, CoreComponents)
@@ -111,13 +114,14 @@ if Code.ensure_loaded?(Igniter) do
         web_module_name: inspect(web_module),
         core_components_module: core_components_module,
         core_components_module_name: inspect(core_components_module),
+        js?: esbuild?,
         theme?: false
       }
     end
 
     ## FILES
 
-    defp generate_files(igniter, schema, tailwind?) do
+    defp generate_files(igniter, schema, tailwind?, esbuild?) do
       {igniter, core_component_functions} =
         core_component_functions(igniter, schema.core_components_module)
 
@@ -126,9 +130,10 @@ if Code.ensure_loaded?(Igniter) do
           {"storybook.ex.eex",
            Path.join(["lib", to_string(schema.web_app_name), "storybook.ex"])},
           {"_root.index.exs", "storybook/_root.index.exs"},
-          {"welcome.story.exs", "storybook/welcome.story.exs"},
-          {"storybook.js", "assets/js/storybook.js"}
-        ] ++ core_components_mapping(core_component_functions)
+          {"welcome.story.exs", "storybook/welcome.story.exs"}
+        ] ++
+          if(esbuild?, do: [{"storybook.js", "assets/js/storybook.js"}], else: []) ++
+          core_components_mapping(core_component_functions)
 
       igniter =
         Enum.reduce(mapping, igniter, fn {source, target}, igniter ->
@@ -423,7 +428,17 @@ if Code.ensure_loaded?(Igniter) do
 
     ## CONFIG
 
-    defp setup_esbuild(igniter, schema) do
+    defp setup_esbuild(igniter, schema, false) do
+      Igniter.add_notice(igniter, """
+      Your project does not use esbuild (no :esbuild dependency), so no storybook
+      JS entry point was set up. If your components need JS hooks in the storybook,
+      add an assets/js/storybook.js declaring them (see the sandboxing guide), bundle
+      it with your JS pipeline to priv/static/assets/js/storybook.js, and set
+      js_path: "/assets/js/storybook.js" in lib/#{schema.web_app_name}/storybook.ex.
+      """)
+    end
+
+    defp setup_esbuild(igniter, schema, true) do
       if Project.Config.configures_key?(
            igniter,
            "config.exs",
