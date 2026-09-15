@@ -163,6 +163,43 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       refute storybook_profile =~ "NODE_PATH"
     end
 
+    test "adds the live_reload pattern to runtime.exs when the endpoint config lives there" do
+      igniter =
+        phx_test_project()
+        |> edit_file("config/dev.exs", ~r/\n# Reload browser tabs.*?\n  \]\n/s, "\n")
+        |> edit_file(
+          "config/runtime.exs",
+          "if config_env() == :prod do",
+          String.trim_trailing("""
+          if config_env() == :dev do
+            # Reload browser tabs when matching files change.
+            config :test, TestWeb.Endpoint,
+              live_reload: [
+                web_console_logger: true,
+                patterns: [
+                  # Static assets, except user uploads
+                  ~r"priv/static/(?!uploads/).*\\.(js|css|png|jpeg|jpg|gif|svg)$",
+                  # Router, Controllers, LiveViews and LiveComponents
+                  ~r"lib/test_web/router\\.ex$",
+                  ~r"lib/test_web/(controllers|live|components)/.*\\.(ex|heex)$"
+                ]
+              ]
+          end
+
+          if config_env() == :prod do
+          """)
+        )
+        |> Igniter.compose_task("phoenix_storybook.install", [])
+
+      assert_has_patch(igniter, "config/runtime.exs", """
+      + | ~r"storybook/.*\\.exs$"
+      """)
+
+      refute igniter
+             |> Igniter.Test.diff(only: "config/dev.exs")
+             |> String.contains?("storybook/.*")
+    end
+
     test "adds the storybook watcher and live_reload pattern to dev.exs" do
       phx_test_project()
       |> Igniter.compose_task("phoenix_storybook.install", [])
@@ -371,7 +408,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
       refute_creates(igniter, layout_path)
     end
 
-    test "notices the live_reload setup when there is no dev.exs" do
+    test "warns the live_reload setup when there is no dev.exs" do
       # --no-tailwind, otherwise the tailwind watcher setup recreates dev.exs
       # before the live_reload step runs.
       igniter =
@@ -380,7 +417,7 @@ defmodule Mix.Tasks.PhoenixStorybook.InstallTest do
         |> apply_igniter!()
         |> Igniter.compose_task("phoenix_storybook.install", ["--no-tailwind"])
 
-      assert_has_notice(igniter, &(&1 =~ "Add a live_reload pattern"))
+      assert_has_warning(igniter, &(&1 =~ "Add a live_reload pattern"))
     end
 
     test "warns the live_reload setup when dev.exs has no live_reload config" do

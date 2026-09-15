@@ -17,7 +17,8 @@ if Code.ensure_loaded?(Igniter) do
       * the CSS sandbox class on the `<body>` of your root layout
       * `config.exs`: `js/storybook.js` esbuild entry point and `:storybook` /
         `:storybook_theme` tailwind profiles
-      * `dev.exs`: tailwind watchers and a live_reload pattern for stories
+      * `dev.exs`: tailwind watchers, and a live_reload pattern for stories (in
+        `runtime.exs` for apps generated with phx_new >= 1.8.9)
       * `.formatter.exs`: `:phoenix_storybook` import and `storybook/**/*.exs` inputs
       * `mix.exs`: storybook tailwind builds in the `assets.build` and `assets.deploy` aliases
 
@@ -41,6 +42,7 @@ if Code.ensure_loaded?(Igniter) do
     alias Sourceror.Zipper
 
     @templates_folder "priv/templates/phx.gen.storybook"
+    @live_reload_config_files ["config/dev.exs", "config/runtime.exs"]
     @example_story_functions ~w(button header table input)a
 
     @impl Igniter.Mix.Task
@@ -633,21 +635,41 @@ if Code.ensure_loaded?(Igniter) do
       Igniter.add_notice(igniter, live_reload_message(schema))
     end
 
-    # The endpoint live_reload configuration usually lives in its own `config`
-    # call in dev.exs, so `Project.Config.configure/6` cannot be used
-    # here: it would patch the first `config` call matching the app and
-    # endpoint, which is usually the one holding the http settings and watchers.
+    # The endpoint live_reload configuration lives in its own `config` call
+    # (in dev.exs, or under `if config_env() == :dev` in runtime.exs since
+    # phx_new 1.8.9), so `Project.Config.configure/6` cannot be used here: it
+    # would patch the first `config` call matching the app and endpoint, which
+    # is usually the one holding the http settings and watchers.
     defp setup_live_reload(igniter, endpoint, schema) do
-      if Igniter.exists?(igniter, "config/dev.exs") do
-        Igniter.update_elixir_file(igniter, "config/dev.exs", fn zipper ->
-          case add_live_reload_pattern(zipper, endpoint, schema.app_name) do
-            {:ok, zipper} -> {:ok, zipper}
-            :error -> {:warning, live_reload_message(schema)}
-          end
-        end)
-      else
-        Igniter.add_notice(igniter, live_reload_message(schema))
+      case live_reload_config_file(igniter, endpoint, schema.app_name) do
+        {:ok, path} ->
+          Igniter.update_elixir_file(igniter, path, fn zipper ->
+            case add_live_reload_pattern(zipper, endpoint, schema.app_name) do
+              {:ok, zipper} -> {:ok, zipper}
+              :error -> {:warning, live_reload_message(schema)}
+            end
+          end)
+
+        :error ->
+          Igniter.add_warning(igniter, live_reload_message(schema))
       end
+    end
+
+    defp live_reload_config_file(igniter, endpoint, app_name) do
+      Enum.find_value(@live_reload_config_files, :error, fn path ->
+        with true <- Igniter.exists?(igniter, path),
+             igniter = Igniter.include_existing_file(igniter, path),
+             zipper =
+               igniter.rewrite
+               |> Rewrite.source!(path)
+               |> Rewrite.Source.get(:quoted)
+               |> Zipper.zip(),
+             {:ok, _zipper} <- move_to_live_reload_config(zipper, endpoint, app_name) do
+          {:ok, path}
+        else
+          _ -> nil
+        end
+      end)
     end
 
     defp add_live_reload_pattern(zipper, endpoint, app_name) do
@@ -666,7 +688,7 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp move_to_live_reload_config(zipper, endpoint, app_name) do
-      Code.Function.move_to_function_call_in_current_scope(zipper, :config, 3, fn call ->
+      Code.Function.move_to_function_call(zipper, :config, 3, fn call ->
         Code.Function.argument_equals?(call, 0, app_name) and
           Code.Function.argument_equals?(call, 1, endpoint) and
           Code.Function.argument_matches_predicate?(
@@ -679,7 +701,7 @@ if Code.ensure_loaded?(Igniter) do
 
     defp live_reload_message(schema) do
       """
-      Add a live_reload pattern to your endpoint in config/dev.exs to live reload your stories:
+      Add a live_reload pattern to your endpoint config (config/dev.exs or config/runtime.exs) to live reload your stories:
 
           config #{inspect(schema.app_name)}, #{schema.web_module_name}.Endpoint,
             live_reload: [

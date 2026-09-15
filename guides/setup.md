@@ -162,7 +162,8 @@ only your bespoke component CSS goes under the sandbox class:
 ### d. Dev watcher & live reload
 
 In `config/dev.exs`, add a watcher so the storybook CSS rebuilds on change, and a live-reload
-pattern for your stories:
+pattern for your stories (apps generated with phx_new >= 1.8.9 keep the `live_reload` config in
+`config/runtime.exs`, under `if config_env() == :dev`):
 
 ```elixir
 config :my_app, MyAppWeb.Endpoint,
