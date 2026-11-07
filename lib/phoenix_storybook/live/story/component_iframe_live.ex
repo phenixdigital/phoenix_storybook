@@ -6,11 +6,11 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   alias PhoenixStorybook.ExtraAssignsHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.{ComponentRenderer, RenderingContext}
-  alias PhoenixStorybook.ScreenSizeHelpers
   alias PhoenixStorybook.Stories.{Variation, VariationGroup}
   alias PhoenixStorybook.Story.PlaygroundPreviewLive
   alias PhoenixStorybook.StoryNotFound
   alias PhoenixStorybook.ThemeHelpers
+  alias PhoenixStorybook.VariationTitleHelpers
 
   @playground_topic_salt "phoenix_storybook:playground_topic"
   @playground_token_max_age 86_400
@@ -183,11 +183,11 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
          variation_id: variation_id
        })
        when is_binary(group_id) and is_binary(variation_id) do
-    "#{ScreenSizeHelpers.variation_title(group)} › #{ScreenSizeHelpers.variation_title(grouped_variation)}"
+    "#{VariationTitleHelpers.variation_title(group)} › #{VariationTitleHelpers.variation_title(grouped_variation)}"
   end
 
   defp screen_size_section_title(variation_or_group, _assigns),
-    do: ScreenSizeHelpers.variation_title(variation_or_group)
+    do: VariationTitleHelpers.variation_title(variation_or_group)
 
   # Variations always render as divs here: the screen-size iframe already isolates them.
   defp render_all_variations(assigns) do

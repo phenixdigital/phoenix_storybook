@@ -72,18 +72,8 @@ defmodule PhoenixStorybook.ScreenSizeHelpers do
     end
   end
 
-  def viewport_param(nil), do: nil
-  def viewport_param({:preset, preset_key, _label, _width_px}), do: preset_key
-  def viewport_param({:custom, width_px}), do: width_px
-
   def screen_size_width({:preset, _preset_key, _label, width_px}), do: width_px
   def screen_size_width({:custom, width_px}), do: width_px
-
-  @doc "Title shown for a variation or group, the same in every view: description, else humanized id."
-  def variation_title(%{description: description}) when is_binary(description), do: description
-
-  def variation_title(%{id: variation_id}),
-    do: variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ")
 
   @doc """
   Parses the `group_id` / `variation_id` story page params of the screen-size preview, with the
@@ -132,17 +122,21 @@ defmodule PhoenixStorybook.ScreenSizeHelpers do
 
   @doc "The `group_id` / `variation_id` params for a selection (inverse of `variation_selection/3`)."
   def variation_selection_params(:all), do: %{group_id: nil, variation_id: nil}
-  def variation_selection_params({:variation, v}), do: %{group_id: nil, variation_id: v.id}
-  def variation_selection_params({:group, g}), do: %{group_id: g.id, variation_id: nil}
 
-  def variation_selection_params({:grouped_variation, g, v}),
-    do: %{group_id: g.id, variation_id: v.id}
+  def variation_selection_params({:variation, variation}),
+    do: %{group_id: nil, variation_id: variation.id}
 
-  @doc "Value of a selection in the Variation select: the query string of its params."
-  def variation_selection_value(selection) do
+  def variation_selection_params({:group, group}), do: %{group_id: group.id, variation_id: nil}
+
+  def variation_selection_params({:grouped_variation, group, grouped_variation}),
+    do: %{group_id: group.id, variation_id: grouped_variation.id}
+
+  @doc "The query string of a selection's params, used as its option value in the Variation select."
+  def variation_selection_query(selection) do
     selection
     |> variation_selection_params()
     |> Enum.reject(fn {_param, param_value} -> is_nil(param_value) end)
+    |> Enum.sort()
     |> URI.encode_query()
   end
 end

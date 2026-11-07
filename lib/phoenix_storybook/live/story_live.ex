@@ -1044,8 +1044,12 @@ defmodule PhoenixStorybook.StoryLive do
   end
 
   # the option value is the selection's query string, e.g. "group_id=g&variation_id=v"
-  def handle_event("psb-set-variation-selection", %{"variation_selection" => value}, socket) do
-    selection_params = URI.decode_query(value)
+  def handle_event(
+        "psb-set-variation-selection",
+        %{"variation_selection" => variation_selection_query},
+        socket
+      ) do
+    selection_params = URI.decode_query(variation_selection_query)
 
     {:noreply,
      patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{

@@ -20,6 +20,7 @@ defmodule PhoenixStorybook.Story.Variations do
   alias PhoenixStorybook.ScreenSizeHelpers
   alias PhoenixStorybook.Stories.VariationGroup
   alias PhoenixStorybook.Story
+  alias PhoenixStorybook.VariationTitleHelpers
 
   @doc """
   Renders all component's (including live_components) variations: code & preview.
@@ -74,7 +75,7 @@ defmodule PhoenixStorybook.Story.Variations do
   defp render_variation_blocks(assigns) do
     ~H"""
     <div class="psb psb:space-y-12 psb:pb-12" id={"story-variations-#{story_id(@story)}"}>
-      <%= for variation = %{id: variation_id, description: description, note: note} <- @story.variations(),
+      <%= for variation = %{note: note} <- @story.variations(),
               extra_attributes = ExtraAssignsHelpers.variation_extra_attributes(variation, assigns),
               rendering_context = RenderingContext.build(assigns.backend_module, assigns.story, variation, extra_attributes) do %>
         <div
@@ -87,11 +88,7 @@ defmodule PhoenixStorybook.Story.Variations do
               href={"##{anchor_id(variation)}"}
               class="psb psb-variation-anchor-link psb:font-semibold psb:flex psb:items-center psb:gap-2"
             >
-              <%= if description do %>
-                {description}
-              <% else %>
-                {variation_id |> to_string() |> String.capitalize() |> String.replace("_", " ")}
-              <% end %>
+              {VariationTitleHelpers.variation_title(variation)}
               <.scaled_fa_icon
                 style={:light}
                 name="link"
@@ -204,8 +201,8 @@ defmodule PhoenixStorybook.Story.Variations do
     assigns =
       assign(
         assigns,
-        :selected_value,
-        ScreenSizeHelpers.variation_selection_value(assigns.variation_selection)
+        :selected_query,
+        ScreenSizeHelpers.variation_selection_query(assigns.variation_selection)
       )
 
     ~H"""
@@ -245,28 +242,28 @@ defmodule PhoenixStorybook.Story.Variations do
               name="variation_selection"
               class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-input psb:bg-background psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm"
             >
-              <option value="" selected={@selected_value == ""}>All</option>
+              <option value="" selected={@selected_query == ""}>All</option>
               <%= for story_entry <- @story.variations() do %>
                 <%= case story_entry do %>
                   <% group = %VariationGroup{} -> %>
-                    <optgroup label={ScreenSizeHelpers.variation_title(group)}>
+                    <optgroup label={VariationTitleHelpers.variation_title(group)}>
                       <.variation_selection_option
                         selection={{:group, group}}
-                        selected_value={@selected_value}
+                        selected_query={@selected_query}
                         label="Whole group"
                       />
                       <.variation_selection_option
                         :for={grouped_variation <- group.variations}
                         selection={{:grouped_variation, group, grouped_variation}}
-                        selected_value={@selected_value}
-                        label={ScreenSizeHelpers.variation_title(grouped_variation)}
+                        selected_query={@selected_query}
+                        label={VariationTitleHelpers.variation_title(grouped_variation)}
                       />
                     </optgroup>
                   <% variation -> %>
                     <.variation_selection_option
                       selection={{:variation, variation}}
-                      selected_value={@selected_value}
-                      label={ScreenSizeHelpers.variation_title(variation)}
+                      selected_query={@selected_query}
+                      label={VariationTitleHelpers.variation_title(variation)}
                     />
                 <% end %>
               <% end %>
@@ -282,12 +279,12 @@ defmodule PhoenixStorybook.Story.Variations do
     assigns =
       assign(
         assigns,
-        :option_value,
-        ScreenSizeHelpers.variation_selection_value(assigns.selection)
+        :option_query,
+        ScreenSizeHelpers.variation_selection_query(assigns.selection)
       )
 
     ~H"""
-    <option value={@option_value} selected={@option_value == @selected_value}>{@label}</option>
+    <option value={@option_query} selected={@option_query == @selected_query}>{@label}</option>
     """
   end
 

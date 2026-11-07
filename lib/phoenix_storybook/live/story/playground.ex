@@ -13,7 +13,7 @@ defmodule PhoenixStorybook.Story.Playground do
 
   alias PhoenixStorybook.Stories.{Attr, Slot, Variation, VariationGroup}
   alias PhoenixStorybook.Story.{PlaygroundPreviewLive, SourceSelect}
-  alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers}
+  alias PhoenixStorybook.{TemplateHelpers, ThemeHelpers, VariationTitleHelpers}
 
   alias Makeup.Formatters.HTML.HTMLFormatter
   alias Makeup.Lexers.HTMLLexer
@@ -833,12 +833,7 @@ defmodule PhoenixStorybook.Story.Playground do
 
   defp variation_options(story) do
     for variation <- story.variations() do
-      label =
-        if variation.description,
-          do: variation.description,
-          else: variation.id |> to_string() |> String.capitalize() |> String.replace("_", " ")
-
-      {label, variation.id}
+      {VariationTitleHelpers.variation_title(variation), variation.id}
     end
   end
 
