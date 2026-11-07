@@ -9,6 +9,7 @@ defmodule PhoenixStorybook.StoryLive do
   alias PhoenixStorybook.Helpers.ExampleHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.CodeRenderer
+  alias PhoenixStorybook.ScreenSizeHelpers
   alias PhoenixStorybook.Stories.StorySource
 
   alias PhoenixStorybook.Story.{
@@ -97,6 +98,29 @@ defmodule PhoenixStorybook.StoryLive do
         variation = current_variation(story.storybook_type(), story, params)
         story_entry = story_entry(socket, story_path)
         theme = current_theme(params, socket)
+        screen_sizes = ScreenSizeHelpers.screen_sizes(assigns.backend_module)
+
+        selected_screen_size =
+          ScreenSizeHelpers.selected_screen_size(screen_sizes, params["viewport"])
+
+        # in screen-size mode, group_id / variation_id select what the preview shows
+        # (same contract as the iframe route; none = all variations)
+        {variation_id, group_id, variation_selection} =
+          cond do
+            selected_screen_size ->
+              {params["variation_id"], params["group_id"],
+               ScreenSizeHelpers.variation_selection(
+                 story,
+                 params["group_id"],
+                 params["variation_id"]
+               )}
+
+            variation ->
+              {variation.id, nil, :all}
+
+            true ->
+              {nil, nil, :all}
+          end
 
         ThemeHelpers.call_theme_function(assigns.backend_module, theme)
 
@@ -108,7 +132,12 @@ defmodule PhoenixStorybook.StoryLive do
            story_entry: story_entry,
            story_path: assigns.backend_module.storybook_path(story),
            variation: variation,
-           variation_id: if(variation, do: variation.id, else: nil),
+           variation_id: variation_id,
+           group_id: group_id,
+           variation_selection: variation_selection,
+           screen_sizes: screen_sizes,
+           viewport: params["viewport"],
+           selected_screen_size: selected_screen_size,
            page_title: story_entry.name,
            tab: current_tab(params, story),
            source_file: current_source_file(params, story),
@@ -370,6 +399,9 @@ defmodule PhoenixStorybook.StoryLive do
       color_mode_class={@color_mode_class}
       fa_plan={@fa_plan}
       root_path={@root_path}
+      screen_sizes={@screen_sizes}
+      selected_screen_size={@selected_screen_size}
+      variation_selection={@variation_selection}
       socket={@socket}
       story={@story}
       story_path={@story_path}
@@ -978,6 +1010,54 @@ defmodule PhoenixStorybook.StoryLive do
      socket
      |> assign(:theme, theme)
      |> patch_to(socket.assigns.root_path, socket.assigns.story_path, %{theme: theme})}
+  end
+
+  def handle_event("psb-set-screen-size", %{"screen_size" => "custom"}, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("psb-set-screen-size", %{"screen_size" => ""}, socket) do
+    {:noreply,
+     patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{
+       viewport: nil,
+       group_id: nil,
+       variation_id: nil
+     })}
+  end
+
+  def handle_event("psb-set-screen-size", %{"screen_size" => preset_key}, socket) do
+    # entering screen-size mode shows all variations; switching presets keeps the selection
+    variation_selection =
+      if socket.assigns.selected_screen_size, do: socket.assigns.variation_selection, else: :all
+
+    {:noreply,
+     patch_to(
+       socket,
+       socket.assigns.root_path,
+       socket.assigns.story_path,
+       Map.put(
+         ScreenSizeHelpers.variation_selection_params(variation_selection),
+         :viewport,
+         preset_key
+       )
+     )}
+  end
+
+  # the option value is the selection's query string, e.g. "group_id=g&variation_id=v"
+  def handle_event("psb-set-variation-selection", %{"variation_selection" => value}, socket) do
+    selection_params = URI.decode_query(value)
+
+    {:noreply,
+     patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{
+       group_id: selection_params["group_id"],
+       variation_id: selection_params["variation_id"]
+     })}
+  end
+
+  def handle_event("psb-set-screen-width", %{"width" => width_px}, socket)
+      when is_integer(width_px) and width_px > 0 do
+    {:noreply,
+     patch_to(socket, socket.assigns.root_path, socket.assigns.story_path, %{viewport: width_px})}
   end
 
   def handle_event("psb-set-tab", %{"tab" => tab}, socket) do

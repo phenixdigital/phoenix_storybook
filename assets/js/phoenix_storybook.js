@@ -1,6 +1,7 @@
 // phoenix and phoenix_live_view are loaded from host app dependencies (see JSAssets module)
 import { ColorModeHook } from "./lib/color_mode_hook";
 import { RootHook } from "./lib/root_hook";
+import { ScreenSizeHook } from "./lib/screen_size_hook";
 import { SearchHook } from "./lib/search_hook";
 import { SidebarHook } from "./lib/sidebar_hook";
 import { StoryHook } from "./lib/story_hook";
@@ -30,6 +31,7 @@ const psbHooks = {
   "PhoenixStorybook.SidebarHook": SidebarHook,
   "PhoenixStorybook.ColorModeHook": ColorModeHook,
   "PhoenixStorybook.RootHook": RootHook,
+  "PhoenixStorybook.ScreenSizeHook": ScreenSizeHook,
 };
 warnReservedHooks(Object.keys(psbHooks), window.storybook.Hooks);
 

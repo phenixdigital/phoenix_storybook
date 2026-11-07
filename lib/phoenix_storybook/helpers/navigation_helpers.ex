@@ -13,8 +13,9 @@ defmodule PhoenixStorybook.NavigationHelpers do
     LiveView.push_navigate(socket, to: path)
   end
 
+  # ponytail: screen-size params ride along story page links only, never iframe srcs
   def path_to(%{assigns: assigns}, root_path, story_path, params) do
-    query = build_query(assigns, params)
+    query = build_query(assigns, params, [:viewport, :group_id])
     build_path(root_path, story_path, query)
   end
 
@@ -46,11 +47,11 @@ defmodule PhoenixStorybook.NavigationHelpers do
     end
   end
 
-  defp build_query(assigns, params) do
+  defp build_query(assigns, params, carried_story_page_params \\ []) do
     params = Map.new(params)
 
     assigns
-    |> Map.take([:theme, :tab, :variation_id])
+    |> Map.take([:theme, :tab, :variation_id | carried_story_page_params])
     |> Map.merge(params)
     |> Enum.reject(fn {_key, value} -> is_nil(value) end)
     |> Enum.to_list()

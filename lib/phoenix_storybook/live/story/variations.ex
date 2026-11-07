@@ -17,6 +17,8 @@ defmodule PhoenixStorybook.Story.Variations do
     RenderingContext
   }
 
+  alias PhoenixStorybook.ScreenSizeHelpers
+  alias PhoenixStorybook.Stories.VariationGroup
   alias PhoenixStorybook.Story
 
   @doc """
@@ -33,11 +35,14 @@ defmodule PhoenixStorybook.Story.Variations do
   attr :color_mode_class, :string
   attr :fa_plan, :atom
   attr :root_path, :string
+  attr :screen_sizes, :list, default: nil
+  attr :selected_screen_size, :any, default: nil
   attr :socket, :any
   attr :story, Story
   attr :story_path, :string
   attr :theme, :atom
   attr :variation_extra_assigns, :map
+  attr :variation_selection, :any, default: :all
 
   def render_variations(assigns) do
     assigns =
@@ -50,6 +55,23 @@ defmodule PhoenixStorybook.Story.Variations do
           end
       )
 
+    ~H"""
+    <.screen_size_toolbar
+      :if={@screen_sizes}
+      screen_sizes={@screen_sizes}
+      selected_screen_size={@selected_screen_size}
+      variation_selection={@variation_selection}
+      story={@story}
+    />
+    <%= if @selected_screen_size do %>
+      {screen_size_preview(assigns)}
+    <% else %>
+      {render_variation_blocks(assigns)}
+    <% end %>
+    """
+  end
+
+  defp render_variation_blocks(assigns) do
     ~H"""
     <div class="psb psb:space-y-12 psb:pb-12" id={"story-variations-#{story_id(@story)}"}>
       <%= for variation = %{id: variation_id, description: description, note: note} <- @story.variations(),
@@ -174,6 +196,140 @@ defmodule PhoenixStorybook.Story.Variations do
           </div>
         </div>
       <% end %>
+    </div>
+    """
+  end
+
+  defp screen_size_toolbar(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :selected_value,
+        ScreenSizeHelpers.variation_selection_value(assigns.variation_selection)
+      )
+
+    ~H"""
+    <div class="psb psb:flex psb:flex-wrap psb:items-center psb:gap-3 psb:mb-4 psb:text-sm psb:text-muted-foreground">
+      <form id="psb-screen-size-form" phx-change="psb-set-screen-size">
+        <select
+          name="screen_size"
+          aria-label="Screen size"
+          class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-input psb:bg-background psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm"
+        >
+          <option value="">None</option>
+          <option
+            :for={{preset_key, {label, width_px}} <- @screen_sizes}
+            value={preset_key}
+            selected={match?({:preset, ^preset_key, _, _}, @selected_screen_size)}
+          >
+            {label} ({width_px}px)
+          </option>
+          <option :if={match?({:custom, _}, @selected_screen_size)} value="custom" selected>
+            Custom
+          </option>
+        </select>
+      </form>
+      <%= if @selected_screen_size do %>
+        <output
+          id="psb-screen-size-readout"
+          aria-live="polite"
+          class="psb psb:tabular-nums"
+        >
+          {ScreenSizeHelpers.screen_size_width(@selected_screen_size)}px
+        </output>
+        <form id="psb-variation-selection-form" phx-change="psb-set-variation-selection">
+          <label class="psb psb:flex psb:items-center psb:gap-2">
+            Variation
+            <%!-- option values are the selection's query string, e.g. "group_id=g&variation_id=v" --%>
+            <select
+              name="variation_selection"
+              class="psb psb:form-select psb:h-8 psb:rounded-lg psb:border psb:border-input psb:bg-background psb:py-0 psb:pl-3 psb:pr-9 psb:text-sm"
+            >
+              <option value="" selected={@selected_value == ""}>All</option>
+              <%= for story_entry <- @story.variations() do %>
+                <%= case story_entry do %>
+                  <% group = %VariationGroup{} -> %>
+                    <optgroup label={ScreenSizeHelpers.variation_title(group)}>
+                      <.variation_selection_option
+                        selection={{:group, group}}
+                        selected_value={@selected_value}
+                        label="Whole group"
+                      />
+                      <.variation_selection_option
+                        :for={grouped_variation <- group.variations}
+                        selection={{:grouped_variation, group, grouped_variation}}
+                        selected_value={@selected_value}
+                        label={ScreenSizeHelpers.variation_title(grouped_variation)}
+                      />
+                    </optgroup>
+                  <% variation -> %>
+                    <.variation_selection_option
+                      selection={{:variation, variation}}
+                      selected_value={@selected_value}
+                      label={ScreenSizeHelpers.variation_title(variation)}
+                    />
+                <% end %>
+              <% end %>
+            </select>
+          </label>
+        </form>
+      <% end %>
+    </div>
+    """
+  end
+
+  defp variation_selection_option(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :option_value,
+        ScreenSizeHelpers.variation_selection_value(assigns.selection)
+      )
+
+    ~H"""
+    <option value={@option_value} selected={@option_value == @selected_value}>{@label}</option>
+    """
+  end
+
+  defp screen_size_preview(assigns) do
+    selection_params = ScreenSizeHelpers.variation_selection_params(assigns.variation_selection)
+
+    assigns =
+      assign(assigns,
+        screen_width_px: ScreenSizeHelpers.screen_size_width(assigns.selected_screen_size),
+        screen_size_iframe_src:
+          path_to_iframe(assigns.socket, assigns.root_path, assigns.story_path,
+            variations: "all",
+            group_id: selection_params.group_id,
+            variation_id: selection_params.variation_id,
+            theme: assigns.theme,
+            color_mode: assigns.color_mode
+          )
+      )
+
+    ~H"""
+    <div
+      id="psb-screen-size-pane"
+      phx-hook="PhoenixStorybook.ScreenSizeHook"
+      data-screen-width={@screen_width_px}
+      class="psb psb:pb-12"
+      style="overflow-x: auto; overflow-y: hidden; flex-shrink: 0;"
+    >
+      <%!-- ponytail: id keyed on src so a new src mounts a fresh iframe; width changes reuse it --%>
+      <div
+        id={"psb-screen-size-box-#{:erlang.phash2(@screen_size_iframe_src)}"}
+        phx-update="ignore"
+        class="psb psb-screen-size-box psb:border psb:border-border psb:rounded-md psb:bg-card"
+        style="resize: horizontal; overflow: hidden; min-width: 120px; box-sizing: content-box;"
+      >
+        <iframe
+          title="Screen size preview"
+          class="psb:border-0 psb:block"
+          style={"width: #{@screen_width_px}px;"}
+          src={@screen_size_iframe_src}
+          height="0"
+        />
+      </div>
     </div>
     """
   end

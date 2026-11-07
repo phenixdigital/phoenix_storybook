@@ -6,6 +6,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   alias PhoenixStorybook.ExtraAssignsHelpers
   alias PhoenixStorybook.LayoutView
   alias PhoenixStorybook.Rendering.{ComponentRenderer, RenderingContext}
+  alias PhoenixStorybook.ScreenSizeHelpers
   alias PhoenixStorybook.Stories.{Variation, VariationGroup}
   alias PhoenixStorybook.Story.PlaygroundPreviewLive
   alias PhoenixStorybook.StoryNotFound
@@ -42,6 +43,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
            variation_id: params["variation_id"],
            group_id: params["group_id"],
            variation: current_variation(story.storybook_type(), story, params),
+           all_variations_mode: all_variations_mode?(params),
            topic: topic,
            theme: params["theme"],
            color_mode: params["color_mode"]
@@ -56,6 +58,14 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         raise StoryNotFound, "unknown story #{inspect(story_path)}"
     end
   end
+
+  # `variations=all` renders every variation (or only `variation_id` when given), stacked.
+  defp all_variations_mode?(%{"variations" => "all"}), do: true
+
+  defp all_variations_mode?(%{"variations" => other}),
+    do: raise(ArgumentError, "unknown variations param #{inspect(other)}, expected all")
+
+  defp all_variations_mode?(_params), do: false
 
   defp verified_playground_topic(_socket, nil), do: nil
 
@@ -86,6 +96,14 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     assign(socket, :color_mode_class, class)
   end
 
+  defp assign_extra_assigns(socket = %{assigns: %{all_variations_mode: true, story: story}}) do
+    assign(
+      socket,
+      :extra_assigns,
+      ExtraAssignsHelpers.init_variation_extra_assigns(story.storybook_type(), story)
+    )
+  end
+
   defp assign_extra_assigns(socket) do
     case Map.get(socket.assigns, :variation) do
       nil ->
@@ -104,8 +122,9 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   end
 
   def render(assigns) do
-    case assigns.story.storybook_type() do
-      :example -> render_example(assigns)
+    case {assigns.story.storybook_type(), Map.get(assigns, :all_variations_mode, false)} do
+      {:example, _} -> render_example(assigns)
+      {_, true} -> render_all_variations(assigns)
       _ -> render_component(assigns)
     end
   end
@@ -155,6 +174,71 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         </div>
       <% end %>
     <% end %>
+    """
+  end
+
+  # one variation of a group (group_id + variation_id): "Group title › Variation title"
+  defp screen_size_section_title(group = %VariationGroup{variations: [grouped_variation]}, %{
+         group_id: group_id,
+         variation_id: variation_id
+       })
+       when is_binary(group_id) and is_binary(variation_id) do
+    "#{ScreenSizeHelpers.variation_title(group)} › #{ScreenSizeHelpers.variation_title(grouped_variation)}"
+  end
+
+  defp screen_size_section_title(variation_or_group, _assigns),
+    do: ScreenSizeHelpers.variation_title(variation_or_group)
+
+  # Variations always render as divs here: the screen-size iframe already isolates them.
+  defp render_all_variations(assigns) do
+    # Most specific wins: a story container with its own class or style keeps it; otherwise the
+    # library's existing inline-style default for iframe containers (same layout as the None view's
+    # psb: classes, which aren't loaded here).
+    {container_classes, container_opts} =
+      case assigns.story.container() do
+        {_container, opts} when is_list(opts) and opts != [] -> Keyword.pop(opts, :class)
+        _default_container -> {nil, elem(LayoutView.normalize_story_container(:iframe), 1)}
+      end
+
+    # group_id / variation_id select one entry (current_variation/3 resolves and validates them)
+    rendered_variations =
+      if assigns.variation_id || assigns.group_id,
+        do: [assigns.variation],
+        else: assigns.story.variations()
+
+    assigns =
+      assign(assigns,
+        rendered_variations: rendered_variations,
+        container_classes: container_classes,
+        container_opts: container_opts
+      )
+
+    ~H"""
+    <section
+      :for={variation <- @rendered_variations}
+      id={"psb-screen-size-variation-#{variation.id}"}
+      style="padding: 8px; border-bottom: 1px dashed rgba(128, 128, 128, 0.35);"
+    >
+      <%!-- ponytail: paddings, not margins, so nothing collapses out of body and the measured height is exact.
+           8px section + the container's 5px = the None view's card (p-2) + default container --%>
+      <h3 style="margin: 0; padding: 4px 5px; font: 600 12px/1.4 system-ui, sans-serif; opacity: 0.6;">
+        {screen_size_section_title(variation, assigns)}
+      </h3>
+      <div
+        {@container_opts}
+        class={[@container_classes, @color_mode_class]}
+        {LayoutView.sandbox_attributes(@socket, {:div, @container_opts}, assigns)}
+      >
+        {ComponentRenderer.render(
+          RenderingContext.build(
+            @backend_module,
+            @story,
+            variation,
+            variation_extra_attributes(variation, assigns)
+          )
+        )}
+      </div>
+    </section>
     """
   end
 
