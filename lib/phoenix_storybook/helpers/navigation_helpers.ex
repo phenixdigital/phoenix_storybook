@@ -13,9 +13,14 @@ defmodule PhoenixStorybook.NavigationHelpers do
     LiveView.push_navigate(socket, to: path)
   end
 
-  # ponytail: screen-size params ride along story page links only, never iframe srcs
+  # screen-size params ride along links to the variations tab only, never other tabs or iframe srcs
   def path_to(%{assigns: assigns}, root_path, story_path, params) do
-    query = build_query(assigns, params, [:viewport, :group_id])
+    target_tab = params |> Map.new() |> Map.get(:tab, Map.get(assigns, :tab))
+
+    carried_screen_size_params =
+      if to_string(target_tab) == "variations", do: [:viewport, :group_id], else: []
+
+    query = build_query(assigns, params, carried_screen_size_params)
     build_path(root_path, story_path, query)
   end
 

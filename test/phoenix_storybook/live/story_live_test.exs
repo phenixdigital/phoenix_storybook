@@ -907,6 +907,21 @@ defmodule PhoenixStorybook.StoryLiveTest do
       refute html =~ "psb-variation-selection-form"
     end
 
+    test "switching to another tab drops the screen size", %{conn: conn} do
+      {:ok, view, _html} =
+        live(
+          conn,
+          ~p"/storybook/a_folder/component?viewport=tablet&group_id=group&variation_id=world"
+        )
+
+      render_hook(view, "psb-set-tab", %{"tab" => "playground"})
+
+      assert_patched(
+        view,
+        ~p"/storybook/a_folder/component?#{[tab: :playground, theme: :default, variation_id: :world]}"
+      )
+    end
+
     test "viewports: false hides the screen size toolbar", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/storybook_no_viewports/component")
 
