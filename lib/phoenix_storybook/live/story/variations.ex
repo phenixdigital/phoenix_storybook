@@ -48,12 +48,7 @@ defmodule PhoenixStorybook.Story.Variations do
   def render_variations(assigns) do
     assigns =
       assign(assigns,
-        sandbox_attributes:
-          case assigns.story.container() do
-            {:div, opts} -> assigns_to_attributes(opts, [:class])
-            {:iframe, opts} -> assigns_to_attributes(opts, [:style])
-            _ -> []
-          end
+        sandbox_attributes: LayoutView.story_container_attributes(assigns.story.container())
       )
 
     ~H"""

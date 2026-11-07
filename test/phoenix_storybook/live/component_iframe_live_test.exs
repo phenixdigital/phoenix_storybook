@@ -49,6 +49,22 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     def render(assigns), do: ~H"<div>dummy</div>"
   end
 
+  @default_div_class "psb:flex psb:flex-col psb:items-center psb:gap-y-[5px] psb:p-[5px]"
+
+  defmodule DataAttributeDivContainerStory do
+    use PhoenixStorybook.Story, :component
+    def function, do: &PhoenixStorybook.ComponentIframeLiveTest.DummyStory.render/1
+    def container, do: {:div, "data-foo": "bar"}
+    def variations, do: [%Variation{id: :one}]
+  end
+
+  defmodule StyledIframeContainerStory do
+    use PhoenixStorybook.Story, :component
+    def function, do: &PhoenixStorybook.ComponentIframeLiveTest.DummyStory.render/1
+    def container, do: {:iframe, style: "display: block;"}
+    def variations, do: [%Variation{id: :one}]
+  end
+
   defmodule EmptyVariationsStory do
     def storybook_type, do: :component
     def variations, do: []
@@ -273,20 +289,44 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       refute html =~ "component: hello"
     end
 
-    test "a story container with its own options replaces the default container", %{conn: conn} do
+    # same container rules as the None view (Story.Variations.render_variations/1)
+    test "a div container class replaces the default class, extra attributes pass through",
+         %{conn: conn} do
+      # a_folder/component: {:div, class: "block", "data-foo": "bar"}
       {:ok, _view, html} =
         live_with_params(conn, "/storybook/iframe/a_folder/component", %{"variations" => "all"})
 
-      assert html =~ ~s|data-foo="bar"|
-      assert html =~ ~r/class="block[^"]*"/
-      refute html =~ "flex-direction: column"
+      assert html =~ ~s|<div class="psb-sandbox block" data-foo="bar">|
     end
 
-    test "a story without container options gets the default iframe container", %{conn: conn} do
+    test "a div container with only a data attribute keeps the default class" do
+      html = render_all_variations(DataAttributeDivContainerStory)
+
+      assert html =~
+               ~s|<div class="psb-sandbox #{@default_div_class}" data-foo="bar">|
+    end
+
+    test "a bare :div container gets the default class", %{conn: conn} do
       {:ok, _view, html} =
         live_with_params(conn, "/storybook/iframe/component", %{"variations" => "all"})
 
-      assert html =~ "flex-direction: column"
+      assert html =~ ~s|<div class="psb-sandbox #{@default_div_class}">|
+    end
+
+    test "an iframe container style replaces the default style, as on #psb-iframe-container" do
+      html = render_all_variations(StyledIframeContainerStory)
+
+      assert html =~ ~s|<div class="" style="display: block;">|
+      refute html =~ "flex-direction: column"
+    end
+
+    test "a bare :iframe container gets the default iframe style", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/containers/components/iframe", %{
+          "variations" => "all"
+        })
+
+      assert html =~ ~s|<div class="" style="display: flex; flex-direction: column;|
     end
 
     test "an :iframe container story renders its variations as divs", %{conn: conn} do
@@ -529,6 +569,26 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     assert_raise PhoenixStorybook.StoryNotFound, fn ->
       ComponentIframeLive.handle_params(params, "/", socket)
     end
+  end
+
+  defp render_all_variations(story) do
+    %{
+      __changed__: %{},
+      socket: %Socket{
+        assigns: %Socket.AssignsNotInSocket{__assigns__: %{backend_module: BackendNoTheme}}
+      },
+      backend_module: BackendNoTheme,
+      story: story,
+      all_variations_mode: true,
+      variation: nil,
+      variation_id: nil,
+      group_id: nil,
+      extra_assigns: %{},
+      theme: nil,
+      color_mode_class: nil
+    }
+    |> ComponentIframeLive.render()
+    |> rendered_to_string()
   end
 
   defp base_socket(backend_module) do

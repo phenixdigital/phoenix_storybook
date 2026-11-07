@@ -190,14 +190,22 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     do: VariationTitleHelpers.variation_title(variation_or_group)
 
   # Variations always render as divs here: the screen-size iframe already isolates them.
+  # Their container follows the None view's rules (Story.Variations.render_variations/1): an
+  # :iframe container's style lands on the div like on its #psb-iframe-container; any other
+  # container gets the sandbox class and the story's extra attributes.
   defp render_all_variations(assigns) do
-    # Most specific wins: a story container with its own class or style keeps it; otherwise the
-    # library's existing inline-style default for iframe containers (same layout as the None view's
-    # psb: classes, which aren't loaded here).
-    {container_classes, container_opts} =
-      case assigns.story.container() do
-        {_container, opts} when is_list(opts) and opts != [] -> Keyword.pop(opts, :class)
-        _default_container -> {nil, elem(LayoutView.normalize_story_container(:iframe), 1)}
+    {container_class, container_attributes} =
+      case LayoutView.normalize_story_container(assigns.story.container()) do
+        {:iframe, iframe_opts} ->
+          {assigns.color_mode_class, [style: iframe_opts[:style]]}
+
+        story_container ->
+          {[
+             LayoutView.sandbox_class(assigns.socket, story_container, assigns),
+             assigns.color_mode_class
+           ],
+           LayoutView.sandbox_attributes(assigns.socket, story_container, assigns) ++
+             LayoutView.story_container_attributes(story_container)}
       end
 
     # group_id / variation_id select one entry (current_variation/3 resolves and validates them)
@@ -209,14 +217,16 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     assigns =
       assign(assigns,
         rendered_variations: rendered_variations,
-        container_classes: container_classes,
-        container_opts: container_opts
+        container_class: container_class,
+        container_attributes: container_attributes
       )
 
     ~H"""
+    <%!-- class "psb" scopes the psb: utility classes (the default div container class), as in None --%>
     <section
       :for={variation <- @rendered_variations}
       id={"psb-screen-size-variation-#{variation.id}"}
+      class="psb"
       style="padding: 8px; border-bottom: 1px dashed rgba(128, 128, 128, 0.35);"
     >
       <%!-- ponytail: paddings, not margins, so nothing collapses out of body and the measured height is exact.
@@ -224,11 +234,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
       <h3 style="margin: 0; padding: 4px 5px; font: 600 12px/1.4 system-ui, sans-serif; opacity: 0.6;">
         {screen_size_section_title(variation, assigns)}
       </h3>
-      <div
-        {@container_opts}
-        class={[@container_classes, @color_mode_class]}
-        {LayoutView.sandbox_attributes(@socket, {:div, @container_opts}, assigns)}
-      >
+      <div class={@container_class} {@container_attributes}>
         {ComponentRenderer.render(
           RenderingContext.build(
             @backend_module,

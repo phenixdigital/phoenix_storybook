@@ -72,12 +72,18 @@ The preview iframe itself is served by `/iframe/<story>?variations=all`, which a
 
 ## Layout
 
-By default, each variation renders in the same container as in the regular Variations tab
-(centred, with a small padding), so a story looks the same with **None** and with a screen size,
-only narrower.
+Each variation renders in the same container as in the regular Variations tab, following the
+same rules, so a story looks the same with **None** and with a screen size, only narrower:
 
-A story's own `container` class or style applies inside the preview and replaces the default
-layout. For instance, for a navigation bar or a page layout that should span the whole width:
+- A `:div` container is centred, with a small padding. A container `class` replaces that default
+  layout class (the sandbox class is kept), and any other option, such as `"data-foo": "bar"`,
+  becomes an HTML attribute and keeps the default layout.
+- An `:iframe` container renders as a plain `div` inside the preview, since the preview iframe
+  already isolates it. Its `style` replaces the default centred style, as inside its own iframe
+  in the Variations tab. Its other options are attributes of that per-variation iframe, so they
+  don't apply here.
+
+For instance, for a navigation bar or a page layout that should span the whole width:
 
 ```elixir
 # storybook/navbar.story.exs
@@ -86,6 +92,3 @@ defmodule Storybook.Navbar do
   def container, do: {:div, class: "p-0"}
 end
 ```
-
-Stories with an `:iframe` container render as plain `div`s inside the preview, since the preview
-iframe already isolates them.
