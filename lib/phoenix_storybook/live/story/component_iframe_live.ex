@@ -282,7 +282,8 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         assigns.story
       )
 
-    {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
+    {:noreply,
+     assign(socket, extra_assigns: Map.put(assigns.extra_assigns, variation_id, extra_assigns))}
   end
 
   def handle_event("psb-toggle", assign_params, socket = %{assigns: assigns}) do
@@ -293,7 +294,8 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
         assigns.story
       )
 
-    {:noreply, assign(socket, extra_assigns: %{variation_id => extra_assigns})}
+    {:noreply,
+     assign(socket, extra_assigns: Map.put(assigns.extra_assigns, variation_id, extra_assigns))}
   end
 
   def handle_event(_, _, socket), do: {:noreply, socket}

@@ -83,6 +83,22 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ "component: world"
     end
 
+    test "psb-assign on a whole-group iframe keeps the other variations' extra assigns",
+         %{conn: conn} do
+      {:ok, view, _html} =
+        live_with_params(conn, "/storybook/iframe/templates/template_component", %{
+          "variation_id" => "group"
+        })
+
+      view |> element("#set-foo-template-component-group-one") |> render_click()
+      view |> element("#set-bar-template-component-group-two") |> render_click()
+      view |> element("#toggle-status-template-component-group-two") |> render_click()
+
+      html = render(view)
+      assert html =~ "template_component: foo / status: false"
+      assert html =~ "template_component: bar / status: true"
+    end
+
     test "variation with a template", %{conn: conn} do
       {:ok, view, html} =
         live_with_params(conn, "/storybook/iframe/templates/template_iframe_component", %{
