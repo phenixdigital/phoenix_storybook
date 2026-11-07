@@ -13,8 +13,14 @@ defmodule PhoenixStorybook.NavigationHelpers do
     LiveView.push_navigate(socket, to: path)
   end
 
+  # screen-size params ride along links to the variations tab only, never other tabs or iframe srcs
   def path_to(%{assigns: assigns}, root_path, story_path, params) do
-    query = build_query(assigns, params)
+    target_tab = params |> Map.new() |> Map.get(:tab, Map.get(assigns, :tab))
+
+    carried_screen_size_params =
+      if to_string(target_tab) == "variations", do: [:viewport, :group_id], else: []
+
+    query = build_query(assigns, params, carried_screen_size_params)
     build_path(root_path, story_path, query)
   end
 
@@ -46,11 +52,11 @@ defmodule PhoenixStorybook.NavigationHelpers do
     end
   end
 
-  defp build_query(assigns, params) do
+  defp build_query(assigns, params, carried_story_page_params \\ []) do
     params = Map.new(params)
 
     assigns
-    |> Map.take([:theme, :tab, :variation_id])
+    |> Map.take([:theme, :tab, :variation_id | carried_story_page_params])
     |> Map.merge(params)
     |> Enum.reject(fn {_key, value} -> is_nil(value) end)
     |> Enum.to_list()

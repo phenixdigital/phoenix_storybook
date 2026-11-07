@@ -65,8 +65,9 @@
     <% end %>
   </head>
 
+  <%!-- variations=all puts the story's container class on each variation's div, not on body --%>
   <% container =
-    if assigns[:story],
+    if assigns[:story] && !assigns[:all_variations_mode],
       do: normalize_story_container(assigns[:story].container()),
       else: {:div, []} %>
   <body

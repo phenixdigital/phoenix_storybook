@@ -137,6 +137,7 @@ it is possible to enable iframe rendering, component per component.
 
 This could be required e.g. if you need to bind listeners on `document` or when
 you want to make sure responsive css works as expected.
+To check responsive CSS at a given width, see the [screen sizes guide](screen_sizes.md).
 
 Just add the `iframe` option to it.
 

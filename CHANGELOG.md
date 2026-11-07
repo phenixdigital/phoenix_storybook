@@ -9,6 +9,9 @@
 > - You can also [buy me a coffee](https://ko-fi.com/C0C316P9FN), as it would encourage me spending
 >   more of my free time to fixing bugs and developing new features 🤗
 
+## Unreleased
+- **feature**: [screen size preview on the Variations tab: render a story's variations at a preset or custom width, configurable with the `viewports:` option](https://github.com/phenixdigital/phoenix_storybook/issues/49)
+
 ## v1.5.0 (2026-09-15)
 - **feature**: [add Igniter installer (mix igniter.install phoenix_storybook)](https://github.com/phenixdigital/phoenix_storybook/pull/840) - 🙏 [@SerhiiFesenko](https://github.com/SerhiiFesenko)
 - **bugfix**: [fixed Github button hovers over sidebar links

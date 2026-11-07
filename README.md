@@ -158,6 +158,11 @@ defmodule MyAppWeb.Storybook do
     color_mode_sandbox_dark_class: "dark",
     color_mode_sandbox_light_class: "light",
 
+    # Screen size presets of the Variations tab, as `preset_key: {label, width_px}`.
+    # Defaults to Storybook JS's presets (320, 414, 834 and 1280px). Set to `false` to hide the
+    # Screen size select. See the `guides/screen_sizes.md` guide for more details.
+    viewports: [sm: {"sm", 640}, md: {"md", 768}, lg: {"lg", 1024}],
+
     # If you want to use custom FontAwesome icons.
     font_awesome_plan: :pro, # default value is :free
     font_awesome_kit_id: "foo8b41bar4625",
@@ -208,7 +213,8 @@ config :phoenix_storybook, fingerprint_assets: true
 ℹ️ Learn more about customizing the storybook UI with `theme_path` in
 [The theme file](guides/theming.md#the-theme-file), theming components in the
 [theming guide](guides/theming.md), icons in the [icons](guides/icons.md) guide and color mode in the
-[color modes guide](guides/color_modes.md).
+[color modes guide](guides/color_modes.md), and screen size previews in the
+[screen sizes guide](guides/screen_sizes.md).
 
 <!-- MDOC !-->
 

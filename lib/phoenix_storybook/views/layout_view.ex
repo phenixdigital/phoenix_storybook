@@ -251,6 +251,11 @@ defmodule PhoenixStorybook.LayoutView do
     ]
   end
 
+  # story container opts other than class (div) or style (iframe) pass through as HTML attributes
+  def story_container_attributes({:div, opts}), do: assigns_to_attributes(opts, [:class])
+  def story_container_attributes({:iframe, opts}), do: assigns_to_attributes(opts, [:style])
+  def story_container_attributes(_story_container), do: []
+
   def root_class(_conn_or_socket, %{theme: nil}), do: nil
 
   def root_class(conn_or_socket, assigns) do
