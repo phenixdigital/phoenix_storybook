@@ -40,6 +40,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
            story_path: story_path,
            story: story,
            variation_id: params["variation_id"],
+           group_id: params["group_id"],
            variation: current_variation(story.storybook_type(), story, params),
            topic: topic,
            theme: params["theme"],
@@ -125,7 +126,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
       )
 
     ~H"""
-    <%= if @variation_id do %>
+    <%= if @variation_id || @group_id do %>
       <%= if @playground do %>
         {live_render(@socket, PlaygroundPreviewLive,
           id: playground_preview_id(@story),
@@ -190,6 +191,24 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     story |> Macro.underscore() |> String.replace("/", "_")
   end
 
+  defp current_variation(_type, story, %{"playground" => _, "group_id" => group_id}) do
+    raise StoryNotFound,
+          "group_id is not supported with playground (group_id #{inspect(group_id)} in story #{inspect(story)})"
+  end
+
+  defp current_variation(type, story, params = %{"group_id" => group_id})
+       when type in [:component, :live_component] do
+    group = find_variation_group(story, group_id)
+
+    case params do
+      %{"variation_id" => variation_id} ->
+        %VariationGroup{group | variations: [find_variation_in_group(story, group, variation_id)]}
+
+      _ ->
+        group
+    end
+  end
+
   defp current_variation(type, story, %{"variation_id" => variation_id})
        when type in [:component, :live_component] do
     Enum.find(story.variations(), &(to_string(&1.id) == variation_id)) ||
@@ -208,6 +227,27 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
   defp current_variation(type, story, _params) do
     raise StoryNotFound,
           "story #{inspect(story)} of type #{inspect(type)} can't be rendered in an iframe"
+  end
+
+  defp find_variation_group(story, group_id) do
+    case Enum.find(story.variations(), &(to_string(&1.id) == group_id)) do
+      group = %VariationGroup{} ->
+        group
+
+      %Variation{} ->
+        raise StoryNotFound,
+              "#{inspect(group_id)} is a variation, not a variation group, in story #{inspect(story)}"
+
+      nil ->
+        raise StoryNotFound,
+              "unknown variation group #{inspect(group_id)} in story #{inspect(story)}"
+    end
+  end
+
+  defp find_variation_in_group(story, group, variation_id) do
+    Enum.find(group.variations, &(to_string(&1.id) == variation_id)) ||
+      raise StoryNotFound,
+            "unknown variation #{inspect(variation_id)} in group #{inspect(to_string(group.id))} of story #{inspect(story)}"
   end
 
   defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
