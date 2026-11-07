@@ -29,11 +29,6 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.EmptyVariationsStory}
   end
 
-  defmodule BackendPage do
-    def config(_key, default \\ nil), do: default
-    def load_story(_story_path), do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.PageStory}
-  end
-
   defmodule HandleInfoStory do
     def handle_info({:storybook_handle_info, from}, socket) do
       send(from, :handled)
@@ -57,10 +52,6 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
   defmodule EmptyVariationsStory do
     def storybook_type, do: :component
     def variations, do: []
-  end
-
-  defmodule PageStory do
-    def storybook_type, do: :page
   end
 
   setup_all do
@@ -253,6 +244,22 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
   end
 
+  test "handle_params raises StoryNotFound for an unknown variation_id" do
+    socket = base_socket(PhoenixStorybook.TestStorybook)
+
+    error =
+      assert_raise PhoenixStorybook.StoryNotFound, fn ->
+        ComponentIframeLive.handle_params(
+          %{"story" => ["component"], "variation_id" => "unknown"},
+          "/",
+          socket
+        )
+      end
+
+    assert error.message =~ ~s|unknown variation "unknown"|
+    assert error.message =~ "TreeStorybook.Component"
+  end
+
   test "handle_params assigns empty extra_assigns when variation is nil" do
     socket = base_socket(BackendComponentEmpty)
 
@@ -263,13 +270,16 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     assert socket.assigns.extra_assigns == %{}
   end
 
-  test "handle_params returns nil variation for non-component stories" do
-    socket = base_socket(BackendPage)
+  test "handle_params raises StoryNotFound for page stories" do
+    socket = base_socket(PhoenixStorybook.TestStorybook)
 
-    {:noreply, socket} =
-      ComponentIframeLive.handle_params(%{"story" => ["page"]}, "/", socket)
+    error =
+      assert_raise PhoenixStorybook.StoryNotFound, fn ->
+        ComponentIframeLive.handle_params(%{"story" => ["a_page"]}, "/", socket)
+      end
 
-    assert socket.assigns.variation == nil
+    assert error.message =~
+             "story TreeStorybook.APage of type :page can't be rendered in an iframe"
   end
 
   test "variation_extra_attributes ignores theme when no strategy configured" do

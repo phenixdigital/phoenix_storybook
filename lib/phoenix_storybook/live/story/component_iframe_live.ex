@@ -192,7 +192,8 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
 
   defp current_variation(type, story, %{"variation_id" => variation_id})
        when type in [:component, :live_component] do
-    Enum.find(story.variations(), &(to_string(&1.id) == variation_id))
+    Enum.find(story.variations(), &(to_string(&1.id) == variation_id)) ||
+      raise StoryNotFound, "unknown variation #{inspect(variation_id)} in story #{inspect(story)}"
   end
 
   defp current_variation(type, story, _) when type in [:component, :live_component] do
@@ -202,7 +203,12 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
     end
   end
 
-  defp current_variation(_type, _story, _params), do: nil
+  defp current_variation(:example, _story, _params), do: nil
+
+  defp current_variation(type, story, _params) do
+    raise StoryNotFound,
+          "story #{inspect(story)} of type #{inspect(type)} can't be rendered in an iframe"
+  end
 
   defp variation_extra_attributes(%Variation{id: variation_id}, assigns) do
     extra_assigns = Map.get(assigns.extra_assigns, {:single, variation_id}, %{})
