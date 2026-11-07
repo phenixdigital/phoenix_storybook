@@ -29,11 +29,6 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.EmptyVariationsStory}
   end
 
-  defmodule BackendPage do
-    def config(_key, default \\ nil), do: default
-    def load_story(_story_path), do: {:ok, PhoenixStorybook.ComponentIframeLiveTest.PageStory}
-  end
-
   defmodule HandleInfoStory do
     def handle_info({:storybook_handle_info, from}, socket) do
       send(from, :handled)
@@ -57,10 +52,6 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
   defmodule EmptyVariationsStory do
     def storybook_type, do: :component
     def variations, do: []
-  end
-
-  defmodule PageStory do
-    def storybook_type, do: :page
   end
 
   setup_all do
@@ -90,6 +81,22 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
 
       assert html =~ "component: hello"
       assert html =~ "component: world"
+    end
+
+    test "psb-assign on a whole-group iframe keeps the other variations' extra assigns",
+         %{conn: conn} do
+      {:ok, view, _html} =
+        live_with_params(conn, "/storybook/iframe/templates/template_component", %{
+          "variation_id" => "group"
+        })
+
+      view |> element("#set-foo-template-component-group-one") |> render_click()
+      view |> element("#set-bar-template-component-group-two") |> render_click()
+      view |> element("#toggle-status-template-component-group-two") |> render_click()
+
+      html = render(view)
+      assert html =~ "template_component: foo / status: false"
+      assert html =~ "template_component: bar / status: true"
     end
 
     test "variation with a template", %{conn: conn} do
@@ -142,6 +149,75 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ "Iframe example content"
       assert html =~ ~s|style="padding: 16px;"|
       assert html =~ ~s|data-foo="bar"|
+    end
+  end
+
+  describe "single grouped variation" do
+    test "group_id and variation_id render only that variation, through the group template",
+         %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/templates/template_component", %{
+          "group_id" => "group_template",
+          "variation_id" => "one"
+        })
+
+      assert html =~ "group-template"
+      assert html =~ "template_component: one"
+      refute html =~ "template_component: two"
+    end
+
+    test "group_id alone renders the whole group", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/a_folder/component", %{"group_id" => "group"})
+
+      assert html =~ "component: hello"
+      assert html =~ "component: world"
+    end
+
+    test "psb-assign and psb-toggle update the single grouped variation", %{conn: conn} do
+      {:ok, view, html} =
+        live_with_params(conn, "/storybook/iframe/templates/template_component", %{
+          "group_id" => "group",
+          "variation_id" => "two"
+        })
+
+      assert html =~ "template_component: two / status: false"
+      refute html =~ "template_component: one"
+
+      view |> element("#set-foo-template-component-group-two") |> render_click()
+      assert render(view) =~ "template_component: foo / status: false"
+
+      view |> element("#toggle-status-template-component-group-two") |> render_click()
+      assert render(view) =~ "template_component: foo / status: true"
+    end
+
+    test "handle_params raises StoryNotFound for an unknown group_id" do
+      error = assert_iframe_story_not_found(%{"group_id" => "unknown", "variation_id" => "one"})
+      assert error.message =~ ~s|unknown variation group "unknown"|
+      assert error.message =~ "TreeStorybook.TemplateComponent"
+    end
+
+    test "handle_params raises StoryNotFound for an unknown variation in a known group" do
+      error = assert_iframe_story_not_found(%{"group_id" => "group", "variation_id" => "unknown"})
+      assert error.message =~ ~s|unknown variation "unknown" in group "group"|
+      assert error.message =~ "TreeStorybook.TemplateComponent"
+    end
+
+    test "handle_params raises StoryNotFound when group_id points at a plain variation" do
+      error = assert_iframe_story_not_found(%{"group_id" => "hello"})
+      assert error.message =~ ~s|"hello" is a variation, not a variation group|
+      assert error.message =~ "TreeStorybook.TemplateComponent"
+    end
+
+    test "handle_params raises StoryNotFound when group_id comes with playground" do
+      error =
+        assert_iframe_story_not_found(%{
+          "group_id" => "group",
+          "variation_id" => "one",
+          "playground" => "true"
+        })
+
+      assert error.message =~ "group_id is not supported with playground"
     end
   end
 
@@ -253,6 +329,22 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
   end
 
+  test "handle_params raises StoryNotFound for an unknown variation_id" do
+    socket = base_socket(PhoenixStorybook.TestStorybook)
+
+    error =
+      assert_raise PhoenixStorybook.StoryNotFound, fn ->
+        ComponentIframeLive.handle_params(
+          %{"story" => ["component"], "variation_id" => "unknown"},
+          "/",
+          socket
+        )
+      end
+
+    assert error.message =~ ~s|unknown variation "unknown"|
+    assert error.message =~ "TreeStorybook.Component"
+  end
+
   test "handle_params assigns empty extra_assigns when variation is nil" do
     socket = base_socket(BackendComponentEmpty)
 
@@ -263,13 +355,16 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     assert socket.assigns.extra_assigns == %{}
   end
 
-  test "handle_params returns nil variation for non-component stories" do
-    socket = base_socket(BackendPage)
+  test "handle_params raises StoryNotFound for page stories" do
+    socket = base_socket(PhoenixStorybook.TestStorybook)
 
-    {:noreply, socket} =
-      ComponentIframeLive.handle_params(%{"story" => ["page"]}, "/", socket)
+    error =
+      assert_raise PhoenixStorybook.StoryNotFound, fn ->
+        ComponentIframeLive.handle_params(%{"story" => ["a_page"]}, "/", socket)
+      end
 
-    assert socket.assigns.variation == nil
+    assert error.message =~
+             "story TreeStorybook.APage of type :page can't be rendered in an iframe"
   end
 
   test "variation_extra_attributes ignores theme when no strategy configured" do
@@ -333,6 +428,15 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
 
   defp live_with_params(conn, path, params) do
     live(conn, "#{path}?#{URI.encode_query(params)}")
+  end
+
+  defp assert_iframe_story_not_found(params) do
+    socket = base_socket(PhoenixStorybook.TestStorybook)
+    params = Map.put(params, "story", ["templates", "template_component"])
+
+    assert_raise PhoenixStorybook.StoryNotFound, fn ->
+      ComponentIframeLive.handle_params(params, "/", socket)
+    end
   end
 
   defp base_socket(backend_module) do
