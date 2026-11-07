@@ -35,6 +35,8 @@ defmodule PhoenixStorybook.TestStorybook do
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
     compilation_mode: :lazy,
     source_permalink_base_url: "https://github.com/phenixdigital/phoenix_storybook/blob/main",
+    # pin the repo root so permalinks do not depend on the checkout folder name
+    source_permalink_root: Path.expand("..", __DIR__),
     themes: [
       default: [name: "Default"],
       colorful: [name: "Colorful", dropdown_class: "text-pink-400"]
@@ -66,21 +68,24 @@ defmodule PhoenixStorybook.GitlabSourcePermalinkStorybook do
   use PhoenixStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
     compilation_mode: :lazy,
-    source_permalink_base_url: "https://gitlab.com/phenixdigital/phoenix_storybook"
+    source_permalink_base_url: "https://gitlab.com/phenixdigital/phoenix_storybook",
+    source_permalink_root: Path.expand("..", __DIR__)
 end
 
 defmodule PhoenixStorybook.GitlabBlobSourcePermalinkStorybook do
   use PhoenixStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
     compilation_mode: :lazy,
-    source_permalink_base_url: "https://gitlab.com/phenixdigital/phoenix_storybook/-/blob/main"
+    source_permalink_base_url: "https://gitlab.com/phenixdigital/phoenix_storybook/-/blob/main",
+    source_permalink_root: Path.expand("..", __DIR__)
 end
 
 defmodule PhoenixStorybook.UnknownHostSourcePermalinkStorybook do
   use PhoenixStorybook,
     content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
     compilation_mode: :lazy,
-    source_permalink_base_url: "https://bitbucket.org/phenixdigital/phoenix_storybook"
+    source_permalink_base_url: "https://bitbucket.org/phenixdigital/phoenix_storybook",
+    source_permalink_root: Path.expand("..", __DIR__)
 end
 
 defmodule PhoenixStorybook.MismatchedRepoSourcePermalinkStorybook do
