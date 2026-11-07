@@ -81,6 +81,7 @@ defmodule PhoenixStorybook.MixProject do
       "guides/components.md",
       "guides/icons.md",
       "guides/sandboxing.md",
+      "guides/screen_sizes.md",
       "guides/setup.md",
       "guides/testing.md",
       "guides/theming.md"
