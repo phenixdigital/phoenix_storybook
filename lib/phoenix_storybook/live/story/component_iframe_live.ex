@@ -229,7 +229,7 @@ defmodule PhoenixStorybook.Story.ComponentIframeLive do
       class="psb"
       style="padding: 8px; border-bottom: 1px dashed rgba(128, 128, 128, 0.35);"
     >
-      <%!-- ponytail: paddings, not margins, so nothing collapses out of body and the measured height is exact.
+      <%!-- Paddings, not margins, so nothing collapses out of body and the measured height is exact.
            8px section + the container's 5px = the None view's card (p-2) + default container --%>
       <h3 style="margin: 0; padding: 4px 5px; font: 600 12px/1.4 system-ui, sans-serif; opacity: 0.6;">
         {screen_size_section_title(variation, assigns)}

@@ -307,7 +307,7 @@ defmodule PhoenixStorybook.Story.Variations do
       class="psb psb:pb-12"
       style="overflow-x: auto; overflow-y: hidden; flex-shrink: 0;"
     >
-      <%!-- ponytail: id keyed on src so a new src mounts a fresh iframe; width changes reuse it --%>
+      <%!-- The id is keyed on src so a new src mounts a fresh iframe; width changes reuse it --%>
       <div
         id={"psb-screen-size-box-#{:erlang.phash2(@screen_size_iframe_src)}"}
         phx-update="ignore"
