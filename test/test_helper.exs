@@ -90,6 +90,13 @@ defmodule PhoenixStorybook.MismatchedRepoSourcePermalinkStorybook do
     source_permalink_base_url: "https://github.com/phenixdigital/another_repo/blob/main"
 end
 
+defmodule PhoenixStorybook.NoViewportsStorybook do
+  use PhoenixStorybook,
+    content_path: Path.expand("./fixtures/storybook_content/tree", __DIR__),
+    compilation_mode: :lazy,
+    viewports: false
+end
+
 defmodule PhoenixStorybook.TestRouter do
   use Phoenix.Router
   import PhoenixStorybook.Router
@@ -147,6 +154,13 @@ defmodule PhoenixStorybook.TestRouter do
     otp_app: :phoenix_storybook,
     backend_module: PhoenixStorybook.MismatchedRepoSourcePermalinkStorybook,
     session_name: :live_storybook_mismatched_repo_permalink,
+    pipeline: false
+  )
+
+  live_storybook("/storybook_no_viewports",
+    otp_app: :phoenix_storybook,
+    backend_module: PhoenixStorybook.NoViewportsStorybook,
+    session_name: :live_storybook_no_viewports,
     pipeline: false
   )
 

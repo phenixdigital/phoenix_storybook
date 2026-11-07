@@ -15,6 +15,11 @@ defmodule PhoenixStorybook.Guides.GuidesTest do
     assert guide =~ "<h1>Sandboxing components</h1>"
   end
 
+  test "screen sizes guide" do
+    guide = Guides.markup("screen_sizes.md")
+    assert guide =~ "<h1>Screen sizes</h1>"
+  end
+
   test "icons guide" do
     guide = Guides.markup("icons.md")
     assert guide =~ "<h1>Custom Icons</h1>"

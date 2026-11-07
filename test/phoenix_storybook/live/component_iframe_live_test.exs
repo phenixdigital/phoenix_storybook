@@ -221,6 +221,98 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
     end
   end
 
+  describe "all variations mode" do
+    test "variations=all renders every variation of the story", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/component", %{"variations" => "all"})
+
+      for variation_id <- ~w(hello world lengthy themed) do
+        assert html =~ ~s|id="psb-screen-size-variation-#{variation_id}"|
+      end
+
+      assert html =~ "Hello variation"
+      assert html =~ "component: hello"
+      assert html =~ "component: world"
+    end
+
+    test "variation_id renders only that variation", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/component", %{
+          "variations" => "all",
+          "variation_id" => "world"
+        })
+
+      assert html =~ "component: world"
+      refute html =~ "component: hello"
+    end
+
+    test "group_id renders the whole group in one section", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/a_folder/component", %{
+          "variations" => "all",
+          "group_id" => "group"
+        })
+
+      assert html =~ ~s|id="psb-screen-size-variation-group"|
+      refute html =~ ~s|id="psb-screen-size-variation-no_attributes"|
+      assert html =~ "component: hello"
+      assert html =~ "component: world"
+    end
+
+    test "group_id and variation_id render one grouped variation, titled after its group",
+         %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/a_folder/component", %{
+          "variations" => "all",
+          "group_id" => "group",
+          "variation_id" => "world"
+        })
+
+      assert html =~ "Group › World variation"
+      assert html =~ "component: world"
+      refute html =~ "component: hello"
+    end
+
+    test "a story container with its own options replaces the default container", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/a_folder/component", %{"variations" => "all"})
+
+      assert html =~ ~s|data-foo="bar"|
+      assert html =~ ~r/class="block[^"]*"/
+      refute html =~ "flex-direction: column"
+    end
+
+    test "a story without container options gets the default iframe container", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/component", %{"variations" => "all"})
+
+      assert html =~ "flex-direction: column"
+    end
+
+    test "an :iframe container story renders its variations as divs", %{conn: conn} do
+      {:ok, _view, html} =
+        live_with_params(conn, "/storybook/iframe/containers/components/iframe", %{
+          "variations" => "all"
+        })
+
+      assert html =~ ~s|<section id="psb-screen-size-variation-hello"|
+      assert html =~ "component:"
+      refute html =~ "<iframe"
+    end
+
+    test "an unknown variations param raises" do
+      socket = base_socket(PhoenixStorybook.TestStorybook)
+
+      assert_raise ArgumentError, ~r/unknown variations param "some"/, fn ->
+        ComponentIframeLive.handle_params(
+          %{"story" => ["component"], "variations" => "some"},
+          "/",
+          socket
+        )
+      end
+    end
+  end
+
   describe "playground" do
     test "it renders a playground with a variation", %{conn: conn} do
       {:ok, _view, html} =

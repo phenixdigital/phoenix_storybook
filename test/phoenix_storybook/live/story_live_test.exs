@@ -808,6 +808,118 @@ defmodule PhoenixStorybook.StoryLiveTest do
     end
   end
 
+  describe "screen sizes" do
+    test "the Variations tab renders the screen size select with the default presets", %{
+      conn: conn
+    } do
+      {:ok, _view, html} = live(conn, ~p"/storybook/component")
+
+      assert html =~ ~s|id="psb-screen-size-form"|
+      assert html =~ "Small mobile (320px)"
+      assert html =~ "Tablet (834px)"
+      refute html =~ "psb-screen-size-pane"
+    end
+
+    test "choosing a preset patches ?viewport= and renders the preview iframe", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component")
+
+      html =
+        view
+        |> form("#psb-screen-size-form")
+        |> render_change(%{screen_size: "tablet"})
+
+      assert_patched(
+        view,
+        ~p"/storybook/component?#{[tab: :variations, theme: :default, viewport: :tablet]}"
+      )
+
+      assert html =~ ~s|data-screen-width="834"|
+      assert html =~ ~r|<iframe[^>]+src="/storybook/iframe/component\?[^"]*variations=all|
+    end
+
+    test "the custom-width event patches ?viewport=<px>", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component?viewport=tablet")
+
+      html = render_hook(view, "psb-set-screen-width", %{width: 419})
+
+      assert_patched(
+        view,
+        ~p"/storybook/component?#{[tab: :variations, theme: :default, viewport: 419]}"
+      )
+
+      assert html =~ ~s|data-screen-width="419"|
+      assert html =~ ~r|<option value="custom" selected|
+    end
+
+    test "choosing Custom keeps the current custom width", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/storybook/component?viewport=419")
+
+      html =
+        view
+        |> form("#psb-screen-size-form")
+        |> render_change(%{screen_size: "custom"})
+
+      assert html =~ ~s|data-screen-width="419"|
+    end
+
+    test "the Variation select patches the params and keeps them across a preset change", %{
+      conn: conn
+    } do
+      {:ok, view, _html} = live(conn, ~p"/storybook/a_folder/component?viewport=tablet")
+
+      view
+      |> form("#psb-variation-selection-form")
+      |> render_change(%{variation_selection: "group_id=group&variation_id=world"})
+
+      assert_patched(
+        view,
+        ~p"/storybook/a_folder/component?#{[group_id: :group, tab: :variations, theme: :default, variation_id: :world, viewport: :tablet]}"
+      )
+
+      html =
+        view
+        |> form("#psb-screen-size-form")
+        |> render_change(%{screen_size: "desktop"})
+
+      assert_patched(
+        view,
+        ~p"/storybook/a_folder/component?#{[group_id: :group, tab: :variations, theme: :default, variation_id: :world, viewport: :desktop]}"
+      )
+
+      assert html =~ ~r|<iframe[^>]+src="[^"]*group_id=group[^"]*variation_id=world|
+    end
+
+    test "None clears the screen size and the variation selection", %{conn: conn} do
+      {:ok, view, _html} =
+        live(conn, ~p"/storybook/a_folder/component?viewport=tablet&group_id=group")
+
+      html =
+        view
+        |> form("#psb-screen-size-form")
+        |> render_change(%{screen_size: ""})
+
+      assert_patched(
+        view,
+        ~p"/storybook/a_folder/component?#{[tab: :variations, theme: :default]}"
+      )
+
+      refute html =~ "psb-screen-size-pane"
+      refute html =~ "psb-variation-selection-form"
+    end
+
+    test "viewports: false hides the screen size toolbar", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/storybook_no_viewports/component")
+
+      refute html =~ "psb-screen-size-form"
+    end
+
+    test "an unknown viewport raises", %{conn: conn} do
+      assert_raise ArgumentError, ~r/unknown viewport param "watch"/, fn ->
+        get(conn, ~p"/storybook/component", viewport: "watch")
+      end
+    end
+  end
+
   describe "page rendering" do
     test "renders a page story", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/storybook/a_page")
