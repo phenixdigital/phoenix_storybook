@@ -299,6 +299,33 @@ defmodule PhoenixStorybook.ComponentIframeLiveTest do
       assert html =~ ~s|<div class="psb-sandbox block" data-foo="bar">|
     end
 
+    test "the story's container class lands on the variation div only, not on body",
+         %{conn: conn} do
+      # a_folder/component: {:div, class: "block", "data-foo": "bar"}
+      all_variations_html =
+        conn
+        |> get("/storybook/iframe/a_folder/component", %{"variations" => "all"})
+        |> html_response(200)
+
+      assert all_variations_html =~ ~s|<body class="psb-sandbox" style="margin: 0;">|
+
+      # once per variation, each on its container div
+      variation_sections =
+        Regex.scan(~r/<section id="psb-screen-size-variation-/, all_variations_html)
+
+      containers =
+        Regex.scan(~r/<div class="psb-sandbox block" data-foo="bar">/, all_variations_html)
+
+      assert length(variation_sections) > 0
+      assert length(Regex.scan(~r/psb-sandbox block/, all_variations_html)) == length(containers)
+      assert length(containers) == length(variation_sections)
+
+      single_variation_html =
+        conn |> get("/storybook/iframe/a_folder/component") |> html_response(200)
+
+      assert single_variation_html =~ ~s|<body class="psb-sandbox block" style="margin: 0;">|
+    end
+
     test "a div container with only a data attribute keeps the default class" do
       html = render_all_variations(DataAttributeDivContainerStory)
 
